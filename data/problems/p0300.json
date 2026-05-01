@@ -1,0 +1,35 @@
+{
+  "id": 300,
+  "title": "最长递增子序列",
+  "difficulty": "Medium",
+  "tags": [
+    "DP",
+    "贪心+二分"
+  ],
+  "day": 7,
+  "day_title": "DP / 多维DP / 技巧",
+  "category": "DP",
+  "leetcode_url": "https://leetcode.cn/problems/lis/",
+  "filename": "p300_lis.py",
+  "doc": "🔹 题面\n    返回最长严格递增子序列的长度。\n\n🔹 解法对比\n    | 方法               | 时间        | 空间 | 备注                        |\n    |--------------------|-------------|------|-----------------------------|\n    | DP 标准            | O(n²)       | O(n) | f[i] = max{f[j]+1 | a[j]<a[i]} |\n    | 贪心 + 二分(patience)★| O(n log n) | O(n) | 维护\"长度→最小末尾\"           |\n\n🔹 贪心 + 二分思想\n    tails[k] = 当前长度为 k+1 的 LIS 的最小末尾。\n    新元素 x 用 bisect_left 找位置;若可追加则增加长度。\n    注意:tails 不一定是真正的 LIS,但长度正确。",
+  "solutions": [
+    {
+      "method": "lengthOfLIS",
+      "title": "贪心 + 二分",
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "starred": true,
+      "code": "def lengthOfLIS(self, nums: list[int]) -> int:\n    tails: list[int] = []\n    for x in nums:\n        i = bisect_left(tails, x)\n        if i == len(tails):\n            tails.append(x)\n        else:\n            tails[i] = x\n    return len(tails)"
+    },
+    {
+      "method": "lengthOfLIS_dp",
+      "title": "DP",
+      "time": "O(n²)",
+      "space": "O(n)",
+      "starred": false,
+      "code": "def lengthOfLIS_dp(self, nums: list[int]) -> int:\n    n = len(nums)\n    if n == 0:\n        return 0\n    f = [1] * n\n    for i in range(1, n):\n        for j in range(i):\n            if nums[j] < nums[i]:\n                f[i] = max(f[i], f[j] + 1)\n    return max(f)"
+    }
+  ],
+  "raw_source": "# LC 300. 最长递增子序列 · Medium · DP / 贪心+二分\n\"\"\"\n🔹 题面\n    返回最长严格递增子序列的长度。\n\n🔹 解法对比\n    | 方法               | 时间        | 空间 | 备注                        |\n    |--------------------|-------------|------|-----------------------------|\n    | DP 标准            | O(n²)       | O(n) | f[i] = max{f[j]+1 | a[j]<a[i]} |\n    | 贪心 + 二分(patience)★| O(n log n) | O(n) | 维护\"长度→最小末尾\"           |\n\n🔹 贪心 + 二分思想\n    tails[k] = 当前长度为 k+1 的 LIS 的最小末尾。\n    新元素 x 用 bisect_left 找位置;若可追加则增加长度。\n    注意:tails 不一定是真正的 LIS,但长度正确。\n\"\"\"\nfrom bisect import bisect_left\n\n\nclass Solution:\n    # 解法 1:贪心 + 二分 ★ — O(n log n) / O(n)\n    def lengthOfLIS(self, nums: list[int]) -> int:\n        tails: list[int] = []\n        for x in nums:\n            i = bisect_left(tails, x)\n            if i == len(tails):\n                tails.append(x)\n            else:\n                tails[i] = x\n        return len(tails)\n\n    # 解法 2:DP — O(n²) / O(n)\n    def lengthOfLIS_dp(self, nums: list[int]) -> int:\n        n = len(nums)\n        if n == 0:\n            return 0\n        f = [1] * n\n        for i in range(1, n):\n            for j in range(i):\n                if nums[j] < nums[i]:\n                    f[i] = max(f[i], f[j] + 1)\n        return max(f)\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        ([10, 9, 2, 5, 3, 7, 101, 18], 4),\n        ([0, 1, 0, 3, 2, 3], 4),\n        ([7, 7, 7, 7], 1),\n        ([], 0),\n    ]\n    for arg, want in cases:\n        for fn in (s.lengthOfLIS, s.lengthOfLIS_dp):\n            assert fn(arg) == want\n    print(\"✅ p300 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

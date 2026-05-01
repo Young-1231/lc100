@@ -1,0 +1,34 @@
+{
+  "id": 72,
+  "title": "编辑距离",
+  "difficulty": "Medium",
+  "tags": [
+    "多维 DP"
+  ],
+  "day": 7,
+  "day_title": "DP / 多维DP / 技巧",
+  "category": "多维DP",
+  "leetcode_url": "https://leetcode.cn/problems/edit-distance/",
+  "filename": "p072_edit_distance.py",
+  "doc": "🔹 解法对比\n    | 方法            | 时间    | 空间   | 备注                  |\n    |-----------------|---------|--------|-----------------------|\n    | DP 二维 ★      | O(mn)   | O(mn)  | 易理解,可回溯路径    |\n    | DP 滚动一维     | O(mn)   | O(min(m,n))| 空间最优          |\n\n🔹 状态\n    f[i][j] = word1[:i] → word2[:j] 的最少操作。",
+  "solutions": [
+    {
+      "method": "minDistance",
+      "title": "二维 DP",
+      "time": "O(mn)",
+      "space": "O(mn)",
+      "starred": true,
+      "code": "def minDistance(self, a: str, b: str) -> int:\n    m, n = len(a), len(b)\n    f = [[0] * (n + 1) for _ in range(m + 1)]\n    for i in range(m + 1):\n        f[i][0] = i\n    for j in range(n + 1):\n        f[0][j] = j\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if a[i - 1] == b[j - 1]:\n                f[i][j] = f[i - 1][j - 1]\n            else:\n                f[i][j] = 1 + min(f[i - 1][j - 1], f[i - 1][j], f[i][j - 1])\n    return f[m][n]"
+    },
+    {
+      "method": "minDistance_1d",
+      "title": "滚动一维",
+      "time": "O(mn)",
+      "space": "O(n)",
+      "starred": false,
+      "code": "def minDistance_1d(self, a: str, b: str) -> int:\n    m, n = len(a), len(b)\n    if m < n:\n        a, b = b, a\n        m, n = n, m\n    prev = list(range(n + 1))\n    for i in range(1, m + 1):\n        cur = [i] + [0] * n\n        for j in range(1, n + 1):\n            if a[i - 1] == b[j - 1]:\n                cur[j] = prev[j - 1]\n            else:\n                cur[j] = 1 + min(prev[j - 1], prev[j], cur[j - 1])\n        prev = cur\n    return prev[n]"
+    }
+  ],
+  "raw_source": "# LC 72. 编辑距离 · Medium · 多维 DP\n\"\"\"\n🔹 解法对比\n    | 方法            | 时间    | 空间   | 备注                  |\n    |-----------------|---------|--------|-----------------------|\n    | DP 二维 ★      | O(mn)   | O(mn)  | 易理解,可回溯路径    |\n    | DP 滚动一维     | O(mn)   | O(min(m,n))| 空间最优          |\n\n🔹 状态\n    f[i][j] = word1[:i] → word2[:j] 的最少操作。\n\"\"\"\n\n\nclass Solution:\n    # 解法 1:二维 DP ★ — O(mn) / O(mn)\n    def minDistance(self, a: str, b: str) -> int:\n        m, n = len(a), len(b)\n        f = [[0] * (n + 1) for _ in range(m + 1)]\n        for i in range(m + 1):\n            f[i][0] = i\n        for j in range(n + 1):\n            f[0][j] = j\n        for i in range(1, m + 1):\n            for j in range(1, n + 1):\n                if a[i - 1] == b[j - 1]:\n                    f[i][j] = f[i - 1][j - 1]\n                else:\n                    f[i][j] = 1 + min(f[i - 1][j - 1], f[i - 1][j], f[i][j - 1])\n        return f[m][n]\n\n    # 解法 2:滚动一维 — O(mn) / O(n)\n    def minDistance_1d(self, a: str, b: str) -> int:\n        m, n = len(a), len(b)\n        if m < n:\n            a, b = b, a\n            m, n = n, m\n        prev = list(range(n + 1))\n        for i in range(1, m + 1):\n            cur = [i] + [0] * n\n            for j in range(1, n + 1):\n                if a[i - 1] == b[j - 1]:\n                    cur[j] = prev[j - 1]\n                else:\n                    cur[j] = 1 + min(prev[j - 1], prev[j], cur[j - 1])\n            prev = cur\n        return prev[n]\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        ((\"horse\", \"ros\"), 3),\n        ((\"intention\", \"execution\"), 5),\n        ((\"\", \"abc\"), 3),\n        ((\"abc\", \"\"), 3),\n    ]\n    for args, want in cases:\n        for fn in (s.minDistance, s.minDistance_1d):\n            assert fn(*args) == want\n    print(\"✅ p072 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

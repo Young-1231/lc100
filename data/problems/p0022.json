@@ -1,0 +1,26 @@
+{
+  "id": 22,
+  "title": "括号生成",
+  "difficulty": "Medium",
+  "tags": [
+    "回溯"
+  ],
+  "day": 5,
+  "day_title": "图论 / 回溯 / 二分",
+  "category": "回溯",
+  "leetcode_url": "https://leetcode.cn/problems/generate-parentheses/",
+  "filename": "p022_generate_parentheses.py",
+  "doc": "🔹 直觉\n    剩余左括号 > 0 才放 '(';剩余右括号 > 剩余左括号 才放 ')'(保证有效)。",
+  "solutions": [
+    {
+      "method": "generateParenthesis",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def generateParenthesis(self, n: int) -> list[str]:\n    ans, path = [], []\n\n    def bt(left, right):\n        if not left and not right:\n            ans.append(\"\".join(path))\n            return\n        if left > 0:\n            path.append(\"(\")\n            bt(left - 1, right)\n            path.pop()\n        if right > left:\n            path.append(\")\")\n            bt(left, right - 1)\n            path.pop()\n\n    bt(n, n)\n    return ans"
+    }
+  ],
+  "raw_source": "# LC 22. 括号生成 · Medium · 回溯\n\"\"\"\n🔹 直觉\n    剩余左括号 > 0 才放 '(';剩余右括号 > 剩余左括号 才放 ')'(保证有效)。\n\"\"\"\n\n\nclass Solution:\n    def generateParenthesis(self, n: int) -> list[str]:\n        ans, path = [], []\n\n        def bt(left, right):\n            if not left and not right:\n                ans.append(\"\".join(path))\n                return\n            if left > 0:\n                path.append(\"(\")\n                bt(left - 1, right)\n                path.pop()\n            if right > left:\n                path.append(\")\")\n                bt(left, right - 1)\n                path.pop()\n\n        bt(n, n)\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert sorted(s.generateParenthesis(3)) == sorted([\"((()))\", \"(()())\", \"(())()\", \"()(())\", \"()()()\"])\n    assert s.generateParenthesis(1) == [\"()\"]\n    print(\"✅ p022 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

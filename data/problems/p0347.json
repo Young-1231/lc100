@@ -1,0 +1,35 @@
+{
+  "id": 347,
+  "title": "前 K 个高频元素",
+  "difficulty": "Medium",
+  "tags": [
+    "堆",
+    "桶排序"
+  ],
+  "day": 6,
+  "day_title": "栈 / 堆 / 贪心",
+  "category": "堆",
+  "leetcode_url": "https://leetcode.cn/problems/top-k-frequent/",
+  "filename": "p347_top_k_frequent.py",
+  "doc": "🔹 题面\n    返回出现频率前 K 高的元素。\n\n🔹 解法对比\n    | 方法                 | 时间      | 空间 | 备注                       |\n    |----------------------|-----------|------|----------------------------|\n    | 排序                 | O(n log n)| O(n) | 简单                       |\n    | 小顶堆 维持大小 K ★ | O(n log k)| O(n+k)| 大数据流首选                |\n    | 桶排序(频次桶)     | O(n)      | O(n) | 频次范围 ≤ n,严格 O(n)    |",
+  "solutions": [
+    {
+      "method": "topKFrequent",
+      "title": "小顶堆",
+      "time": "O(n log k)",
+      "space": "",
+      "starred": true,
+      "code": "def topKFrequent(self, nums: list[int], k: int) -> list[int]:\n    cnt = Counter(nums)\n    return [x for x, _ in heapq.nlargest(k, cnt.items(), key=lambda kv: kv[1])]"
+    },
+    {
+      "method": "topKFrequent_bucket",
+      "title": "桶排序",
+      "time": "O(n)",
+      "space": "",
+      "starred": false,
+      "code": "def topKFrequent_bucket(self, nums: list[int], k: int) -> list[int]:\n    cnt = Counter(nums)\n    buckets: list[list[int]] = [[] for _ in range(len(nums) + 1)]\n    for x, c in cnt.items():\n        buckets[c].append(x)\n    out: list[int] = []\n    for f in range(len(buckets) - 1, 0, -1):\n        for x in buckets[f]:\n            out.append(x)\n            if len(out) == k:\n                return out\n    return out"
+    }
+  ],
+  "raw_source": "# LC 347. 前 K 个高频元素 · Medium · 堆 / 桶排序\n\"\"\"\n🔹 题面\n    返回出现频率前 K 高的元素。\n\n🔹 解法对比\n    | 方法                 | 时间      | 空间 | 备注                       |\n    |----------------------|-----------|------|----------------------------|\n    | 排序                 | O(n log n)| O(n) | 简单                       |\n    | 小顶堆 维持大小 K ★ | O(n log k)| O(n+k)| 大数据流首选                |\n    | 桶排序(频次桶)     | O(n)      | O(n) | 频次范围 ≤ n,严格 O(n)    |\n\"\"\"\nfrom collections import Counter\nimport heapq\n\n\nclass Solution:\n    # 解法 1:小顶堆 ★ — O(n log k)\n    def topKFrequent(self, nums: list[int], k: int) -> list[int]:\n        cnt = Counter(nums)\n        return [x for x, _ in heapq.nlargest(k, cnt.items(), key=lambda kv: kv[1])]\n\n    # 解法 2:桶排序 — O(n)\n    def topKFrequent_bucket(self, nums: list[int], k: int) -> list[int]:\n        cnt = Counter(nums)\n        buckets: list[list[int]] = [[] for _ in range(len(nums) + 1)]\n        for x, c in cnt.items():\n            buckets[c].append(x)\n        out: list[int] = []\n        for f in range(len(buckets) - 1, 0, -1):\n            for x in buckets[f]:\n                out.append(x)\n                if len(out) == k:\n                    return out\n        return out\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        (([1, 1, 1, 2, 2, 3], 2), {1, 2}),\n        (([1], 1), {1}),\n        (([4, 1, -1, 2, -1, 2, 3], 2), {-1, 2}),\n    ]\n    for args, want in cases:\n        for fn in (s.topKFrequent, s.topKFrequent_bucket):\n            assert set(fn(*args)) == want\n    print(\"✅ p347 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

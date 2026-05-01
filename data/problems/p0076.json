@@ -1,0 +1,34 @@
+{
+  "id": 76,
+  "title": "最小覆盖子串",
+  "difficulty": "Hard",
+  "tags": [
+    "滑动窗口"
+  ],
+  "day": 1,
+  "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
+  "category": "子串",
+  "leetcode_url": "https://leetcode.cn/problems/minimum-window-substring/",
+  "filename": "p076_minimum_window_substring.py",
+  "doc": "🔹 题面\n    在 s 中找出包含 t 全部字符(含重复)的最短子串。\n\n🔹 解法对比\n    | 方法                            | 时间          | 空间        | 备注                |\n    |---------------------------------|---------------|-------------|---------------------|\n    | 暴力枚举所有子串                | O(n²·|Σ|)     | O(|Σ|)      | 仅做正确性参考      |\n    | 滑动窗口(Counter 比较)        | O(n·|Σ|)      | O(|Σ|)      | 直观,常数大        |\n    | 滑动窗口 + valid 计数 ★        | O(n + |t|)    | O(|Σ|)      | 工程最优            |\n\n🔹 直觉\n    维护 need(目标计数),valid(已满足\"种数\")。\n    r 扩大直到 valid == 不同字符数;l 收缩直到刚好不满足。",
+  "solutions": [
+    {
+      "method": "minWindow",
+      "title": "滑窗 + valid 计数",
+      "time": "O(n + |t|)",
+      "space": "O(|Σ|)",
+      "starred": true,
+      "code": "def minWindow(self, s: str, t: str) -> str:\n    if len(s) < len(t):\n        return \"\"\n    need = Counter(t)\n    kinds = len(need)\n    have: dict[str, int] = {}\n    valid = 0\n    l = 0\n    best_l, best_len = 0, float(\"inf\")\n    for r, c in enumerate(s):\n        if c in need:\n            have[c] = have.get(c, 0) + 1\n            if have[c] == need[c]:\n                valid += 1\n        while valid == kinds:\n            if r - l + 1 < best_len:\n                best_l, best_len = l, r - l + 1\n            lc = s[l]\n            if lc in need:\n                if have[lc] == need[lc]:\n                    valid -= 1\n                have[lc] -= 1\n            l += 1\n    return \"\" if best_len == float(\"inf\") else s[best_l:best_l + best_len]"
+    },
+    {
+      "method": "minWindow_naive",
+      "title": "滑窗 + Counter 直接对比",
+      "time": "O(n·|Σ|)",
+      "space": "",
+      "starred": false,
+      "code": "def minWindow_naive(self, s: str, t: str) -> str:\n    if len(s) < len(t):\n        return \"\"\n    need = Counter(t)\n    win: Counter = Counter()\n    l = 0\n    best = (float(\"inf\"), 0, 0)\n    for r, c in enumerate(s):\n        win[c] += 1\n        while all(win[k] >= v for k, v in need.items()):\n            if r - l + 1 < best[0]:\n                best = (r - l + 1, l, r + 1)\n            win[s[l]] -= 1\n            l += 1\n    return \"\" if best[0] == float(\"inf\") else s[best[1]:best[2]]"
+    }
+  ],
+  "raw_source": "# LC 76. 最小覆盖子串 · Hard · 滑动窗口\n\"\"\"\n🔹 题面\n    在 s 中找出包含 t 全部字符(含重复)的最短子串。\n\n🔹 解法对比\n    | 方法                            | 时间          | 空间        | 备注                |\n    |---------------------------------|---------------|-------------|---------------------|\n    | 暴力枚举所有子串                | O(n²·|Σ|)     | O(|Σ|)      | 仅做正确性参考      |\n    | 滑动窗口(Counter 比较)        | O(n·|Σ|)      | O(|Σ|)      | 直观,常数大        |\n    | 滑动窗口 + valid 计数 ★        | O(n + |t|)    | O(|Σ|)      | 工程最优            |\n\n🔹 直觉\n    维护 need(目标计数),valid(已满足\"种数\")。\n    r 扩大直到 valid == 不同字符数;l 收缩直到刚好不满足。\n\"\"\"\nfrom collections import Counter\n\n\nclass Solution:\n    # 解法 1:滑窗 + valid 计数 ★  — O(n + |t|) / O(|Σ|)\n    def minWindow(self, s: str, t: str) -> str:\n        if len(s) < len(t):\n            return \"\"\n        need = Counter(t)\n        kinds = len(need)\n        have: dict[str, int] = {}\n        valid = 0\n        l = 0\n        best_l, best_len = 0, float(\"inf\")\n        for r, c in enumerate(s):\n            if c in need:\n                have[c] = have.get(c, 0) + 1\n                if have[c] == need[c]:\n                    valid += 1\n            while valid == kinds:\n                if r - l + 1 < best_len:\n                    best_l, best_len = l, r - l + 1\n                lc = s[l]\n                if lc in need:\n                    if have[lc] == need[lc]:\n                        valid -= 1\n                    have[lc] -= 1\n                l += 1\n        return \"\" if best_len == float(\"inf\") else s[best_l:best_l + best_len]\n\n    # 解法 2:滑窗 + Counter 直接对比 — O(n·|Σ|)\n    def minWindow_naive(self, s: str, t: str) -> str:\n        if len(s) < len(t):\n            return \"\"\n        need = Counter(t)\n        win: Counter = Counter()\n        l = 0\n        best = (float(\"inf\"), 0, 0)\n        for r, c in enumerate(s):\n            win[c] += 1\n            while all(win[k] >= v for k, v in need.items()):\n                if r - l + 1 < best[0]:\n                    best = (r - l + 1, l, r + 1)\n                win[s[l]] -= 1\n                l += 1\n        return \"\" if best[0] == float(\"inf\") else s[best[1]:best[2]]\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        ((\"ADOBECODEBANC\", \"ABC\"), \"BANC\"),\n        ((\"a\", \"a\"), \"a\"),\n        ((\"a\", \"aa\"), \"\"),\n    ]\n    for args, want in cases:\n        for fn in (s.minWindow, s.minWindow_naive):\n            assert fn(*args) == want\n    print(\"✅ p076 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

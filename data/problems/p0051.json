@@ -1,0 +1,26 @@
+{
+  "id": 51,
+  "title": "N 皇后",
+  "difficulty": "Hard",
+  "tags": [
+    "回溯"
+  ],
+  "day": 5,
+  "day_title": "图论 / 回溯 / 二分",
+  "category": "回溯",
+  "leetcode_url": "https://leetcode.cn/problems/n-queens/",
+  "filename": "p051_n_queens.py",
+  "doc": "🔹 直觉\n    按行放,每行枚举列;用三个集合记录\"已用列\"、\"已用主对角线 r-c\"、\"已用副对角线 r+c\"。",
+  "solutions": [
+    {
+      "method": "solveNQueens",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def solveNQueens(self, n: int) -> list[list[str]]:\n    cols, diag1, diag2 = set(), set(), set()\n    ans, board = [], [-1] * n\n\n    def render():\n        return [\n            \"\".join(\"Q\" if c == board[r] else \".\" for c in range(n))\n            for r in range(n)\n        ]\n\n    def bt(r):\n        if r == n:\n            ans.append(render())\n            return\n        for c in range(n):\n            if c in cols or (r - c) in diag1 or (r + c) in diag2:\n                continue\n            board[r] = c\n            cols.add(c); diag1.add(r - c); diag2.add(r + c)\n            bt(r + 1)\n            cols.remove(c); diag1.remove(r - c); diag2.remove(r + c)\n\n    bt(0)\n    return ans"
+    }
+  ],
+  "raw_source": "# LC 51. N 皇后 · Hard · 回溯\n\"\"\"\n🔹 直觉\n    按行放,每行枚举列;用三个集合记录\"已用列\"、\"已用主对角线 r-c\"、\"已用副对角线 r+c\"。\n\"\"\"\n\n\nclass Solution:\n    def solveNQueens(self, n: int) -> list[list[str]]:\n        cols, diag1, diag2 = set(), set(), set()\n        ans, board = [], [-1] * n\n\n        def render():\n            return [\n                \"\".join(\"Q\" if c == board[r] else \".\" for c in range(n))\n                for r in range(n)\n            ]\n\n        def bt(r):\n            if r == n:\n                ans.append(render())\n                return\n            for c in range(n):\n                if c in cols or (r - c) in diag1 or (r + c) in diag2:\n                    continue\n                board[r] = c\n                cols.add(c); diag1.add(r - c); diag2.add(r + c)\n                bt(r + 1)\n                cols.remove(c); diag1.remove(r - c); diag2.remove(r + c)\n\n        bt(0)\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert len(s.solveNQueens(4)) == 2\n    assert len(s.solveNQueens(1)) == 1\n    assert len(s.solveNQueens(8)) == 92\n    print(\"✅ p051 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

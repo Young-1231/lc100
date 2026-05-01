@@ -1,0 +1,1426 @@
+[
+  {
+    "id": 1,
+    "title": "两数之和",
+    "difficulty": "Easy",
+    "category": "哈希",
+    "day": 1,
+    "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
+    "filename": "p001_two_sum.py",
+    "n_sols": 3,
+    "tags": [
+      "哈希"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/two-sum/"
+  },
+  {
+    "id": 2,
+    "title": "两数相加",
+    "difficulty": "Medium",
+    "category": "链表",
+    "day": 3,
+    "day_title": "链表",
+    "filename": "p002_add_two_numbers.py",
+    "n_sols": 1,
+    "tags": [
+      "链表模拟"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/add-two-numbers/"
+  },
+  {
+    "id": 3,
+    "title": "无重复字符的最长子串",
+    "difficulty": "Medium",
+    "category": "滑动窗口",
+    "day": 1,
+    "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
+    "filename": "p003_longest_substring_no_repeat.py",
+    "n_sols": 1,
+    "tags": [
+      "滑动窗口"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/longest-substring-no-repeat/"
+  },
+  {
+    "id": 4,
+    "title": "寻找两个正序数组的中位数",
+    "difficulty": "Hard",
+    "category": "二分",
+    "day": 5,
+    "day_title": "图论 / 回溯 / 二分",
+    "filename": "p004_median_two_sorted.py",
+    "n_sols": 1,
+    "tags": [
+      "二分"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/median-two-sorted/"
+  },
+  {
+    "id": 5,
+    "title": "最长回文子串",
+    "difficulty": "Medium",
+    "category": "多维DP",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p005_longest_palindrome.py",
+    "n_sols": 3,
+    "tags": [
+      "中心扩展",
+      "DP",
+      "Manacher"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/longest-palindrome/"
+  },
+  {
+    "id": 11,
+    "title": "盛最多水的容器",
+    "difficulty": "Medium",
+    "category": "双指针",
+    "day": 1,
+    "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
+    "filename": "p011_container_with_most_water.py",
+    "n_sols": 2,
+    "tags": [
+      "双指针"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/container-with-most-water/"
+  },
+  {
+    "id": 15,
+    "title": "三数之和",
+    "difficulty": "Medium",
+    "category": "双指针",
+    "day": 1,
+    "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
+    "filename": "p015_three_sum.py",
+    "n_sols": 3,
+    "tags": [
+      "双指针"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/three-sum/"
+  },
+  {
+    "id": 17,
+    "title": "电话号码的字母组合",
+    "difficulty": "Medium",
+    "category": "回溯",
+    "day": 5,
+    "day_title": "图论 / 回溯 / 二分",
+    "filename": "p017_letter_combinations.py",
+    "n_sols": 1,
+    "tags": [
+      "回溯"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/letter-combinations/"
+  },
+  {
+    "id": 19,
+    "title": "删除链表的倒数第 N 个结点",
+    "difficulty": "Medium",
+    "category": "链表",
+    "day": 3,
+    "day_title": "链表",
+    "filename": "p019_remove_nth_from_end.py",
+    "n_sols": 1,
+    "tags": [
+      "双指针",
+      "哨兵"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/remove-nth-from-end/"
+  },
+  {
+    "id": 20,
+    "title": "有效的括号",
+    "difficulty": "Easy",
+    "category": "栈",
+    "day": 6,
+    "day_title": "栈 / 堆 / 贪心",
+    "filename": "p020_valid_parentheses.py",
+    "n_sols": 1,
+    "tags": [
+      "栈"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/valid-parentheses/"
+  },
+  {
+    "id": 21,
+    "title": "合并两个有序链表",
+    "difficulty": "Easy",
+    "category": "链表",
+    "day": 3,
+    "day_title": "链表",
+    "filename": "p021_merge_two_lists.py",
+    "n_sols": 1,
+    "tags": [
+      "链表归并"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/merge-two-lists/"
+  },
+  {
+    "id": 22,
+    "title": "括号生成",
+    "difficulty": "Medium",
+    "category": "回溯",
+    "day": 5,
+    "day_title": "图论 / 回溯 / 二分",
+    "filename": "p022_generate_parentheses.py",
+    "n_sols": 1,
+    "tags": [
+      "回溯"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/generate-parentheses/"
+  },
+  {
+    "id": 23,
+    "title": "合并 K 个升序链表",
+    "difficulty": "Hard",
+    "category": "链表",
+    "day": 3,
+    "day_title": "链表",
+    "filename": "p023_merge_k_lists.py",
+    "n_sols": 3,
+    "tags": [
+      "堆",
+      "分治"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/merge-k-lists/"
+  },
+  {
+    "id": 24,
+    "title": "两两交换链表中的节点",
+    "difficulty": "Medium",
+    "category": "链表",
+    "day": 3,
+    "day_title": "链表",
+    "filename": "p024_swap_pairs.py",
+    "n_sols": 2,
+    "tags": [
+      "链表"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/swap-pairs/"
+  },
+  {
+    "id": 25,
+    "title": "K 个一组翻转链表",
+    "difficulty": "Hard",
+    "category": "链表",
+    "day": 3,
+    "day_title": "链表",
+    "filename": "p025_reverse_k_group.py",
+    "n_sols": 2,
+    "tags": [
+      "链表"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/reverse-k-group/"
+  },
+  {
+    "id": 31,
+    "title": "下一个排列",
+    "difficulty": "Medium",
+    "category": "技巧",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p031_next_permutation.py",
+    "n_sols": 1,
+    "tags": [
+      "双指针 + 反转"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/next-permutation/"
+  },
+  {
+    "id": 32,
+    "title": "最长有效括号",
+    "difficulty": "Hard",
+    "category": "DP",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p032_longest_valid_parens.py",
+    "n_sols": 3,
+    "tags": [
+      "DP",
+      "栈"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/longest-valid-parens/"
+  },
+  {
+    "id": 33,
+    "title": "搜索旋转排序数组",
+    "difficulty": "Medium",
+    "category": "二分",
+    "day": 5,
+    "day_title": "图论 / 回溯 / 二分",
+    "filename": "p033_search_rotated.py",
+    "n_sols": 1,
+    "tags": [
+      "二分"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/search-rotated/"
+  },
+  {
+    "id": 34,
+    "title": "在排序数组中查找元素的第一个和最后一个位置",
+    "difficulty": "Medium",
+    "category": "二分",
+    "day": 5,
+    "day_title": "图论 / 回溯 / 二分",
+    "filename": "p034_first_last_position.py",
+    "n_sols": 1,
+    "tags": [
+      "二分"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/first-last-position/"
+  },
+  {
+    "id": 35,
+    "title": "搜索插入位置",
+    "difficulty": "Easy",
+    "category": "二分",
+    "day": 5,
+    "day_title": "图论 / 回溯 / 二分",
+    "filename": "p035_search_insert.py",
+    "n_sols": 1,
+    "tags": [
+      "二分"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/search-insert/"
+  },
+  {
+    "id": 39,
+    "title": "组合总和",
+    "difficulty": "Medium",
+    "category": "回溯",
+    "day": 5,
+    "day_title": "图论 / 回溯 / 二分",
+    "filename": "p039_combination_sum.py",
+    "n_sols": 1,
+    "tags": [
+      "回溯"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/combination-sum/"
+  },
+  {
+    "id": 41,
+    "title": "缺失的第一个正数",
+    "difficulty": "Hard",
+    "category": "普通数组",
+    "day": 2,
+    "day_title": "数组 / 矩阵",
+    "filename": "p041_first_missing_positive.py",
+    "n_sols": 2,
+    "tags": [
+      "原地哈希"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/first-missing-positive/"
+  },
+  {
+    "id": 42,
+    "title": "接雨水",
+    "difficulty": "Hard",
+    "category": "双指针",
+    "day": 1,
+    "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
+    "filename": "p042_trapping_rain_water.py",
+    "n_sols": 4,
+    "tags": [
+      "双指针",
+      "单调栈",
+      "DP"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/trapping-rain-water/"
+  },
+  {
+    "id": 45,
+    "title": "跳跃游戏 II",
+    "difficulty": "Medium",
+    "category": "贪心",
+    "day": 6,
+    "day_title": "栈 / 堆 / 贪心",
+    "filename": "p045_jump_game_ii.py",
+    "n_sols": 2,
+    "tags": [
+      "贪心",
+      "BFS"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/jump-game-ii/"
+  },
+  {
+    "id": 46,
+    "title": "全排列",
+    "difficulty": "Medium",
+    "category": "回溯",
+    "day": 5,
+    "day_title": "图论 / 回溯 / 二分",
+    "filename": "p046_permutations.py",
+    "n_sols": 2,
+    "tags": [
+      "回溯"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/permutations/"
+  },
+  {
+    "id": 48,
+    "title": "旋转图像",
+    "difficulty": "Medium",
+    "category": "矩阵",
+    "day": 2,
+    "day_title": "数组 / 矩阵",
+    "filename": "p048_rotate_image.py",
+    "n_sols": 1,
+    "tags": [
+      "矩阵"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/rotate-image/"
+  },
+  {
+    "id": 49,
+    "title": "字母异位词分组",
+    "difficulty": "Medium",
+    "category": "哈希",
+    "day": 1,
+    "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
+    "filename": "p049_group_anagrams.py",
+    "n_sols": 2,
+    "tags": [
+      "哈希"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/group-anagrams/"
+  },
+  {
+    "id": 51,
+    "title": "N 皇后",
+    "difficulty": "Hard",
+    "category": "回溯",
+    "day": 5,
+    "day_title": "图论 / 回溯 / 二分",
+    "filename": "p051_n_queens.py",
+    "n_sols": 1,
+    "tags": [
+      "回溯"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/n-queens/"
+  },
+  {
+    "id": 53,
+    "title": "最大子数组和",
+    "difficulty": "Medium",
+    "category": "普通数组",
+    "day": 2,
+    "day_title": "数组 / 矩阵",
+    "filename": "p053_max_subarray.py",
+    "n_sols": 3,
+    "tags": [
+      "DP",
+      "分治"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/max-subarray/"
+  },
+  {
+    "id": 54,
+    "title": "螺旋矩阵",
+    "difficulty": "Medium",
+    "category": "矩阵",
+    "day": 2,
+    "day_title": "数组 / 矩阵",
+    "filename": "p054_spiral_matrix.py",
+    "n_sols": 1,
+    "tags": [
+      "模拟"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/spiral-matrix/"
+  },
+  {
+    "id": 55,
+    "title": "跳跃游戏",
+    "difficulty": "Medium",
+    "category": "贪心",
+    "day": 6,
+    "day_title": "栈 / 堆 / 贪心",
+    "filename": "p055_jump_game.py",
+    "n_sols": 2,
+    "tags": [
+      "贪心"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/jump-game/"
+  },
+  {
+    "id": 56,
+    "title": "合并区间",
+    "difficulty": "Medium",
+    "category": "普通数组",
+    "day": 2,
+    "day_title": "数组 / 矩阵",
+    "filename": "p056_merge_intervals.py",
+    "n_sols": 2,
+    "tags": [
+      "排序"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/merge-intervals/"
+  },
+  {
+    "id": 62,
+    "title": "不同路径",
+    "difficulty": "Medium",
+    "category": "多维DP",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p062_unique_paths.py",
+    "n_sols": 1,
+    "tags": [
+      "多维 DP"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/unique-paths/"
+  },
+  {
+    "id": 64,
+    "title": "最小路径和",
+    "difficulty": "Medium",
+    "category": "多维DP",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p064_min_path_sum.py",
+    "n_sols": 1,
+    "tags": [
+      "多维 DP"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/min-path-sum/"
+  },
+  {
+    "id": 70,
+    "title": "爬楼梯",
+    "difficulty": "Easy",
+    "category": "DP",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p070_climb_stairs.py",
+    "n_sols": 2,
+    "tags": [
+      "DP"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/climb-stairs/"
+  },
+  {
+    "id": 72,
+    "title": "编辑距离",
+    "difficulty": "Medium",
+    "category": "多维DP",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p072_edit_distance.py",
+    "n_sols": 2,
+    "tags": [
+      "多维 DP"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/edit-distance/"
+  },
+  {
+    "id": 73,
+    "title": "矩阵置零",
+    "difficulty": "Medium",
+    "category": "矩阵",
+    "day": 2,
+    "day_title": "数组 / 矩阵",
+    "filename": "p073_set_matrix_zeroes.py",
+    "n_sols": 2,
+    "tags": [
+      "矩阵原地标记"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/set-matrix-zeroes/"
+  },
+  {
+    "id": 74,
+    "title": "搜索二维矩阵",
+    "difficulty": "Medium",
+    "category": "二分",
+    "day": 5,
+    "day_title": "图论 / 回溯 / 二分",
+    "filename": "p074_search_matrix.py",
+    "n_sols": 1,
+    "tags": [
+      "二分"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/search-matrix/"
+  },
+  {
+    "id": 75,
+    "title": "颜色分类",
+    "difficulty": "Medium",
+    "category": "技巧",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p075_sort_colors.py",
+    "n_sols": 1,
+    "tags": [
+      "三指针(荷兰国旗)"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/sort-colors/"
+  },
+  {
+    "id": 76,
+    "title": "最小覆盖子串",
+    "difficulty": "Hard",
+    "category": "子串",
+    "day": 1,
+    "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
+    "filename": "p076_minimum_window_substring.py",
+    "n_sols": 2,
+    "tags": [
+      "滑动窗口"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/minimum-window-substring/"
+  },
+  {
+    "id": 78,
+    "title": "子集",
+    "difficulty": "Medium",
+    "category": "回溯",
+    "day": 5,
+    "day_title": "图论 / 回溯 / 二分",
+    "filename": "p078_subsets.py",
+    "n_sols": 3,
+    "tags": [
+      "回溯",
+      "位掩码",
+      "迭代"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/subsets/"
+  },
+  {
+    "id": 79,
+    "title": "单词搜索",
+    "difficulty": "Medium",
+    "category": "回溯",
+    "day": 5,
+    "day_title": "图论 / 回溯 / 二分",
+    "filename": "p079_word_search.py",
+    "n_sols": 1,
+    "tags": [
+      "回溯 + 矩阵"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/word-search/"
+  },
+  {
+    "id": 84,
+    "title": "柱状图中最大的矩形",
+    "difficulty": "Hard",
+    "category": "栈",
+    "day": 6,
+    "day_title": "栈 / 堆 / 贪心",
+    "filename": "p084_largest_rectangle.py",
+    "n_sols": 2,
+    "tags": [
+      "单调栈"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/largest-rectangle/"
+  },
+  {
+    "id": 94,
+    "title": "二叉树的中序遍历",
+    "difficulty": "Easy",
+    "category": "二叉树",
+    "day": 4,
+    "day_title": "二叉树",
+    "filename": "p094_inorder_traversal.py",
+    "n_sols": 3,
+    "tags": [
+      "遍历"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/inorder-traversal/"
+  },
+  {
+    "id": 98,
+    "title": "验证二叉搜索树",
+    "difficulty": "Medium",
+    "category": "二叉树",
+    "day": 4,
+    "day_title": "二叉树",
+    "filename": "p098_validate_bst.py",
+    "n_sols": 1,
+    "tags": [
+      "递归",
+      "中序"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/validate-bst/"
+  },
+  {
+    "id": 101,
+    "title": "对称二叉树",
+    "difficulty": "Easy",
+    "category": "二叉树",
+    "day": 4,
+    "day_title": "二叉树",
+    "filename": "p101_symmetric_tree.py",
+    "n_sols": 1,
+    "tags": [
+      "递归"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/symmetric-tree/"
+  },
+  {
+    "id": 102,
+    "title": "二叉树的层序遍历",
+    "difficulty": "Medium",
+    "category": "二叉树",
+    "day": 4,
+    "day_title": "二叉树",
+    "filename": "p102_level_order.py",
+    "n_sols": 2,
+    "tags": [
+      "BFS"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/level-order/"
+  },
+  {
+    "id": 104,
+    "title": "二叉树的最大深度",
+    "difficulty": "Easy",
+    "category": "二叉树",
+    "day": 4,
+    "day_title": "二叉树",
+    "filename": "p104_max_depth.py",
+    "n_sols": 2,
+    "tags": [
+      "递归",
+      "BFS"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/max-depth/"
+  },
+  {
+    "id": 105,
+    "title": "从前序与中序构造二叉树",
+    "difficulty": "Medium",
+    "category": "二叉树",
+    "day": 4,
+    "day_title": "二叉树",
+    "filename": "p105_build_tree_pre_in.py",
+    "n_sols": 2,
+    "tags": [
+      "递归 + 哈希"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/build-tree-pre-in/"
+  },
+  {
+    "id": 108,
+    "title": "将有序数组转换为二叉搜索树",
+    "difficulty": "Easy",
+    "category": "二叉树",
+    "day": 4,
+    "day_title": "二叉树",
+    "filename": "p108_sorted_array_to_bst.py",
+    "n_sols": 1,
+    "tags": [
+      "递归构造"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/sorted-array-to-bst/"
+  },
+  {
+    "id": 114,
+    "title": "二叉树展开为链表",
+    "difficulty": "Medium",
+    "category": "二叉树",
+    "day": 4,
+    "day_title": "二叉树",
+    "filename": "p114_flatten_tree.py",
+    "n_sols": 1,
+    "tags": [
+      "后序",
+      "反向先序"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/flatten-tree/"
+  },
+  {
+    "id": 118,
+    "title": "杨辉三角",
+    "difficulty": "Easy",
+    "category": "DP",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p118_pascal_triangle.py",
+    "n_sols": 1,
+    "tags": [
+      "DP"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/pascal-triangle/"
+  },
+  {
+    "id": 121,
+    "title": "买卖股票的最佳时机",
+    "difficulty": "Easy",
+    "category": "贪心",
+    "day": 6,
+    "day_title": "栈 / 堆 / 贪心",
+    "filename": "p121_best_time_stock.py",
+    "n_sols": 1,
+    "tags": [
+      "贪心",
+      "一次遍历"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/best-time-stock/"
+  },
+  {
+    "id": 124,
+    "title": "二叉树中的最大路径和",
+    "difficulty": "Hard",
+    "category": "二叉树",
+    "day": 4,
+    "day_title": "二叉树",
+    "filename": "p124_max_path_sum.py",
+    "n_sols": 1,
+    "tags": [
+      "递归"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/max-path-sum/"
+  },
+  {
+    "id": 128,
+    "title": "最长连续序列",
+    "difficulty": "Medium",
+    "category": "哈希",
+    "day": 1,
+    "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
+    "filename": "p128_longest_consecutive.py",
+    "n_sols": 1,
+    "tags": [
+      "哈希"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/longest-consecutive-sequence/"
+  },
+  {
+    "id": 131,
+    "title": "分割回文串",
+    "difficulty": "Medium",
+    "category": "回溯",
+    "day": 5,
+    "day_title": "图论 / 回溯 / 二分",
+    "filename": "p131_palindrome_partitioning.py",
+    "n_sols": 1,
+    "tags": [
+      "回溯"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/palindrome-partitioning/"
+  },
+  {
+    "id": 136,
+    "title": "只出现一次的数字",
+    "difficulty": "Easy",
+    "category": "技巧",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p136_single_number.py",
+    "n_sols": 1,
+    "tags": [
+      "位运算"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/single-number/"
+  },
+  {
+    "id": 138,
+    "title": "随机链表的复制",
+    "difficulty": "Medium",
+    "category": "链表",
+    "day": 3,
+    "day_title": "链表",
+    "filename": "p138_copy_random_list.py",
+    "n_sols": 1,
+    "tags": [
+      "哈希",
+      "原地交织"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/copy-random-list/"
+  },
+  {
+    "id": 139,
+    "title": "单词拆分",
+    "difficulty": "Medium",
+    "category": "DP",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p139_word_break.py",
+    "n_sols": 1,
+    "tags": [
+      "DP"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/word-break/"
+  },
+  {
+    "id": 141,
+    "title": "环形链表",
+    "difficulty": "Easy",
+    "category": "链表",
+    "day": 3,
+    "day_title": "链表",
+    "filename": "p141_linked_list_cycle.py",
+    "n_sols": 2,
+    "tags": [
+      "Floyd 龟兔"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/linked-list-cycle/"
+  },
+  {
+    "id": 142,
+    "title": "环形链表 II",
+    "difficulty": "Medium",
+    "category": "链表",
+    "day": 3,
+    "day_title": "链表",
+    "filename": "p142_linked_list_cycle_ii.py",
+    "n_sols": 2,
+    "tags": [
+      "Floyd 数学"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/linked-list-cycle-ii/"
+  },
+  {
+    "id": 146,
+    "title": "LRU 缓存",
+    "difficulty": "Medium",
+    "category": "链表",
+    "day": 3,
+    "day_title": "链表",
+    "filename": "p146_lru_cache.py",
+    "n_sols": 0,
+    "tags": [
+      "哈希 + 双向链表"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/lru-cache/"
+  },
+  {
+    "id": 148,
+    "title": "排序链表",
+    "difficulty": "Medium",
+    "category": "链表",
+    "day": 3,
+    "day_title": "链表",
+    "filename": "p148_sort_list.py",
+    "n_sols": 4,
+    "tags": [
+      "归并排序"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/sort-list/"
+  },
+  {
+    "id": 152,
+    "title": "乘积最大子数组",
+    "difficulty": "Medium",
+    "category": "DP",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p152_max_product.py",
+    "n_sols": 2,
+    "tags": [
+      "DP"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/max-product/"
+  },
+  {
+    "id": 153,
+    "title": "寻找旋转排序数组中的最小值",
+    "difficulty": "Medium",
+    "category": "二分",
+    "day": 5,
+    "day_title": "图论 / 回溯 / 二分",
+    "filename": "p153_find_min_rotated.py",
+    "n_sols": 1,
+    "tags": [
+      "二分"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/find-min-rotated/"
+  },
+  {
+    "id": 155,
+    "title": "最小栈",
+    "difficulty": "Medium",
+    "category": "栈",
+    "day": 6,
+    "day_title": "栈 / 堆 / 贪心",
+    "filename": "p155_min_stack.py",
+    "n_sols": 0,
+    "tags": [
+      "栈"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/min-stack/"
+  },
+  {
+    "id": 160,
+    "title": "相交链表",
+    "difficulty": "Easy",
+    "category": "链表",
+    "day": 3,
+    "day_title": "链表",
+    "filename": "p160_intersection_two_lists.py",
+    "n_sols": 1,
+    "tags": [
+      "双指针"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/intersection-two-lists/"
+  },
+  {
+    "id": 169,
+    "title": "多数元素",
+    "difficulty": "Easy",
+    "category": "技巧",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p169_majority_element.py",
+    "n_sols": 1,
+    "tags": [
+      "Boyer-Moore 投票"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/majority-element/"
+  },
+  {
+    "id": 189,
+    "title": "轮转数组",
+    "difficulty": "Medium",
+    "category": "普通数组",
+    "day": 2,
+    "day_title": "数组 / 矩阵",
+    "filename": "p189_rotate_array.py",
+    "n_sols": 3,
+    "tags": [
+      "数组技巧"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/rotate-array/"
+  },
+  {
+    "id": 198,
+    "title": "打家劫舍",
+    "difficulty": "Medium",
+    "category": "DP",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p198_house_robber.py",
+    "n_sols": 2,
+    "tags": [
+      "DP"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/house-robber/"
+  },
+  {
+    "id": 199,
+    "title": "二叉树的右视图",
+    "difficulty": "Medium",
+    "category": "二叉树",
+    "day": 4,
+    "day_title": "二叉树",
+    "filename": "p199_right_side_view.py",
+    "n_sols": 2,
+    "tags": [
+      "BFS",
+      "DFS"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/right-side-view/"
+  },
+  {
+    "id": 200,
+    "title": "岛屿数量",
+    "difficulty": "Medium",
+    "category": "图论",
+    "day": 5,
+    "day_title": "图论 / 回溯 / 二分",
+    "filename": "p200_num_islands.py",
+    "n_sols": 3,
+    "tags": [
+      "DFS",
+      "BFS",
+      "并查集"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/num-islands/"
+  },
+  {
+    "id": 206,
+    "title": "反转链表",
+    "difficulty": "Easy",
+    "category": "链表",
+    "day": 3,
+    "day_title": "链表",
+    "filename": "p206_reverse_list.py",
+    "n_sols": 2,
+    "tags": [
+      "链表基础"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/reverse-list/"
+  },
+  {
+    "id": 207,
+    "title": "课程表",
+    "difficulty": "Medium",
+    "category": "图论",
+    "day": 5,
+    "day_title": "图论 / 回溯 / 二分",
+    "filename": "p207_course_schedule.py",
+    "n_sols": 2,
+    "tags": [
+      "拓扑排序"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/course-schedule/"
+  },
+  {
+    "id": 208,
+    "title": "实现 Trie(前缀树)",
+    "difficulty": "Medium",
+    "category": "图论",
+    "day": 5,
+    "day_title": "图论 / 回溯 / 二分",
+    "filename": "p208_trie.py",
+    "n_sols": 0,
+    "tags": [
+      "字典树"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/implement-trie-prefix-tree/"
+  },
+  {
+    "id": 215,
+    "title": "数组中的第 K 个最大元素",
+    "difficulty": "Medium",
+    "category": "堆",
+    "day": 6,
+    "day_title": "栈 / 堆 / 贪心",
+    "filename": "p215_kth_largest.py",
+    "n_sols": 3,
+    "tags": [
+      "堆",
+      "快选"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/kth-largest/"
+  },
+  {
+    "id": 226,
+    "title": "翻转二叉树",
+    "difficulty": "Easy",
+    "category": "二叉树",
+    "day": 4,
+    "day_title": "二叉树",
+    "filename": "p226_invert_tree.py",
+    "n_sols": 2,
+    "tags": [
+      "递归"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/invert-tree/"
+  },
+  {
+    "id": 230,
+    "title": "BST 中第 K 小元素",
+    "difficulty": "Medium",
+    "category": "二叉树",
+    "day": 4,
+    "day_title": "二叉树",
+    "filename": "p230_kth_smallest_bst.py",
+    "n_sols": 1,
+    "tags": [
+      "中序"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/kth-smallest-bst/"
+  },
+  {
+    "id": 234,
+    "title": "回文链表",
+    "difficulty": "Easy",
+    "category": "链表",
+    "day": 3,
+    "day_title": "链表",
+    "filename": "p234_palindrome_list.py",
+    "n_sols": 2,
+    "tags": [
+      "快慢指针 + 反转"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/palindrome-list/"
+  },
+  {
+    "id": 236,
+    "title": "二叉树的最近公共祖先",
+    "difficulty": "Medium",
+    "category": "二叉树",
+    "day": 4,
+    "day_title": "二叉树",
+    "filename": "p236_lowest_common_ancestor.py",
+    "n_sols": 1,
+    "tags": [
+      "递归"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/lowest-common-ancestor/"
+  },
+  {
+    "id": 238,
+    "title": "除自身以外数组的乘积",
+    "difficulty": "Medium",
+    "category": "普通数组",
+    "day": 2,
+    "day_title": "数组 / 矩阵",
+    "filename": "p238_product_except_self.py",
+    "n_sols": 1,
+    "tags": [
+      "前缀积"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/product-except-self/"
+  },
+  {
+    "id": 239,
+    "title": "滑动窗口最大值",
+    "difficulty": "Hard",
+    "category": "子串",
+    "day": 1,
+    "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
+    "filename": "p239_sliding_window_max.py",
+    "n_sols": 1,
+    "tags": [
+      "单调队列"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/sliding-window-max/"
+  },
+  {
+    "id": 240,
+    "title": "搜索二维矩阵 II",
+    "difficulty": "Medium",
+    "category": "矩阵",
+    "day": 2,
+    "day_title": "数组 / 矩阵",
+    "filename": "p240_search_matrix_ii.py",
+    "n_sols": 1,
+    "tags": [
+      "矩阵"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/search-matrix-ii/"
+  },
+  {
+    "id": 279,
+    "title": "完全平方数",
+    "difficulty": "Medium",
+    "category": "DP",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p279_perfect_squares.py",
+    "n_sols": 1,
+    "tags": [
+      "DP",
+      "BFS"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/perfect-squares/"
+  },
+  {
+    "id": 283,
+    "title": "移动零",
+    "difficulty": "Easy",
+    "category": "双指针",
+    "day": 1,
+    "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
+    "filename": "p283_move_zeroes.py",
+    "n_sols": 1,
+    "tags": [
+      "双指针"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/move-zeroes/"
+  },
+  {
+    "id": 287,
+    "title": "寻找重复数",
+    "difficulty": "Medium",
+    "category": "技巧",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p287_find_duplicate.py",
+    "n_sols": 1,
+    "tags": [
+      "Floyd 链表环"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/find-duplicate/"
+  },
+  {
+    "id": 295,
+    "title": "数据流的中位数",
+    "difficulty": "Hard",
+    "category": "堆",
+    "day": 6,
+    "day_title": "栈 / 堆 / 贪心",
+    "filename": "p295_median_data_stream.py",
+    "n_sols": 0,
+    "tags": [
+      "双堆"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/find-median-from-data-stream/"
+  },
+  {
+    "id": 300,
+    "title": "最长递增子序列",
+    "difficulty": "Medium",
+    "category": "DP",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p300_lis.py",
+    "n_sols": 2,
+    "tags": [
+      "DP",
+      "贪心+二分"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/lis/"
+  },
+  {
+    "id": 322,
+    "title": "零钱兑换",
+    "difficulty": "Medium",
+    "category": "DP",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p322_coin_change.py",
+    "n_sols": 2,
+    "tags": [
+      "完全背包"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/coin-change/"
+  },
+  {
+    "id": 347,
+    "title": "前 K 个高频元素",
+    "difficulty": "Medium",
+    "category": "堆",
+    "day": 6,
+    "day_title": "栈 / 堆 / 贪心",
+    "filename": "p347_top_k_frequent.py",
+    "n_sols": 2,
+    "tags": [
+      "堆",
+      "桶排序"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/top-k-frequent/"
+  },
+  {
+    "id": 394,
+    "title": "字符串解码",
+    "difficulty": "Medium",
+    "category": "栈",
+    "day": 6,
+    "day_title": "栈 / 堆 / 贪心",
+    "filename": "p394_decode_string.py",
+    "n_sols": 1,
+    "tags": [
+      "栈"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/decode-string/"
+  },
+  {
+    "id": 416,
+    "title": "分割等和子集",
+    "difficulty": "Medium",
+    "category": "DP",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p416_partition_equal_subset.py",
+    "n_sols": 1,
+    "tags": [
+      "0-1 背包"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/partition-equal-subset/"
+  },
+  {
+    "id": 437,
+    "title": "路径总和 III",
+    "difficulty": "Medium",
+    "category": "二叉树",
+    "day": 4,
+    "day_title": "二叉树",
+    "filename": "p437_path_sum_iii.py",
+    "n_sols": 1,
+    "tags": [
+      "前缀和 + 哈希"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/path-sum-iii/"
+  },
+  {
+    "id": 438,
+    "title": "找到字符串中所有字母异位词",
+    "difficulty": "Medium",
+    "category": "滑动窗口",
+    "day": 1,
+    "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
+    "filename": "p438_find_all_anagrams.py",
+    "n_sols": 1,
+    "tags": [
+      "滑动窗口"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/find-all-anagrams/"
+  },
+  {
+    "id": 543,
+    "title": "二叉树的直径",
+    "difficulty": "Easy",
+    "category": "二叉树",
+    "day": 4,
+    "day_title": "二叉树",
+    "filename": "p543_diameter_of_tree.py",
+    "n_sols": 1,
+    "tags": [
+      "递归"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/diameter-of-tree/"
+  },
+  {
+    "id": 560,
+    "title": "和为 K 的子数组",
+    "difficulty": "Medium",
+    "category": "子串",
+    "day": 1,
+    "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
+    "filename": "p560_subarray_sum_k.py",
+    "n_sols": 1,
+    "tags": [
+      "子串",
+      "前缀和"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/subarray-sum-k/"
+  },
+  {
+    "id": 739,
+    "title": "每日温度",
+    "difficulty": "Medium",
+    "category": "栈",
+    "day": 6,
+    "day_title": "栈 / 堆 / 贪心",
+    "filename": "p739_daily_temperatures.py",
+    "n_sols": 1,
+    "tags": [
+      "单调栈"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/daily-temperatures/"
+  },
+  {
+    "id": 763,
+    "title": "划分字母区间",
+    "difficulty": "Medium",
+    "category": "贪心",
+    "day": 6,
+    "day_title": "栈 / 堆 / 贪心",
+    "filename": "p763_partition_labels.py",
+    "n_sols": 1,
+    "tags": [
+      "贪心"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/partition-labels/"
+  },
+  {
+    "id": 994,
+    "title": "腐烂的橘子",
+    "difficulty": "Medium",
+    "category": "图论",
+    "day": 5,
+    "day_title": "图论 / 回溯 / 二分",
+    "filename": "p994_rotting_oranges.py",
+    "n_sols": 1,
+    "tags": [
+      "多源 BFS"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/rotting-oranges/"
+  },
+  {
+    "id": 1143,
+    "title": "最长公共子序列",
+    "difficulty": "Medium",
+    "category": "多维DP",
+    "day": 7,
+    "day_title": "DP / 多维DP / 技巧",
+    "filename": "p1143_lcs.py",
+    "n_sols": 1,
+    "tags": [
+      "多维 DP"
+    ],
+    "leetcode_url": "https://leetcode.cn/problems/longest-common-subsequence/"
+  }
+]

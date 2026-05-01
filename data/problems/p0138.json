@@ -1,0 +1,37 @@
+{
+  "id": 138,
+  "title": "随机链表的复制",
+  "difficulty": "Medium",
+  "tags": [
+    "哈希",
+    "原地交织"
+  ],
+  "day": 3,
+  "day_title": "链表",
+  "category": "链表",
+  "leetcode_url": "https://leetcode.cn/problems/copy-random-list/",
+  "filename": "p138_copy_random_list.py",
+  "doc": "🔹 题面\n    每节点除 next 外多一个 random 指针,复制整张图。\n\n🔹 直觉(两种)\n    1. 哈希:旧节点 -> 新节点,先建副本节点,再串 next/random。  O(n)/O(n)\n    2. 原地交织:在每个原节点后插入复制节点 a→a'→b→b'→…,\n       让 a'.random = a.random.next;最后拆出。  O(n)/O(1)\n\n🔹 踩坑\n    random 可能指向自己或 None;构造好\"先映射,再连边\"。",
+  "solutions": [
+    {
+      "method": "copyRandomList",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def copyRandomList(self, head):\n    if not head:\n        return None\n    m: dict = {}\n    cur = head\n    while cur:\n        m[cur] = Node(cur.val)\n        cur = cur.next\n    cur = head\n    while cur:\n        m[cur].next = m.get(cur.next)\n        m[cur].random = m.get(cur.random)\n        cur = cur.next\n    return m[head]"
+    }
+  ],
+  "raw_source": "# LC 138. 随机链表的复制 · Medium · 哈希 / 原地交织\n\"\"\"\n🔹 题面\n    每节点除 next 外多一个 random 指针,复制整张图。\n\n🔹 直觉(两种)\n    1. 哈希:旧节点 -> 新节点,先建副本节点,再串 next/random。  O(n)/O(n)\n    2. 原地交织:在每个原节点后插入复制节点 a→a'→b→b'→…,\n       让 a'.random = a.random.next;最后拆出。  O(n)/O(1)\n\n🔹 踩坑\n    random 可能指向自己或 None;构造好\"先映射,再连边\"。\n\"\"\"\n\n\nclass Node:\n    def __init__(self, x: int, nxt=None, rand=None):\n        self.val = x\n        self.next = nxt\n        self.random = rand\n\n\nclass Solution:\n    # 解法 1:哈希\n    def copyRandomList(self, head):\n        if not head:\n            return None\n        m: dict = {}\n        cur = head\n        while cur:\n            m[cur] = Node(cur.val)\n            cur = cur.next\n        cur = head\n        while cur:\n            m[cur].next = m.get(cur.next)\n            m[cur].random = m.get(cur.random)\n            cur = cur.next\n        return m[head]\n\n\ndef _test() -> None:\n    s = Solution()\n    # 构造 [[7,None],[13,0],[11,4],[10,2],[1,0]]\n    nodes = [Node(7), Node(13), Node(11), Node(10), Node(1)]\n    for i in range(4):\n        nodes[i].next = nodes[i + 1]\n    randoms = [None, 0, 4, 2, 0]\n    for n, r in zip(nodes, randoms):\n        n.random = nodes[r] if r is not None else None\n    out = s.copyRandomList(nodes[0])\n    # 校验:不是同一引用,但值序列与 random 索引相同\n    cur, vals = out, []\n    while cur:\n        vals.append(cur.val)\n        cur = cur.next\n    assert vals == [7, 13, 11, 10, 1]\n    # 校验 random 索引\n    cur = out\n    idx_map = {}\n    i = 0\n    p = out\n    while p:\n        idx_map[id(p)] = i\n        i += 1\n        p = p.next\n    cur = out\n    rand_idx = []\n    while cur:\n        rand_idx.append(idx_map[id(cur.random)] if cur.random else None)\n        cur = cur.next\n    assert rand_idx == [None, 0, 4, 2, 0]\n    print(\"✅ p138 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": {
+    "type": "list",
+    "data": [
+      7,
+      13,
+      11,
+      10,
+      1
+    ],
+    "label": "随机链表"
+  }
+}

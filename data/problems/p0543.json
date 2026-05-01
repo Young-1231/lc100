@@ -1,0 +1,36 @@
+{
+  "id": 543,
+  "title": "二叉树的直径",
+  "difficulty": "Easy",
+  "tags": [
+    "递归"
+  ],
+  "day": 4,
+  "day_title": "二叉树",
+  "category": "二叉树",
+  "leetcode_url": "https://leetcode.cn/problems/diameter-of-tree/",
+  "filename": "p543_diameter_of_tree.py",
+  "doc": "🔹 题面\n    返回任意两节点的最长路径(以\"边数\"计)。\n\n🔹 直觉\n    后序求\"以当前节点为最高点\"的最长路径 = 左深度 + 右深度。\n    全局取最大。注意:函数返回的是\"该节点向下的最长路径长度\"(深度),\n    而 best 记录\"穿过该节点的总路径\"。",
+  "solutions": [
+    {
+      "method": "diameterOfBinaryTree",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def diameterOfBinaryTree(self, root) -> int:\n    self.best = 0\n\n    def depth(n):\n        if not n:\n            return 0\n        l = depth(n.left)\n        r = depth(n.right)\n        self.best = max(self.best, l + r)\n        return 1 + max(l, r)\n\n    depth(root)\n    return self.best"
+    }
+  ],
+  "raw_source": "# LC 543. 二叉树的直径 · Easy · 递归\n\"\"\"\n🔹 题面\n    返回任意两节点的最长路径(以\"边数\"计)。\n\n🔹 直觉\n    后序求\"以当前节点为最高点\"的最长路径 = 左深度 + 右深度。\n    全局取最大。注意:函数返回的是\"该节点向下的最长路径长度\"(深度),\n    而 best 记录\"穿过该节点的总路径\"。\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import build_tree\n\n\nclass Solution:\n    def diameterOfBinaryTree(self, root) -> int:\n        self.best = 0\n\n        def depth(n):\n            if not n:\n                return 0\n            l = depth(n.left)\n            r = depth(n.right)\n            self.best = max(self.best, l + r)\n            return 1 + max(l, r)\n\n        depth(root)\n        return self.best\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.diameterOfBinaryTree(build_tree([1, 2, 3, 4, 5])) == 3\n    assert s.diameterOfBinaryTree(build_tree([1, 2])) == 1\n    assert s.diameterOfBinaryTree(build_tree([1])) == 0\n    print(\"✅ p543 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": {
+    "type": "tree",
+    "data": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "label": "直径=3"
+  }
+}

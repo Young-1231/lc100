@@ -1,0 +1,44 @@
+{
+  "id": 206,
+  "title": "反转链表",
+  "difficulty": "Easy",
+  "tags": [
+    "链表基础"
+  ],
+  "day": 3,
+  "day_title": "链表",
+  "category": "链表",
+  "leetcode_url": "https://leetcode.cn/problems/reverse-list/",
+  "filename": "p206_reverse_list.py",
+  "doc": "🔹 题面\n    反转单链表。\n\n🔹 解法对比\n    | 方法     | 时间 | 空间    | 备注                        |\n    |----------|------|---------|-----------------------------|\n    | 迭代 ★  | O(n) | O(1)    | 三指针 prev/cur/nxt          |\n    | 递归     | O(n) | O(n) 栈 | 优雅,深递归可能爆栈        |",
+  "solutions": [
+    {
+      "method": "reverseList",
+      "title": "迭代",
+      "time": "O(n)",
+      "space": "O(1)",
+      "starred": true,
+      "code": "def reverseList(self, head):\n    prev, cur = None, head\n    while cur:\n        nxt = cur.next\n        cur.next = prev\n        prev = cur\n        cur = nxt\n    return prev"
+    },
+    {
+      "method": "reverseList_recursive",
+      "title": "递归",
+      "time": "O(n)",
+      "space": "O(n)",
+      "starred": false,
+      "code": "def reverseList_recursive(self, head):\n    if not head or not head.next:\n        return head\n    new_head = self.reverseList_recursive(head.next)\n    head.next.next = head\n    head.next = None\n    return new_head"
+    }
+  ],
+  "raw_source": "# LC 206. 反转链表 · Easy · 链表基础\n\"\"\"\n🔹 题面\n    反转单链表。\n\n🔹 解法对比\n    | 方法     | 时间 | 空间    | 备注                        |\n    |----------|------|---------|-----------------------------|\n    | 迭代 ★  | O(n) | O(1)    | 三指针 prev/cur/nxt          |\n    | 递归     | O(n) | O(n) 栈 | 优雅,深递归可能爆栈        |\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import build_list, list_to_array\n\n\nclass Solution:\n    # 解法 1:迭代 ★ — O(n) / O(1)\n    def reverseList(self, head):\n        prev, cur = None, head\n        while cur:\n            nxt = cur.next\n            cur.next = prev\n            prev = cur\n            cur = nxt\n        return prev\n\n    # 解法 2:递归 — O(n) / O(n)\n    def reverseList_recursive(self, head):\n        if not head or not head.next:\n            return head\n        new_head = self.reverseList_recursive(head.next)\n        head.next.next = head\n        head.next = None\n        return new_head\n\n\ndef _test() -> None:\n    s = Solution()\n    for fn in (s.reverseList, s.reverseList_recursive):\n        assert list_to_array(fn(build_list([1, 2, 3, 4, 5]))) == [5, 4, 3, 2, 1]\n        assert list_to_array(fn(build_list([]))) == []\n        assert list_to_array(fn(build_list([1]))) == [1]\n    print(\"✅ p206 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": {
+    "type": "list",
+    "data": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "label": "反转前"
+  }
+}

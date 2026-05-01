@@ -1,0 +1,26 @@
+{
+  "id": 146,
+  "title": "LRU 缓存",
+  "difficulty": "Medium",
+  "tags": [
+    "哈希 + 双向链表"
+  ],
+  "day": 3,
+  "day_title": "链表",
+  "category": "链表",
+  "leetcode_url": "https://leetcode.cn/problems/lru-cache/",
+  "filename": "p146_lru_cache.py",
+  "doc": "🔹 题面\n    实现 LRU:get/put 都 O(1)。\n\n🔹 直觉\n    哈希表 → 双向链表节点。命中或写入移到链表头(最近使用);超容量时\n    剔除尾部(最久未使用)。\n\n🔹 关键\n    - 哑头/哑尾节点,简化边界。\n    - move_to_head = remove + add_to_head。\n    - put 已存在 → 更新 value 并移到头。\n\n🔹 复杂度 O(1) / O(capacity)",
+  "solutions": [],
+  "raw_source": "# LC 146. LRU 缓存 · Medium · 哈希 + 双向链表\n\"\"\"\n🔹 题面\n    实现 LRU:get/put 都 O(1)。\n\n🔹 直觉\n    哈希表 → 双向链表节点。命中或写入移到链表头(最近使用);超容量时\n    剔除尾部(最久未使用)。\n\n🔹 关键\n    - 哑头/哑尾节点,简化边界。\n    - move_to_head = remove + add_to_head。\n    - put 已存在 → 更新 value 并移到头。\n\n🔹 复杂度 O(1) / O(capacity)\n\"\"\"\n\n\nclass _Node:\n    __slots__ = (\"key\", \"val\", \"prev\", \"next\")\n\n    def __init__(self, k=0, v=0):\n        self.key, self.val = k, v\n        self.prev = self.next = None\n\n\nclass LRUCache:\n    def __init__(self, capacity: int):\n        self.cap = capacity\n        self.map: dict[int, _Node] = {}\n        self.head, self.tail = _Node(), _Node()\n        self.head.next = self.tail\n        self.tail.prev = self.head\n\n    def _add(self, n: _Node) -> None:\n        n.prev = self.head\n        n.next = self.head.next\n        self.head.next.prev = n\n        self.head.next = n\n\n    def _remove(self, n: _Node) -> None:\n        n.prev.next = n.next\n        n.next.prev = n.prev\n\n    def get(self, key: int) -> int:\n        if key not in self.map:\n            return -1\n        n = self.map[key]\n        self._remove(n); self._add(n)\n        return n.val\n\n    def put(self, key: int, value: int) -> None:\n        if key in self.map:\n            n = self.map[key]\n            n.val = value\n            self._remove(n); self._add(n)\n            return\n        if len(self.map) >= self.cap:\n            lru = self.tail.prev\n            self._remove(lru)\n            del self.map[lru.key]\n        n = _Node(key, value)\n        self._add(n)\n        self.map[key] = n\n\n\ndef _test() -> None:\n    c = LRUCache(2)\n    c.put(1, 1); c.put(2, 2)\n    assert c.get(1) == 1\n    c.put(3, 3)            # 淘汰 2\n    assert c.get(2) == -1\n    c.put(4, 4)            # 淘汰 1\n    assert c.get(1) == -1\n    assert c.get(3) == 3\n    assert c.get(4) == 4\n    print(\"✅ p146 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": {
+    "type": "list",
+    "data": [
+      4,
+      3,
+      2,
+      1
+    ],
+    "label": "LRU(头最新)"
+  }
+}

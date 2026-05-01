@@ -1,0 +1,39 @@
+{
+  "id": 136,
+  "title": "只出现一次的数字",
+  "difficulty": "Easy",
+  "tags": [
+    "位运算"
+  ],
+  "day": 7,
+  "day_title": "DP / 多维DP / 技巧",
+  "category": "技巧",
+  "leetcode_url": "https://leetcode.cn/problems/single-number/",
+  "filename": "p136_single_number.py",
+  "doc": "🔹 直觉\n    XOR 性质:a^a=0, a^0=a。所有数 XOR 起来,成对的抵消,留下落单的。",
+  "solutions": [
+    {
+      "method": "singleNumber",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def singleNumber(self, nums: list[int]) -> int:\n    return reduce(xor, nums)"
+    }
+  ],
+  "raw_source": "# LC 136. 只出现一次的数字 · Easy · 位运算\n\"\"\"\n🔹 直觉\n    XOR 性质:a^a=0, a^0=a。所有数 XOR 起来,成对的抵消,留下落单的。\n\"\"\"\nfrom functools import reduce\nfrom operator import xor\n\n\nclass Solution:\n    def singleNumber(self, nums: list[int]) -> int:\n        return reduce(xor, nums)\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.singleNumber([2, 2, 1]) == 1\n    assert s.singleNumber([4, 1, 2, 1, 2]) == 4\n    assert s.singleNumber([1]) == 1\n    print(\"✅ p136 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": {
+    "type": "array",
+    "data": [
+      4,
+      1,
+      2,
+      1,
+      2
+    ],
+    "highlight": [
+      0
+    ],
+    "label": "落单=4"
+  }
+}

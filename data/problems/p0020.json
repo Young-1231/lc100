@@ -1,0 +1,26 @@
+{
+  "id": 20,
+  "title": "有效的括号",
+  "difficulty": "Easy",
+  "tags": [
+    "栈"
+  ],
+  "day": 6,
+  "day_title": "栈 / 堆 / 贪心",
+  "category": "栈",
+  "leetcode_url": "https://leetcode.cn/problems/valid-parentheses/",
+  "filename": "p020_valid_parentheses.py",
+  "doc": "🔹 直觉\n    左括号入栈;右括号必须匹配栈顶,否则失败。最终栈空才合法。",
+  "solutions": [
+    {
+      "method": "isValid",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def isValid(self, s: str) -> bool:\n    m = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n    st: list[str] = []\n    for c in s:\n        if c in m:\n            if not st or st.pop() != m[c]:\n                return False\n        else:\n            st.append(c)\n    return not st"
+    }
+  ],
+  "raw_source": "# LC 20. 有效的括号 · Easy · 栈\n\"\"\"\n🔹 直觉\n    左括号入栈;右括号必须匹配栈顶,否则失败。最终栈空才合法。\n\"\"\"\n\n\nclass Solution:\n    def isValid(self, s: str) -> bool:\n        m = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n        st: list[str] = []\n        for c in s:\n            if c in m:\n                if not st or st.pop() != m[c]:\n                    return False\n            else:\n                st.append(c)\n        return not st\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.isValid(\"()\") is True\n    assert s.isValid(\"()[]{}\") is True\n    assert s.isValid(\"(]\") is False\n    assert s.isValid(\"([)]\") is False\n    assert s.isValid(\"{[]}\") is True\n    assert s.isValid(\"\") is True\n    print(\"✅ p020 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

@@ -1,0 +1,55 @@
+{
+  "id": 1,
+  "title": "两数之和",
+  "difficulty": "Easy",
+  "tags": [
+    "哈希"
+  ],
+  "day": 1,
+  "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
+  "category": "哈希",
+  "leetcode_url": "https://leetcode.cn/problems/two-sum/",
+  "filename": "p001_two_sum.py",
+  "doc": "🔹 题面\n    给定 nums 和 target,返回两数下标使其和为 target,假设有且仅有一个解。\n\n🔹 解法对比\n    | 方法           | 时间       | 空间   | 备注                       |\n    |----------------|------------|--------|----------------------------|\n    | 暴力双循环     | O(n²)      | O(1)   | 简单直接                   |\n    | 排序 + 双指针  | O(n log n) | O(n)   | 需保留原下标               |\n    | 一遍哈希 ★    | O(n)       | O(n)   | 面试默写解法               |\n\n🔹 直觉\n    枚举 x,只需问\"之前是否见过 target - x\"。set/dict 是常数时间问答机。\n\n🔹 踩坑\n    - 必须先查表再写入,避免同一元素自己配自己。\n    - 题目假设唯一解;若多解需返回全部,需把 dict[val] 改 list。\n\n🔹 同类\n    167(已排序双指针)、653(BST 双指针)",
+  "solutions": [
+    {
+      "method": "twoSum_brute",
+      "title": "暴力",
+      "time": "O(n²)",
+      "space": "O(1)",
+      "starred": false,
+      "code": "def twoSum_brute(self, nums: list[int], target: int) -> list[int]:\n    n = len(nums)\n    for i in range(n):\n        for j in range(i + 1, n):\n            if nums[i] + nums[j] == target:\n                return [i, j]\n    return []"
+    },
+    {
+      "method": "twoSum_two_pointer",
+      "title": "排序 + 双指针",
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "starred": false,
+      "code": "def twoSum_two_pointer(self, nums: list[int], target: int) -> list[int]:\n    idx = sorted(range(len(nums)), key=lambda i: nums[i])\n    l, r = 0, len(nums) - 1\n    while l < r:\n        s = nums[idx[l]] + nums[idx[r]]\n        if s == target:\n            return sorted([idx[l], idx[r]])\n        if s < target:\n            l += 1\n        else:\n            r -= 1\n    return []"
+    },
+    {
+      "method": "twoSum",
+      "title": "一遍哈希",
+      "time": "O(n)",
+      "space": "O(n)",
+      "starred": true,
+      "code": "def twoSum(self, nums: list[int], target: int) -> list[int]:\n    seen: dict[int, int] = {}\n    for i, x in enumerate(nums):\n        if (j := seen.get(target - x)) is not None:\n            return [j, i]\n        seen[x] = i\n    return []"
+    }
+  ],
+  "raw_source": "# LC 1. 两数之和 · Easy · 哈希\n# https://leetcode.cn/problems/two-sum/\n\"\"\"\n🔹 题面\n    给定 nums 和 target,返回两数下标使其和为 target,假设有且仅有一个解。\n\n🔹 解法对比\n    | 方法           | 时间       | 空间   | 备注                       |\n    |----------------|------------|--------|----------------------------|\n    | 暴力双循环     | O(n²)      | O(1)   | 简单直接                   |\n    | 排序 + 双指针  | O(n log n) | O(n)   | 需保留原下标               |\n    | 一遍哈希 ★    | O(n)       | O(n)   | 面试默写解法               |\n\n🔹 直觉\n    枚举 x,只需问\"之前是否见过 target - x\"。set/dict 是常数时间问答机。\n\n🔹 踩坑\n    - 必须先查表再写入,避免同一元素自己配自己。\n    - 题目假设唯一解;若多解需返回全部,需把 dict[val] 改 list。\n\n🔹 同类\n    167(已排序双指针)、653(BST 双指针)\n\"\"\"\nfrom __future__ import annotations\n\n\nclass Solution:\n    # 解法 1:暴力 — O(n²) / O(1)\n    def twoSum_brute(self, nums: list[int], target: int) -> list[int]:\n        n = len(nums)\n        for i in range(n):\n            for j in range(i + 1, n):\n                if nums[i] + nums[j] == target:\n                    return [i, j]\n        return []\n\n    # 解法 2:排序 + 双指针 — O(n log n) / O(n)\n    # 把 (val, idx) 排序后用左右指针;命中后返回原下标\n    def twoSum_two_pointer(self, nums: list[int], target: int) -> list[int]:\n        idx = sorted(range(len(nums)), key=lambda i: nums[i])\n        l, r = 0, len(nums) - 1\n        while l < r:\n            s = nums[idx[l]] + nums[idx[r]]\n            if s == target:\n                return sorted([idx[l], idx[r]])\n            if s < target:\n                l += 1\n            else:\n                r -= 1\n        return []\n\n    # 解法 3:一遍哈希 ★  — O(n) / O(n)\n    def twoSum(self, nums: list[int], target: int) -> list[int]:\n        seen: dict[int, int] = {}\n        for i, x in enumerate(nums):\n            if (j := seen.get(target - x)) is not None:\n                return [j, i]\n            seen[x] = i\n        return []\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        (([2, 7, 11, 15], 9), [0, 1]),\n        (([3, 2, 4], 6), [1, 2]),\n        (([3, 3], 6), [0, 1]),\n        (([-1, -2, -3, -4, -5], -8), [2, 4]),\n    ]\n    for args, want in cases:\n        for fn in (s.twoSum, s.twoSum_brute, s.twoSum_two_pointer):\n            got = fn(*args)\n            assert got == want, f\"{fn.__name__}{args} -> {got} != {want}\"\n    print(f\"✅ p001 通过 {len(cases)} 用例 × 3 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": {
+    "type": "array",
+    "data": [
+      2,
+      7,
+      11,
+      15
+    ],
+    "highlight": [
+      0,
+      1
+    ],
+    "label": "target=9"
+  }
+}

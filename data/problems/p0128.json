@@ -1,0 +1,26 @@
+{
+  "id": 128,
+  "title": "最长连续序列",
+  "difficulty": "Medium",
+  "tags": [
+    "哈希"
+  ],
+  "day": 1,
+  "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
+  "category": "哈希",
+  "leetcode_url": "https://leetcode.cn/problems/longest-consecutive-sequence/",
+  "filename": "p128_longest_consecutive.py",
+  "doc": "🔹 题面\n    O(n) 找出未排序数组中最长连续元素序列长度。\n\n🔹 直觉\n    将数组扔进 set。只从\"序列起点\"出发计数(x-1 不在 set 中),保证每个元素最多被\n    访问 2 次,均摊 O(n)。\n\n🔹 复杂度  O(n) / O(n)\n\n🔹 踩坑\n    - 必须先判断 x-1 not in S,否则 O(n²)。\n    - 重复元素 set 自动去重,无需特别处理。",
+  "solutions": [
+    {
+      "method": "longestConsecutive",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def longestConsecutive(self, nums: list[int]) -> int:\n    S = set(nums)\n    best = 0\n    for x in S:\n        if x - 1 in S:\n            continue            # 不是序列起点,跳过\n        y = x\n        while y + 1 in S:\n            y += 1\n        best = max(best, y - x + 1)\n    return best"
+    }
+  ],
+  "raw_source": "# LC 128. 最长连续序列 · Medium · 哈希\n\"\"\"\n🔹 题面\n    O(n) 找出未排序数组中最长连续元素序列长度。\n\n🔹 直觉\n    将数组扔进 set。只从\"序列起点\"出发计数(x-1 不在 set 中),保证每个元素最多被\n    访问 2 次,均摊 O(n)。\n\n🔹 复杂度  O(n) / O(n)\n\n🔹 踩坑\n    - 必须先判断 x-1 not in S,否则 O(n²)。\n    - 重复元素 set 自动去重,无需特别处理。\n\"\"\"\n\n\nclass Solution:\n    def longestConsecutive(self, nums: list[int]) -> int:\n        S = set(nums)\n        best = 0\n        for x in S:\n            if x - 1 in S:\n                continue            # 不是序列起点,跳过\n            y = x\n            while y + 1 in S:\n                y += 1\n            best = max(best, y - x + 1)\n        return best\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.longestConsecutive([100, 4, 200, 1, 3, 2]) == 4\n    assert s.longestConsecutive([0, 3, 7, 2, 5, 8, 4, 6, 0, 1]) == 9\n    assert s.longestConsecutive([]) == 0\n    print(\"✅ p128 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

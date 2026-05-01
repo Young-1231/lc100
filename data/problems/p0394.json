@@ -1,0 +1,26 @@
+{
+  "id": 394,
+  "title": "字符串解码",
+  "difficulty": "Medium",
+  "tags": [
+    "栈"
+  ],
+  "day": 6,
+  "day_title": "栈 / 堆 / 贪心",
+  "category": "栈",
+  "leetcode_url": "https://leetcode.cn/problems/decode-string/",
+  "filename": "p394_decode_string.py",
+  "doc": "🔹 题面\n    \"3[a]2[bc]\" → \"aaabcbc\";\"2[abc]3[cd]ef\" → \"abcabccdcdcdef\"。\n\n🔹 直觉\n    两个栈:数字栈 + 字符串栈。遇 [ 入栈,遇 ] 出栈拼接。",
+  "solutions": [
+    {
+      "method": "decodeString",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def decodeString(self, s: str) -> str:\n    num_stack: list[int] = []\n    str_stack: list[str] = []\n    cur, k = \"\", 0\n    for c in s:\n        if c.isdigit():\n            k = k * 10 + int(c)\n        elif c == \"[\":\n            num_stack.append(k); k = 0\n            str_stack.append(cur); cur = \"\"\n        elif c == \"]\":\n            cur = str_stack.pop() + cur * num_stack.pop()\n        else:\n            cur += c\n    return cur"
+    }
+  ],
+  "raw_source": "# LC 394. 字符串解码 · Medium · 栈\n\"\"\"\n🔹 题面\n    \"3[a]2[bc]\" → \"aaabcbc\";\"2[abc]3[cd]ef\" → \"abcabccdcdcdef\"。\n\n🔹 直觉\n    两个栈:数字栈 + 字符串栈。遇 [ 入栈,遇 ] 出栈拼接。\n\"\"\"\n\n\nclass Solution:\n    def decodeString(self, s: str) -> str:\n        num_stack: list[int] = []\n        str_stack: list[str] = []\n        cur, k = \"\", 0\n        for c in s:\n            if c.isdigit():\n                k = k * 10 + int(c)\n            elif c == \"[\":\n                num_stack.append(k); k = 0\n                str_stack.append(cur); cur = \"\"\n            elif c == \"]\":\n                cur = str_stack.pop() + cur * num_stack.pop()\n            else:\n                cur += c\n        return cur\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.decodeString(\"3[a]2[bc]\") == \"aaabcbc\"\n    assert s.decodeString(\"3[a2[c]]\") == \"accaccacc\"\n    assert s.decodeString(\"2[abc]3[cd]ef\") == \"abcabccdcdcdef\"\n    assert s.decodeString(\"abc\") == \"abc\"\n    print(\"✅ p394 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

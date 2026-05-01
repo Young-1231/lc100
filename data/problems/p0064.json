@@ -1,0 +1,26 @@
+{
+  "id": 64,
+  "title": "最小路径和",
+  "difficulty": "Medium",
+  "tags": [
+    "多维 DP"
+  ],
+  "day": 7,
+  "day_title": "DP / 多维DP / 技巧",
+  "category": "多维DP",
+  "leetcode_url": "https://leetcode.cn/problems/min-path-sum/",
+  "filename": "p064_min_path_sum.py",
+  "doc": "🔹 状态\n    f[i][j] = grid[i][j] + min(f[i-1][j], f[i][j-1])",
+  "solutions": [
+    {
+      "method": "minPathSum",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def minPathSum(self, g: list[list[int]]) -> int:\n    m, n = len(g), len(g[0])\n    f = list(g[0])\n    for j in range(1, n):\n        f[j] += f[j - 1]\n    for i in range(1, m):\n        f[0] += g[i][0]\n        for j in range(1, n):\n            f[j] = g[i][j] + min(f[j], f[j - 1])\n    return f[-1]"
+    }
+  ],
+  "raw_source": "# LC 64. 最小路径和 · Medium · 多维 DP\n\"\"\"\n🔹 状态\n    f[i][j] = grid[i][j] + min(f[i-1][j], f[i][j-1])\n\"\"\"\n\n\nclass Solution:\n    def minPathSum(self, g: list[list[int]]) -> int:\n        m, n = len(g), len(g[0])\n        f = list(g[0])\n        for j in range(1, n):\n            f[j] += f[j - 1]\n        for i in range(1, m):\n            f[0] += g[i][0]\n            for j in range(1, n):\n                f[j] = g[i][j] + min(f[j], f[j - 1])\n        return f[-1]\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.minPathSum([[1, 3, 1], [1, 5, 1], [4, 2, 1]]) == 7\n    assert s.minPathSum([[1, 2, 3], [4, 5, 6]]) == 12\n    print(\"✅ p064 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

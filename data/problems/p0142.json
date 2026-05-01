@@ -1,0 +1,47 @@
+{
+  "id": 142,
+  "title": "环形链表 II",
+  "difficulty": "Medium",
+  "tags": [
+    "Floyd 数学"
+  ],
+  "day": 3,
+  "day_title": "链表",
+  "category": "链表",
+  "leetcode_url": "https://leetcode.cn/problems/linked-list-cycle-ii/",
+  "filename": "p142_linked_list_cycle_ii.py",
+  "doc": "🔹 题面\n    返回入环节点。\n\n🔹 解法对比\n    | 方法            | 时间 | 空间 | 备注                  |\n    |-----------------|------|------|-----------------------|\n    | 哈希记录访问过  | O(n) | O(n) | 一目了然              |\n    | Floyd 数学 ★   | O(n) | O(1) | 经典,理解入环点公式  |\n\n🔹 Floyd 推导\n    a = head→入环点距离, b = 入环点→相遇点, c = 相遇点→入环点。\n    fast 走 2 * slow:a + b + k(b+c) = 2(a + b) → a = c + (k-1)(b+c)。\n    所以让一个指针从 head、另一个从相遇点同步前进,必相遇于入环点。",
+  "solutions": [
+    {
+      "method": "detectCycle",
+      "title": "Floyd",
+      "time": "O(n)",
+      "space": "O(1)",
+      "starred": true,
+      "code": "def detectCycle(self, head):\n    slow = fast = head\n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n        if slow is fast:\n            p = head\n            while p is not slow:\n                p = p.next\n                slow = slow.next\n            return p\n    return None"
+    },
+    {
+      "method": "detectCycle_set",
+      "title": "哈希",
+      "time": "O(n)",
+      "space": "O(n)",
+      "starred": false,
+      "code": "def detectCycle_set(self, head):\n    seen = set()\n    cur = head\n    while cur:\n        if id(cur) in seen:\n            return cur\n        seen.add(id(cur))\n        cur = cur.next\n    return None"
+    }
+  ],
+  "raw_source": "# LC 142. 环形链表 II · Medium · Floyd 数学\n\"\"\"\n🔹 题面\n    返回入环节点。\n\n🔹 解法对比\n    | 方法            | 时间 | 空间 | 备注                  |\n    |-----------------|------|------|-----------------------|\n    | 哈希记录访问过  | O(n) | O(n) | 一目了然              |\n    | Floyd 数学 ★   | O(n) | O(1) | 经典,理解入环点公式  |\n\n🔹 Floyd 推导\n    a = head→入环点距离, b = 入环点→相遇点, c = 相遇点→入环点。\n    fast 走 2 * slow:a + b + k(b+c) = 2(a + b) → a = c + (k-1)(b+c)。\n    所以让一个指针从 head、另一个从相遇点同步前进,必相遇于入环点。\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import build_list\n\n\nclass Solution:\n    # 解法 1:Floyd ★ — O(n) / O(1)\n    def detectCycle(self, head):\n        slow = fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n            if slow is fast:\n                p = head\n                while p is not slow:\n                    p = p.next\n                    slow = slow.next\n                return p\n        return None\n\n    # 解法 2:哈希 — O(n) / O(n)\n    def detectCycle_set(self, head):\n        seen = set()\n        cur = head\n        while cur:\n            if id(cur) in seen:\n                return cur\n            seen.add(id(cur))\n            cur = cur.next\n        return None\n\n\ndef _test() -> None:\n    s = Solution()\n    h = build_list([3, 2, 0, -4])\n    h.next.next.next.next = h.next\n    for fn in (s.detectCycle, s.detectCycle_set):\n        assert fn(h) is h.next\n        assert fn(build_list([1, 2])) is None\n    print(\"✅ p142 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": {
+    "type": "list",
+    "data": [
+      3,
+      2,
+      0,
+      -4
+    ],
+    "cycle": true,
+    "label": "环入口=节点 1",
+    "highlight": [
+      1
+    ]
+  }
+}

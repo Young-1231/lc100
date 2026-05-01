@@ -1,0 +1,52 @@
+{
+  "id": 11,
+  "title": "盛最多水的容器",
+  "difficulty": "Medium",
+  "tags": [
+    "双指针"
+  ],
+  "day": 1,
+  "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
+  "category": "双指针",
+  "leetcode_url": "https://leetcode.cn/problems/container-with-most-water/",
+  "filename": "p011_container_with_most_water.py",
+  "doc": "🔹 题面\n    两条垂线与 x 轴构成容器,选两条使盛水最多。area = (j-i)*min(h[i],h[j])。\n\n🔹 解法对比\n    | 方法            | 时间   | 空间  | 备注                            |\n    |-----------------|--------|-------|---------------------------------|\n    | 暴力枚举两线对  | O(n²)  | O(1)  | 思路直接                        |\n    | 双指针贪心 ★   | O(n)   | O(1)  | 移动较矮一侧才有可能更优        |\n\n🔹 双指针正确性\n    若移动较高一侧:宽度减小,高度仍受较矮限制,面积只会减小。\n    所以放弃较矮一侧不会错过最优解(贪心反证)。",
+  "solutions": [
+    {
+      "method": "maxArea_brute",
+      "title": "暴力",
+      "time": "O(n²)",
+      "space": "O(1)",
+      "starred": false,
+      "code": "def maxArea_brute(self, h: list[int]) -> int:\n    n, best = len(h), 0\n    for i in range(n):\n        for j in range(i + 1, n):\n            best = max(best, (j - i) * min(h[i], h[j]))\n    return best"
+    },
+    {
+      "method": "maxArea",
+      "title": "双指针",
+      "time": "O(n)",
+      "space": "O(1)",
+      "starred": true,
+      "code": "def maxArea(self, h: list[int]) -> int:\n    i, j, best = 0, len(h) - 1, 0\n    while i < j:\n        best = max(best, (j - i) * min(h[i], h[j]))\n        if h[i] < h[j]:\n            i += 1\n        else:\n            j -= 1\n    return best"
+    }
+  ],
+  "raw_source": "# LC 11. 盛最多水的容器 · Medium · 双指针\n\"\"\"\n🔹 题面\n    两条垂线与 x 轴构成容器,选两条使盛水最多。area = (j-i)*min(h[i],h[j])。\n\n🔹 解法对比\n    | 方法            | 时间   | 空间  | 备注                            |\n    |-----------------|--------|-------|---------------------------------|\n    | 暴力枚举两线对  | O(n²)  | O(1)  | 思路直接                        |\n    | 双指针贪心 ★   | O(n)   | O(1)  | 移动较矮一侧才有可能更优        |\n\n🔹 双指针正确性\n    若移动较高一侧:宽度减小,高度仍受较矮限制,面积只会减小。\n    所以放弃较矮一侧不会错过最优解(贪心反证)。\n\"\"\"\n\n\nclass Solution:\n    # 解法 1:暴力 — O(n²) / O(1)\n    def maxArea_brute(self, h: list[int]) -> int:\n        n, best = len(h), 0\n        for i in range(n):\n            for j in range(i + 1, n):\n                best = max(best, (j - i) * min(h[i], h[j]))\n        return best\n\n    # 解法 2:双指针 ★  — O(n) / O(1)\n    def maxArea(self, h: list[int]) -> int:\n        i, j, best = 0, len(h) - 1, 0\n        while i < j:\n            best = max(best, (j - i) * min(h[i], h[j]))\n            if h[i] < h[j]:\n                i += 1\n            else:\n                j -= 1\n        return best\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        ([1, 8, 6, 2, 5, 4, 8, 3, 7], 49),\n        ([1, 1], 1),\n        ([4, 3, 2, 1, 4], 16),\n        ([1, 2, 1], 2),\n    ]\n    for arg, want in cases:\n        for fn in (s.maxArea, s.maxArea_brute):\n            assert fn(arg) == want\n    print(\"✅ p011 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": {
+    "type": "array",
+    "data": [
+      1,
+      8,
+      6,
+      2,
+      5,
+      4,
+      8,
+      3,
+      7
+    ],
+    "highlight": [
+      1,
+      8
+    ],
+    "label": "max area=49"
+  }
+}

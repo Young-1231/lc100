@@ -1,0 +1,35 @@
+{
+  "id": 98,
+  "title": "验证二叉搜索树",
+  "difficulty": "Medium",
+  "tags": [
+    "递归",
+    "中序"
+  ],
+  "day": 4,
+  "day_title": "二叉树",
+  "category": "二叉树",
+  "leetcode_url": "https://leetcode.cn/problems/validate-bst/",
+  "filename": "p098_validate_bst.py",
+  "doc": "🔹 直觉\n    1. 递归带\"上下界\"边界:每个节点必须 ∈ (low, high)。\n    2. 中序遍历必须严格递增。\n    陷阱:仅检查\"父子大小关系\"是错的——不能保证孙子也在范围内。",
+  "solutions": [
+    {
+      "method": "isValidBST",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def isValidBST(self, root) -> bool:\n    def ok(n, lo, hi):\n        if not n:\n            return True\n        if n.val <= lo or n.val >= hi:\n            return False\n        return ok(n.left, lo, n.val) and ok(n.right, n.val, hi)\n    return ok(root, float(\"-inf\"), float(\"inf\"))"
+    }
+  ],
+  "raw_source": "# LC 98. 验证二叉搜索树 · Medium · 递归 / 中序\n\"\"\"\n🔹 直觉\n    1. 递归带\"上下界\"边界:每个节点必须 ∈ (low, high)。\n    2. 中序遍历必须严格递增。\n    陷阱:仅检查\"父子大小关系\"是错的——不能保证孙子也在范围内。\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import build_tree\n\n\nclass Solution:\n    def isValidBST(self, root) -> bool:\n        def ok(n, lo, hi):\n            if not n:\n                return True\n            if n.val <= lo or n.val >= hi:\n                return False\n            return ok(n.left, lo, n.val) and ok(n.right, n.val, hi)\n        return ok(root, float(\"-inf\"), float(\"inf\"))\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.isValidBST(build_tree([2, 1, 3])) is True\n    assert s.isValidBST(build_tree([5, 1, 4, None, None, 3, 6])) is False\n    assert s.isValidBST(build_tree([5, 4, 6, None, None, 3, 7])) is False\n    print(\"✅ p098 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": {
+    "type": "tree",
+    "data": [
+      2,
+      1,
+      3
+    ],
+    "label": "合法 BST"
+  }
+}

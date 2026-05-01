@@ -1,0 +1,44 @@
+{
+  "id": 169,
+  "title": "多数元素",
+  "difficulty": "Easy",
+  "tags": [
+    "Boyer-Moore 投票"
+  ],
+  "day": 7,
+  "day_title": "DP / 多维DP / 技巧",
+  "category": "技巧",
+  "leetcode_url": "https://leetcode.cn/problems/majority-element/",
+  "filename": "p169_majority_element.py",
+  "doc": "🔹 直觉\n    \"众数计数 +1,他人 -1\";票数为 0 时换候选。多数元素必然胜出。",
+  "solutions": [
+    {
+      "method": "majorityElement",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def majorityElement(self, nums: list[int]) -> int:\n    cand, cnt = 0, 0\n    for x in nums:\n        if cnt == 0:\n            cand = x\n        cnt += 1 if x == cand else -1\n    return cand"
+    }
+  ],
+  "raw_source": "# LC 169. 多数元素 · Easy · Boyer-Moore 投票\n\"\"\"\n🔹 直觉\n    \"众数计数 +1,他人 -1\";票数为 0 时换候选。多数元素必然胜出。\n\"\"\"\n\n\nclass Solution:\n    def majorityElement(self, nums: list[int]) -> int:\n        cand, cnt = 0, 0\n        for x in nums:\n            if cnt == 0:\n                cand = x\n            cnt += 1 if x == cand else -1\n        return cand\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.majorityElement([3, 2, 3]) == 3\n    assert s.majorityElement([2, 2, 1, 1, 1, 2, 2]) == 2\n    assert s.majorityElement([1]) == 1\n    print(\"✅ p169 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": {
+    "type": "array",
+    "data": [
+      2,
+      2,
+      1,
+      1,
+      1,
+      2,
+      2
+    ],
+    "highlight": [
+      0,
+      1,
+      5,
+      6
+    ],
+    "label": "众数=2"
+  }
+}

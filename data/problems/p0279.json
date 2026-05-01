@@ -1,0 +1,27 @@
+{
+  "id": 279,
+  "title": "完全平方数",
+  "difficulty": "Medium",
+  "tags": [
+    "DP",
+    "BFS"
+  ],
+  "day": 7,
+  "day_title": "DP / 多维DP / 技巧",
+  "category": "DP",
+  "leetcode_url": "https://leetcode.cn/problems/perfect-squares/",
+  "filename": "p279_perfect_squares.py",
+  "doc": "🔹 题面\n    n 拆成尽量少的完全平方数之和。\n\n🔹 直觉\n    f(i) = 1 + min{ f(i - k²) },k² ≤ i。",
+  "solutions": [
+    {
+      "method": "numSquares",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def numSquares(self, n: int) -> int:\n    f = [0] + [float(\"inf\")] * n\n    for i in range(1, n + 1):\n        k = 1\n        while k * k <= i:\n            f[i] = min(f[i], f[i - k * k] + 1)\n            k += 1\n    return f[n]"
+    }
+  ],
+  "raw_source": "# LC 279. 完全平方数 · Medium · DP / BFS\n\"\"\"\n🔹 题面\n    n 拆成尽量少的完全平方数之和。\n\n🔹 直觉\n    f(i) = 1 + min{ f(i - k²) },k² ≤ i。\n\"\"\"\n\n\nclass Solution:\n    def numSquares(self, n: int) -> int:\n        f = [0] + [float(\"inf\")] * n\n        for i in range(1, n + 1):\n            k = 1\n            while k * k <= i:\n                f[i] = min(f[i], f[i - k * k] + 1)\n                k += 1\n        return f[n]\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.numSquares(12) == 3\n    assert s.numSquares(13) == 2\n    assert s.numSquares(1) == 1\n    print(\"✅ p279 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

@@ -1,0 +1,26 @@
+{
+  "id": 34,
+  "title": "在排序数组中查找元素的第一个和最后一个位置",
+  "difficulty": "Medium",
+  "tags": [
+    "二分"
+  ],
+  "day": 5,
+  "day_title": "图论 / 回溯 / 二分",
+  "category": "二分",
+  "leetcode_url": "https://leetcode.cn/problems/first-last-position/",
+  "filename": "p034_first_last_position.py",
+  "doc": "🔹 直觉\n    两次 lower_bound:\n        first = bisect_left(nums, target)\n        last  = bisect_right(nums, target) - 1",
+  "solutions": [
+    {
+      "method": "searchRange",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def searchRange(self, nums: list[int], target: int) -> list[int]:\n    l = bisect_left(nums, target)\n    if l == len(nums) or nums[l] != target:\n        return [-1, -1]\n    return [l, bisect_right(nums, target) - 1]"
+    }
+  ],
+  "raw_source": "# LC 34. 在排序数组中查找元素的第一个和最后一个位置 · Medium · 二分\n\"\"\"\n🔹 直觉\n    两次 lower_bound:\n        first = bisect_left(nums, target)\n        last  = bisect_right(nums, target) - 1\n\"\"\"\nfrom bisect import bisect_left, bisect_right\n\n\nclass Solution:\n    def searchRange(self, nums: list[int], target: int) -> list[int]:\n        l = bisect_left(nums, target)\n        if l == len(nums) or nums[l] != target:\n            return [-1, -1]\n        return [l, bisect_right(nums, target) - 1]\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.searchRange([5, 7, 7, 8, 8, 10], 8) == [3, 4]\n    assert s.searchRange([5, 7, 7, 8, 8, 10], 6) == [-1, -1]\n    assert s.searchRange([], 0) == [-1, -1]\n    print(\"✅ p034 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

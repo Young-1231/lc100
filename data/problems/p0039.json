@@ -1,0 +1,26 @@
+{
+  "id": 39,
+  "title": "组合总和",
+  "difficulty": "Medium",
+  "tags": [
+    "回溯"
+  ],
+  "day": 5,
+  "day_title": "图论 / 回溯 / 二分",
+  "category": "回溯",
+  "leetcode_url": "https://leetcode.cn/problems/combination-sum/",
+  "filename": "p039_combination_sum.py",
+  "doc": "🔹 题面\n    candidates 中可重复使用元素,凑出 target 的所有组合。\n\n🔹 直觉\n    起点剪枝:每层从 i 开始,允许重复(下一层仍从 i),避免出现 [2,3] 与 [3,2]。",
+  "solutions": [
+    {
+      "method": "combinationSum",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def combinationSum(self, candidates: list[int], target: int) -> list[list[int]]:\n    candidates.sort()\n    ans, path = [], []\n\n    def bt(start, remain):\n        if remain == 0:\n            ans.append(path[:])\n            return\n        for i in range(start, len(candidates)):\n            x = candidates[i]\n            if x > remain:\n                break\n            path.append(x)\n            bt(i, remain - x)\n            path.pop()\n\n    bt(0, target)\n    return ans"
+    }
+  ],
+  "raw_source": "# LC 39. 组合总和 · Medium · 回溯\n\"\"\"\n🔹 题面\n    candidates 中可重复使用元素,凑出 target 的所有组合。\n\n🔹 直觉\n    起点剪枝:每层从 i 开始,允许重复(下一层仍从 i),避免出现 [2,3] 与 [3,2]。\n\"\"\"\n\n\nclass Solution:\n    def combinationSum(self, candidates: list[int], target: int) -> list[list[int]]:\n        candidates.sort()\n        ans, path = [], []\n\n        def bt(start, remain):\n            if remain == 0:\n                ans.append(path[:])\n                return\n            for i in range(start, len(candidates)):\n                x = candidates[i]\n                if x > remain:\n                    break\n                path.append(x)\n                bt(i, remain - x)\n                path.pop()\n\n        bt(0, target)\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert sorted(s.combinationSum([2, 3, 6, 7], 7)) == sorted([[2, 2, 3], [7]])\n    assert sorted(s.combinationSum([2, 3, 5], 8)) == sorted([[2, 2, 2, 2], [2, 3, 3], [3, 5]])\n    assert s.combinationSum([2], 1) == []\n    print(\"✅ p039 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

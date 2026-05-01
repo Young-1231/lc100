@@ -1,0 +1,34 @@
+{
+  "id": 152,
+  "title": "乘积最大子数组",
+  "difficulty": "Medium",
+  "tags": [
+    "DP"
+  ],
+  "day": 7,
+  "day_title": "DP / 多维DP / 技巧",
+  "category": "DP",
+  "leetcode_url": "https://leetcode.cn/problems/max-product/",
+  "filename": "p152_max_product.py",
+  "doc": "🔹 题面\n    返回乘积最大的连续子数组的乘积。\n\n🔹 解法对比\n    | 方法                | 时间 | 空间 | 备注                          |\n    |---------------------|------|------|-------------------------------|\n    | 双状态 DP(滚动)★ | O(n) | O(1) | 同时维护 fmax / fmin(负数翻转) |\n    | DP 数组             | O(n) | O(n) | 同上,但显式存数组             |\n\n🔹 直觉\n    维护\"截至当前的最大乘积 fmax\"和\"最小乘积 fmin\"。负负得正,\n    遇负数时 (fmax * x) 可能成为新的最小,(fmin * x) 反而成为新的最大。",
+  "solutions": [
+    {
+      "method": "maxProduct",
+      "title": "双状态 DP 滚动",
+      "time": "O(n)",
+      "space": "O(1)",
+      "starred": true,
+      "code": "def maxProduct(self, nums: list[int]) -> int:\n    fmax = fmin = ans = nums[0]\n    for x in nums[1:]:\n        cands = (x, fmax * x, fmin * x)\n        fmax = max(cands)\n        fmin = min(cands)\n        ans = max(ans, fmax)\n    return ans"
+    },
+    {
+      "method": "maxProduct_dp",
+      "title": "DP 数组(更直观)",
+      "time": "O(n)",
+      "space": "O(n)",
+      "starred": false,
+      "code": "def maxProduct_dp(self, nums: list[int]) -> int:\n    n = len(nums)\n    mx = nums[:]\n    mn = nums[:]\n    for i in range(1, n):\n        cands = (nums[i], mx[i - 1] * nums[i], mn[i - 1] * nums[i])\n        mx[i] = max(cands)\n        mn[i] = min(cands)\n    return max(mx)"
+    }
+  ],
+  "raw_source": "# LC 152. 乘积最大子数组 · Medium · DP\n\"\"\"\n🔹 题面\n    返回乘积最大的连续子数组的乘积。\n\n🔹 解法对比\n    | 方法                | 时间 | 空间 | 备注                          |\n    |---------------------|------|------|-------------------------------|\n    | 双状态 DP(滚动)★ | O(n) | O(1) | 同时维护 fmax / fmin(负数翻转) |\n    | DP 数组             | O(n) | O(n) | 同上,但显式存数组             |\n\n🔹 直觉\n    维护\"截至当前的最大乘积 fmax\"和\"最小乘积 fmin\"。负负得正,\n    遇负数时 (fmax * x) 可能成为新的最小,(fmin * x) 反而成为新的最大。\n\"\"\"\n\n\nclass Solution:\n    # 解法 1:双状态 DP 滚动 ★ — O(n) / O(1)\n    def maxProduct(self, nums: list[int]) -> int:\n        fmax = fmin = ans = nums[0]\n        for x in nums[1:]:\n            cands = (x, fmax * x, fmin * x)\n            fmax = max(cands)\n            fmin = min(cands)\n            ans = max(ans, fmax)\n        return ans\n\n    # 解法 2:DP 数组(更直观)— O(n) / O(n)\n    def maxProduct_dp(self, nums: list[int]) -> int:\n        n = len(nums)\n        mx = nums[:]\n        mn = nums[:]\n        for i in range(1, n):\n            cands = (nums[i], mx[i - 1] * nums[i], mn[i - 1] * nums[i])\n            mx[i] = max(cands)\n            mn[i] = min(cands)\n        return max(mx)\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        ([2, 3, -2, 4], 6),\n        ([-2, 0, -1], 0),\n        ([-2, 3, -4], 24),\n        ([0, 2], 2),\n    ]\n    for arg, want in cases:\n        for fn in (s.maxProduct, s.maxProduct_dp):\n            assert fn(arg) == want\n    print(\"✅ p152 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

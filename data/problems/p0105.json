@@ -1,0 +1,46 @@
+{
+  "id": 105,
+  "title": "从前序与中序构造二叉树",
+  "difficulty": "Medium",
+  "tags": [
+    "递归 + 哈希"
+  ],
+  "day": 4,
+  "day_title": "二叉树",
+  "category": "二叉树",
+  "leetcode_url": "https://leetcode.cn/problems/build-tree-pre-in/",
+  "filename": "p105_build_tree_pre_in.py",
+  "doc": "🔹 题面\n    给定前序与中序数组,构造唯一二叉树。\n\n🔹 解法对比\n    | 方法            | 时间 | 空间 | 备注              |\n    |-----------------|------|------|-------------------|\n    | 递归 + 哈希 ★  | O(n) | O(n) | 哈希 inorder 索引 |\n    | 迭代 + 栈       | O(n) | O(n) | 巧用前序 + 栈     |\n\n🔹 递归直觉\n    前序首元素是根,中序里左侧是左子树、右侧是右子树。",
+  "solutions": [
+    {
+      "method": "buildTree",
+      "title": "递归 + 哈希",
+      "time": "O(n)",
+      "space": "O(n)",
+      "starred": true,
+      "code": "def buildTree(self, preorder: list[int], inorder: list[int]):\n    idx = {v: i for i, v in enumerate(inorder)}\n\n    def build(pl, pr, il, ir):\n        if pl > pr:\n            return None\n        root_val = preorder[pl]\n        i = idx[root_val]\n        left_len = i - il\n        return TreeNode(\n            root_val,\n            build(pl + 1, pl + left_len, il, i - 1),\n            build(pl + left_len + 1, pr, i + 1, ir),\n        )\n\n    return build(0, len(preorder) - 1, 0, len(inorder) - 1)"
+    },
+    {
+      "method": "buildTree_iter",
+      "title": "迭代 + 栈",
+      "time": "O(n)",
+      "space": "O(n)",
+      "starred": false,
+      "code": "def buildTree_iter(self, preorder: list[int], inorder: list[int]):\n    if not preorder:\n        return None\n    root = TreeNode(preorder[0])\n    st = [root]\n    in_i = 0\n    for v in preorder[1:]:\n        node = st[-1]\n        if node.val != inorder[in_i]:\n            node.left = TreeNode(v)\n            st.append(node.left)\n        else:\n            while st and st[-1].val == inorder[in_i]:\n                node = st.pop()\n                in_i += 1\n            node.right = TreeNode(v)\n            st.append(node.right)\n    return root"
+    }
+  ],
+  "raw_source": "# LC 105. 从前序与中序构造二叉树 · Medium · 递归 + 哈希\n\"\"\"\n🔹 题面\n    给定前序与中序数组,构造唯一二叉树。\n\n🔹 解法对比\n    | 方法            | 时间 | 空间 | 备注              |\n    |-----------------|------|------|-------------------|\n    | 递归 + 哈希 ★  | O(n) | O(n) | 哈希 inorder 索引 |\n    | 迭代 + 栈       | O(n) | O(n) | 巧用前序 + 栈     |\n\n🔹 递归直觉\n    前序首元素是根,中序里左侧是左子树、右侧是右子树。\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import TreeNode, tree_to_level\n\n\nclass Solution:\n    # 解法 1:递归 + 哈希 ★ — O(n) / O(n)\n    def buildTree(self, preorder: list[int], inorder: list[int]):\n        idx = {v: i for i, v in enumerate(inorder)}\n\n        def build(pl, pr, il, ir):\n            if pl > pr:\n                return None\n            root_val = preorder[pl]\n            i = idx[root_val]\n            left_len = i - il\n            return TreeNode(\n                root_val,\n                build(pl + 1, pl + left_len, il, i - 1),\n                build(pl + left_len + 1, pr, i + 1, ir),\n            )\n\n        return build(0, len(preorder) - 1, 0, len(inorder) - 1)\n\n    # 解法 2:迭代 + 栈 — O(n) / O(n)\n    # 思路:沿着 preorder 顺序,栈顶始终是\"当前最深的左链节点\"。\n    # 当 inorder 当前指向的值等于栈顶值时,说明左链结束,弹栈直到不等,再把下一个 pre 值挂到右子树。\n    def buildTree_iter(self, preorder: list[int], inorder: list[int]):\n        if not preorder:\n            return None\n        root = TreeNode(preorder[0])\n        st = [root]\n        in_i = 0\n        for v in preorder[1:]:\n            node = st[-1]\n            if node.val != inorder[in_i]:\n                node.left = TreeNode(v)\n                st.append(node.left)\n            else:\n                while st and st[-1].val == inorder[in_i]:\n                    node = st.pop()\n                    in_i += 1\n                node.right = TreeNode(v)\n                st.append(node.right)\n        return root\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        (([3, 9, 20, 15, 7], [9, 3, 15, 20, 7]), [3, 9, 20, None, None, 15, 7]),\n        (([], []), []),\n        (([-1], [-1]), [-1]),\n    ]\n    for args, want in cases:\n        for fn in (s.buildTree, s.buildTree_iter):\n            assert tree_to_level(fn(*args)) == want\n    print(\"✅ p105 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": {
+    "type": "tree",
+    "data": [
+      3,
+      9,
+      20,
+      null,
+      null,
+      15,
+      7
+    ],
+    "label": "构造结果"
+  }
+}

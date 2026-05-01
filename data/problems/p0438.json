@@ -1,0 +1,26 @@
+{
+  "id": 438,
+  "title": "找到字符串中所有字母异位词",
+  "difficulty": "Medium",
+  "tags": [
+    "滑动窗口"
+  ],
+  "day": 1,
+  "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
+  "category": "滑动窗口",
+  "leetcode_url": "https://leetcode.cn/problems/find-all-anagrams/",
+  "filename": "p438_find_all_anagrams.py",
+  "doc": "🔹 题面\n    s 中所有 p 的异位词起始下标。\n\n🔹 直觉\n    定长滑窗(长度 = len(p)),用计数器对比即可。\n    优化:维护一个 diff = \"still_needed\" 数,= 0 时即匹配。\n\n🔹 复杂度 O(n) / O(Σ=26)",
+  "solutions": [
+    {
+      "method": "findAnagrams",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def findAnagrams(self, s: str, p: str) -> list[int]:\n    m, n = len(p), len(s)\n    if n < m:\n        return []\n    need = Counter(p)\n    win = Counter(s[:m])\n    ans = [0] if win == need else []\n    for r in range(m, n):\n        win[s[r]] += 1\n        win[s[r - m]] -= 1\n        if win[s[r - m]] == 0:\n            del win[s[r - m]]\n        if win == need:\n            ans.append(r - m + 1)\n    return ans"
+    }
+  ],
+  "raw_source": "# LC 438. 找到字符串中所有字母异位词 · Medium · 滑动窗口\n\"\"\"\n🔹 题面\n    s 中所有 p 的异位词起始下标。\n\n🔹 直觉\n    定长滑窗(长度 = len(p)),用计数器对比即可。\n    优化:维护一个 diff = \"still_needed\" 数,= 0 时即匹配。\n\n🔹 复杂度 O(n) / O(Σ=26)\n\"\"\"\nfrom collections import Counter\n\n\nclass Solution:\n    def findAnagrams(self, s: str, p: str) -> list[int]:\n        m, n = len(p), len(s)\n        if n < m:\n            return []\n        need = Counter(p)\n        win = Counter(s[:m])\n        ans = [0] if win == need else []\n        for r in range(m, n):\n            win[s[r]] += 1\n            win[s[r - m]] -= 1\n            if win[s[r - m]] == 0:\n                del win[s[r - m]]\n            if win == need:\n                ans.append(r - m + 1)\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.findAnagrams(\"cbaebabacd\", \"abc\") == [0, 6]\n    assert s.findAnagrams(\"abab\", \"ab\") == [0, 1, 2]\n    assert s.findAnagrams(\"a\", \"ab\") == []\n    print(\"✅ p438 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

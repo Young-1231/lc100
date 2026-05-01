@@ -1,0 +1,41 @@
+{
+  "id": 239,
+  "title": "滑动窗口最大值",
+  "difficulty": "Hard",
+  "tags": [
+    "单调队列"
+  ],
+  "day": 1,
+  "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
+  "category": "子串",
+  "leetcode_url": "https://leetcode.cn/problems/sliding-window-max/",
+  "filename": "p239_sliding_window_max.py",
+  "doc": "🔹 题面\n    返回长度 k 的滑动窗口最大值序列。\n\n🔹 直觉(单调递减队列)\n    队列存的是**下标**,从队头到队尾对应的值**单调递减**。\n    新元素入队时弹出所有比它小的尾部(它们将永远不会成为答案);\n    队头若已超出窗口左界则弹出。窗口准备好后队头即最大值。\n\n🔹 复杂度 O(n) / O(k)\n    每个下标至多入/出队一次。\n\n🔹 踩坑\n    队列存下标,而不是值;否则无法判断是否过期。",
+  "solutions": [
+    {
+      "method": "maxSlidingWindow",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def maxSlidingWindow(self, nums: list[int], k: int) -> list[int]:\n    dq: deque[int] = deque()\n    ans: list[int] = []\n    for i, x in enumerate(nums):\n        while dq and nums[dq[-1]] <= x:\n            dq.pop()\n        dq.append(i)\n        if dq[0] <= i - k:\n            dq.popleft()\n        if i >= k - 1:\n            ans.append(nums[dq[0]])\n    return ans"
+    }
+  ],
+  "raw_source": "# LC 239. 滑动窗口最大值 · Hard · 单调队列\n\"\"\"\n🔹 题面\n    返回长度 k 的滑动窗口最大值序列。\n\n🔹 直觉(单调递减队列)\n    队列存的是**下标**,从队头到队尾对应的值**单调递减**。\n    新元素入队时弹出所有比它小的尾部(它们将永远不会成为答案);\n    队头若已超出窗口左界则弹出。窗口准备好后队头即最大值。\n\n🔹 复杂度 O(n) / O(k)\n    每个下标至多入/出队一次。\n\n🔹 踩坑\n    队列存下标,而不是值;否则无法判断是否过期。\n\"\"\"\nfrom collections import deque\n\n\nclass Solution:\n    def maxSlidingWindow(self, nums: list[int], k: int) -> list[int]:\n        dq: deque[int] = deque()\n        ans: list[int] = []\n        for i, x in enumerate(nums):\n            while dq and nums[dq[-1]] <= x:\n                dq.pop()\n            dq.append(i)\n            if dq[0] <= i - k:\n                dq.popleft()\n            if i >= k - 1:\n                ans.append(nums[dq[0]])\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.maxSlidingWindow([1, 3, -1, -3, 5, 3, 6, 7], 3) == [3, 3, 5, 5, 6, 7]\n    assert s.maxSlidingWindow([1], 1) == [1]\n    assert s.maxSlidingWindow([1, -1], 1) == [1, -1]\n    print(\"✅ p239 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": {
+    "type": "array",
+    "data": [
+      1,
+      3,
+      -1,
+      -3,
+      5,
+      3,
+      6,
+      7
+    ],
+    "windowL": 0,
+    "windowR": 2,
+    "label": "k=3 滑窗"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "id": 189,
+  "title": "轮转数组",
+  "difficulty": "Medium",
+  "tags": [
+    "数组技巧"
+  ],
+  "day": 2,
+  "day_title": "数组 / 矩阵",
+  "category": "普通数组",
+  "leetcode_url": "https://leetcode.cn/problems/rotate-array/",
+  "filename": "p189_rotate_array.py",
+  "doc": "🔹 题面\n    向右轮转数组 k 步。\n\n🔹 解法对比\n    | 方法               | 时间 | 空间 | 备注                  |\n    |--------------------|------|------|-----------------------|\n    | 借助新数组         | O(n) | O(n) | 思路最直接            |\n    | 三次反转 ★        | O(n) | O(1) | 经典技巧,面试首选    |\n    | 环状替换           | O(n) | O(1) | 数学优雅,边界细节多  |\n\n🔹 三次反转思路\n    1. 整体反转\n    2. 反转前 k 个\n    3. 反转后 n-k 个",
+  "solutions": [
+    {
+      "method": "rotate_extra",
+      "title": "借助新数组",
+      "time": "O(n)",
+      "space": "O(n)",
+      "starred": false,
+      "code": "def rotate_extra(self, nums: list[int], k: int) -> None:\n    n = len(nums)\n    k %= n\n    nums[:] = nums[-k:] + nums[:-k]"
+    },
+    {
+      "method": "rotate",
+      "title": "三次反转",
+      "time": "O(n)",
+      "space": "O(1)",
+      "starred": true,
+      "code": "def rotate(self, nums: list[int], k: int) -> None:\n    n = len(nums)\n    k %= n\n    nums.reverse()\n    nums[:k] = reversed(nums[:k])\n    nums[k:] = reversed(nums[k:])"
+    },
+    {
+      "method": "rotate_cyclic",
+      "title": "环状替换",
+      "time": "O(n)",
+      "space": "O(1)",
+      "starred": false,
+      "code": "def rotate_cyclic(self, nums: list[int], k: int) -> None:\n    n = len(nums)\n    k %= n\n    cnt = gcd(k, n)\n    for start in range(cnt):\n        cur, prev = start, nums[start]\n        while True:\n            nxt = (cur + k) % n\n            nums[nxt], prev = prev, nums[nxt]\n            cur = nxt\n            if cur == start:\n                break"
+    }
+  ],
+  "raw_source": "# LC 189. 轮转数组 · Medium · 数组技巧\n\"\"\"\n🔹 题面\n    向右轮转数组 k 步。\n\n🔹 解法对比\n    | 方法               | 时间 | 空间 | 备注                  |\n    |--------------------|------|------|-----------------------|\n    | 借助新数组         | O(n) | O(n) | 思路最直接            |\n    | 三次反转 ★        | O(n) | O(1) | 经典技巧,面试首选    |\n    | 环状替换           | O(n) | O(1) | 数学优雅,边界细节多  |\n\n🔹 三次反转思路\n    1. 整体反转\n    2. 反转前 k 个\n    3. 反转后 n-k 个\n\"\"\"\nfrom math import gcd\n\n\nclass Solution:\n    # 解法 1:借助新数组 — O(n) / O(n)\n    def rotate_extra(self, nums: list[int], k: int) -> None:\n        n = len(nums)\n        k %= n\n        nums[:] = nums[-k:] + nums[:-k]\n\n    # 解法 2:三次反转 ★ — O(n) / O(1)\n    def rotate(self, nums: list[int], k: int) -> None:\n        n = len(nums)\n        k %= n\n        nums.reverse()\n        nums[:k] = reversed(nums[:k])\n        nums[k:] = reversed(nums[k:])\n\n    # 解法 3:环状替换 — O(n) / O(1)\n    def rotate_cyclic(self, nums: list[int], k: int) -> None:\n        n = len(nums)\n        k %= n\n        cnt = gcd(k, n)\n        for start in range(cnt):\n            cur, prev = start, nums[start]\n            while True:\n                nxt = (cur + k) % n\n                nums[nxt], prev = prev, nums[nxt]\n                cur = nxt\n                if cur == start:\n                    break\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        (([1, 2, 3, 4, 5, 6, 7], 3), [5, 6, 7, 1, 2, 3, 4]),\n        (([-1, -100, 3, 99], 2), [3, 99, -1, -100]),\n        (([1, 2], 3), [2, 1]),\n    ]\n    for (arr, k), want in cases:\n        for fn in (s.rotate, s.rotate_extra, s.rotate_cyclic):\n            a = arr[:]\n            fn(a, k)\n            assert a == want, f\"{fn.__name__}({arr}, {k}) -> {a}\"\n    print(\"✅ p189 通过 3 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": {
+    "type": "array",
+    "data": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "label": "右移 3 后 = [5,6,7,1,2,3,4]"
+  }
+}

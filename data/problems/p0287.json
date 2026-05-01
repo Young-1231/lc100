@@ -1,0 +1,40 @@
+{
+  "id": 287,
+  "title": "寻找重复数",
+  "difficulty": "Medium",
+  "tags": [
+    "Floyd 链表环"
+  ],
+  "day": 7,
+  "day_title": "DP / 多维DP / 技巧",
+  "category": "技巧",
+  "leetcode_url": "https://leetcode.cn/problems/find-duplicate/",
+  "filename": "p287_find_duplicate.py",
+  "doc": "🔹 题面\n    长度 n+1 数组,值 ∈ [1,n],只有一个数重复(可重复多次)。要求 O(1) 空间、不修改原数组。\n\n🔹 直觉(把数组当作\"函数\")\n    把 i 视作\"指针\",nums[i] 视作\"它指向的下一个位置\"。\n    存在重复 ⟺ 这张图存在环。\n    用 Floyd 龟兔找入环点(参考 LC 142),即重复值。",
+  "solutions": [
+    {
+      "method": "findDuplicate",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def findDuplicate(self, nums: list[int]) -> int:\n    slow = fast = nums[0]\n    while True:\n        slow = nums[slow]\n        fast = nums[nums[fast]]\n        if slow == fast:\n            break\n    slow = nums[0]\n    while slow != fast:\n        slow = nums[slow]\n        fast = nums[fast]\n    return slow"
+    }
+  ],
+  "raw_source": "# LC 287. 寻找重复数 · Medium · Floyd 链表环\n\"\"\"\n🔹 题面\n    长度 n+1 数组,值 ∈ [1,n],只有一个数重复(可重复多次)。要求 O(1) 空间、不修改原数组。\n\n🔹 直觉(把数组当作\"函数\")\n    把 i 视作\"指针\",nums[i] 视作\"它指向的下一个位置\"。\n    存在重复 ⟺ 这张图存在环。\n    用 Floyd 龟兔找入环点(参考 LC 142),即重复值。\n\"\"\"\n\n\nclass Solution:\n    def findDuplicate(self, nums: list[int]) -> int:\n        slow = fast = nums[0]\n        while True:\n            slow = nums[slow]\n            fast = nums[nums[fast]]\n            if slow == fast:\n                break\n        slow = nums[0]\n        while slow != fast:\n            slow = nums[slow]\n            fast = nums[fast]\n        return slow\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.findDuplicate([1, 3, 4, 2, 2]) == 2\n    assert s.findDuplicate([3, 1, 3, 4, 2]) == 3\n    assert s.findDuplicate([1, 1]) == 1\n    assert s.findDuplicate([1, 1, 2]) == 1\n    print(\"✅ p287 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": {
+    "type": "array",
+    "data": [
+      1,
+      3,
+      4,
+      2,
+      2
+    ],
+    "highlight": [
+      3,
+      4
+    ],
+    "label": "重复=2"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "id": 207,
+  "title": "课程表",
+  "difficulty": "Medium",
+  "tags": [
+    "拓扑排序"
+  ],
+  "day": 5,
+  "day_title": "图论 / 回溯 / 二分",
+  "category": "图论",
+  "leetcode_url": "https://leetcode.cn/problems/course-schedule/",
+  "filename": "p207_course_schedule.py",
+  "doc": "🔹 题面\n    判断是否可修完所有课;前置 [a, b] 表示 b → a。\n\n🔹 解法对比\n    | 方法           | 时间    | 空间   | 备注                     |\n    |----------------|---------|--------|--------------------------|\n    | Kahn(入度+BFS) ★| O(V+E) | O(V+E) | 工程首选;可顺便给出 topo 序 |\n    | DFS 三色染色   | O(V+E)  | O(V+E) | 0 未访问 / 1 在栈 / 2 完成 |",
+  "solutions": [
+    {
+      "method": "canFinish",
+      "title": "Kahn",
+      "time": "O(V+E)",
+      "space": "O(V+E)",
+      "starred": true,
+      "code": "def canFinish(self, numCourses: int, prerequisites: list[list[int]]) -> bool:\n    g = defaultdict(list)\n    indeg = [0] * numCourses\n    for a, b in prerequisites:\n        g[b].append(a)\n        indeg[a] += 1\n    q = deque(i for i, d in enumerate(indeg) if d == 0)\n    seen = 0\n    while q:\n        u = q.popleft()\n        seen += 1\n        for v in g[u]:\n            indeg[v] -= 1\n            if indeg[v] == 0:\n                q.append(v)\n    return seen == numCourses"
+    },
+    {
+      "method": "canFinish_dfs",
+      "title": "DFS 三色染色",
+      "time": "O(V+E)",
+      "space": "O(V+E)",
+      "starred": false,
+      "code": "def canFinish_dfs(self, numCourses: int, prerequisites: list[list[int]]) -> bool:\n    g = defaultdict(list)\n    for a, b in prerequisites:\n        g[b].append(a)\n    color = [0] * numCourses           # 0 未访问 / 1 路径中 / 2 完成\n\n    def dfs(u):\n        if color[u] == 1:\n            return False               # 回边 → 有环\n        if color[u] == 2:\n            return True\n        color[u] = 1\n        for v in g[u]:\n            if not dfs(v):\n                return False\n        color[u] = 2\n        return True\n\n    return all(dfs(u) for u in range(numCourses))"
+    }
+  ],
+  "raw_source": "# LC 207. 课程表 · Medium · 拓扑排序\n\"\"\"\n🔹 题面\n    判断是否可修完所有课;前置 [a, b] 表示 b → a。\n\n🔹 解法对比\n    | 方法           | 时间    | 空间   | 备注                     |\n    |----------------|---------|--------|--------------------------|\n    | Kahn(入度+BFS) ★| O(V+E) | O(V+E) | 工程首选;可顺便给出 topo 序 |\n    | DFS 三色染色   | O(V+E)  | O(V+E) | 0 未访问 / 1 在栈 / 2 完成 |\n\"\"\"\nfrom collections import defaultdict, deque\n\n\nclass Solution:\n    # 解法 1:Kahn ★ — O(V+E) / O(V+E)\n    def canFinish(self, numCourses: int, prerequisites: list[list[int]]) -> bool:\n        g = defaultdict(list)\n        indeg = [0] * numCourses\n        for a, b in prerequisites:\n            g[b].append(a)\n            indeg[a] += 1\n        q = deque(i for i, d in enumerate(indeg) if d == 0)\n        seen = 0\n        while q:\n            u = q.popleft()\n            seen += 1\n            for v in g[u]:\n                indeg[v] -= 1\n                if indeg[v] == 0:\n                    q.append(v)\n        return seen == numCourses\n\n    # 解法 2:DFS 三色染色 — O(V+E) / O(V+E)\n    def canFinish_dfs(self, numCourses: int, prerequisites: list[list[int]]) -> bool:\n        g = defaultdict(list)\n        for a, b in prerequisites:\n            g[b].append(a)\n        color = [0] * numCourses           # 0 未访问 / 1 路径中 / 2 完成\n\n        def dfs(u):\n            if color[u] == 1:\n                return False               # 回边 → 有环\n            if color[u] == 2:\n                return True\n            color[u] = 1\n            for v in g[u]:\n                if not dfs(v):\n                    return False\n            color[u] = 2\n            return True\n\n        return all(dfs(u) for u in range(numCourses))\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        ((2, [[1, 0]]), True),\n        ((2, [[1, 0], [0, 1]]), False),\n        ((4, [[1, 0], [2, 1], [3, 2]]), True),\n    ]\n    for args, want in cases:\n        for fn in (s.canFinish, s.canFinish_dfs):\n            assert fn(*args) is want\n    print(\"✅ p207 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

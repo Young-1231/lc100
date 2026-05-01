@@ -1,0 +1,26 @@
+{
+  "id": 139,
+  "title": "单词拆分",
+  "difficulty": "Medium",
+  "tags": [
+    "DP"
+  ],
+  "day": 7,
+  "day_title": "DP / 多维DP / 技巧",
+  "category": "DP",
+  "leetcode_url": "https://leetcode.cn/problems/word-break/",
+  "filename": "p139_word_break.py",
+  "doc": "🔹 状态\n    f[i] 表示 s[:i] 是否可拆;\n    f[i] = ∃ j: f[j] ∧ s[j:i] ∈ wordDict",
+  "solutions": [
+    {
+      "method": "wordBreak",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def wordBreak(self, s: str, wordDict: list[str]) -> bool:\n    words = set(wordDict)\n    max_len = max((len(w) for w in words), default=0)\n    n = len(s)\n    f = [False] * (n + 1)\n    f[0] = True\n    for i in range(1, n + 1):\n        for j in range(max(0, i - max_len), i):\n            if f[j] and s[j:i] in words:\n                f[i] = True\n                break\n    return f[n]"
+    }
+  ],
+  "raw_source": "# LC 139. 单词拆分 · Medium · DP\n\"\"\"\n🔹 状态\n    f[i] 表示 s[:i] 是否可拆;\n    f[i] = ∃ j: f[j] ∧ s[j:i] ∈ wordDict\n\"\"\"\n\n\nclass Solution:\n    def wordBreak(self, s: str, wordDict: list[str]) -> bool:\n        words = set(wordDict)\n        max_len = max((len(w) for w in words), default=0)\n        n = len(s)\n        f = [False] * (n + 1)\n        f[0] = True\n        for i in range(1, n + 1):\n            for j in range(max(0, i - max_len), i):\n                if f[j] and s[j:i] in words:\n                    f[i] = True\n                    break\n        return f[n]\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.wordBreak(\"leetcode\", [\"leet\", \"code\"]) is True\n    assert s.wordBreak(\"applepenapple\", [\"apple\", \"pen\"]) is True\n    assert s.wordBreak(\"catsandog\", [\"cats\", \"dog\", \"sand\", \"and\", \"cat\"]) is False\n    print(\"✅ p139 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

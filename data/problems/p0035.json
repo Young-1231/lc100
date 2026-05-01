@@ -1,0 +1,26 @@
+{
+  "id": 35,
+  "title": "搜索插入位置",
+  "difficulty": "Easy",
+  "tags": [
+    "二分"
+  ],
+  "day": 5,
+  "day_title": "图论 / 回溯 / 二分",
+  "category": "二分",
+  "leetcode_url": "https://leetcode.cn/problems/search-insert/",
+  "filename": "p035_search_insert.py",
+  "doc": "🔹 直觉\n    标准 lower_bound:返回第一个 ≥ target 的位置。",
+  "solutions": [
+    {
+      "method": "searchInsert",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def searchInsert(self, nums: list[int], target: int) -> int:\n    l, r = 0, len(nums)\n    while l < r:\n        m = (l + r) // 2\n        if nums[m] < target:\n            l = m + 1\n        else:\n            r = m\n    return l"
+    }
+  ],
+  "raw_source": "# LC 35. 搜索插入位置 · Easy · 二分\n\"\"\"\n🔹 直觉\n    标准 lower_bound:返回第一个 ≥ target 的位置。\n\"\"\"\n\n\nclass Solution:\n    def searchInsert(self, nums: list[int], target: int) -> int:\n        l, r = 0, len(nums)\n        while l < r:\n            m = (l + r) // 2\n            if nums[m] < target:\n                l = m + 1\n            else:\n                r = m\n        return l\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.searchInsert([1, 3, 5, 6], 5) == 2\n    assert s.searchInsert([1, 3, 5, 6], 2) == 1\n    assert s.searchInsert([1, 3, 5, 6], 7) == 4\n    assert s.searchInsert([1, 3, 5, 6], 0) == 0\n    print(\"✅ p035 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

@@ -1,0 +1,42 @@
+{
+  "id": 121,
+  "title": "买卖股票的最佳时机",
+  "difficulty": "Easy",
+  "tags": [
+    "贪心",
+    "一次遍历"
+  ],
+  "day": 6,
+  "day_title": "栈 / 堆 / 贪心",
+  "category": "贪心",
+  "leetcode_url": "https://leetcode.cn/problems/best-time-stock/",
+  "filename": "p121_best_time_stock.py",
+  "doc": "🔹 直觉\n    扫一遍:维护历史最低价 lo,答案 = max(p[i] - lo)。",
+  "solutions": [
+    {
+      "method": "maxProfit",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def maxProfit(self, prices: list[int]) -> int:\n    lo, best = float(\"inf\"), 0\n    for p in prices:\n        lo = min(lo, p)\n        best = max(best, p - lo)\n    return best"
+    }
+  ],
+  "raw_source": "# LC 121. 买卖股票的最佳时机 · Easy · 贪心 / 一次遍历\n\"\"\"\n🔹 直觉\n    扫一遍:维护历史最低价 lo,答案 = max(p[i] - lo)。\n\"\"\"\n\n\nclass Solution:\n    def maxProfit(self, prices: list[int]) -> int:\n        lo, best = float(\"inf\"), 0\n        for p in prices:\n            lo = min(lo, p)\n            best = max(best, p - lo)\n        return best\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.maxProfit([7, 1, 5, 3, 6, 4]) == 5\n    assert s.maxProfit([7, 6, 4, 3, 1]) == 0\n    assert s.maxProfit([]) == 0\n    print(\"✅ p121 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": {
+    "type": "array",
+    "data": [
+      7,
+      1,
+      5,
+      3,
+      6,
+      4
+    ],
+    "highlight": [
+      1,
+      4
+    ],
+    "label": "买入=1, 卖出=6"
+  }
+}

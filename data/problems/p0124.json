@@ -1,0 +1,38 @@
+{
+  "id": 124,
+  "title": "二叉树中的最大路径和",
+  "difficulty": "Hard",
+  "tags": [
+    "递归"
+  ],
+  "day": 4,
+  "day_title": "二叉树",
+  "category": "二叉树",
+  "leetcode_url": "https://leetcode.cn/problems/max-path-sum/",
+  "filename": "p124_max_path_sum.py",
+  "doc": "🔹 题面\n    求任意\"路径\"(任意两节点)节点和最大值。可只一个节点。\n\n🔹 直觉\n    后序返回\"以当前节点为顶端、必须包含它、向下走单边\"的最大贡献。\n    全局答案在每个节点处尝试\"左贡献 + 节点 + 右贡献\"。\n    单边贡献若 < 0,丢弃(置 0)。\n\n🔹 复杂度 O(n) / O(h)",
+  "solutions": [
+    {
+      "method": "maxPathSum",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def maxPathSum(self, root) -> int:\n    self.best = float(\"-inf\")\n\n    def gain(n):\n        if not n:\n            return 0\n        l = max(0, gain(n.left))\n        r = max(0, gain(n.right))\n        self.best = max(self.best, n.val + l + r)\n        return n.val + max(l, r)\n\n    gain(root)\n    return self.best"
+    }
+  ],
+  "raw_source": "# LC 124. 二叉树中的最大路径和 · Hard · 递归\n\"\"\"\n🔹 题面\n    求任意\"路径\"(任意两节点)节点和最大值。可只一个节点。\n\n🔹 直觉\n    后序返回\"以当前节点为顶端、必须包含它、向下走单边\"的最大贡献。\n    全局答案在每个节点处尝试\"左贡献 + 节点 + 右贡献\"。\n    单边贡献若 < 0,丢弃(置 0)。\n\n🔹 复杂度 O(n) / O(h)\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import build_tree\n\n\nclass Solution:\n    def maxPathSum(self, root) -> int:\n        self.best = float(\"-inf\")\n\n        def gain(n):\n            if not n:\n                return 0\n            l = max(0, gain(n.left))\n            r = max(0, gain(n.right))\n            self.best = max(self.best, n.val + l + r)\n            return n.val + max(l, r)\n\n        gain(root)\n        return self.best\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.maxPathSum(build_tree([1, 2, 3])) == 6\n    assert s.maxPathSum(build_tree([-10, 9, 20, None, None, 15, 7])) == 42\n    assert s.maxPathSum(build_tree([-3])) == -3\n    print(\"✅ p124 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": {
+    "type": "tree",
+    "data": [
+      -10,
+      9,
+      20,
+      null,
+      null,
+      15,
+      7
+    ],
+    "label": "最大路径=42"
+  }
+}

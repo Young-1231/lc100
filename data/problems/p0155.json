@@ -1,0 +1,17 @@
+{
+  "id": 155,
+  "title": "最小栈",
+  "difficulty": "Medium",
+  "tags": [
+    "栈"
+  ],
+  "day": 6,
+  "day_title": "栈 / 堆 / 贪心",
+  "category": "栈",
+  "leetcode_url": "https://leetcode.cn/problems/min-stack/",
+  "filename": "p155_min_stack.py",
+  "doc": "🔹 直觉\n    用辅助栈,栈顶始终保存\"截至目前的最小值\"。\n    或单栈中存对 (x, cur_min);技巧:差值栈也行。",
+  "solutions": [],
+  "raw_source": "# LC 155. 最小栈 · Medium · 栈\n\"\"\"\n🔹 直觉\n    用辅助栈,栈顶始终保存\"截至目前的最小值\"。\n    或单栈中存对 (x, cur_min);技巧:差值栈也行。\n\"\"\"\n\n\nclass MinStack:\n    def __init__(self):\n        self.s: list[int] = []\n        self.m: list[int] = []           # 最小值栈\n\n    def push(self, val: int) -> None:\n        self.s.append(val)\n        self.m.append(val if not self.m else min(val, self.m[-1]))\n\n    def pop(self) -> None:\n        self.s.pop()\n        self.m.pop()\n\n    def top(self) -> int:\n        return self.s[-1]\n\n    def getMin(self) -> int:\n        return self.m[-1]\n\n\ndef _test() -> None:\n    ms = MinStack()\n    ms.push(-2); ms.push(0); ms.push(-3)\n    assert ms.getMin() == -3\n    ms.pop()\n    assert ms.top() == 0\n    assert ms.getMin() == -2\n    print(\"✅ p155 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

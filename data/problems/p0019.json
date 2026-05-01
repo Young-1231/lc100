@@ -1,0 +1,40 @@
+{
+  "id": 19,
+  "title": "删除链表的倒数第 N 个结点",
+  "difficulty": "Medium",
+  "tags": [
+    "双指针",
+    "哨兵"
+  ],
+  "day": 3,
+  "day_title": "链表",
+  "category": "链表",
+  "leetcode_url": "https://leetcode.cn/problems/remove-nth-from-end/",
+  "filename": "p019_remove_nth_from_end.py",
+  "doc": "🔹 题面\n    一次扫描删掉倒数第 N 个节点。\n\n🔹 直觉\n    哨兵 + 快慢指针:fast 先走 n+1 步,然后 fast/slow 同步,fast=None 时 slow.next 即待删。\n\n🔹 复杂度 O(L) / O(1)\n\n🔹 踩坑\n    必须用 dummy,否则删除头节点要分支处理。",
+  "solutions": [
+    {
+      "method": "removeNthFromEnd",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def removeNthFromEnd(self, head, n: int):\n    dummy = ListNode(0, head)\n    fast = slow = dummy\n    for _ in range(n + 1):\n        fast = fast.next\n    while fast:\n        fast = fast.next\n        slow = slow.next\n    slow.next = slow.next.next\n    return dummy.next"
+    }
+  ],
+  "raw_source": "# LC 19. 删除链表的倒数第 N 个结点 · Medium · 双指针 / 哨兵\n\"\"\"\n🔹 题面\n    一次扫描删掉倒数第 N 个节点。\n\n🔹 直觉\n    哨兵 + 快慢指针:fast 先走 n+1 步,然后 fast/slow 同步,fast=None 时 slow.next 即待删。\n\n🔹 复杂度 O(L) / O(1)\n\n🔹 踩坑\n    必须用 dummy,否则删除头节点要分支处理。\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import ListNode, build_list, list_to_array\n\n\nclass Solution:\n    def removeNthFromEnd(self, head, n: int):\n        dummy = ListNode(0, head)\n        fast = slow = dummy\n        for _ in range(n + 1):\n            fast = fast.next\n        while fast:\n            fast = fast.next\n            slow = slow.next\n        slow.next = slow.next.next\n        return dummy.next\n\n\ndef _test() -> None:\n    s = Solution()\n    assert list_to_array(s.removeNthFromEnd(build_list([1, 2, 3, 4, 5]), 2)) == [1, 2, 3, 5]\n    assert list_to_array(s.removeNthFromEnd(build_list([1]), 1)) == []\n    assert list_to_array(s.removeNthFromEnd(build_list([1, 2]), 1)) == [1]\n    assert list_to_array(s.removeNthFromEnd(build_list([1, 2]), 2)) == [2]\n    print(\"✅ p019 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": {
+    "type": "list",
+    "data": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "label": "删除倒数第 2 个",
+    "highlight": [
+      3
+    ]
+  }
+}

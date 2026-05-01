@@ -1,0 +1,26 @@
+{
+  "id": 62,
+  "title": "不同路径",
+  "difficulty": "Medium",
+  "tags": [
+    "多维 DP"
+  ],
+  "day": 7,
+  "day_title": "DP / 多维DP / 技巧",
+  "category": "多维DP",
+  "leetcode_url": "https://leetcode.cn/problems/unique-paths/",
+  "filename": "p062_unique_paths.py",
+  "doc": "🔹 直觉\n    f[i][j] = f[i-1][j] + f[i][j-1];可滚动到一维。\n    数学解:C(m+n-2, m-1)。",
+  "solutions": [
+    {
+      "method": "uniquePaths",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def uniquePaths(self, m: int, n: int) -> int:\n    f = [1] * n\n    for _ in range(1, m):\n        for j in range(1, n):\n            f[j] += f[j - 1]\n    return f[-1]"
+    }
+  ],
+  "raw_source": "# LC 62. 不同路径 · Medium · 多维 DP\n\"\"\"\n🔹 直觉\n    f[i][j] = f[i-1][j] + f[i][j-1];可滚动到一维。\n    数学解:C(m+n-2, m-1)。\n\"\"\"\n\n\nclass Solution:\n    def uniquePaths(self, m: int, n: int) -> int:\n        f = [1] * n\n        for _ in range(1, m):\n            for j in range(1, n):\n                f[j] += f[j - 1]\n        return f[-1]\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.uniquePaths(3, 7) == 28\n    assert s.uniquePaths(3, 2) == 3\n    assert s.uniquePaths(1, 1) == 1\n    print(\"✅ p062 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

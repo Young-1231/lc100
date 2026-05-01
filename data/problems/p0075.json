@@ -1,0 +1,37 @@
+{
+  "id": 75,
+  "title": "颜色分类",
+  "difficulty": "Medium",
+  "tags": [
+    "三指针(荷兰国旗)"
+  ],
+  "day": 7,
+  "day_title": "DP / 多维DP / 技巧",
+  "category": "技巧",
+  "leetcode_url": "https://leetcode.cn/problems/sort-colors/",
+  "filename": "p075_sort_colors.py",
+  "doc": "🔹 直觉\n    三指针:lo / mid / hi,扫描时\n        nums[mid]==0 → swap(lo,mid), lo++, mid++\n        nums[mid]==1 → mid++\n        nums[mid]==2 → swap(mid,hi), hi--   (此时 mid 不动,因为换来的是未知)",
+  "solutions": [
+    {
+      "method": "sortColors",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def sortColors(self, nums: list[int]) -> None:\n    lo, mid, hi = 0, 0, len(nums) - 1\n    while mid <= hi:\n        x = nums[mid]\n        if x == 0:\n            nums[lo], nums[mid] = nums[mid], nums[lo]\n            lo += 1; mid += 1\n        elif x == 1:\n            mid += 1\n        else:\n            nums[mid], nums[hi] = nums[hi], nums[mid]\n            hi -= 1"
+    }
+  ],
+  "raw_source": "# LC 75. 颜色分类 · Medium · 三指针(荷兰国旗)\n\"\"\"\n🔹 直觉\n    三指针:lo / mid / hi,扫描时\n        nums[mid]==0 → swap(lo,mid), lo++, mid++\n        nums[mid]==1 → mid++\n        nums[mid]==2 → swap(mid,hi), hi--   (此时 mid 不动,因为换来的是未知)\n\"\"\"\n\n\nclass Solution:\n    def sortColors(self, nums: list[int]) -> None:\n        lo, mid, hi = 0, 0, len(nums) - 1\n        while mid <= hi:\n            x = nums[mid]\n            if x == 0:\n                nums[lo], nums[mid] = nums[mid], nums[lo]\n                lo += 1; mid += 1\n            elif x == 1:\n                mid += 1\n            else:\n                nums[mid], nums[hi] = nums[hi], nums[mid]\n                hi -= 1\n\n\ndef _test() -> None:\n    s = Solution()\n    a = [2, 0, 2, 1, 1, 0]; s.sortColors(a); assert a == [0, 0, 1, 1, 2, 2]\n    a = [2, 0, 1]; s.sortColors(a); assert a == [0, 1, 2]\n    a = [0]; s.sortColors(a); assert a == [0]\n    print(\"✅ p075 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": {
+    "type": "array",
+    "data": [
+      2,
+      0,
+      2,
+      1,
+      1,
+      0
+    ],
+    "label": "颜色分类前"
+  }
+}

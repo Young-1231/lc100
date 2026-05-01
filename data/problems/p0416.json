@@ -1,0 +1,26 @@
+{
+  "id": 416,
+  "title": "分割等和子集",
+  "difficulty": "Medium",
+  "tags": [
+    "0-1 背包"
+  ],
+  "day": 7,
+  "day_title": "DP / 多维DP / 技巧",
+  "category": "DP",
+  "leetcode_url": "https://leetcode.cn/problems/partition-equal-subset/",
+  "filename": "p416_partition_equal_subset.py",
+  "doc": "🔹 直觉\n    总和奇数直接 False。否则求是否存在子集和 = total // 2。\n    一维 0-1 背包,容量 = target,逆序更新。\n\n🔹 状态\n    f[v] 是否可凑出和 v;f[v] |= f[v - x]。",
+  "solutions": [
+    {
+      "method": "canPartition",
+      "title": "主解法",
+      "time": "",
+      "space": "",
+      "starred": false,
+      "code": "def canPartition(self, nums: list[int]) -> bool:\n    s = sum(nums)\n    if s & 1:\n        return False\n    target = s // 2\n    f = [False] * (target + 1)\n    f[0] = True\n    for x in nums:\n        for v in range(target, x - 1, -1):\n            f[v] = f[v] or f[v - x]\n    return f[target]"
+    }
+  ],
+  "raw_source": "# LC 416. 分割等和子集 · Medium · 0-1 背包\n\"\"\"\n🔹 直觉\n    总和奇数直接 False。否则求是否存在子集和 = total // 2。\n    一维 0-1 背包,容量 = target,逆序更新。\n\n🔹 状态\n    f[v] 是否可凑出和 v;f[v] |= f[v - x]。\n\"\"\"\n\n\nclass Solution:\n    def canPartition(self, nums: list[int]) -> bool:\n        s = sum(nums)\n        if s & 1:\n            return False\n        target = s // 2\n        f = [False] * (target + 1)\n        f[0] = True\n        for x in nums:\n            for v in range(target, x - 1, -1):\n                f[v] = f[v] or f[v - x]\n        return f[target]\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.canPartition([1, 5, 11, 5]) is True\n    assert s.canPartition([1, 2, 3, 5]) is False\n    assert s.canPartition([1, 1]) is True\n    print(\"✅ p416 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}

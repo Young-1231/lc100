@@ -1,0 +1,44 @@
+{
+  "id": 78,
+  "title": "子集",
+  "difficulty": "Medium",
+  "tags": [
+    "回溯",
+    "位掩码",
+    "迭代"
+  ],
+  "day": 5,
+  "day_title": "图论 / 回溯 / 二分",
+  "category": "回溯",
+  "leetcode_url": "https://leetcode.cn/problems/subsets/",
+  "filename": "p078_subsets.py",
+  "doc": "🔹 解法对比\n    | 方法          | 时间       | 空间   | 备注                   |\n    |---------------|------------|--------|------------------------|\n    | 迭代倍增 ★   | O(n·2ⁿ)    | O(n·2ⁿ)| 最简洁:ans 反复 ×2     |\n    | 回溯(选/不选)| O(n·2ⁿ)   | O(n)   | 通用框架               |\n    | 位掩码        | O(n·2ⁿ)    | O(n)   | 用 i 的二进制选元素    |",
+  "solutions": [
+    {
+      "method": "subsets",
+      "title": "迭代倍增",
+      "time": "O(n·2ⁿ)",
+      "space": "",
+      "starred": true,
+      "code": "def subsets(self, nums: list[int]) -> list[list[int]]:\n    out = [[]]\n    for x in nums:\n        out += [s + [x] for s in out]\n    return out"
+    },
+    {
+      "method": "subsets_backtrack",
+      "title": "回溯",
+      "time": "O(n·2ⁿ)",
+      "space": "",
+      "starred": false,
+      "code": "def subsets_backtrack(self, nums: list[int]) -> list[list[int]]:\n    ans, path = [], []\n\n    def bt(i):\n        if i == len(nums):\n            ans.append(path[:])\n            return\n        bt(i + 1)\n        path.append(nums[i])\n        bt(i + 1)\n        path.pop()\n\n    bt(0)\n    return ans"
+    },
+    {
+      "method": "subsets_bitmask",
+      "title": "位掩码",
+      "time": "O(n·2ⁿ)",
+      "space": "",
+      "starred": false,
+      "code": "def subsets_bitmask(self, nums: list[int]) -> list[list[int]]:\n    n = len(nums)\n    out = []\n    for mask in range(1 << n):\n        sub = [nums[i] for i in range(n) if mask & (1 << i)]\n        out.append(sub)\n    return out"
+    }
+  ],
+  "raw_source": "# LC 78. 子集 · Medium · 回溯/位掩码/迭代\n\"\"\"\n🔹 解法对比\n    | 方法          | 时间       | 空间   | 备注                   |\n    |---------------|------------|--------|------------------------|\n    | 迭代倍增 ★   | O(n·2ⁿ)    | O(n·2ⁿ)| 最简洁:ans 反复 ×2     |\n    | 回溯(选/不选)| O(n·2ⁿ)   | O(n)   | 通用框架               |\n    | 位掩码        | O(n·2ⁿ)    | O(n)   | 用 i 的二进制选元素    |\n\"\"\"\n\n\nclass Solution:\n    # 解法 1:迭代倍增 ★ — O(n·2ⁿ)\n    def subsets(self, nums: list[int]) -> list[list[int]]:\n        out = [[]]\n        for x in nums:\n            out += [s + [x] for s in out]\n        return out\n\n    # 解法 2:回溯 — O(n·2ⁿ)\n    def subsets_backtrack(self, nums: list[int]) -> list[list[int]]:\n        ans, path = [], []\n\n        def bt(i):\n            if i == len(nums):\n                ans.append(path[:])\n                return\n            bt(i + 1)\n            path.append(nums[i])\n            bt(i + 1)\n            path.pop()\n\n        bt(0)\n        return ans\n\n    # 解法 3:位掩码 — O(n·2ⁿ)\n    def subsets_bitmask(self, nums: list[int]) -> list[list[int]]:\n        n = len(nums)\n        out = []\n        for mask in range(1 << n):\n            sub = [nums[i] for i in range(n) if mask & (1 << i)]\n            out.append(sub)\n        return out\n\n\ndef _test() -> None:\n    s = Solution()\n    want = sorted(map(sorted, [[], [1], [2], [3], [1, 2], [1, 3], [2, 3], [1, 2, 3]]))\n    for fn in (s.subsets, s.subsets_backtrack, s.subsets_bitmask):\n        assert sorted(map(sorted, fn([1, 2, 3]))) == want\n        assert fn([]) == [[]]\n    print(\"✅ p078 通过 3 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
+  "viz": null
+}
