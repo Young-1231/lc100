@@ -38,5 +38,19 @@
     }
   ],
   "raw_source": "# LC 15. 三数之和 · Medium · 双指针\n\"\"\"\n🔹 题面\n    返回所有不重复三元组 (a,b,c),其中 a+b+c=0。\n\n🔹 解法对比\n    | 方法              | 时间   | 空间   | 备注                    |\n    |-------------------|--------|--------|-------------------------|\n    | 暴力三重循环+set  | O(n³)  | O(n)   | 排序后 set 去重         |\n    | 排序 + 双指针 ★  | O(n²)  | O(1)   | 经典模板,面试首选      |\n    | 排序 + 哈希       | O(n²)  | O(n)   | 固定 a,在剩余里 2Sum   |\n\n🔹 直觉(双指针)\n    排序后固定 i,问题退化为\"在 i+1..n-1 找两数之和 = -nums[i]\" → 双指针。\n\n🔹 三处去重(出错率最高)\n    1) i 跳过相同的 (i>0 and nums[i]==nums[i-1])\n    2) 找到答案后 l 推进时跳过相同的\n    3) 找到答案后 r 退后时跳过相同的\n\"\"\"\n\n\nclass Solution:\n    # 解法 1:暴力 + set 去重 — O(n³) / O(n)\n    def threeSum_brute(self, nums: list[int]) -> list[list[int]]:\n        n = len(nums)\n        out: set[tuple[int, int, int]] = set()\n        for i in range(n - 2):\n            for j in range(i + 1, n - 1):\n                for k in range(j + 1, n):\n                    if nums[i] + nums[j] + nums[k] == 0:\n                        out.add(tuple(sorted((nums[i], nums[j], nums[k]))))\n        return [list(t) for t in out]\n\n    # 解法 2:排序 + 双指针 ★ — O(n²) / O(1)\n    def threeSum(self, nums: list[int]) -> list[list[int]]:\n        nums.sort()\n        n, ans = len(nums), []\n        for i in range(n - 2):\n            if nums[i] > 0:\n                break\n            if i and nums[i] == nums[i - 1]:\n                continue\n            l, r, target = i + 1, n - 1, -nums[i]\n            while l < r:\n                s = nums[l] + nums[r]\n                if s == target:\n                    ans.append([nums[i], nums[l], nums[r]])\n                    l += 1; r -= 1\n                    while l < r and nums[l] == nums[l - 1]:\n                        l += 1\n                    while l < r and nums[r] == nums[r + 1]:\n                        r -= 1\n                elif s < target:\n                    l += 1\n                else:\n                    r -= 1\n        return ans\n\n    # 解法 3:排序 + 哈希(每对 a, b 在剩余里查 -a-b)— O(n²) / O(n)\n    def threeSum_hash(self, nums: list[int]) -> list[list[int]]:\n        nums.sort()\n        n, ans = len(nums), []\n        for i in range(n - 2):\n            if nums[i] > 0:\n                break\n            if i and nums[i] == nums[i - 1]:\n                continue\n            seen: set[int] = set()\n            j = i + 1\n            while j < n:\n                want = -nums[i] - nums[j]\n                if want in seen:\n                    ans.append([nums[i], want, nums[j]])\n                    while j + 1 < n and nums[j + 1] == nums[j]:\n                        j += 1\n                seen.add(nums[j])\n                j += 1\n        return ans\n\n\ndef _norm(x):\n    return sorted(tuple(sorted(t)) for t in x)\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        ([-1, 0, 1, 2, -1, -4], [[-1, -1, 2], [-1, 0, 1]]),\n        ([], []),\n        ([0, 0, 0], [[0, 0, 0]]),\n        ([0, 0, 0, 0], [[0, 0, 0]]),\n    ]\n    for arg, want in cases:\n        for fn in (s.threeSum, s.threeSum_brute, s.threeSum_hash):\n            assert _norm(fn(arg[:])) == _norm(want)\n    print(\"✅ p015 通过 3 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "排序后**固定 i**,问题退化为『在 i+1..n-1 找两数之和 = -nums[i]』,经典双指针。三处去重防止重复三元组。",
+    "long": [
+      "**为什么排序?** 排序让『相同元素相邻』,可以一次跳过去重;并让双指针有方向性。",
+      "**外层 i**:i 跳过已用过的相同值(`if i>0 and nums[i]==nums[i-1]: continue`)。",
+      "**内层 l/r**:固定 i 后,target = -nums[i];和 < target 推 l,和 > target 退 r,等于则记录答案。",
+      "**两次去重**:命中后,l 跳过相同左值,r 跳过相同右值,避免相同三元组重复。",
+      "**剪枝**:`nums[i] > 0` 时三数和必 > 0,直接 break。"
+    ],
+    "complexity": {
+      "time": "**O(n²)** —— 排序 O(n log n),外层 n 次,每次内层双指针 O(n),总体 O(n²) 主导。",
+      "space": "**O(1)** 额外(不计输出和排序栈)。"
+    }
+  }
 }

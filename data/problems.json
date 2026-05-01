@@ -11,7 +11,8 @@
     "tags": [
       "哈希"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/two-sum/"
+    "leetcode_url": "https://leetcode.cn/problems/two-sum/",
+    "has_expl": true
   },
   {
     "id": 2,
@@ -25,7 +26,8 @@
     "tags": [
       "链表模拟"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/add-two-numbers/"
+    "leetcode_url": "https://leetcode.cn/problems/add-two-numbers/",
+    "has_expl": false
   },
   {
     "id": 3,
@@ -39,7 +41,8 @@
     "tags": [
       "滑动窗口"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/longest-substring-no-repeat/"
+    "leetcode_url": "https://leetcode.cn/problems/longest-substring-no-repeat/",
+    "has_expl": true
   },
   {
     "id": 4,
@@ -53,7 +56,8 @@
     "tags": [
       "二分"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/median-two-sorted/"
+    "leetcode_url": "https://leetcode.cn/problems/median-two-sorted/",
+    "has_expl": true
   },
   {
     "id": 5,
@@ -69,7 +73,8 @@
       "DP",
       "Manacher"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/longest-palindrome/"
+    "leetcode_url": "https://leetcode.cn/problems/longest-palindrome/",
+    "has_expl": true
   },
   {
     "id": 11,
@@ -83,7 +88,8 @@
     "tags": [
       "双指针"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/container-with-most-water/"
+    "leetcode_url": "https://leetcode.cn/problems/container-with-most-water/",
+    "has_expl": true
   },
   {
     "id": 15,
@@ -97,7 +103,8 @@
     "tags": [
       "双指针"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/three-sum/"
+    "leetcode_url": "https://leetcode.cn/problems/three-sum/",
+    "has_expl": true
   },
   {
     "id": 17,
@@ -111,7 +118,8 @@
     "tags": [
       "回溯"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/letter-combinations/"
+    "leetcode_url": "https://leetcode.cn/problems/letter-combinations/",
+    "has_expl": false
   },
   {
     "id": 19,
@@ -126,7 +134,8 @@
       "双指针",
       "哨兵"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/remove-nth-from-end/"
+    "leetcode_url": "https://leetcode.cn/problems/remove-nth-from-end/",
+    "has_expl": false
   },
   {
     "id": 20,
@@ -140,7 +149,8 @@
     "tags": [
       "栈"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/valid-parentheses/"
+    "leetcode_url": "https://leetcode.cn/problems/valid-parentheses/",
+    "has_expl": true
   },
   {
     "id": 21,
@@ -154,7 +164,8 @@
     "tags": [
       "链表归并"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/merge-two-lists/"
+    "leetcode_url": "https://leetcode.cn/problems/merge-two-lists/",
+    "has_expl": false
   },
   {
     "id": 22,
@@ -168,7 +179,8 @@
     "tags": [
       "回溯"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/generate-parentheses/"
+    "leetcode_url": "https://leetcode.cn/problems/generate-parentheses/",
+    "has_expl": false
   },
   {
     "id": 23,
@@ -183,7 +195,8 @@
       "堆",
       "分治"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/merge-k-lists/"
+    "leetcode_url": "https://leetcode.cn/problems/merge-k-lists/",
+    "has_expl": true
   },
   {
     "id": 24,
@@ -197,7 +210,8 @@
     "tags": [
       "链表"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/swap-pairs/"
+    "leetcode_url": "https://leetcode.cn/problems/swap-pairs/",
+    "has_expl": false
   },
   {
     "id": 25,
@@ -211,7 +225,8 @@
     "tags": [
       "链表"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/reverse-k-group/"
+    "leetcode_url": "https://leetcode.cn/problems/reverse-k-group/",
+    "has_expl": true
   },
   {
     "id": 31,
@@ -225,7 +240,8 @@
     "tags": [
       "双指针 + 反转"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/next-permutation/"
+    "leetcode_url": "https://leetcode.cn/problems/next-permutation/",
+    "has_expl": false
   },
   {
     "id": 32,
@@ -240,7 +256,8 @@
       "DP",
       "栈"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/longest-valid-parens/"
+    "leetcode_url": "https://leetcode.cn/problems/longest-valid-parens/",
+    "has_expl": false
   },
   {
     "id": 33,
@@ -254,7 +271,8 @@
     "tags": [
       "二分"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/search-rotated/"
+    "leetcode_url": "https://leetcode.cn/problems/search-rotated/",
+    "has_expl": true
   },
   {
     "id": 34,
@@ -268,7 +286,8 @@
     "tags": [
       "二分"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/first-last-position/"
+    "leetcode_url": "https://leetcode.cn/problems/first-last-position/",
+    "has_expl": false
   },
   {
     "id": 35,
@@ -282,7 +301,8 @@
     "tags": [
       "二分"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/search-insert/"
+    "leetcode_url": "https://leetcode.cn/problems/search-insert/",
+    "has_expl": false
   },
   {
     "id": 39,
@@ -296,7 +316,8 @@
     "tags": [
       "回溯"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/combination-sum/"
+    "leetcode_url": "https://leetcode.cn/problems/combination-sum/",
+    "has_expl": false
   },
   {
     "id": 41,
@@ -310,7 +331,8 @@
     "tags": [
       "原地哈希"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/first-missing-positive/"
+    "leetcode_url": "https://leetcode.cn/problems/first-missing-positive/",
+    "has_expl": true
   },
   {
     "id": 42,
@@ -326,7 +348,8 @@
       "单调栈",
       "DP"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/trapping-rain-water/"
+    "leetcode_url": "https://leetcode.cn/problems/trapping-rain-water/",
+    "has_expl": true
   },
   {
     "id": 45,
@@ -341,7 +364,8 @@
       "贪心",
       "BFS"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/jump-game-ii/"
+    "leetcode_url": "https://leetcode.cn/problems/jump-game-ii/",
+    "has_expl": false
   },
   {
     "id": 46,
@@ -355,7 +379,8 @@
     "tags": [
       "回溯"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/permutations/"
+    "leetcode_url": "https://leetcode.cn/problems/permutations/",
+    "has_expl": true
   },
   {
     "id": 48,
@@ -369,7 +394,8 @@
     "tags": [
       "矩阵"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/rotate-image/"
+    "leetcode_url": "https://leetcode.cn/problems/rotate-image/",
+    "has_expl": false
   },
   {
     "id": 49,
@@ -383,7 +409,8 @@
     "tags": [
       "哈希"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/group-anagrams/"
+    "leetcode_url": "https://leetcode.cn/problems/group-anagrams/",
+    "has_expl": true
   },
   {
     "id": 51,
@@ -397,7 +424,8 @@
     "tags": [
       "回溯"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/n-queens/"
+    "leetcode_url": "https://leetcode.cn/problems/n-queens/",
+    "has_expl": false
   },
   {
     "id": 53,
@@ -412,7 +440,8 @@
       "DP",
       "分治"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/max-subarray/"
+    "leetcode_url": "https://leetcode.cn/problems/max-subarray/",
+    "has_expl": true
   },
   {
     "id": 54,
@@ -426,7 +455,8 @@
     "tags": [
       "模拟"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/spiral-matrix/"
+    "leetcode_url": "https://leetcode.cn/problems/spiral-matrix/",
+    "has_expl": false
   },
   {
     "id": 55,
@@ -440,7 +470,8 @@
     "tags": [
       "贪心"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/jump-game/"
+    "leetcode_url": "https://leetcode.cn/problems/jump-game/",
+    "has_expl": false
   },
   {
     "id": 56,
@@ -454,7 +485,8 @@
     "tags": [
       "排序"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/merge-intervals/"
+    "leetcode_url": "https://leetcode.cn/problems/merge-intervals/",
+    "has_expl": true
   },
   {
     "id": 62,
@@ -468,7 +500,8 @@
     "tags": [
       "多维 DP"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/unique-paths/"
+    "leetcode_url": "https://leetcode.cn/problems/unique-paths/",
+    "has_expl": false
   },
   {
     "id": 64,
@@ -482,7 +515,8 @@
     "tags": [
       "多维 DP"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/min-path-sum/"
+    "leetcode_url": "https://leetcode.cn/problems/min-path-sum/",
+    "has_expl": false
   },
   {
     "id": 70,
@@ -496,7 +530,8 @@
     "tags": [
       "DP"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/climb-stairs/"
+    "leetcode_url": "https://leetcode.cn/problems/climb-stairs/",
+    "has_expl": false
   },
   {
     "id": 72,
@@ -510,7 +545,8 @@
     "tags": [
       "多维 DP"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/edit-distance/"
+    "leetcode_url": "https://leetcode.cn/problems/edit-distance/",
+    "has_expl": true
   },
   {
     "id": 73,
@@ -524,7 +560,8 @@
     "tags": [
       "矩阵原地标记"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/set-matrix-zeroes/"
+    "leetcode_url": "https://leetcode.cn/problems/set-matrix-zeroes/",
+    "has_expl": false
   },
   {
     "id": 74,
@@ -538,7 +575,8 @@
     "tags": [
       "二分"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/search-matrix/"
+    "leetcode_url": "https://leetcode.cn/problems/search-matrix/",
+    "has_expl": false
   },
   {
     "id": 75,
@@ -552,7 +590,8 @@
     "tags": [
       "三指针(荷兰国旗)"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/sort-colors/"
+    "leetcode_url": "https://leetcode.cn/problems/sort-colors/",
+    "has_expl": false
   },
   {
     "id": 76,
@@ -566,7 +605,8 @@
     "tags": [
       "滑动窗口"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/minimum-window-substring/"
+    "leetcode_url": "https://leetcode.cn/problems/minimum-window-substring/",
+    "has_expl": true
   },
   {
     "id": 78,
@@ -582,7 +622,8 @@
       "位掩码",
       "迭代"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/subsets/"
+    "leetcode_url": "https://leetcode.cn/problems/subsets/",
+    "has_expl": true
   },
   {
     "id": 79,
@@ -596,7 +637,8 @@
     "tags": [
       "回溯 + 矩阵"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/word-search/"
+    "leetcode_url": "https://leetcode.cn/problems/word-search/",
+    "has_expl": false
   },
   {
     "id": 84,
@@ -610,7 +652,8 @@
     "tags": [
       "单调栈"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/largest-rectangle/"
+    "leetcode_url": "https://leetcode.cn/problems/largest-rectangle/",
+    "has_expl": true
   },
   {
     "id": 94,
@@ -624,7 +667,8 @@
     "tags": [
       "遍历"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/inorder-traversal/"
+    "leetcode_url": "https://leetcode.cn/problems/inorder-traversal/",
+    "has_expl": true
   },
   {
     "id": 98,
@@ -639,7 +683,8 @@
       "递归",
       "中序"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/validate-bst/"
+    "leetcode_url": "https://leetcode.cn/problems/validate-bst/",
+    "has_expl": false
   },
   {
     "id": 101,
@@ -653,7 +698,8 @@
     "tags": [
       "递归"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/symmetric-tree/"
+    "leetcode_url": "https://leetcode.cn/problems/symmetric-tree/",
+    "has_expl": false
   },
   {
     "id": 102,
@@ -667,7 +713,8 @@
     "tags": [
       "BFS"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/level-order/"
+    "leetcode_url": "https://leetcode.cn/problems/level-order/",
+    "has_expl": false
   },
   {
     "id": 104,
@@ -682,7 +729,8 @@
       "递归",
       "BFS"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/max-depth/"
+    "leetcode_url": "https://leetcode.cn/problems/max-depth/",
+    "has_expl": false
   },
   {
     "id": 105,
@@ -696,7 +744,8 @@
     "tags": [
       "递归 + 哈希"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/build-tree-pre-in/"
+    "leetcode_url": "https://leetcode.cn/problems/build-tree-pre-in/",
+    "has_expl": true
   },
   {
     "id": 108,
@@ -710,7 +759,8 @@
     "tags": [
       "递归构造"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/sorted-array-to-bst/"
+    "leetcode_url": "https://leetcode.cn/problems/sorted-array-to-bst/",
+    "has_expl": false
   },
   {
     "id": 114,
@@ -725,7 +775,8 @@
       "后序",
       "反向先序"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/flatten-tree/"
+    "leetcode_url": "https://leetcode.cn/problems/flatten-tree/",
+    "has_expl": false
   },
   {
     "id": 118,
@@ -739,7 +790,8 @@
     "tags": [
       "DP"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/pascal-triangle/"
+    "leetcode_url": "https://leetcode.cn/problems/pascal-triangle/",
+    "has_expl": false
   },
   {
     "id": 121,
@@ -754,7 +806,8 @@
       "贪心",
       "一次遍历"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/best-time-stock/"
+    "leetcode_url": "https://leetcode.cn/problems/best-time-stock/",
+    "has_expl": false
   },
   {
     "id": 124,
@@ -768,7 +821,8 @@
     "tags": [
       "递归"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/max-path-sum/"
+    "leetcode_url": "https://leetcode.cn/problems/max-path-sum/",
+    "has_expl": true
   },
   {
     "id": 128,
@@ -782,7 +836,8 @@
     "tags": [
       "哈希"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/longest-consecutive-sequence/"
+    "leetcode_url": "https://leetcode.cn/problems/longest-consecutive-sequence/",
+    "has_expl": true
   },
   {
     "id": 131,
@@ -796,7 +851,8 @@
     "tags": [
       "回溯"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/palindrome-partitioning/"
+    "leetcode_url": "https://leetcode.cn/problems/palindrome-partitioning/",
+    "has_expl": false
   },
   {
     "id": 136,
@@ -810,7 +866,8 @@
     "tags": [
       "位运算"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/single-number/"
+    "leetcode_url": "https://leetcode.cn/problems/single-number/",
+    "has_expl": false
   },
   {
     "id": 138,
@@ -825,7 +882,8 @@
       "哈希",
       "原地交织"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/copy-random-list/"
+    "leetcode_url": "https://leetcode.cn/problems/copy-random-list/",
+    "has_expl": false
   },
   {
     "id": 139,
@@ -839,7 +897,8 @@
     "tags": [
       "DP"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/word-break/"
+    "leetcode_url": "https://leetcode.cn/problems/word-break/",
+    "has_expl": false
   },
   {
     "id": 141,
@@ -853,7 +912,8 @@
     "tags": [
       "Floyd 龟兔"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/linked-list-cycle/"
+    "leetcode_url": "https://leetcode.cn/problems/linked-list-cycle/",
+    "has_expl": false
   },
   {
     "id": 142,
@@ -867,7 +927,8 @@
     "tags": [
       "Floyd 数学"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/linked-list-cycle-ii/"
+    "leetcode_url": "https://leetcode.cn/problems/linked-list-cycle-ii/",
+    "has_expl": true
   },
   {
     "id": 146,
@@ -881,7 +942,8 @@
     "tags": [
       "哈希 + 双向链表"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/lru-cache/"
+    "leetcode_url": "https://leetcode.cn/problems/lru-cache/",
+    "has_expl": true
   },
   {
     "id": 148,
@@ -895,7 +957,8 @@
     "tags": [
       "归并排序"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/sort-list/"
+    "leetcode_url": "https://leetcode.cn/problems/sort-list/",
+    "has_expl": true
   },
   {
     "id": 152,
@@ -909,7 +972,8 @@
     "tags": [
       "DP"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/max-product/"
+    "leetcode_url": "https://leetcode.cn/problems/max-product/",
+    "has_expl": false
   },
   {
     "id": 153,
@@ -923,7 +987,8 @@
     "tags": [
       "二分"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/find-min-rotated/"
+    "leetcode_url": "https://leetcode.cn/problems/find-min-rotated/",
+    "has_expl": false
   },
   {
     "id": 155,
@@ -937,7 +1002,8 @@
     "tags": [
       "栈"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/min-stack/"
+    "leetcode_url": "https://leetcode.cn/problems/min-stack/",
+    "has_expl": false
   },
   {
     "id": 160,
@@ -951,7 +1017,8 @@
     "tags": [
       "双指针"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/intersection-two-lists/"
+    "leetcode_url": "https://leetcode.cn/problems/intersection-two-lists/",
+    "has_expl": false
   },
   {
     "id": 169,
@@ -965,7 +1032,8 @@
     "tags": [
       "Boyer-Moore 投票"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/majority-element/"
+    "leetcode_url": "https://leetcode.cn/problems/majority-element/",
+    "has_expl": false
   },
   {
     "id": 189,
@@ -979,7 +1047,8 @@
     "tags": [
       "数组技巧"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/rotate-array/"
+    "leetcode_url": "https://leetcode.cn/problems/rotate-array/",
+    "has_expl": false
   },
   {
     "id": 198,
@@ -993,7 +1062,8 @@
     "tags": [
       "DP"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/house-robber/"
+    "leetcode_url": "https://leetcode.cn/problems/house-robber/",
+    "has_expl": false
   },
   {
     "id": 199,
@@ -1008,7 +1078,8 @@
       "BFS",
       "DFS"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/right-side-view/"
+    "leetcode_url": "https://leetcode.cn/problems/right-side-view/",
+    "has_expl": false
   },
   {
     "id": 200,
@@ -1024,7 +1095,8 @@
       "BFS",
       "并查集"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/num-islands/"
+    "leetcode_url": "https://leetcode.cn/problems/num-islands/",
+    "has_expl": true
   },
   {
     "id": 206,
@@ -1038,7 +1110,8 @@
     "tags": [
       "链表基础"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/reverse-list/"
+    "leetcode_url": "https://leetcode.cn/problems/reverse-list/",
+    "has_expl": false
   },
   {
     "id": 207,
@@ -1052,7 +1125,8 @@
     "tags": [
       "拓扑排序"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/course-schedule/"
+    "leetcode_url": "https://leetcode.cn/problems/course-schedule/",
+    "has_expl": true
   },
   {
     "id": 208,
@@ -1066,7 +1140,8 @@
     "tags": [
       "字典树"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/implement-trie-prefix-tree/"
+    "leetcode_url": "https://leetcode.cn/problems/implement-trie-prefix-tree/",
+    "has_expl": false
   },
   {
     "id": 215,
@@ -1081,7 +1156,8 @@
       "堆",
       "快选"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/kth-largest/"
+    "leetcode_url": "https://leetcode.cn/problems/kth-largest/",
+    "has_expl": true
   },
   {
     "id": 226,
@@ -1095,7 +1171,8 @@
     "tags": [
       "递归"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/invert-tree/"
+    "leetcode_url": "https://leetcode.cn/problems/invert-tree/",
+    "has_expl": false
   },
   {
     "id": 230,
@@ -1109,7 +1186,8 @@
     "tags": [
       "中序"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/kth-smallest-bst/"
+    "leetcode_url": "https://leetcode.cn/problems/kth-smallest-bst/",
+    "has_expl": false
   },
   {
     "id": 234,
@@ -1123,7 +1201,8 @@
     "tags": [
       "快慢指针 + 反转"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/palindrome-list/"
+    "leetcode_url": "https://leetcode.cn/problems/palindrome-list/",
+    "has_expl": false
   },
   {
     "id": 236,
@@ -1137,7 +1216,8 @@
     "tags": [
       "递归"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/lowest-common-ancestor/"
+    "leetcode_url": "https://leetcode.cn/problems/lowest-common-ancestor/",
+    "has_expl": true
   },
   {
     "id": 238,
@@ -1151,7 +1231,8 @@
     "tags": [
       "前缀积"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/product-except-self/"
+    "leetcode_url": "https://leetcode.cn/problems/product-except-self/",
+    "has_expl": false
   },
   {
     "id": 239,
@@ -1165,7 +1246,8 @@
     "tags": [
       "单调队列"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/sliding-window-max/"
+    "leetcode_url": "https://leetcode.cn/problems/sliding-window-max/",
+    "has_expl": true
   },
   {
     "id": 240,
@@ -1179,7 +1261,8 @@
     "tags": [
       "矩阵"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/search-matrix-ii/"
+    "leetcode_url": "https://leetcode.cn/problems/search-matrix-ii/",
+    "has_expl": false
   },
   {
     "id": 279,
@@ -1194,7 +1277,8 @@
       "DP",
       "BFS"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/perfect-squares/"
+    "leetcode_url": "https://leetcode.cn/problems/perfect-squares/",
+    "has_expl": false
   },
   {
     "id": 283,
@@ -1208,7 +1292,8 @@
     "tags": [
       "双指针"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/move-zeroes/"
+    "leetcode_url": "https://leetcode.cn/problems/move-zeroes/",
+    "has_expl": false
   },
   {
     "id": 287,
@@ -1222,7 +1307,8 @@
     "tags": [
       "Floyd 链表环"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/find-duplicate/"
+    "leetcode_url": "https://leetcode.cn/problems/find-duplicate/",
+    "has_expl": false
   },
   {
     "id": 295,
@@ -1236,7 +1322,8 @@
     "tags": [
       "双堆"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/find-median-from-data-stream/"
+    "leetcode_url": "https://leetcode.cn/problems/find-median-from-data-stream/",
+    "has_expl": true
   },
   {
     "id": 300,
@@ -1251,7 +1338,8 @@
       "DP",
       "贪心+二分"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/lis/"
+    "leetcode_url": "https://leetcode.cn/problems/lis/",
+    "has_expl": true
   },
   {
     "id": 322,
@@ -1265,7 +1353,8 @@
     "tags": [
       "完全背包"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/coin-change/"
+    "leetcode_url": "https://leetcode.cn/problems/coin-change/",
+    "has_expl": true
   },
   {
     "id": 347,
@@ -1280,7 +1369,8 @@
       "堆",
       "桶排序"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/top-k-frequent/"
+    "leetcode_url": "https://leetcode.cn/problems/top-k-frequent/",
+    "has_expl": false
   },
   {
     "id": 394,
@@ -1294,7 +1384,8 @@
     "tags": [
       "栈"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/decode-string/"
+    "leetcode_url": "https://leetcode.cn/problems/decode-string/",
+    "has_expl": false
   },
   {
     "id": 416,
@@ -1308,7 +1399,8 @@
     "tags": [
       "0-1 背包"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/partition-equal-subset/"
+    "leetcode_url": "https://leetcode.cn/problems/partition-equal-subset/",
+    "has_expl": false
   },
   {
     "id": 437,
@@ -1322,7 +1414,8 @@
     "tags": [
       "前缀和 + 哈希"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/path-sum-iii/"
+    "leetcode_url": "https://leetcode.cn/problems/path-sum-iii/",
+    "has_expl": false
   },
   {
     "id": 438,
@@ -1336,7 +1429,8 @@
     "tags": [
       "滑动窗口"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/find-all-anagrams/"
+    "leetcode_url": "https://leetcode.cn/problems/find-all-anagrams/",
+    "has_expl": false
   },
   {
     "id": 543,
@@ -1350,7 +1444,8 @@
     "tags": [
       "递归"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/diameter-of-tree/"
+    "leetcode_url": "https://leetcode.cn/problems/diameter-of-tree/",
+    "has_expl": false
   },
   {
     "id": 560,
@@ -1365,7 +1460,8 @@
       "子串",
       "前缀和"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/subarray-sum-k/"
+    "leetcode_url": "https://leetcode.cn/problems/subarray-sum-k/",
+    "has_expl": true
   },
   {
     "id": 739,
@@ -1379,7 +1475,8 @@
     "tags": [
       "单调栈"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/daily-temperatures/"
+    "leetcode_url": "https://leetcode.cn/problems/daily-temperatures/",
+    "has_expl": false
   },
   {
     "id": 763,
@@ -1393,7 +1490,8 @@
     "tags": [
       "贪心"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/partition-labels/"
+    "leetcode_url": "https://leetcode.cn/problems/partition-labels/",
+    "has_expl": false
   },
   {
     "id": 994,
@@ -1407,7 +1505,8 @@
     "tags": [
       "多源 BFS"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/rotting-oranges/"
+    "leetcode_url": "https://leetcode.cn/problems/rotting-oranges/",
+    "has_expl": false
   },
   {
     "id": 1143,
@@ -1421,6 +1520,7 @@
     "tags": [
       "多维 DP"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/longest-common-subsequence/"
+    "leetcode_url": "https://leetcode.cn/problems/longest-common-subsequence/",
+    "has_expl": false
   }
 ]

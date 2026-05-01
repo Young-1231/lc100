@@ -13,5 +13,18 @@
   "doc": "🔹 直觉\n    维护两个堆:\n        lo:大顶堆(存小一半);hi:小顶堆(存大一半)。\n    保证 |lo| - |hi| ∈ {0,1}。中位数 = lo 顶 或 (lo顶+hi顶)/2。\n\n🔹 trick(Python 没大顶堆)\n    把 lo 入负值实现大顶。",
   "solutions": [],
   "raw_source": "# LC 295. 数据流的中位数 · Hard · 双堆\n\"\"\"\n🔹 直觉\n    维护两个堆:\n        lo:大顶堆(存小一半);hi:小顶堆(存大一半)。\n    保证 |lo| - |hi| ∈ {0,1}。中位数 = lo 顶 或 (lo顶+hi顶)/2。\n\n🔹 trick(Python 没大顶堆)\n    把 lo 入负值实现大顶。\n\"\"\"\nimport heapq\n\n\nclass MedianFinder:\n    def __init__(self):\n        self.lo: list[int] = []        # 大顶(存负)\n        self.hi: list[int] = []        # 小顶\n\n    def addNum(self, num: int) -> None:\n        heapq.heappush(self.lo, -num)\n        heapq.heappush(self.hi, -heapq.heappop(self.lo))\n        if len(self.hi) > len(self.lo):\n            heapq.heappush(self.lo, -heapq.heappop(self.hi))\n\n    def findMedian(self) -> float:\n        if len(self.lo) > len(self.hi):\n            return float(-self.lo[0])\n        return (-self.lo[0] + self.hi[0]) / 2\n\n\ndef _test() -> None:\n    mf = MedianFinder()\n    mf.addNum(1); mf.addNum(2)\n    assert mf.findMedian() == 1.5\n    mf.addNum(3)\n    assert mf.findMedian() == 2.0\n    print(\"✅ p295 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**双堆**:大顶堆 lo 存小一半,小顶堆 hi 存大一半。约束 `|lo| - |hi| ∈ {0, 1}`,中位数从两堆顶取。",
+    "long": [
+      "**Python 没大顶堆**:lo 存负值,push 时取负,pop 后再取负,恢复语义。",
+      "**插入流程**(三步保持平衡):1) 先 push 到 lo;2) 把 lo 的最大转移到 hi;3) 若 |hi| > |lo|,把 hi 的最小转移回 lo。",
+      "**正确性**:转移后两堆顶满足 lo.top ≤ hi.top,且大小差 ≤ 1。",
+      "**取中位数**:总数奇 → lo.top;偶 → (lo.top + hi.top) / 2。"
+    ],
+    "complexity": {
+      "time": "**O(log n)** 每次 add;**O(1)** find。",
+      "space": "**O(n)**。"
+    }
+  }
 }

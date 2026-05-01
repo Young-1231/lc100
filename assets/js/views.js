@@ -35,6 +35,14 @@ function escapeHtml(s) {
   }[c]));
 }
 
+// Inline markdown for explanation text: **bold** and `code` only.
+function escInlineMd(s) {
+  let r = escapeHtml(s);
+  r = r.replace(/`([^`]+)`/g, (_, c) => `<code>${c}</code>`);
+  r = r.replace(/\*\*([^*]+)\*\*/g, (_, c) => `<strong>${c}</strong>`);
+  return r;
+}
+
 function diffClass(d) {
   d = (d || "").toLowerCase();
   if (d.startsWith("e")) return "easy";
@@ -303,6 +311,39 @@ export async function renderProblem(id) {
             <h2>可视化 <span class="badge">${escapeHtml(data.viz.label || data.viz.type)}</span></h2>
             <div class="viz-wrap">${renderViz(data.viz)}</div>
           </section>` : ""}
+          ${data.explanation ? (() => {
+            const longDefault = location.search.includes("expl=long");
+            return `
+          <section class="detail-section" id="sec-expl">
+            <h2>💡 解题思路
+              <span class="seg-toggle" id="expl-toggle" role="tablist">
+                <button class="seg-btn ${longDefault ? "" : "active"}" data-mode="short">简洁</button>
+                <button class="seg-btn ${longDefault ? "active" : ""}" data-mode="long">详细</button>
+              </span>
+            </h2>
+            <div class="md expl-block ${longDefault ? "hidden" : ""}" id="expl-short">${
+              data.explanation.short ? `<p class="lead-line">${escInlineMd(data.explanation.short)}</p>` : ""
+            }</div>
+            <div class="md expl-block ${longDefault ? "" : "hidden"}" id="expl-long">${
+              Array.isArray(data.explanation.long)
+                ? data.explanation.long.map(p => `<p>${escInlineMd(p)}</p>`).join("")
+                : (data.explanation.long ? `<p>${escInlineMd(data.explanation.long)}</p>` : "")
+            }</div>
+          </section>`;})() : ""}
+          ${data.explanation && data.explanation.complexity ? `
+          <section class="detail-section" id="sec-complexity">
+            <h2>🧮 复杂度推导</h2>
+            <div class="complexity-grid">
+              <div class="cx-card">
+                <div class="cx-label">时间复杂度</div>
+                <div class="md">${data.explanation.complexity.time ? `<p>${escInlineMd(data.explanation.complexity.time)}</p>` : ""}</div>
+              </div>
+              <div class="cx-card">
+                <div class="cx-label">空间复杂度</div>
+                <div class="md">${data.explanation.complexity.space ? `<p>${escInlineMd(data.explanation.complexity.space)}</p>` : ""}</div>
+              </div>
+            </div>
+          </section>` : ""}
           ${hasMulti ? `
           <section class="detail-section" id="sec-solutions">
             <h2>多解法对比 <span class="badge">${sols.length} 种</span></h2>
@@ -345,12 +386,27 @@ export async function renderProblem(id) {
           <ol>
             <li><a href="#sec-doc">题面 & 直觉</a></li>
             ${data.viz ? `<li><a href="#sec-viz">可视化</a></li>` : ""}
+            ${data.explanation ? `<li><a href="#sec-expl">💡 解题思路</a></li>` : ""}
+            ${data.explanation && data.explanation.complexity ? `<li><a href="#sec-complexity">🧮 复杂度推导</a></li>` : ""}
             ${hasMulti ? `<li><a href="#sec-solutions">多解法对比</a></li>` : `<li><a href="#sec-solution">解法</a></li>`}
             <li><a href="#sec-source">完整源码</a></li>
           </ol>
         </aside>
       </div>
     </div>`;
+
+  // 解题思路 简洁/详细 切换
+  const explToggle = document.getElementById("expl-toggle");
+  if (explToggle) {
+    explToggle.addEventListener("click", e => {
+      const mode = e.target.dataset.mode;
+      if (!mode) return;
+      explToggle.querySelectorAll(".seg-btn").forEach(b =>
+        b.classList.toggle("active", b === e.target));
+      document.getElementById("expl-short").classList.toggle("hidden", mode !== "short");
+      document.getElementById("expl-long").classList.toggle("hidden", mode !== "long");
+    });
+  }
 
   // Solution tab switching
   const tabs = document.querySelectorAll(".sol-tab");

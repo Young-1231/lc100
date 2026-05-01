@@ -14,6 +14,8 @@
 | --- | --- |
 | 🧠 **100 题全覆盖** | 严格按 LeetCode 官方 Hot 100,Python 实现 |
 | 🌟 **多解法对比** | 41 道题给出 2–4 种解法,共 165+ 个解法实现 |
+| 💡 **双版本解题思路** | 36 道核心题:[简洁]命中要害 / [详细]分步推理,一键切换 |
+| 🧮 **复杂度推导** | 不只给结果,展示『为什么是 O(n)』的推导过程 |
 | 🎨 **SVG 可视化** | 链表/树/数组/滑窗/环 节点级 SVG 渲染,自适应主题 |
 | 🧪 **100% 自测通过** | 每题内嵌 `_test()`,`run_all.py` 一键全跑(0.04s) |
 | 🌗 **暗 / 亮主题** | 同步系统偏好 + 持久化(`localStorage`) |
@@ -33,6 +35,10 @@
 | 链表可视化 | 二叉树可视化 | 环形链表 |
 | --- | --- | --- |
 | ![viz-list](docs/screenshot-viz-list.png) | ![viz-tree](docs/screenshot-viz-tree.png) | ![viz-cycle](docs/screenshot-viz-cycle.png) |
+
+| 解题思路·简洁版 | 解题思路·详细版 |
+| --- | --- |
+| ![expl-short](docs/screenshot-expl-short.png) | ![expl-long](docs/screenshot-expl-long.png) |
 
 | 模式速记 | 进度面板 |
 | --- | --- |

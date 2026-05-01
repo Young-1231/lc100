@@ -22,5 +22,19 @@
     }
   ],
   "raw_source": "# LC 4. 寻找两个正序数组的中位数 · Hard · 二分\n\"\"\"\n🔹 题面\n    O(log min(m,n)) 求两个升序数组合并后的中位数。\n\n🔹 直觉(短数组上二分切分点)\n    把两数组各切一刀,左半总长 = (m+n+1)//2。\n    设 i 为短数组的左半长度,j = 总左半长度 - i。\n    要求 max(left) ≤ min(right) 即可:\n        A[i-1] ≤ B[j]   且   B[j-1] ≤ A[i]\n    若 A[i-1] > B[j],i 太大,r = i - 1;反之 l = i + 1。\n\n🔹 复杂度 O(log min(m,n))\n\"\"\"\n\n\nclass Solution:\n    def findMedianSortedArrays(self, a: list[int], b: list[int]) -> float:\n        if len(a) > len(b):\n            a, b = b, a\n        m, n = len(a), len(b)\n        half = (m + n + 1) // 2\n        l, r = 0, m\n        INF = float(\"inf\")\n        while l <= r:\n            i = (l + r) // 2\n            j = half - i\n            aL = a[i - 1] if i > 0 else -INF\n            aR = a[i] if i < m else INF\n            bL = b[j - 1] if j > 0 else -INF\n            bR = b[j] if j < n else INF\n            if aL <= bR and bL <= aR:\n                if (m + n) & 1:\n                    return float(max(aL, bL))\n                return (max(aL, bL) + min(aR, bR)) / 2\n            if aL > bR:\n                r = i - 1\n            else:\n                l = i + 1\n        return 0.0\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.findMedianSortedArrays([1, 3], [2]) == 2.0\n    assert s.findMedianSortedArrays([1, 2], [3, 4]) == 2.5\n    assert s.findMedianSortedArrays([], [1]) == 1.0\n    assert s.findMedianSortedArrays([2], []) == 2.0\n    print(\"✅ p004 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**在短数组上二分切分位置**,使左半总长 = (m+n+1)/2 且 max(left) ≤ min(right)。O(log min(m,n))。",
+    "long": [
+      "**目标**:把两个有序数组各切一刀,使左半总长固定,且左半最大 ≤ 右半最小。",
+      "**变量**:i = 短数组左半长度(0..m),j = (m+n+1)/2 - i。在 i 上二分。",
+      "**判断**:取 aL = a[i-1] / aR = a[i] / bL = b[j-1] / bR = b[j](越界用 ±∞)。需要 aL ≤ bR 且 bL ≤ aR。",
+      "**收缩**:aL > bR 说明 i 太大,r = i-1;反之 l = i+1。",
+      "**结果**:奇数总长答案 = max(aL, bL);偶数 = (max(aL,bL) + min(aR,bR)) / 2。"
+    ],
+    "complexity": {
+      "time": "**O(log min(m, n))** —— 在短数组上二分。",
+      "space": "**O(1)**。"
+    }
+  }
 }

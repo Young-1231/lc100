@@ -304,6 +304,12 @@ def main() -> None:
     sols_dir = dst / "solutions"
     sols_dir.mkdir(parents=True, exist_ok=True)
 
+    # 读取手写双版本思路 + 复杂度推导
+    expl_path = dst / "data" / "explanations.json"
+    explanations: dict[str, dict] = {}
+    if expl_path.exists():
+        explanations = json.loads(expl_path.read_text(encoding="utf-8"))
+
     all_problems: list[dict[str, Any]] = []
     days: dict[int, dict[str, Any]] = {}
 
@@ -315,6 +321,10 @@ def main() -> None:
         day_problems: list[int] = []
         for py in sorted(day_path.glob("p*.py")):
             data = parse_problem(py, day_idx, day_title)
+            # 合并手写解释
+            expl = explanations.get(str(data["id"]))
+            if expl and not str(expl.get("short", "")).startswith("_"):
+                data["explanation"] = expl
             (problems_dir / f"p{data['id']:04d}.json").write_text(
                 json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
             )
@@ -331,6 +341,7 @@ def main() -> None:
                 "n_sols": len(data["solutions"]),
                 "tags": data["tags"],
                 "leetcode_url": data["leetcode_url"],
+                "has_expl": "explanation" in data,
             })
             day_problems.append(data["id"])
         days[day_idx] = {

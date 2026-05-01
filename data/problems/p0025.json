@@ -40,5 +40,18 @@
       5
     ],
     "label": "K=2 翻转前"
+  },
+  "explanation": {
+    "short": "哨兵 + 段前驱 group_prev。先看后面是否够 K 个,**够则反转 [group_prev.next, kth] 区间**,然后接回。",
+    "long": [
+      "**为什么要哨兵?** 头节点可能也参与翻转,有 dummy 才统一处理。",
+      "**先探后翻**:从 group_prev 走 K 步,如果走不满直接收工返回;走满则得到 kth(段尾)。",
+      "**反转区间**:经典 prev/cur 三指针,但 prev 初始为 group_next(段尾的下一个)而不是 None,这样反转完成后 head 自然接到下段。",
+      "**接回**:旧的段头 `group_prev.next` 反转后变成新段尾,把它记下;`group_prev.next = kth`(新段头),`group_prev = 旧段头`(下次的前驱)。"
+    ],
+    "complexity": {
+      "time": "**O(n)** —— 每个节点至多被访问 2 次(探+翻)。",
+      "space": "**O(1)** —— 迭代版本不需要递归栈。"
+    }
   }
 }

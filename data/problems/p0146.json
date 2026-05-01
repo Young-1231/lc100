@@ -22,5 +22,19 @@
       1
     ],
     "label": "LRU(头最新)"
+  },
+  "explanation": {
+    "short": "**哈希 + 双向链表**:dict 给 O(1) 定位节点,链表给 O(1) 移动到头/尾。命中或写入移头,超容量删尾。",
+    "long": [
+      "**为什么不用 OrderedDict?** 学考点。手撕双向链表才显示数据结构功底。",
+      "**节点结构**:`{key, val, prev, next}`,key 也存以便淘汰时反查 dict。",
+      "**两个哑节点**:head 和 tail,简化『首/尾插入』的边界条件,所有真节点都在 head 和 tail 之间。",
+      "**get(k)**:dict 命中后 _remove + _add 把节点搬到 head 之后(标记最近使用)。",
+      "**put(k, v)**:存在则更新值并移头;不存在,容量满时先 _remove tail.prev 并 del dict[那个 key],再 _add 新节点。"
+    ],
+    "complexity": {
+      "time": "**O(1)** —— get/put 均摊 O(1)。",
+      "space": "**O(capacity)** —— dict 和链表节点都受 cap 上限。"
+    }
   }
 }

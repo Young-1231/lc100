@@ -30,5 +30,18 @@
     }
   ],
   "raw_source": "# LC 49. 字母异位词分组 · Medium · 哈希\n\"\"\"\n🔹 题面\n    把字符串数组按字母异位词分组。\n\n🔹 解法对比\n    | 方法                  | 时间          | 空间   | 备注                       |\n    |-----------------------|---------------|--------|----------------------------|\n    | 排序作 key            | O(n·k log k)  | O(n·k) | 简洁,普适(支持任意字符)|\n    | 计数元组作 key ★     | O(n·k)        | O(n·k) | 仅小写字母时更快            |\n\n    n=字符串数,k=字符串平均长度。\n\n🔹 直觉\n    异位词 ≡ 排序后字符串相同 ≡ 字符计数元组相同。让\"特征\"做哈希键。\n\n🔹 踩坑\n    - tuple(count) 作 key:list 不可哈希。\n\"\"\"\nfrom collections import defaultdict\n\n\nclass Solution:\n    # 解法 1:排序作 key — O(n·k log k)\n    def groupAnagrams_sort(self, strs: list[str]) -> list[list[str]]:\n        bucket: dict[str, list[str]] = defaultdict(list)\n        for s in strs:\n            bucket[\"\".join(sorted(s))].append(s)\n        return list(bucket.values())\n\n    # 解法 2:计数元组作 key ★  — O(n·k)\n    def groupAnagrams(self, strs: list[str]) -> list[list[str]]:\n        bucket: dict[tuple, list[str]] = defaultdict(list)\n        for s in strs:\n            cnt = [0] * 26\n            for c in s:\n                cnt[ord(c) - 97] += 1\n            bucket[tuple(cnt)].append(s)\n        return list(bucket.values())\n\n\ndef _norm(out):\n    return sorted(sorted(g) for g in out)\n\n\ndef _test() -> None:\n    s = Solution()\n    arg = [\"eat\", \"tea\", \"tan\", \"ate\", \"nat\", \"bat\"]\n    want = [[\"bat\"], [\"nat\", \"tan\"], [\"ate\", \"eat\", \"tea\"]]\n    for fn in (s.groupAnagrams, s.groupAnagrams_sort):\n        assert _norm(fn(arg)) == _norm(want)\n    assert s.groupAnagrams([\"\"]) == [[\"\"]]\n    print(\"✅ p049 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "异位词 ⟺ 字符计数元组相同。把『计数元组』作 dict key 即可一次分组。",
+    "long": [
+      "**指纹思想**:两个串是异位词 ⟺ 它们的字符多重集相等 ⟺ 排序后相同 ⟺ 26 维计数向量相同。",
+      "**两种 key**:1) 排序后字符串(O(k log k));2) 长度 26 的计数 tuple(O(k))。",
+      "**为什么用 tuple 不用 list?** dict 的 key 必须可哈希,list 不可哈希。",
+      "**实现**:`defaultdict(list)` 简化分组写入。"
+    ],
+    "complexity": {
+      "time": "**O(n · k)** —— n 个字符串,每个长度 k,计数法每串扫一遍 O(k)。排序法多个 log k 因子。",
+      "space": "**O(n · k)** —— 存储所有字符串引用 + 哈希 key。"
+    }
+  }
 }

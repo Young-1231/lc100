@@ -52,5 +52,18 @@
       6
     ],
     "label": "K=3 合并"
+  },
+  "explanation": {
+    "short": "**小顶堆**取最小,O(N log K);或**分治两两归并**,T(N) = 2T(N/2) + O(N) = O(N log K)。",
+    "long": [
+      "**朴素**:顺次合并 K 次,时间 O(NK)(每次 N 元素被反复扫)。",
+      "**小顶堆**:把 K 个链表头入堆,每次弹出最小并把其 next 推入。每个节点入/出堆各一次,堆操作 O(log K)。",
+      "**Python heapq 陷阱**:ListNode 不可比较,入堆元组 `(val, idx, node)`,idx 唯一防 tie。",
+      "**分治**:把 K 个链表分两半各自归并,再合并两个有序链表 O(N)。共 log K 层,每层总扫 N。"
+    ],
+    "complexity": {
+      "time": "**O(N log K)** —— 堆和分治都达到此下界。",
+      "space": "**O(K)** 堆 / **O(log K)** 分治递归栈。"
+    }
   }
 }

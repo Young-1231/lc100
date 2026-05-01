@@ -40,5 +40,18 @@
     }
   ],
   "raw_source": "# LC 5. 最长回文子串 · Medium · 中心扩展 / DP / Manacher\n\"\"\"\n🔹 解法对比\n    | 方法            | 时间   | 空间   | 备注                                  |\n    |-----------------|--------|--------|---------------------------------------|\n    | DP              | O(n²)  | O(n²)  | f[i][j] = f[i+1][j-1] && s[i]==s[j]   |\n    | 中心扩展 ★     | O(n²)  | O(1)   | 面试默写,常数小                       |\n    | Manacher        | O(n)   | O(n)   | 极致最优;实现细节多                  |\n\"\"\"\n\n\nclass Solution:\n    # 解法 1:中心扩展 ★ — O(n²) / O(1)\n    def longestPalindrome(self, s: str) -> str:\n        if not s:\n            return \"\"\n\n        def expand(l, r):\n            while l >= 0 and r < len(s) and s[l] == s[r]:\n                l -= 1; r += 1\n            return l + 1, r - 1\n\n        bl, br = 0, 0\n        for i in range(len(s)):\n            for l0, r0 in (expand(i, i), expand(i, i + 1)):\n                if r0 - l0 > br - bl:\n                    bl, br = l0, r0\n        return s[bl:br + 1]\n\n    # 解法 2:DP — O(n²) / O(n²)\n    def longestPalindrome_dp(self, s: str) -> str:\n        n = len(s)\n        if n < 2:\n            return s\n        f = [[False] * n for _ in range(n)]\n        for i in range(n):\n            f[i][i] = True\n        bl, blen = 0, 1\n        for L in range(2, n + 1):\n            for i in range(n - L + 1):\n                j = i + L - 1\n                if s[i] != s[j]:\n                    continue\n                if L == 2 or f[i + 1][j - 1]:\n                    f[i][j] = True\n                    if L > blen:\n                        bl, blen = i, L\n        return s[bl:bl + blen]\n\n    # 解法 3:Manacher — O(n) / O(n)\n    def longestPalindrome_manacher(self, s: str) -> str:\n        if not s:\n            return \"\"\n        t = \"^#\" + \"#\".join(s) + \"#$\"\n        n = len(t)\n        p = [0] * n\n        c = r = 0\n        for i in range(1, n - 1):\n            mirror = 2 * c - i\n            if i < r:\n                p[i] = min(r - i, p[mirror])\n            while t[i + p[i] + 1] == t[i - p[i] - 1]:\n                p[i] += 1\n            if i + p[i] > r:\n                c, r = i, i + p[i]\n        max_i = max(range(n), key=lambda i: p[i])\n        start = (max_i - p[max_i]) // 2\n        return s[start:start + p[max_i]]\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        (\"babad\", (\"bab\", \"aba\")),\n        (\"cbbd\", (\"bb\",)),\n        (\"a\", (\"a\",)),\n        (\"ac\", (\"a\", \"c\")),\n    ]\n    for arg, wants in cases:\n        for fn in (s.longestPalindrome, s.longestPalindrome_dp, s.longestPalindrome_manacher):\n            got = fn(arg)\n            assert got in wants, f\"{fn.__name__}({arg}) -> {got}\"\n    print(\"✅ p005 通过 3 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**中心扩展**最简洁:枚举每个『中心』(奇 1 个 / 偶 2 个),向两侧扩展。Manacher O(n) 是炫技款。",
+    "long": [
+      "**奇偶两种中心**:奇长度 'aba' 中心是 1 个字符;偶长度 'abba' 中心是 2 个字符。每个 i 都尝试两种。",
+      "**扩展函数**:`while l>=0 and r<n and s[l]==s[r]: l--; r++;` 退出后实际边界 [l+1, r-1]。",
+      "**记录答案**:每次扩展后比较长度更新 best_l, best_r。",
+      "**Manacher 思路**:在每两字符间插 # 把奇偶统一;维护中心 c 和右边界 r,利用对称性快速跳过部分位置。"
+    ],
+    "complexity": {
+      "time": "**O(n²)** 中心扩展 / **O(n)** Manacher。",
+      "space": "**O(1)** / **O(n)**。"
+    }
+  }
 }

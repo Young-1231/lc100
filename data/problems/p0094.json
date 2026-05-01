@@ -47,5 +47,18 @@
       3
     ],
     "label": "示例"
+  },
+  "explanation": {
+    "short": "迭代:**一路向左压栈,弹栈访问,转向右子树**。Morris 用临时线索把空间降到 O(1)。",
+    "long": [
+      "**迭代框架**:`while cur or stack:` 内层 `while cur: stack.append(cur); cur = cur.left`(走到最左);弹栈 + 访问 + `cur = cur.right`。",
+      "**Morris 思想**:对每个有左子树的节点,把它的『前驱』(左子树中最右节点)的 right 临时指向自己,形成线索。",
+      "**Morris 流程**:`cur` 非空时,若有左:找前驱,前驱.right == None 则建线索往左走;否则线索已存在(说明左子树访问完),拆线索 + 访问 + 往右。无左:直接访问 + 往右。",
+      "**Morris 正确性**:每条边最多被建/拆一次,所以总操作 O(n)。"
+    ],
+    "complexity": {
+      "time": "**O(n)** —— 每个节点访问常数次。",
+      "space": "**O(h)** 迭代栈 / **O(1)** Morris(树本身被临时改)。"
+    }
   }
 }

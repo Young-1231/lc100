@@ -39,5 +39,18 @@
     }
   ],
   "raw_source": "# LC 215. 数组中的第 K 个最大元素 · Medium · 堆 / 快选\n\"\"\"\n🔹 解法对比\n    | 方法                | 时间(平均) | 空间       | 备注                       |\n    |---------------------|--------------|------------|----------------------------|\n    | 排序                | O(n log n)   | O(1) 原地  | 最简单                     |\n    | 小顶堆 维持大小 K ★| O(n log k)   | O(k)       | 大数据流首选(在线)       |\n    | 快速选择            | O(n) 期望    | O(log n) 栈| 最优期望;最坏 O(n²)       |\n\"\"\"\nimport heapq\nimport random\n\n\nclass Solution:\n    # 解法 1:排序 — O(n log n)\n    def findKthLargest_sort(self, nums: list[int], k: int) -> int:\n        return sorted(nums)[-k]\n\n    # 解法 2:小顶堆 ★ — O(n log k)\n    def findKthLargest(self, nums: list[int], k: int) -> int:\n        h: list[int] = []\n        for x in nums:\n            heapq.heappush(h, x)\n            if len(h) > k:\n                heapq.heappop(h)\n        return h[0]\n\n    # 解法 3:快速选择 — O(n) 平均\n    def findKthLargest_quick(self, nums: list[int], k: int) -> int:\n        nums = nums[:]\n        target = len(nums) - k\n\n        def partition(l, r):\n            p = random.randint(l, r)\n            nums[p], nums[r] = nums[r], nums[p]\n            pivot = nums[r]\n            store = l\n            for i in range(l, r):\n                if nums[i] < pivot:\n                    nums[store], nums[i] = nums[i], nums[store]\n                    store += 1\n            nums[store], nums[r] = nums[r], nums[store]\n            return store\n\n        l, r = 0, len(nums) - 1\n        while True:\n            p = partition(l, r)\n            if p == target:\n                return nums[p]\n            if p < target:\n                l = p + 1\n            else:\n                r = p - 1\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        (([3, 2, 1, 5, 6, 4], 2), 5),\n        (([3, 2, 3, 1, 2, 4, 5, 5, 6], 4), 4),\n        (([1], 1), 1),\n    ]\n    for args, want in cases:\n        for fn in (s.findKthLargest, s.findKthLargest_sort, s.findKthLargest_quick):\n            assert fn(*args) == want\n    print(\"✅ p215 通过 3 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "三种递进:**排序 O(n log n)** → **小顶堆维持大小 K, O(n log K)** → **快速选择 O(n) 期望**。",
+    "long": [
+      "**小顶堆做法**:堆内永远只留『目前最大的 K 个』,堆顶就是其中最小的(也即第 K 大候选)。每来新元素,push 后若 size > k,pop 一次。",
+      "**快速选择**:像 quicksort 但只递归含目标的那一半。随机选 pivot 把数组分成 < / = / > 三段,看目标下标在哪一段。",
+      "**为什么 O(n) 期望?** T(n) = T(n/2) + O(n) → O(n)。最坏 O(n²) 但随机 pivot 几乎不会触发。",
+      "**面试选择**:数据流场景用堆;一次性查询用快选。"
+    ],
+    "complexity": {
+      "time": "排序 **O(n log n)** / 堆 **O(n log K)** / 快选 **O(n) 期望**, **O(n²) 最坏**。",
+      "space": "**O(K)** / **O(log n)** 快选递归栈。"
+    }
+  }
 }

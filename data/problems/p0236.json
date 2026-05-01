@@ -38,5 +38,18 @@
       4
     ],
     "label": "LCA 示例"
+  },
+  "explanation": {
+    "short": "后序:每节点问『左右子树各自找到了 p 还是 q』。**两边都找到 → 当前是 LCA;只一边 → 把那边返回上去**。",
+    "long": [
+      "**递归签名**:返回『以当前 root 为根的子树中,p/q 第一次同时被囊括的祖先』(若只囊括其一,则返回那一个)。",
+      "**终止**:`root is None / root is p / root is q` 直接返回 root。",
+      "**分情况**:`l, r = recurse(left), recurse(right)`。`l and r` → root 是 LCA;只 l → 答案在左;只 r → 答案在右。",
+      "**正确性**:p 和 q 都存在于树中是题目保证,所以一定能在某个节点处『左右各一个』。"
+    ],
+    "complexity": {
+      "time": "**O(n)**。",
+      "space": "**O(h)** 递归栈。"
+    }
   }
 }

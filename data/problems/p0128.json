@@ -22,5 +22,18 @@
     }
   ],
   "raw_source": "# LC 128. 最长连续序列 · Medium · 哈希\n\"\"\"\n🔹 题面\n    O(n) 找出未排序数组中最长连续元素序列长度。\n\n🔹 直觉\n    将数组扔进 set。只从\"序列起点\"出发计数(x-1 不在 set 中),保证每个元素最多被\n    访问 2 次,均摊 O(n)。\n\n🔹 复杂度  O(n) / O(n)\n\n🔹 踩坑\n    - 必须先判断 x-1 not in S,否则 O(n²)。\n    - 重复元素 set 自动去重,无需特别处理。\n\"\"\"\n\n\nclass Solution:\n    def longestConsecutive(self, nums: list[int]) -> int:\n        S = set(nums)\n        best = 0\n        for x in S:\n            if x - 1 in S:\n                continue            # 不是序列起点,跳过\n            y = x\n            while y + 1 in S:\n                y += 1\n            best = max(best, y - x + 1)\n        return best\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.longestConsecutive([100, 4, 200, 1, 3, 2]) == 4\n    assert s.longestConsecutive([0, 3, 7, 2, 5, 8, 4, 6, 0, 1]) == 9\n    assert s.longestConsecutive([]) == 0\n    print(\"✅ p128 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "把数组扔进 set,**只让序列起点启动 while 扩展**(起点定义:x-1 不在 set 中),保证每个数最多被访问 2 次。",
+    "long": [
+      "**为何 O(n)?** 关键剪枝:若 x-1 已经在 set 里,x 就不是序列起点,跳过它(它会被某个起点包进自己的 while 里)。",
+      "**正确性**:每个数恰好属于一个连续序列,且只会从该序列的最小值起一次扩展,所以总操作 ≤ 2n。",
+      "**陷阱**:必须先 `set(nums)`,在 list 上 `in` 查询是 O(n)。",
+      "**举例**:`[100,4,200,1,3,2]` → set={100,4,200,1,3,2}。只有 1 和 100 和 200 是起点,从 1 扩展出 1→2→3→4 长度 4。"
+    ],
+    "complexity": {
+      "time": "**O(n)** —— 见上方均摊分析。",
+      "space": "**O(n)** —— set 存所有元素。"
+    }
+  }
 }
