@@ -22,5 +22,18 @@
     }
   ],
   "raw_source": "# LC 763. 划分字母区间 · Medium · 贪心\n\"\"\"\n🔹 题面\n    把 s 划分尽量多的片段,要求同一字母只出现在一个片段里。\n\n🔹 直觉\n    预处理每个字母的最远下标 last[c]。扫描时维护当前段右界 end:\n        end = max(end, last[s[i]])\n    i == end 时收一段。\n\"\"\"\n\n\nclass Solution:\n    def partitionLabels(self, s: str) -> list[int]:\n        last = {c: i for i, c in enumerate(s)}\n        ans, start, end = [], 0, 0\n        for i, c in enumerate(s):\n            end = max(end, last[c])\n            if i == end:\n                ans.append(end - start + 1)\n                start = i + 1\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.partitionLabels(\"ababcbacadefegdehijhklij\") == [9, 7, 8]\n    assert s.partitionLabels(\"eccbbbbdec\") == [10]\n    print(\"✅ p763 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**预处理每个字母的最远下标**;扫描时维护当前段右界 end,i==end 时切一段。",
+    "long": [
+      "**关键观察**:如果某字母在区间内最后一次出现在 last[c],那么这一段必须延伸到 ≥ last[c]。",
+      "**预处理**:扫一遍记录 last = {字符: 最后下标}。",
+      "**主循环**:扫 i,end = max(end, last[s[i]]);若 i == end 则当前段结束,长度 = end - start + 1。",
+      "**贪心正确性**:每段都拉到必须的最远点,既不会撒漏字符也不会过度合并。"
+    ],
+    "complexity": {
+      "time": "**O(n)**。",
+      "space": "**O(|Σ|)**。"
+    }
+  }
 }

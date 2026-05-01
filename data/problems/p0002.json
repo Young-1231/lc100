@@ -30,5 +30,18 @@
       3
     ],
     "label": "342(低位在前)"
+  },
+  "explanation": {
+    "short": "**逐位相加 + 进位**:像列竖式那样模拟,carry 跨位传递。",
+    "long": [
+      "**链表低位在前**:`243` 存为 `2 → 4 → 3`,正好对应『从个位到高位』的加法顺序。",
+      "**循环条件**:`while l1 or l2 or carry`,三者都没了才停,处理两条链长度不一致 + 末尾还有进位的情况。",
+      "**单步**:`s = (l1.val if l1 else 0) + (l2.val if l2 else 0) + carry; carry, d = divmod(s, 10)`。",
+      "**dummy 哑头**:简化首节点边界,最后返回 dummy.next。"
+    ],
+    "complexity": {
+      "time": "**O(max(m, n))**。",
+      "space": "**O(max(m, n))** —— 输出链表。"
+    }
   }
 }

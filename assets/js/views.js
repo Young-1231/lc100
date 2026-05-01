@@ -194,24 +194,39 @@ export async function renderAll() {
       <div class="prob-list" id="prob-list"></div>
     </div>`;
 
-  const state = { q: "", diff: "all", day: "all", st: "all" };
+  // 支持 URL ?q=xxx 预填搜索(便于分享/书签 + 测试)
+  const urlQ = new URLSearchParams(location.search).get("q") || "";
+  const state = { q: urlQ, diff: "all", day: "all", st: "all" };
+  if (urlQ) document.getElementById("search").value = urlQ;
 
   function apply() {
     let v = list.slice();
+    const snippetMap = new Map();
     if (state.q) {
       const q = state.q.toLowerCase();
-      v = v.filter(p =>
-        String(p.id).includes(q) ||
-        p.title.toLowerCase().includes(q) ||
-        (p.tags || []).some(t => t.toLowerCase().includes(q)) ||
-        (p.category || "").toLowerCase().includes(q)
-      );
+      v = v.filter(p => {
+        if (String(p.id).includes(q)) return true;
+        const blob = p.search || (p.title + " " + (p.tags || []).join(" ")).toLowerCase();
+        const idx = blob.indexOf(q);
+        if (idx < 0) return false;
+        // 抽取上下文片段(标题命中不显示,改为正文片段)
+        const titleHit = p.title.toLowerCase().includes(q);
+        if (!titleHit) {
+          const start = Math.max(0, idx - 30);
+          const end = Math.min(blob.length, idx + q.length + 60);
+          const before = (start > 0 ? "…" : "") + escapeHtml(blob.slice(start, idx));
+          const hit = `<mark>${escapeHtml(blob.slice(idx, idx + q.length))}</mark>`;
+          const after = escapeHtml(blob.slice(idx + q.length, end)) + (end < blob.length ? "…" : "");
+          snippetMap.set(p.id, before + hit + after);
+        }
+        return true;
+      });
     }
     if (state.diff !== "all") v = v.filter(p => diffClass(p.difficulty) === state.diff);
     if (state.day !== "all")  v = v.filter(p => p.day === Number(state.day));
     if (state.st === "done")  v = v.filter(p => progress.isDone(p.id));
     if (state.st === "todo")  v = v.filter(p => !progress.isDone(p.id));
-    renderProblemList(document.getElementById("prob-list"), v);
+    renderProblemList(document.getElementById("prob-list"), v, snippetMap);
   }
 
   document.getElementById("search").oninput = e => { state.q = e.target.value; apply(); };
@@ -236,7 +251,7 @@ export async function renderAll() {
   apply();
 }
 
-function renderProblemList(container, items) {
+function renderProblemList(container, items, snippetMap) {
   if (!items.length) {
     container.innerHTML = `<div class="empty">没有匹配的题目。</div>`;
     return;
@@ -244,11 +259,20 @@ function renderProblemList(container, items) {
   container.innerHTML = "";
   for (const p of items) {
     const done = progress.isDone(p.id);
+    const rating = progress.getRating(p.id);
+    const snippet = snippetMap && snippetMap.get(p.id);
+    const ratingHtml = rating ? `<span class="row-rating" title="自评 ${rating} 星">${"★".repeat(rating)}</span>` : "";
     const row = el(`
-      <a class="prob-row ${done ? "done" : ""}" href="#/p/${p.id}">
+      <a class="prob-row ${done ? "done" : ""} ${snippet ? "with-snippet" : ""}" href="#/p/${p.id}">
         <div class="prob-check ${done ? "checked" : ""}" data-id="${p.id}">${SVG_CHECK}</div>
         <div class="prob-num">#${p.id}</div>
-        <div class="prob-title">${escapeHtml(p.title)} ${p.n_sols >= 2 ? `<span class="star" title="${p.n_sols} 种解法">★ ${p.n_sols} 解法</span>` : ""}</div>
+        <div class="prob-title-wrap">
+          <div class="prob-title">${escapeHtml(p.title)}
+            ${p.n_sols >= 2 ? `<span class="star" title="${p.n_sols} 种解法">★ ${p.n_sols} 解法</span>` : ""}
+            ${ratingHtml}
+          </div>
+          ${snippet ? `<div class="prob-snippet">${snippet}</div>` : ""}
+        </div>
         <span class="diff ${diffClass(p.difficulty)}">${escapeHtml(p.difficulty)}</span>
         <div class="prob-cat">${escapeHtml(p.category || "")}</div>
         <div class="prob-day">Day ${p.day}</div>
@@ -380,6 +404,23 @@ export async function renderProblem(id) {
             <h2>完整源码 <span class="badge">${escapeHtml(data.filename)}</span></h2>
             ${codeBlock(data.raw_source, "python", true)}
           </section>
+          <section class="detail-section" id="sec-personal">
+            <h2>📝 我的笔记 & 难度自评</h2>
+            <div class="personal-grid">
+              <div class="rating-card">
+                <div class="cx-label">难度自评(对你而言)</div>
+                <div class="rating-stars" id="rating-stars" data-current="${progress.getRating(id)}">
+                  ${[1,2,3,4,5].map(n => `<button class="star-btn" data-val="${n}" aria-label="${n} 星">★</button>`).join("")}
+                  <button class="star-clear" id="rating-clear" title="清除评分">×</button>
+                </div>
+                <div class="rating-hint">1=随手 / 2=轻松 / 3=中等 / 4=费劲 / 5=Hard 待复习</div>
+              </div>
+              <div class="note-card">
+                <div class="cx-label">我的笔记 <span style="float:right;color:var(--text-mute);font-weight:400;font-size:11px" id="note-status"></span></div>
+                <textarea id="note-area" placeholder="写下错题、思路卡点、复习计划… 自动保存到本机浏览器。">${escapeHtml(progress.getNote(id))}</textarea>
+              </div>
+            </div>
+          </section>
         </article>
         <aside class="toc">
           <div class="toc-title">本页目录</div>
@@ -390,10 +431,50 @@ export async function renderProblem(id) {
             ${data.explanation && data.explanation.complexity ? `<li><a href="#sec-complexity">🧮 复杂度推导</a></li>` : ""}
             ${hasMulti ? `<li><a href="#sec-solutions">多解法对比</a></li>` : `<li><a href="#sec-solution">解法</a></li>`}
             <li><a href="#sec-source">完整源码</a></li>
+            <li><a href="#sec-personal">📝 笔记 & 自评</a></li>
           </ol>
         </aside>
       </div>
     </div>`;
+
+  // 难度自评 & 笔记
+  const stars = document.getElementById("rating-stars");
+  if (stars) {
+    function paint(cur) {
+      stars.dataset.current = cur;
+      [...stars.querySelectorAll(".star-btn")].forEach(b => {
+        b.classList.toggle("filled", Number(b.dataset.val) <= cur);
+      });
+    }
+    paint(progress.getRating(id));
+    stars.addEventListener("click", e => {
+      if (e.target.classList.contains("star-btn")) {
+        const v = Number(e.target.dataset.val);
+        progress.setRating(id, v);
+        paint(v);
+      }
+      if (e.target.id === "rating-clear") {
+        progress.setRating(id, 0);
+        paint(0);
+      }
+    });
+  }
+  const note = document.getElementById("note-area");
+  const noteStatus = document.getElementById("note-status");
+  if (note) {
+    let timer;
+    note.addEventListener("input", () => {
+      if (noteStatus) noteStatus.textContent = "正在保存…";
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        progress.setNote(id, note.value);
+        if (noteStatus) {
+          noteStatus.textContent = "已保存 ✓";
+          setTimeout(() => noteStatus.textContent = "", 1200);
+        }
+      }, 350);
+    });
+  }
 
   // 解题思路 简洁/详细 切换
   const explToggle = document.getElementById("expl-toggle");
@@ -520,16 +601,63 @@ export async function renderProgress() {
       <div class="progress-grid">${dayCards}</div>
       <h2 class="section-title">按难度</h2>
       <div class="progress-grid">${diffCards}</div>
-      <div style="margin:48px 0;text-align:center">
-        <button class="pill" id="reset-btn">重置全部进度</button>
+      <h2 class="section-title">我的难度自评分布</h2>
+      <div class="rating-dist" id="rating-dist"></div>
+      <div style="margin:48px 0;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button class="pill" id="export-btn">📦 导出进度 JSON</button>
+        <button class="pill" id="import-btn">📥 导入进度 JSON</button>
+        <input type="file" id="import-file" accept="application/json" style="display:none">
+        <button class="pill" id="reset-btn" style="color:var(--hard);border-color:var(--hard)">⚠ 重置全部进度</button>
       </div>
     </div>`;
 
+  // 评分分布柱状图
+  const dist = progress.ratingDistribution();      // [unrated, ★, ★★, ★★★, ★★★★, ★★★★★]
+  const distEl = document.getElementById("rating-dist");
+  const maxN = Math.max(1, ...dist.slice(1));
+  distEl.innerHTML = [1, 2, 3, 4, 5].map(r => {
+    const n = dist[r];
+    const pct = Math.round(n / maxN * 100);
+    return `
+      <div class="dist-row">
+        <div class="dist-label">${"★".repeat(r)}<span class="dist-faint">${"★".repeat(5 - r)}</span></div>
+        <div class="dist-bar"><div class="dist-fill" style="width:${pct}%"></div></div>
+        <div class="dist-count">${n}</div>
+      </div>`;
+  }).join("");
+
   document.getElementById("reset-btn").addEventListener("click", () => {
-    if (confirm("确定要重置全部进度?此操作不可撤销。")) {
+    if (confirm("确定要重置全部进度(完成 / 评分 / 笔记)?此操作不可撤销。")) {
       progress.reset();
       renderProgress();
     }
+  });
+  document.getElementById("export-btn").addEventListener("click", () => {
+    const blob = new Blob([progress.export()], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `lc100-progress-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+  document.getElementById("import-btn").addEventListener("click", () => {
+    document.getElementById("import-file").click();
+  });
+  document.getElementById("import-file").addEventListener("change", e => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        progress.import(ev.target.result);
+        alert("✅ 导入成功!");
+        renderProgress();
+      } catch (err) {
+        alert("❌ 导入失败:" + err.message);
+      }
+    };
+    reader.readAsText(f);
   });
 }
 

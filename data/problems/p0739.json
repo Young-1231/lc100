@@ -22,5 +22,18 @@
     }
   ],
   "raw_source": "# LC 739. 每日温度 · Medium · 单调栈\n\"\"\"\n🔹 题面\n    返回每天距下一个更高温度的天数。\n\n🔹 直觉\n    维护\"温度递减\"的下标栈。新的更高温度时,把栈中所有 ≤ 它的弹出,\n    并填它们的答案。\n\"\"\"\n\n\nclass Solution:\n    def dailyTemperatures(self, t: list[int]) -> list[int]:\n        n = len(t)\n        ans = [0] * n\n        st: list[int] = []\n        for i, x in enumerate(t):\n            while st and t[st[-1]] < x:\n                j = st.pop()\n                ans[j] = i - j\n            st.append(i)\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.dailyTemperatures([73, 74, 75, 71, 69, 72, 76, 73]) == [1, 1, 4, 2, 1, 1, 0, 0]\n    assert s.dailyTemperatures([30, 40, 50, 60]) == [1, 1, 1, 0]\n    assert s.dailyTemperatures([30, 60, 90]) == [1, 1, 0]\n    print(\"✅ p739 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**单调递减栈存下标**:新温度大于栈顶则弹出并填它的答案。",
+    "long": [
+      "**单调栈选型**:求『右边第一个比我大的』→ 维护单调递减栈。",
+      "**算法**:扫到 i,while 栈顶元素温度 < t[i],弹出 j,ans[j] = i - j;然后 i 入栈。",
+      "**最终**:扫完后栈中剩下的元素表示『没有更高温度』,ans 默认 0 即正确。",
+      "**复杂度均摊**:每个下标入/出栈各 1 次。"
+    ],
+    "complexity": {
+      "time": "**O(n)**。",
+      "space": "**O(n)**。"
+    }
+  }
 }

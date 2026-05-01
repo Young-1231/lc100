@@ -48,5 +48,18 @@
       3,
       4
     ]
+  },
+  "explanation": {
+    "short": "**BFS 取每层最后一个**;或 **DFS 先右后左**,每层第一次访问即右视图。",
+    "long": [
+      "**BFS 写法**:`for i in range(sz): if i == sz-1: append(n.val)`,直观清晰。",
+      "**DFS 妙处**:递归带 depth,先递归右子树;若 depth == len(out),说明这层第一次到达,push 当前值。",
+      "**为何 DFS 这样能行?** 先右后左的 DFS,最早到达每个深度的节点必然来自右侧路径。",
+      "**变体**:左视图 — 把『先右后左』改成『先左后右』。"
+    ],
+    "complexity": {
+      "time": "**O(n)**。",
+      "space": "**O(h)** DFS / **O(w)** BFS。"
+    }
   }
 }

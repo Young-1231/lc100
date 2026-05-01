@@ -33,5 +33,18 @@
       4
     ],
     "label": "合并结果"
+  },
+  "explanation": {
+    "short": "**哨兵 dummy + 双指针归并**:谁小接谁,末尾接剩余。",
+    "long": [
+      "**dummy + tail**:dummy 简化首节点处理;tail 指向当前结果末尾。",
+      "**主循环**:`while l1 and l2`,比较 val,小的一侧:`tail.next = node; node = node.next; tail = tail.next`。",
+      "**收尾**:`tail.next = l1 or l2`,直接挂上还没用完的那条链。",
+      "**复用节点**:不需要新建 ListNode,直接复用原节点指针,节省内存。"
+    ],
+    "complexity": {
+      "time": "**O(m + n)**。",
+      "space": "**O(1)** 不计输出。"
+    }
   }
 }

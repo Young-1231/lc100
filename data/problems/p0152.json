@@ -30,5 +30,18 @@
     }
   ],
   "raw_source": "# LC 152. 乘积最大子数组 · Medium · DP\n\"\"\"\n🔹 题面\n    返回乘积最大的连续子数组的乘积。\n\n🔹 解法对比\n    | 方法                | 时间 | 空间 | 备注                          |\n    |---------------------|------|------|-------------------------------|\n    | 双状态 DP(滚动)★ | O(n) | O(1) | 同时维护 fmax / fmin(负数翻转) |\n    | DP 数组             | O(n) | O(n) | 同上,但显式存数组             |\n\n🔹 直觉\n    维护\"截至当前的最大乘积 fmax\"和\"最小乘积 fmin\"。负负得正,\n    遇负数时 (fmax * x) 可能成为新的最小,(fmin * x) 反而成为新的最大。\n\"\"\"\n\n\nclass Solution:\n    # 解法 1:双状态 DP 滚动 ★ — O(n) / O(1)\n    def maxProduct(self, nums: list[int]) -> int:\n        fmax = fmin = ans = nums[0]\n        for x in nums[1:]:\n            cands = (x, fmax * x, fmin * x)\n            fmax = max(cands)\n            fmin = min(cands)\n            ans = max(ans, fmax)\n        return ans\n\n    # 解法 2:DP 数组(更直观)— O(n) / O(n)\n    def maxProduct_dp(self, nums: list[int]) -> int:\n        n = len(nums)\n        mx = nums[:]\n        mn = nums[:]\n        for i in range(1, n):\n            cands = (nums[i], mx[i - 1] * nums[i], mn[i - 1] * nums[i])\n            mx[i] = max(cands)\n            mn[i] = min(cands)\n        return max(mx)\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        ([2, 3, -2, 4], 6),\n        ([-2, 0, -1], 0),\n        ([-2, 3, -4], 24),\n        ([0, 2], 2),\n    ]\n    for arg, want in cases:\n        for fn in (s.maxProduct, s.maxProduct_dp):\n            assert fn(arg) == want\n    print(\"✅ p152 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**双状态 DP**:同时维护以 i 结尾的 fmax 和 fmin(因为负负得正)。",
+    "long": [
+      "**为何不能像 LC 53 单变量?** 负数会让最大变最小、最小变最大。",
+      "**状态**:fmax / fmin 都是『以 i 结尾』的最大 / 最小积。",
+      "**转移**:对 nums[i],候选三个 — `nums[i]`、`fmax * nums[i]`、`fmin * nums[i]`,各取 max 与 min。",
+      "**全局答案**:每步更新 ans = max(ans, fmax)。"
+    ],
+    "complexity": {
+      "time": "**O(n)**。",
+      "space": "**O(1)**。"
+    }
+  }
 }

@@ -22,5 +22,18 @@
     }
   ],
   "raw_source": "# LC 394. 字符串解码 · Medium · 栈\n\"\"\"\n🔹 题面\n    \"3[a]2[bc]\" → \"aaabcbc\";\"2[abc]3[cd]ef\" → \"abcabccdcdcdef\"。\n\n🔹 直觉\n    两个栈:数字栈 + 字符串栈。遇 [ 入栈,遇 ] 出栈拼接。\n\"\"\"\n\n\nclass Solution:\n    def decodeString(self, s: str) -> str:\n        num_stack: list[int] = []\n        str_stack: list[str] = []\n        cur, k = \"\", 0\n        for c in s:\n            if c.isdigit():\n                k = k * 10 + int(c)\n            elif c == \"[\":\n                num_stack.append(k); k = 0\n                str_stack.append(cur); cur = \"\"\n            elif c == \"]\":\n                cur = str_stack.pop() + cur * num_stack.pop()\n            else:\n                cur += c\n        return cur\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.decodeString(\"3[a]2[bc]\") == \"aaabcbc\"\n    assert s.decodeString(\"3[a2[c]]\") == \"accaccacc\"\n    assert s.decodeString(\"2[abc]3[cd]ef\") == \"abcabccdcdcdef\"\n    assert s.decodeString(\"abc\") == \"abc\"\n    print(\"✅ p394 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**双栈**:数字栈 + 字符串栈;遇 [ 入栈,遇 ] 出栈拼接。",
+    "long": [
+      "**为何两个栈?** 因为 `[` 处需要同时记下『当前重复次数』和『当前已构造字符串』,两者类型不同分开存。",
+      "**4 类字符**:数字累加到 k;字母拼到 cur;`[` 入栈 (k, cur) 并清空;`]` 弹栈 `cur = prev_str + cur * prev_k`。",
+      "**陷阱**:数字可能多位,要 `k = k * 10 + int(c)`。",
+      "**递归版**:同样可写,但需要传/返回索引,代码稍繁。"
+    ],
+    "complexity": {
+      "time": "**O(n + 输出长度)**。",
+      "space": "**O(n)** —— 两栈与构造串。"
+    }
+  }
 }

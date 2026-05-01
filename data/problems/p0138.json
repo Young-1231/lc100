@@ -33,5 +33,18 @@
       1
     ],
     "label": "随机链表"
+  },
+  "explanation": {
+    "short": "**两遍扫**:第一遍 dict 映射 旧→新 节点,第二遍连 next/random 指针。",
+    "long": [
+      "**关键问题**:random 可能指向链表中任何节点(可能还没创建),不能边扫边接。",
+      "**两遍法**:第一遍只创建副本节点,放进 dict;第二遍利用 dict 一对一映射 next 和 random。",
+      "**O(1) 空间法(原地交织)**:在每个原节点后插入复制 a→a'→b→b'→…;然后 a'.random = a.random.next;最后拆出。",
+      "**注意**:random 可能为 None,要 dict.get 兜底。"
+    ],
+    "complexity": {
+      "time": "**O(n)** —— 两遍扫描。",
+      "space": "**O(n)** 哈希 / **O(1)** 原地交织。"
+    }
   }
 }

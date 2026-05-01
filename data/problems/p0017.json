@@ -22,5 +22,18 @@
     }
   ],
   "raw_source": "# LC 17. 电话号码的字母组合 · Medium · 回溯\n\"\"\"\n🔹 直觉\n    逐位选取该数字对应字母,DFS。\n\"\"\"\n\n\n_KEY = {\n    \"2\": \"abc\", \"3\": \"def\", \"4\": \"ghi\", \"5\": \"jkl\",\n    \"6\": \"mno\", \"7\": \"pqrs\", \"8\": \"tuv\", \"9\": \"wxyz\",\n}\n\n\nclass Solution:\n    def letterCombinations(self, digits: str) -> list[str]:\n        if not digits:\n            return []\n        ans, path = [], []\n\n        def bt(i):\n            if i == len(digits):\n                ans.append(\"\".join(path))\n                return\n            for c in _KEY[digits[i]]:\n                path.append(c)\n                bt(i + 1)\n                path.pop()\n\n        bt(0)\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert sorted(s.letterCombinations(\"23\")) == sorted(\n        [\"ad\", \"ae\", \"af\", \"bd\", \"be\", \"bf\", \"cd\", \"ce\", \"cf\"]\n    )\n    assert s.letterCombinations(\"\") == []\n    assert s.letterCombinations(\"2\") == [\"a\", \"b\", \"c\"]\n    print(\"✅ p017 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**回溯**:逐位枚举该数字对应字母,DFS 拼接到长度等于 digits。",
+    "long": [
+      "**字母表**:`{2:'abc', 3:'def', ...}` 是题面给定的固定映射。",
+      "**回溯三件套**:做选择 (push) → 递归 → 撤销 (pop)。",
+      "**base case**:`i == len(digits)` 时 path 长度 = 输入位数,collect 答案。",
+      "**输入空**:返回 [],而不是 [\"\"](题面要求)。"
+    ],
+    "complexity": {
+      "time": "**O(4ⁿ · n)** —— 每位最多 4 字母,叶节点 join 字符串 O(n)。",
+      "space": "**O(n)** 递归 + path。"
+    }
+  }
 }

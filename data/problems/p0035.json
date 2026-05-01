@@ -22,5 +22,18 @@
     }
   ],
   "raw_source": "# LC 35. 搜索插入位置 · Easy · 二分\n\"\"\"\n🔹 直觉\n    标准 lower_bound:返回第一个 ≥ target 的位置。\n\"\"\"\n\n\nclass Solution:\n    def searchInsert(self, nums: list[int], target: int) -> int:\n        l, r = 0, len(nums)\n        while l < r:\n            m = (l + r) // 2\n            if nums[m] < target:\n                l = m + 1\n            else:\n                r = m\n        return l\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.searchInsert([1, 3, 5, 6], 5) == 2\n    assert s.searchInsert([1, 3, 5, 6], 2) == 1\n    assert s.searchInsert([1, 3, 5, 6], 7) == 4\n    assert s.searchInsert([1, 3, 5, 6], 0) == 0\n    print(\"✅ p035 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**lower_bound**:返回第一个 ≥ target 的下标,即插入位置。",
+    "long": [
+      "**等价于 bisect_left**:Python 内置直接调用即可。",
+      "**手撕区间**:`l, r = 0, len(nums)`(注意 r 是 n 不是 n-1,允许返回 n 表示『插到末尾』)。",
+      "**不变量**:循环结束时 `l == r`,且 `nums[l-1] < target ≤ nums[l]`(边界外用 ±∞)。",
+      "**变种**:upper_bound 改成 `nums[m] <= target` → 返回第一个 > target 的位置。"
+    ],
+    "complexity": {
+      "time": "**O(log n)**。",
+      "space": "**O(1)**。"
+    }
+  }
 }

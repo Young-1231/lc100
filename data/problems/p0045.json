@@ -31,5 +31,18 @@
     }
   ],
   "raw_source": "# LC 45. 跳跃游戏 II · Medium · 贪心 / BFS\n\"\"\"\n🔹 题面\n    返回到达末尾的最少跳跃次数。\n\n🔹 解法对比\n    | 方法           | 时间  | 空间 | 备注                  |\n    |----------------|-------|------|-----------------------|\n    | DP             | O(n²) | O(n) | f[i] = 到 i 的最少步  |\n    | 贪心层次BFS ★ | O(n)  | O(1) | 维护当前层 end / 下一层 farthest |\n\"\"\"\n\n\nclass Solution:\n    # 解法 1:贪心层次 BFS ★ — O(n) / O(1)\n    def jump(self, nums: list[int]) -> int:\n        steps = end = farthest = 0\n        for i in range(len(nums) - 1):\n            farthest = max(farthest, i + nums[i])\n            if i == end:\n                steps += 1\n                end = farthest\n        return steps\n\n    # 解法 2:DP — O(n²) / O(n)\n    def jump_dp(self, nums: list[int]) -> int:\n        n = len(nums)\n        INF = float(\"inf\")\n        f = [INF] * n\n        f[0] = 0\n        for i in range(n):\n            for j in range(1, nums[i] + 1):\n                if i + j < n:\n                    f[i + j] = min(f[i + j], f[i] + 1)\n        return int(f[-1])\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [([2, 3, 1, 1, 4], 2), ([2, 3, 0, 1, 4], 2), ([1], 0)]\n    for arg, want in cases:\n        for fn in (s.jump, s.jump_dp):\n            assert fn(arg) == want\n    print(\"✅ p045 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**贪心层次 BFS**:维护当前层最远 end 与下一层最远 farthest;i == end 时步数 +1。",
+    "long": [
+      "**类比 BFS 分层**:当前能跳到的所有位置 = 一层;当前层覆盖范围 [上次跳点, end];i 走到 end 说明本层用完,跳一步,end 更新为 farthest。",
+      "**单变量循环**:扫 i ∈ [0, n-2],每步更新 farthest = max(farthest, i + nums[i]);i == end 时 steps++ 且 end = farthest。",
+      "**为何 i 到 n-2 即可?** 走到末尾就停;对最后一个位置不需要再触发跳一步。",
+      "**正确性**:贪心『当前层尽量跳得远』等价于『最少层数 = 最少步数』。"
+    ],
+    "complexity": {
+      "time": "**O(n)**。",
+      "space": "**O(1)**。"
+    }
+  }
 }

@@ -22,5 +22,19 @@
     }
   ],
   "raw_source": "# LC 51. N 皇后 · Hard · 回溯\n\"\"\"\n🔹 直觉\n    按行放,每行枚举列;用三个集合记录\"已用列\"、\"已用主对角线 r-c\"、\"已用副对角线 r+c\"。\n\"\"\"\n\n\nclass Solution:\n    def solveNQueens(self, n: int) -> list[list[str]]:\n        cols, diag1, diag2 = set(), set(), set()\n        ans, board = [], [-1] * n\n\n        def render():\n            return [\n                \"\".join(\"Q\" if c == board[r] else \".\" for c in range(n))\n                for r in range(n)\n            ]\n\n        def bt(r):\n            if r == n:\n                ans.append(render())\n                return\n            for c in range(n):\n                if c in cols or (r - c) in diag1 or (r + c) in diag2:\n                    continue\n                board[r] = c\n                cols.add(c); diag1.add(r - c); diag2.add(r + c)\n                bt(r + 1)\n                cols.remove(c); diag1.remove(r - c); diag2.remove(r + c)\n\n        bt(0)\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert len(s.solveNQueens(4)) == 2\n    assert len(s.solveNQueens(1)) == 1\n    assert len(s.solveNQueens(8)) == 92\n    print(\"✅ p051 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**逐行回溯 + 三个 set 防冲突**:cols / r-c / r+c 三个集合判定列与对角线。",
+    "long": [
+      "**关键观察**:同列 c;主对角线 r-c 相等;副对角线 r+c 相等。三个 set 一查便知。",
+      "**回溯**:行 r 枚举列 c,合法则放置(c 进 set,r-c 进 diag1,r+c 进 diag2),递归 r+1。",
+      "**收集**:r == n 时把当前 board 转字符串数组 push 进答案。",
+      "**变体 52**:只数解的数量;时间相同,空间小。",
+      "**位运算优化**:用整数位掩码代替 set,常数巨快(竞赛级)。"
+    ],
+    "complexity": {
+      "time": "**O(n!)** —— 每行最多 n 个选择。",
+      "space": "**O(n)** —— 递归深度 + 三个 set。"
+    }
+  }
 }

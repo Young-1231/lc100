@@ -50,7 +50,17 @@
       0,
       1
     ],
-    "label": "target=9"
+    "pointers": [
+      {
+        "idx": 0,
+        "label": "i=0"
+      },
+      {
+        "idx": 1,
+        "label": "i=1"
+      }
+    ],
+    "label": "target=9 → seen[2]=0 命中"
   },
   "explanation": {
     "short": "把『目标差值 → 出现下标』缓存到哈希表,扫一遍完成查询。",

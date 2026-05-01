@@ -22,5 +22,18 @@
     }
   ],
   "raw_source": "# LC 416. 分割等和子集 · Medium · 0-1 背包\n\"\"\"\n🔹 直觉\n    总和奇数直接 False。否则求是否存在子集和 = total // 2。\n    一维 0-1 背包,容量 = target,逆序更新。\n\n🔹 状态\n    f[v] 是否可凑出和 v;f[v] |= f[v - x]。\n\"\"\"\n\n\nclass Solution:\n    def canPartition(self, nums: list[int]) -> bool:\n        s = sum(nums)\n        if s & 1:\n            return False\n        target = s // 2\n        f = [False] * (target + 1)\n        f[0] = True\n        for x in nums:\n            for v in range(target, x - 1, -1):\n                f[v] = f[v] or f[v - x]\n        return f[target]\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.canPartition([1, 5, 11, 5]) is True\n    assert s.canPartition([1, 2, 3, 5]) is False\n    assert s.canPartition([1, 1]) is True\n    print(\"✅ p416 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**0-1 背包**:总和为奇数直接 False;否则求是否能凑出 sum/2。一维 dp[v] 逆序更新。",
+    "long": [
+      "**问题转化**:把数组分两半使和相等 ⟺ 选若干个数和恰好 = total/2。",
+      "**奇偶判**:total 为奇直接 False。",
+      "**0-1 背包模板**:`f[v]` = 能否凑出 v;`f[v] |= f[v - x]`。",
+      "**为何逆序?** 同一物品最多用一次。逆序时 f[v-x] 还是『上轮值』(不含 x),正序则会 self-update 重复使用。"
+    ],
+    "complexity": {
+      "time": "**O(n · target)**。",
+      "space": "**O(target)**。"
+    }
+  }
 }

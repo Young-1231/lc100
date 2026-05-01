@@ -22,5 +22,19 @@
     }
   ],
   "raw_source": "# LC 22. 括号生成 · Medium · 回溯\n\"\"\"\n🔹 直觉\n    剩余左括号 > 0 才放 '(';剩余右括号 > 剩余左括号 才放 ')'(保证有效)。\n\"\"\"\n\n\nclass Solution:\n    def generateParenthesis(self, n: int) -> list[str]:\n        ans, path = [], []\n\n        def bt(left, right):\n            if not left and not right:\n                ans.append(\"\".join(path))\n                return\n            if left > 0:\n                path.append(\"(\")\n                bt(left - 1, right)\n                path.pop()\n            if right > left:\n                path.append(\")\")\n                bt(left, right - 1)\n                path.pop()\n\n        bt(n, n)\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert sorted(s.generateParenthesis(3)) == sorted([\"((()))\", \"(()())\", \"(())()\", \"()(())\", \"()()()\"])\n    assert s.generateParenthesis(1) == [\"()\"]\n    print(\"✅ p022 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**剪枝回溯**:左括号余量 > 0 才放 `(`;右括号余量 > 左余量 时才放 `)`(保证有效)。",
+    "long": [
+      "**两个计数**:left = 还可放的 `(` 数,right = 还可放的 `)` 数,初始都为 n。",
+      "**剪枝 1**:`left > 0` 才能放 `(`(保证不超过 n 对)。",
+      "**剪枝 2**:`right > left` 才能放 `)` —— 即字符串内已放了至少一个 `(` 等待匹配。",
+      "**收集**:`left == right == 0` 时 path 长度 2n,有效串。",
+      "**Catalan 数**:答案数量 = C(2n,n)/(n+1) = 第 n 个 Catalan 数。"
+    ],
+    "complexity": {
+      "time": "**O(C(2n,n)/(n+1) · n)** —— Catalan 个解,每个长度 2n。",
+      "space": "**O(n)** —— path 与栈。"
+    }
+  }
 }

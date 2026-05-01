@@ -30,5 +30,18 @@
     }
   ],
   "raw_source": "# LC 55. 跳跃游戏 · Medium · 贪心\n\"\"\"\n🔹 题面\n    站在 0,nums[i] 表示从 i 最远可跳的步数,问能否跳到末尾。\n\n🔹 解法对比\n    | 方法     | 时间 | 空间 | 备注                              |\n    |----------|------|------|-----------------------------------|\n    | DP       | O(n²)| O(n) | f[i] = 是否可达                    |\n    | 贪心 ★  | O(n) | O(1) | 维护\"已知可达最远\",超出即失败    |\n\"\"\"\n\n\nclass Solution:\n    # 解法 1:贪心 ★ — O(n) / O(1)\n    def canJump(self, nums: list[int]) -> bool:\n        reach = 0\n        for i, x in enumerate(nums):\n            if i > reach:\n                return False\n            reach = max(reach, i + x)\n        return True\n\n    # 解法 2:DP — O(n²) / O(n)\n    def canJump_dp(self, nums: list[int]) -> bool:\n        n = len(nums)\n        f = [False] * n\n        f[0] = True\n        for i in range(n):\n            if not f[i]:\n                continue\n            for j in range(1, nums[i] + 1):\n                if i + j < n:\n                    f[i + j] = True\n                if i + j >= n - 1:\n                    return True\n        return f[n - 1]\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [([2, 3, 1, 1, 4], True), ([3, 2, 1, 0, 4], False), ([0], True)]\n    for arg, want in cases:\n        for fn in (s.canJump, s.canJump_dp):\n            assert fn(arg) is want\n    print(\"✅ p055 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**贪心维护 reach**:扫描时 i 必须 ≤ reach,然后 reach = max(reach, i + nums[i])。",
+    "long": [
+      "**核心问题**:能不能到末尾?",
+      "**贪心思路**:维护『目前已知可达的最远下标 reach』;扫到 i 时,若 i > reach 说明此处不可达,后面更不行,返 False。",
+      "**更新 reach**:每个可达点都尝试 reach = max(reach, i + nums[i])。",
+      "**正确性**:可达性的传递闭包通过 reach 的单调扩张表达,扫一遍足够。"
+    ],
+    "complexity": {
+      "time": "**O(n)**。",
+      "space": "**O(1)**。"
+    }
+  }
 }

@@ -23,5 +23,18 @@
     }
   ],
   "raw_source": "# LC 279. 完全平方数 · Medium · DP / BFS\n\"\"\"\n🔹 题面\n    n 拆成尽量少的完全平方数之和。\n\n🔹 直觉\n    f(i) = 1 + min{ f(i - k²) },k² ≤ i。\n\"\"\"\n\n\nclass Solution:\n    def numSquares(self, n: int) -> int:\n        f = [0] + [float(\"inf\")] * n\n        for i in range(1, n + 1):\n            k = 1\n            while k * k <= i:\n                f[i] = min(f[i], f[i - k * k] + 1)\n                k += 1\n        return f[n]\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.numSquares(12) == 3\n    assert s.numSquares(13) == 2\n    assert s.numSquares(1) == 1\n    print(\"✅ p279 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**完全背包 DP**:`f[i] = 1 + min{ f[i - k²] | k² ≤ i }`。",
+    "long": [
+      "**状态**:f[x] = 凑出 x 的最少完全平方数个数;f[0] = 0。",
+      "**转移**:对每个 x,枚举所有 k² ≤ x,从 f[x - k²] + 1 中取最小。",
+      "**Lagrange 四平方定理**:答案永远 ≤ 4;有数学闭式解 O(√n) 判 1/2/4,其余为 3。",
+      "**BFS 视角**:把 0 当起点、每步走 k² 步,求到 n 的最少步数。"
+    ],
+    "complexity": {
+      "time": "**O(n √n)** —— 每个 x 内层枚举 √x 个 k。",
+      "space": "**O(n)**。"
+    }
+  }
 }

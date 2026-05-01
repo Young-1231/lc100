@@ -22,5 +22,19 @@
     }
   ],
   "raw_source": "# LC 62. 不同路径 · Medium · 多维 DP\n\"\"\"\n🔹 直觉\n    f[i][j] = f[i-1][j] + f[i][j-1];可滚动到一维。\n    数学解:C(m+n-2, m-1)。\n\"\"\"\n\n\nclass Solution:\n    def uniquePaths(self, m: int, n: int) -> int:\n        f = [1] * n\n        for _ in range(1, m):\n            for j in range(1, n):\n                f[j] += f[j - 1]\n        return f[-1]\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.uniquePaths(3, 7) == 28\n    assert s.uniquePaths(3, 2) == 3\n    assert s.uniquePaths(1, 1) == 1\n    print(\"✅ p062 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**二维 DP**:`f[i][j] = f[i-1][j] + f[i][j-1]`。可滚动到一维。",
+    "long": [
+      "**状态**:`f[i][j]` = 从 (0,0) 到 (i,j) 的不同路径数。",
+      "**转移**:只能从上或左来,所以 = 上 + 左。",
+      "**边界**:第一行 / 列全为 1(只有一种走法)。",
+      "**滚动一维**:f[j] += f[j-1],一行一行更新。",
+      "**数学解**:答案 = C(m+n-2, m-1)(在 m+n-2 步中选 m-1 步向下)。"
+    ],
+    "complexity": {
+      "time": "**O(mn)** DP / **O(min(m,n))** 数学。",
+      "space": "**O(min(m,n))** 滚动 / **O(mn)** 二维。"
+    }
+  }
 }

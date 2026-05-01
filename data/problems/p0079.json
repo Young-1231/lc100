@@ -22,5 +22,18 @@
     }
   ],
   "raw_source": "# LC 79. 单词搜索 · Medium · 回溯 + 矩阵\n\"\"\"\n🔹 直觉\n    枚举起点 → DFS 四向走;走过的格子原地\"涂色\"防止重复,回溯时还原。\n\"\"\"\n\n\nclass Solution:\n    def exist(self, board: list[list[str]], word: str) -> bool:\n        m, n = len(board), len(board[0])\n\n        def dfs(i, j, k):\n            if k == len(word):\n                return True\n            if i < 0 or j < 0 or i >= m or j >= n or board[i][j] != word[k]:\n                return False\n            board[i][j] = \"#\"\n            ok = (dfs(i + 1, j, k + 1) or dfs(i - 1, j, k + 1)\n                  or dfs(i, j + 1, k + 1) or dfs(i, j - 1, k + 1))\n            board[i][j] = word[k]\n            return ok\n\n        return any(dfs(i, j, 0) for i in range(m) for j in range(n))\n\n\ndef _test() -> None:\n    s = Solution()\n    b = [[\"A\", \"B\", \"C\", \"E\"], [\"S\", \"F\", \"C\", \"S\"], [\"A\", \"D\", \"E\", \"E\"]]\n    assert s.exist([row[:] for row in b], \"ABCCED\") is True\n    assert s.exist([row[:] for row in b], \"SEE\") is True\n    assert s.exist([row[:] for row in b], \"ABCB\") is False\n    print(\"✅ p079 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**DFS + 原地涂色防重**:四向递归,走过的格子临时标 `#`,回溯还原。",
+    "long": [
+      "**起点枚举**:对每个格子 (i,j) 都尝试 dfs(i, j, 0)。",
+      "**dfs 边界**:越界 / 字符不匹配 / k == len(word) → 早返。",
+      "**涂色防重**:进入时 board[i][j] = '#',四向递归,退出前还原 word[k]。",
+      "**剪枝优化**:词频分析,若 word 中某字符在 board 中出现次数不足直接返 False。"
+    ],
+    "complexity": {
+      "time": "**O(mn · 4^L)** —— 起点 mn,每步 4 方向,深度 L = len(word)。",
+      "space": "**O(L)** —— 递归栈。"
+    }
+  }
 }

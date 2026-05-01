@@ -264,12 +264,49 @@ VIZ: dict[int, dict] = {
     124: {"type": "tree", "data": [-10, 9, 20, None, None, 15, 7], "label": "最大路径=42"},
     108: {"type": "tree", "data": [0, -3, 9, -10, None, 5], "label": "由 [-10,-3,0,5,9] 构造"},
     # 数组 / 滑窗
-    1:   {"type": "array", "data": [2, 7, 11, 15], "highlight": [0, 1], "label": "target=9"},
-    283: {"type": "array", "data": [0, 1, 0, 3, 12], "label": "原数组"},
-    11:  {"type": "array", "data": [1, 8, 6, 2, 5, 4, 8, 3, 7], "highlight": [1, 8], "label": "max area=49"},
+    1:   {"type": "array", "data": [2, 7, 11, 15],
+          "highlight": [0, 1],
+          "pointers": [{"idx": 0, "label": "i=0"}, {"idx": 1, "label": "i=1"}],
+          "label": "target=9 → seen[2]=0 命中"},
+    283: {"type": "frames", "label": "双指针扫描",
+          "frames": [
+              {"type": "array", "data": [0, 1, 0, 3, 12],
+               "pointers": [{"idx": 0, "label": "slow"}, {"idx": 0, "label": "fast", "color": "#ea580c"}],
+               "note": "初始: slow=fast=0"},
+              {"type": "array", "data": [1, 0, 0, 3, 12],
+               "pointers": [{"idx": 1, "label": "slow"}, {"idx": 1, "label": "fast", "color": "#ea580c"}],
+               "note": "fast=1 是非零,swap 后 slow 推进"},
+              {"type": "array", "data": [1, 3, 0, 0, 12],
+               "pointers": [{"idx": 2, "label": "slow"}, {"idx": 3, "label": "fast", "color": "#ea580c"}],
+               "note": "fast 跳过零,在 fast=3 处 swap"},
+              {"type": "array", "data": [1, 3, 12, 0, 0],
+               "pointers": [{"idx": 3, "label": "slow"}, {"idx": 4, "label": "fast", "color": "#ea580c"}],
+               "note": "扫描完成: 非零左聚,零右移"},
+          ]},
+    11:  {"type": "array", "data": [1, 8, 6, 2, 5, 4, 8, 3, 7],
+          "highlight": [1, 8],
+          "pointers": [{"idx": 1, "label": "l=1"}, {"idx": 8, "label": "r=8"}],
+          "label": "(8-1)·min(8,7) = 49"},
     42:  {"type": "array", "data": [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1], "label": "可接 6 单位水"},
-    3:   {"type": "array", "data": ["a", "b", "c", "a", "b", "c", "b", "b"], "windowL": 0, "windowR": 2, "label": "无重复滑窗"},
-    239: {"type": "array", "data": [1, 3, -1, -3, 5, 3, 6, 7], "windowL": 0, "windowR": 2, "label": "k=3 滑窗"},
+    3:   {"type": "frames", "label": "滑窗扫描 abcabcbb",
+          "frames": [
+              {"type": "array", "data": ["a", "b", "c", "a", "b", "c", "b", "b"],
+               "windowL": 0, "windowR": 2,
+               "pointers": [{"idx": 0, "label": "l"}, {"idx": 2, "label": "r", "color": "#ea580c"}],
+               "note": "扩到 'abc',长度 3"},
+              {"type": "array", "data": ["a", "b", "c", "a", "b", "c", "b", "b"],
+               "windowL": 1, "windowR": 3,
+               "pointers": [{"idx": 1, "label": "l"}, {"idx": 3, "label": "r", "color": "#ea580c"}],
+               "note": "r=3 遇到重复 'a',l 跳到 1"},
+              {"type": "array", "data": ["a", "b", "c", "a", "b", "c", "b", "b"],
+               "windowL": 4, "windowR": 6,
+               "pointers": [{"idx": 4, "label": "l"}, {"idx": 6, "label": "r", "color": "#ea580c"}],
+               "note": "继续扩;最长仍是 3"},
+          ]},
+    239: {"type": "array", "data": [1, 3, -1, -3, 5, 3, 6, 7],
+          "windowL": 0, "windowR": 2,
+          "pointers": [{"idx": 0, "label": "l"}, {"idx": 2, "label": "r", "color": "#ea580c"}],
+          "label": "k=3 滑窗 → 队头是 max=3"},
     560: {"type": "array", "data": [1, 1, 1], "label": "k=2 → 子数组数=2"},
     53:  {"type": "array", "data": [-2, 1, -3, 4, -1, 2, 1, -5, 4], "windowL": 3, "windowR": 6, "label": "最大和=6"},
     189: {"type": "array", "data": [1, 2, 3, 4, 5, 6, 7], "label": "右移 3 后 = [5,6,7,1,2,3,4]"},
@@ -330,6 +367,16 @@ def main() -> None:
             )
             shutil.copy(py, sols_dir / py.name)
             # 索引摘要
+            # 搜索索引文本:把题面、思路、复杂度、解法标题拼起来
+            search_blob = " ".join([
+                data["title"],
+                " ".join(data["tags"]),
+                data["category"],
+                data.get("doc", ""),
+                (data.get("explanation", {}) or {}).get("short", ""),
+                " ".join((data.get("explanation", {}) or {}).get("long", []) or []),
+                " ".join(s.get("title", "") for s in data["solutions"]),
+            ])
             all_problems.append({
                 "id": data["id"],
                 "title": data["title"],
@@ -342,6 +389,7 @@ def main() -> None:
                 "tags": data["tags"],
                 "leetcode_url": data["leetcode_url"],
                 "has_expl": "explanation" in data,
+                "search": search_blob.lower(),
             })
             day_problems.append(data["id"])
         days[day_idx] = {

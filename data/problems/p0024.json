@@ -39,5 +39,18 @@
       4
     ],
     "label": "两两交换前"
+  },
+  "explanation": {
+    "short": "**哨兵 + prev**:每轮取相邻 a, b,改 3 个 next 完成局部交换。",
+    "long": [
+      "**3 个 next 改写**:`prev.next = b; a.next = b.next; b.next = a`。",
+      "**前进 prev**:本轮交换后 a 已是『二人组的尾部』,下次的『二人组前驱』就是 a。",
+      "**循环条件**:`while prev.next and prev.next.next` —— 至少有 2 个待交换。",
+      "**递归版**:`f(a) = let b = a.next; b.next = a; a.next = f(b.next)`,优雅但 O(n) 栈。"
+    ],
+    "complexity": {
+      "time": "**O(n)**。",
+      "space": "**O(1)** 迭代 / **O(n)** 递归栈。"
+    }
   }
 }

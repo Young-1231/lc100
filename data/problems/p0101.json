@@ -34,5 +34,18 @@
       3
     ],
     "label": "对称树"
+  },
+  "explanation": {
+    "short": "**镜像递归**:`same(a, b) ⟺ a.val == b.val ∧ same(a.left, b.right) ∧ same(a.right, b.left)`。",
+    "long": [
+      "**关键变换**:不是判断『树的左右子树相等』,而是『左子树 vs 右子树的镜像』。",
+      "**镜像定义**:两棵树镜像 ⟺ 根值相等且 a 的左 = b 的右(且 a 的右 = b 的左)。",
+      "**两个 None**:base case 都 None 是 True;一 None 一非 None 是 False。",
+      "**迭代版**:用队列 / 栈,每次成对地推入要对比的两个节点,O(w) 空间。"
+    ],
+    "complexity": {
+      "time": "**O(n)**。",
+      "space": "**O(h)**。"
+    }
   }
 }

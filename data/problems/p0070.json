@@ -30,5 +30,18 @@
     }
   ],
   "raw_source": "# LC 70. 爬楼梯 · Easy · DP\n\"\"\"\n🔹 题面\n    每次爬 1 或 2 阶,n 阶有多少种爬法。\n\n🔹 解法对比\n    | 方法            | 时间       | 空间 | 备注              |\n    |-----------------|------------|------|-------------------|\n    | DP 滚动两个变量 ★| O(n)      | O(1) | 斐波那契          |\n    | 矩阵快速幂      | O(log n)   | O(1) | 极致最优;复杂度炫技|\n    | Binet 通项公式  | O(1)       | O(1) | 浮点精度问题      |\n\"\"\"\n\n\nclass Solution:\n    # 解法 1:DP 滚动 ★ — O(n) / O(1)\n    def climbStairs(self, n: int) -> int:\n        a, b = 1, 1\n        for _ in range(n):\n            a, b = b, a + b\n        return a\n\n    # 解法 2:矩阵快速幂 — O(log n) / O(1)\n    # [[1,1],[1,0]]^n · [1,0]^T 的第二项 = F(n+1)。\n    def climbStairs_matpow(self, n: int) -> int:\n        def mul(A, B):\n            return [\n                [A[0][0]*B[0][0] + A[0][1]*B[1][0], A[0][0]*B[0][1] + A[0][1]*B[1][1]],\n                [A[1][0]*B[0][0] + A[1][1]*B[1][0], A[1][0]*B[0][1] + A[1][1]*B[1][1]],\n            ]\n        def matpow(A, p):\n            R = [[1, 0], [0, 1]]\n            while p:\n                if p & 1:\n                    R = mul(R, A)\n                A = mul(A, A)\n                p >>= 1\n            return R\n        if n == 0:\n            return 1\n        M = matpow([[1, 1], [1, 0]], n)\n        return M[0][0]\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [(2, 2), (3, 3), (5, 8), (1, 1), (10, 89)]\n    for arg, want in cases:\n        for fn in (s.climbStairs, s.climbStairs_matpow):\n            assert fn(arg) == want\n    print(\"✅ p070 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**斐波那契**:`f(n) = f(n-1) + f(n-2)`,空间压缩到两个变量。",
+    "long": [
+      "**状态**:`f(n)` = 爬到第 n 阶的方案数;每一阶可由 (n-1) 一步上来或 (n-2) 两步上来。",
+      "**边界**:f(0) = f(1) = 1。",
+      "**滚动**:`a, b = 1, 1; for _ in range(n): a, b = b, a + b`。",
+      "**矩阵快速幂**:[[1,1],[1,0]]^n 对应 Fib,O(log n) 时间;面试加分项。"
+    ],
+    "complexity": {
+      "time": "**O(n)** 滚动 / **O(log n)** 矩阵快幂。",
+      "space": "**O(1)**。"
+    }
+  }
 }

@@ -40,5 +40,18 @@
       5
     ],
     "label": "反转前"
+  },
+  "explanation": {
+    "short": "**三指针迭代**:prev / cur / nxt,每次让 cur.next 指向 prev,前进。",
+    "long": [
+      "**核心三步**:`nxt = cur.next; cur.next = prev; prev = cur; cur = nxt`。",
+      "**为何要先存 nxt?** 改 cur.next 后会丢失原 next 引用。",
+      "**初始 prev = None**:反转后原首节点的 next 应指向 None。",
+      "**递归版**:`f(h) = if h.next is None: return h; new_h = f(h.next); h.next.next = h; h.next = None; return new_h`。"
+    ],
+    "complexity": {
+      "time": "**O(n)**。",
+      "space": "**O(1)** 迭代 / **O(n)** 递归栈。"
+    }
   }
 }

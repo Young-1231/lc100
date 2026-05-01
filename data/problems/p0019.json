@@ -36,5 +36,18 @@
     "highlight": [
       3
     ]
+  },
+  "explanation": {
+    "short": "**快慢指针 + 哨兵**:fast 先走 n+1 步,然后两指针同速;fast=None 时 slow.next 即待删。",
+    "long": [
+      "**为何要哨兵?** 删除头节点也是合法情况;dummy 让所有删除都是 `slow.next = slow.next.next` 统一形式。",
+      "**fast 先走 n+1 步**:这样 fast 与 slow 之间永远隔 n 个节点;fast 跨过末尾时 slow 恰好指向待删的『前一个』。",
+      "**一次遍历**:`for _ in range(n+1): fast = fast.next` 不算遍历主体。",
+      "**边界**:n 等于链表长度时也对(slow 停在 dummy,删头节点)。"
+    ],
+    "complexity": {
+      "time": "**O(L)** —— L 是链表长度。",
+      "space": "**O(1)**。"
+    }
   }
 }

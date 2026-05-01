@@ -13,5 +13,19 @@
   "doc": "🔹 直觉\n    每节点用 dict 保存子节点;is_end 标记完整单词。\n    insert/search/startsWith 均 O(L)。",
   "solutions": [],
   "raw_source": "# LC 208. 实现 Trie(前缀树) · Medium · 字典树\n\"\"\"\n🔹 直觉\n    每节点用 dict 保存子节点;is_end 标记完整单词。\n    insert/search/startsWith 均 O(L)。\n\"\"\"\n\n\nclass Trie:\n    def __init__(self):\n        self.ch: dict = {}\n        self.end = False\n\n    def insert(self, word: str) -> None:\n        cur = self\n        for c in word:\n            if c not in cur.ch:\n                cur.ch[c] = Trie()\n            cur = cur.ch[c]\n        cur.end = True\n\n    def _walk(self, prefix: str):\n        cur = self\n        for c in prefix:\n            if c not in cur.ch:\n                return None\n            cur = cur.ch[c]\n        return cur\n\n    def search(self, word: str) -> bool:\n        n = self._walk(word)\n        return n is not None and n.end\n\n    def startsWith(self, prefix: str) -> bool:\n        return self._walk(prefix) is not None\n\n\ndef _test() -> None:\n    t = Trie()\n    t.insert(\"apple\")\n    assert t.search(\"apple\") is True\n    assert t.search(\"app\") is False\n    assert t.startsWith(\"app\") is True\n    t.insert(\"app\")\n    assert t.search(\"app\") is True\n    print(\"✅ p208 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**Trie**:每节点用 dict 保存子节点,is_end 标记完整词。",
+    "long": [
+      "**节点结构**:`{children: dict, is_end: bool}`。",
+      "**insert**:从根沿字符往下,缺失就创建子节点;末尾把 is_end = True。",
+      "**search vs startsWith**:都是沿字符走;前者要求末尾节点 is_end,后者只要能走完。",
+      "**空间优化**:固定字符集时改用 size 26 的数组(比 dict 快但常数稍多)。",
+      "**变体**:LC 211 加 `.` 通配,需要 DFS 试遍所有子;LC 212 单词搜索 II 用 Trie 做剪枝枚举。"
+    ],
+    "complexity": {
+      "time": "**O(L)** 每次 insert/search,L 为字符串长度。",
+      "space": "**O(N · |Σ|)** 最坏 —— N 总字符数。"
+    }
+  }
 }

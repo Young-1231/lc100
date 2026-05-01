@@ -132,14 +132,19 @@ export function renderTree(data, opts = {}) {
 }
 
 // ===================== Array =====================
-// data: [1,2,3,4,5];  opts.highlight: [int idx]; opts.windowL/R: number
+// data: [1,2,3,4,5]
+// opts:
+//   highlight: [int idx]
+//   windowL / windowR: number
+//   pointers: [{idx, label, color?}]  在格子上方画指针箭头
 export function renderArray(data, opts = {}) {
-  const { highlight = [], windowL = -1, windowR = -1, label = "array", indices = true } = opts;
+  const { highlight = [], windowL = -1, windowR = -1, label = "array", indices = true, pointers = [] } = opts;
   if (!data || !data.length) return "";
   const cw = 44, ch = 38, pad = 14;
   const W = pad * 2 + data.length * cw;
-  const H = ch + (indices ? 20 : 0) + (windowL >= 0 ? 18 : 0) + 14;
-  const y0 = pad;
+  const ptrTop = pointers.length ? 24 : 0;
+  const H = ptrTop + ch + (indices ? 20 : 0) + (windowL >= 0 ? 18 : 0) + 14;
+  const y0 = pad + ptrTop;
   const parts = [];
   data.forEach((v, i) => {
     const x = pad + i * cw;
@@ -161,7 +166,31 @@ export function renderArray(data, opts = {}) {
     parts.push(`<path d="M${x1},${ay - 4} L${x1},${ay} L${x2},${ay} L${x2},${ay - 4}" fill="none" stroke="${COL.hi}" stroke-width="1.6"/>`);
     parts.push(`<text x="${(x1 + x2) / 2}" y="${ay + 12}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="${COL.hi}">window [${windowL}, ${windowR}]</text>`);
   }
+  // 指针箭头(画在格子上方,自下指向格子顶端)
+  pointers.forEach(p => {
+    const px = pad + p.idx * cw + cw / 2;
+    const py = y0 - 4;
+    const color = p.color || COL.hi;
+    parts.push(`<text x="${px}" y="${py - 14}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="${color}">${escapeXml(p.label)}</text>`);
+    parts.push(`<path d="M${px},${py - 10} L${px - 4},${py - 4} L${px + 4},${py - 4} z" fill="${color}"/>`);
+  });
   return svgWrap(W, H, parts.join(""), label);
+}
+
+function escapeXml(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
+// ===================== Frames (多帧步骤) =====================
+// 把多个 viz spec 串成一组步骤;每帧带说明文字。
+export function renderFrames(spec) {
+  const { frames = [], label = "" } = spec;
+  if (!frames.length) return "";
+  return frames.map((f, i) => `
+    <div class="frame">
+      <div class="frame-step"><span class="frame-num">Step ${i + 1}</span> ${escapeXml(f.note || "")}</div>
+      ${renderViz(f)}
+    </div>`).join("");
 }
 
 // ===================== Dispatcher =====================
@@ -169,9 +198,10 @@ export function renderArray(data, opts = {}) {
 export function renderViz(spec) {
   if (!spec) return "";
   switch (spec.type) {
-    case "list":  return renderList(spec.data, spec);
-    case "tree":  return renderTree(spec.data, spec);
-    case "array": return renderArray(spec.data, spec);
+    case "list":   return renderList(spec.data, spec);
+    case "tree":   return renderTree(spec.data, spec);
+    case "array":  return renderArray(spec.data, spec);
+    case "frames": return renderFrames(spec);
     default: return "";
   }
 }

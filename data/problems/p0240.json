@@ -22,5 +22,18 @@
     }
   ],
   "raw_source": "# LC 240. 搜索二维矩阵 II · Medium · 矩阵\n\"\"\"\n🔹 题面\n    每行升序、每列升序,搜索目标 target。\n\n🔹 直觉(Z 字搜索)\n    从右上角出发:\n        m[i][j] == target → 找到\n        m[i][j]  > target → j-=1   (该列下方都更大,可剪)\n        m[i][j]  < target → i+=1\n    每步至少减少一个维度,O(m+n)。\n\n🔹 复杂度 O(m+n) / O(1)\n\"\"\"\n\n\nclass Solution:\n    def searchMatrix(self, m: list[list[int]], target: int) -> bool:\n        if not m or not m[0]:\n            return False\n        i, j = 0, len(m[0]) - 1\n        while i < len(m) and j >= 0:\n            if m[i][j] == target:\n                return True\n            if m[i][j] > target:\n                j -= 1\n            else:\n                i += 1\n        return False\n\n\ndef _test() -> None:\n    s = Solution()\n    M = [[1, 4, 7, 11, 15], [2, 5, 8, 12, 19], [3, 6, 9, 16, 22],\n         [10, 13, 14, 17, 24], [18, 21, 23, 26, 30]]\n    assert s.searchMatrix(M, 5) is True\n    assert s.searchMatrix(M, 20) is False\n    assert s.searchMatrix([], 1) is False\n    print(\"✅ p240 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**Z 字搜索**:从右上角出发,大于 target 左移、小于则下移;每步至少消除一行或一列。",
+    "long": [
+      "**为什么不能用普通二分?** 矩阵是『行/列分别升序』,但行间不全序;直接拍平用二分会错。",
+      "**起点选择**:右上角(或左下角)是关键 —— 它是『所在行的最大、所在列的最小』,提供二选一的判定方向。",
+      "**判定**:`m[i][j] > target` → 这一列下方都更大,j-- 抛弃此列;`<` → 这一行左侧都更小,i++ 抛弃此行。",
+      "**复杂度本质**:每步要么 i++ 要么 j--,最多 m+n 步。"
+    ],
+    "complexity": {
+      "time": "**O(m + n)** —— Z 字路径。",
+      "space": "**O(1)**。"
+    }
+  }
 }

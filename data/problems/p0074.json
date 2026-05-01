@@ -22,5 +22,18 @@
     }
   ],
   "raw_source": "# LC 74. 搜索二维矩阵 · Medium · 二分\n\"\"\"\n🔹 直觉\n    把 m×n 矩阵当成一根升序数组,下标 idx → (idx // n, idx % n)。\n\"\"\"\n\n\nclass Solution:\n    def searchMatrix(self, m: list[list[int]], target: int) -> bool:\n        if not m or not m[0]:\n            return False\n        rows, cols = len(m), len(m[0])\n        l, r = 0, rows * cols - 1\n        while l <= r:\n            mid = (l + r) // 2\n            v = m[mid // cols][mid % cols]\n            if v == target:\n                return True\n            if v < target:\n                l = mid + 1\n            else:\n                r = mid - 1\n        return False\n\n\ndef _test() -> None:\n    s = Solution()\n    M = [[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]]\n    assert s.searchMatrix(M, 3) is True\n    assert s.searchMatrix(M, 13) is False\n    assert s.searchMatrix([[1]], 1) is True\n    print(\"✅ p074 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**当一维数组二分**:把 m×n 矩阵当 mn 长升序数组,下标 → (idx//n, idx%n)。",
+    "long": [
+      "**前提**:每行升序 + 行尾 ≤ 下行行首 → 拍平后整体升序。",
+      "**二分模板**:`l, r = 0, m*n - 1`,标准闭区间二分。",
+      "**索引映射**:`row = mid // cols, col = mid % cols`。",
+      "**对比 LC 240**:那题只保证『行/列各自升序』,行间无序,只能 Z 字搜索。"
+    ],
+    "complexity": {
+      "time": "**O(log(mn))**。",
+      "space": "**O(1)**。"
+    }
+  }
 }

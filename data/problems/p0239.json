@@ -36,7 +36,18 @@
     ],
     "windowL": 0,
     "windowR": 2,
-    "label": "k=3 滑窗"
+    "pointers": [
+      {
+        "idx": 0,
+        "label": "l"
+      },
+      {
+        "idx": 2,
+        "label": "r",
+        "color": "#ea580c"
+      }
+    ],
+    "label": "k=3 滑窗 → 队头是 max=3"
   },
   "explanation": {
     "short": "**单调递减队列**(存下标):新元素入队前弹出所有比它小的尾部,过期则弹队头。队头始终是窗口最大值。",

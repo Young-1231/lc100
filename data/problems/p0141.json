@@ -40,5 +40,18 @@
     ],
     "cycle": true,
     "label": "环形链表"
+  },
+  "explanation": {
+    "short": "**Floyd 龟兔**:slow 1 步,fast 2 步;有环必相遇。",
+    "long": [
+      "**为何必相遇?** 进入环后,fast 与 slow 距离每轮缩 1(模环长);最多 L 轮内相遇。",
+      "**为何不会跨过?** 因为是『同方向相对速度差为 1』,不会跳过 slow。",
+      "**终止条件**:无环时 fast 或 fast.next 为 None,自然退出 while。",
+      "**哈希替代**:`if id(node) in seen: cycle` —— 直观但 O(n) 空间。"
+    ],
+    "complexity": {
+      "time": "**O(n)**。",
+      "space": "**O(1)** Floyd / **O(n)** 哈希。"
+    }
   }
 }

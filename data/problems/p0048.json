@@ -22,5 +22,18 @@
     }
   ],
   "raw_source": "# LC 48. 旋转图像 · Medium · 矩阵\n\"\"\"\n🔹 题面\n    将 n×n 矩阵原地顺时针旋转 90°。\n\n🔹 直觉(转置 + 行翻转)\n    顺时针 90° = 主对角线转置 + 每行反转。\n    逆时针 90° = 副对角线转置 = 主转置 + 每列反转。\n\n🔹 复杂度 O(n²) / O(1)\n\"\"\"\n\n\nclass Solution:\n    def rotate(self, m: list[list[int]]) -> None:\n        n = len(m)\n        for i in range(n):\n            for j in range(i + 1, n):\n                m[i][j], m[j][i] = m[j][i], m[i][j]\n        for row in m:\n            row.reverse()\n\n\ndef _test() -> None:\n    s = Solution()\n    a = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\n    s.rotate(a)\n    assert a == [[7, 4, 1], [8, 5, 2], [9, 6, 3]]\n    a = [[5, 1, 9, 11], [2, 4, 8, 10], [13, 3, 6, 7], [15, 14, 12, 16]]\n    s.rotate(a)\n    assert a == [[15, 13, 2, 5], [14, 3, 4, 1], [12, 6, 8, 9], [16, 7, 10, 11]]\n    print(\"✅ p048 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
-  "viz": null
+  "viz": null,
+  "explanation": {
+    "short": "**转置 + 行翻转 = 顺时针 90°**。原地,O(1) 空间。",
+    "long": [
+      "**几何分解**:顺时针 90° 旋转 = 沿主对角线转置 + 每行水平翻转。",
+      "**为什么这样可行?** 转置后 (i,j) ↔ (j,i);行翻转后 (i, n-1-j),即原 (j, n-1-i),正是原矩阵 (n-1-i, j) 旋转后的位置。",
+      "**实现**:外层 i,内层 `j ∈ [i+1, n)` 做 swap(i,j) 与 (j,i);然后每行 reverse。",
+      "**变体**:逆时针 90° = 转置 + 列翻转 = 沿副对角线转置。"
+    ],
+    "complexity": {
+      "time": "**O(n²)** —— 每对元素被 swap 1 次。",
+      "space": "**O(1)** —— 原地。"
+    }
+  }
 }

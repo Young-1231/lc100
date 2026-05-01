@@ -32,5 +32,18 @@
       5
     ],
     "label": "示例"
+  },
+  "explanation": {
+    "short": "**双指针互换跑道**:a 走完 A 切到 B,b 走完 B 切到 A;若有交点必相遇。",
+    "long": [
+      "**为何必相遇?** 两指针总路程相等(都 = lenA + lenB),若相交则同时到交点;若不相交则同时到 None。",
+      "**直观证明**:a 在 A 上走 lenA - C 后切到 B,再走 lenB - lenC = lenA + lenB - 2·lenC 后到达交点... 等等更简单:总步数都是 lenA + lenB - lenC(交点处)。",
+      "**一行精髓**:`a = a.next if a else headB`,a 到 None 时切到另一条。",
+      "**陷阱**:不相交时 a/b 同时变成 None 退出循环,返回 None 而不是死循环。"
+    ],
+    "complexity": {
+      "time": "**O(m + n)**。",
+      "space": "**O(1)**。"
+    }
   }
 }
