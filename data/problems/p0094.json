@@ -8,7 +8,7 @@
   "day": 4,
   "day_title": "二叉树",
   "category": "二叉树",
-  "leetcode_url": "https://leetcode.cn/problems/inorder-traversal/",
+  "leetcode_url": "https://leetcode.cn/problems/binary-tree-inorder-traversal/",
   "filename": "p094_inorder_traversal.py",
   "doc": "🔹 题面\n    返回中序遍历(左-根-右)结果。\n\n🔹 解法对比\n    | 方法     | 时间 | 空间      | 备注                            |\n    |----------|------|-----------|---------------------------------|\n    | 递归     | O(n) | O(h)      | 简洁                            |\n    | 迭代+栈 ★| O(n) | O(h)      | 经典写法,一路向左,弹出向右     |\n    | Morris   | O(n) | O(1)      | 临时改父指针,做完恢复;难度大   |",
   "solutions": [
@@ -18,7 +18,7 @@
       "time": "O(n)",
       "space": "O(h)",
       "starred": true,
-      "code": "def inorderTraversal(self, root) -> list[int]:\n    out, stack, cur = [], [], root\n    while cur or stack:\n        while cur:\n            stack.append(cur)\n            cur = cur.left\n        cur = stack.pop()\n        out.append(cur.val)\n        cur = cur.right\n    return out"
+      "code": "class Solution:\n    def inorderTraversal(self, root) -> list[int]:\n        out, stack, cur = [], [], root\n        while cur or stack:\n            while cur:\n                stack.append(cur)\n                cur = cur.left\n            cur = stack.pop()\n            out.append(cur.val)\n            cur = cur.right\n        return out\n"
     },
     {
       "method": "inorderTraversal_rec",
@@ -26,7 +26,7 @@
       "time": "O(n)",
       "space": "O(h)",
       "starred": false,
-      "code": "def inorderTraversal_rec(self, root) -> list[int]:\n    out: list[int] = []\n\n    def dfs(n):\n        if not n:\n            return\n        dfs(n.left)\n        out.append(n.val)\n        dfs(n.right)\n\n    dfs(root)\n    return out"
+      "code": "class Solution:\n    def inorderTraversal(self, root) -> list[int]:\n        out: list[int] = []\n\n        def dfs(n):\n            if not n:\n                return\n            dfs(n.left)\n            out.append(n.val)\n            dfs(n.right)\n\n        dfs(root)\n        return out\n"
     },
     {
       "method": "inorderTraversal_morris",
@@ -34,7 +34,7 @@
       "time": "O(n)",
       "space": "O(1)",
       "starred": false,
-      "code": "def inorderTraversal_morris(self, root) -> list[int]:\n    out: list[int] = []\n    cur = root\n    while cur:\n        if cur.left:\n            pred = cur.left\n            while pred.right and pred.right is not cur:\n                pred = pred.right\n            if pred.right is None:\n                pred.right = cur\n                cur = cur.left\n            else:\n                pred.right = None       # 恢复\n                out.append(cur.val)\n                cur = cur.right\n        else:\n            out.append(cur.val)\n            cur = cur.right\n    return out"
+      "code": "class Solution:\n    def inorderTraversal(self, root) -> list[int]:\n        out: list[int] = []\n        cur = root\n        while cur:\n            if cur.left:\n                pred = cur.left\n                while pred.right and pred.right is not cur:\n                    pred = pred.right\n                if pred.right is None:\n                    pred.right = cur\n                    cur = cur.left\n                else:\n                    pred.right = None       # 恢复\n                    out.append(cur.val)\n                    cur = cur.right\n            else:\n                out.append(cur.val)\n                cur = cur.right\n        return out\n"
     }
   ],
   "raw_source": "# LC 94. 二叉树的中序遍历 · Easy · 遍历\n\"\"\"\n🔹 题面\n    返回中序遍历(左-根-右)结果。\n\n🔹 解法对比\n    | 方法     | 时间 | 空间      | 备注                            |\n    |----------|------|-----------|---------------------------------|\n    | 递归     | O(n) | O(h)      | 简洁                            |\n    | 迭代+栈 ★| O(n) | O(h)      | 经典写法,一路向左,弹出向右     |\n    | Morris   | O(n) | O(1)      | 临时改父指针,做完恢复;难度大   |\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import build_tree\n\n\nclass Solution:\n    # 解法 1:迭代 + 栈 ★ — O(n) / O(h)\n    def inorderTraversal(self, root) -> list[int]:\n        out, stack, cur = [], [], root\n        while cur or stack:\n            while cur:\n                stack.append(cur)\n                cur = cur.left\n            cur = stack.pop()\n            out.append(cur.val)\n            cur = cur.right\n        return out\n\n    # 解法 2:递归 — O(n) / O(h)\n    def inorderTraversal_rec(self, root) -> list[int]:\n        out: list[int] = []\n\n        def dfs(n):\n            if not n:\n                return\n            dfs(n.left)\n            out.append(n.val)\n            dfs(n.right)\n\n        dfs(root)\n        return out\n\n    # 解法 3:Morris 遍历 — O(n) / O(1)\n    # 核心:对每个有左子树的节点,把它的\"前驱(左子树最右)\"的 right 接到自己,\n    # 形成线索;遍历完左子树后顺着线索回到自己,再断开。\n    def inorderTraversal_morris(self, root) -> list[int]:\n        out: list[int] = []\n        cur = root\n        while cur:\n            if cur.left:\n                pred = cur.left\n                while pred.right and pred.right is not cur:\n                    pred = pred.right\n                if pred.right is None:\n                    pred.right = cur\n                    cur = cur.left\n                else:\n                    pred.right = None       # 恢复\n                    out.append(cur.val)\n                    cur = cur.right\n            else:\n                out.append(cur.val)\n                cur = cur.right\n        return out\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [([1, None, 2, 3], [1, 3, 2]), ([], []), ([1], [1])]\n    for arg, want in cases:\n        for fn in (s.inorderTraversal, s.inorderTraversal_rec, s.inorderTraversal_morris):\n            assert fn(build_tree(arg)) == want\n    print(\"✅ p094 通过 3 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -60,5 +60,14 @@
       "time": "**O(n)** —— 每个节点访问常数次。",
       "space": "**O(h)** 迭代栈 / **O(1)** Morris(树本身被临时改)。"
     }
+  },
+  "n_sols": 3,
+  "code_explain": {
+    "method": "inorderTraversal",
+    "annotated": "class Solution:\n    def inorderTraversal(self, root) -> list[int]:\n        out, stack, cur = [], [], root\n        while cur or stack:\n            while cur:               # 一路向左,沿途结点压栈\n                stack.append(cur)\n                cur = cur.left\n            cur = stack.pop()        # 弹出最左(当前最小未访问)结点\n            out.append(cur.val)      # 访问它\n            cur = cur.right          # 再转向它的右子树\n        return out\n",
+    "gotchas": [
+      "中序 = 左 → 根 → 右;用栈模拟递归。",
+      "先把左链全压栈,弹出即按中序顺序。"
+    ]
   }
 }

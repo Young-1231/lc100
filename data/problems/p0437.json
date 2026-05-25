@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def pathSum(self, root, targetSum: int) -> int:\n    cnt = defaultdict(int)\n    cnt[0] = 1\n    ans = 0\n\n    def dfs(n, cur):\n        nonlocal ans\n        if not n:\n            return\n        cur += n.val\n        ans += cnt[cur - targetSum]\n        cnt[cur] += 1\n        dfs(n.left, cur)\n        dfs(n.right, cur)\n        cnt[cur] -= 1\n\n    dfs(root, 0)\n    return ans"
+      "code": "from collections import defaultdict\n\nclass Solution:\n    def pathSum(self, root, targetSum: int) -> int:\n        cnt = defaultdict(int)\n        cnt[0] = 1\n        ans = 0\n\n        def dfs(n, cur):\n            nonlocal ans\n            if not n:\n                return\n            cur += n.val\n            ans += cnt[cur - targetSum]\n            cnt[cur] += 1\n            dfs(n.left, cur)\n            dfs(n.right, cur)\n            cnt[cur] -= 1\n\n        dfs(root, 0)\n        return ans\n"
     }
   ],
   "raw_source": "# LC 437. 路径总和 III · Medium · 前缀和 + 哈希\n\"\"\"\n🔹 题面\n    任意\"自上而下\"路径的节点和等于 targetSum 的路径数(可不到根/不到叶)。\n\n🔹 直觉\n    把二叉树看成\"从根到 X\"的前缀和。当前节点累计和 = curSum,\n    若存在 prefix[curSum - target] 个祖先,则有那么多条新路径。\n    DFS 进入时 +1,回溯时 -1(避免兄弟分支互相影响)。\n\n🔹 复杂度 O(n) / O(h)\n\"\"\"\nfrom collections import defaultdict\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import build_tree\n\n\nclass Solution:\n    def pathSum(self, root, targetSum: int) -> int:\n        cnt = defaultdict(int)\n        cnt[0] = 1\n        ans = 0\n\n        def dfs(n, cur):\n            nonlocal ans\n            if not n:\n                return\n            cur += n.val\n            ans += cnt[cur - targetSum]\n            cnt[cur] += 1\n            dfs(n.left, cur)\n            dfs(n.right, cur)\n            cnt[cur] -= 1\n\n        dfs(root, 0)\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.pathSum(build_tree([10, 5, -3, 3, 2, None, 11, 3, -2, None, 1]), 8) == 3\n    assert s.pathSum(build_tree([5, 4, 8, 11, None, 13, 4, 7, 2, None, None, 5, 1]), 22) == 3\n    assert s.pathSum(None, 0) == 0\n    print(\"✅ p437 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -52,5 +52,14 @@
       "time": "**O(n)**。",
       "space": "**O(h)** 递归 + dict。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "pathSum",
+    "annotated": "from collections import defaultdict\n\nclass Solution:\n    def pathSum(self, root, targetSum: int) -> int:\n        cnt = defaultdict(int)       # 记录「根到当前结点路径」上各前缀和出现次数\n        cnt[0] = 1                   # 前缀和 0 预置一次(代表空前缀)\n        ans = 0\n\n        def dfs(n, cur):\n            nonlocal ans\n            if not n:\n                return\n            cur += n.val             # 当前路径前缀和\n            ans += cnt[cur - targetSum]   # 多少个祖先前缀和 = cur-target,就有多少条合法路径\n            cnt[cur] += 1            # 进子树前,登记当前前缀和\n            dfs(n.left, cur)\n            dfs(n.right, cur)\n            cnt[cur] -= 1            # 回溯:离开本结点,撤销其前缀和(不影响别的分支)\n\n        dfs(root, 0)\n        return ans\n",
+    "gotchas": [
+      "树上前缀和:思路同 #560,但要**回溯**——离开结点时 `cnt[cur] -= 1`,否则别的分支会误用。",
+      "`cnt[0] = 1` 处理「从根开始就凑够」的路径。"
+    ]
   }
 }

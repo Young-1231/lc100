@@ -9,7 +9,7 @@
   "day": 4,
   "day_title": "二叉树",
   "category": "二叉树",
-  "leetcode_url": "https://leetcode.cn/problems/max-depth/",
+  "leetcode_url": "https://leetcode.cn/problems/maximum-depth-of-binary-tree/",
   "filename": "p104_max_depth.py",
   "doc": "🔹 解法对比\n    | 方法     | 时间 | 空间 | 备注              |\n    |----------|------|------|-------------------|\n    | 递归 DFS | O(n) | O(h) | 简洁              |\n    | 迭代 BFS | O(n) | O(w) | 层序逐层加        |",
   "solutions": [
@@ -19,7 +19,7 @@
       "time": "O(n)",
       "space": "O(h)",
       "starred": false,
-      "code": "def maxDepth(self, root) -> int:\n    if not root:\n        return 0\n    return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))"
+      "code": "class Solution:\n    def maxDepth(self, root) -> int:\n        if not root:\n            return 0\n        return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))\n"
     },
     {
       "method": "maxDepth_bfs",
@@ -27,7 +27,7 @@
       "time": "O(n)",
       "space": "O(w)",
       "starred": false,
-      "code": "def maxDepth_bfs(self, root) -> int:\n    if not root:\n        return 0\n    q = deque([root])\n    d = 0\n    while q:\n        d += 1\n        for _ in range(len(q)):\n            n = q.popleft()\n            if n.left:\n                q.append(n.left)\n            if n.right:\n                q.append(n.right)\n    return d"
+      "code": "from collections import deque\n\nclass Solution:\n    def maxDepth(self, root) -> int:\n        if not root:\n            return 0\n        q = deque([root])\n        d = 0\n        while q:\n            d += 1\n            for _ in range(len(q)):\n                n = q.popleft()\n                if n.left:\n                    q.append(n.left)\n                if n.right:\n                    q.append(n.right)\n        return d\n"
     }
   ],
   "raw_source": "# LC 104. 二叉树的最大深度 · Easy · 递归 / BFS\n\"\"\"\n🔹 解法对比\n    | 方法     | 时间 | 空间 | 备注              |\n    |----------|------|------|-------------------|\n    | 递归 DFS | O(n) | O(h) | 简洁              |\n    | 迭代 BFS | O(n) | O(w) | 层序逐层加        |\n\"\"\"\nfrom collections import deque\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import build_tree\n\n\nclass Solution:\n    # 解法 1:递归 — O(n) / O(h)\n    def maxDepth(self, root) -> int:\n        if not root:\n            return 0\n        return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))\n\n    # 解法 2:BFS — O(n) / O(w)\n    def maxDepth_bfs(self, root) -> int:\n        if not root:\n            return 0\n        q = deque([root])\n        d = 0\n        while q:\n            d += 1\n            for _ in range(len(q)):\n                n = q.popleft()\n                if n.left:\n                    q.append(n.left)\n                if n.right:\n                    q.append(n.right)\n        return d\n\n\ndef _test() -> None:\n    s = Solution()\n    for fn in (s.maxDepth, s.maxDepth_bfs):\n        assert fn(build_tree([3, 9, 20, None, None, 15, 7])) == 3\n        assert fn(None) == 0\n        assert fn(build_tree([1, None, 2])) == 2\n    print(\"✅ p104 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -56,5 +56,14 @@
       "time": "**O(n)**。",
       "space": "**O(h)** 递归 / **O(w)** BFS。"
     }
+  },
+  "n_sols": 2,
+  "code_explain": {
+    "method": "maxDepth",
+    "annotated": "from collections import deque\n\nclass Solution:\n    def maxDepth(self, root) -> int:\n        if not root:\n            return 0\n        q = deque([root])\n        d = 0\n        while q:\n            d += 1                   # 每处理完一层,深度 +1\n            for _ in range(len(q)):  # 固定本层数量\n                n = q.popleft()\n                if n.left:\n                    q.append(n.left)\n                if n.right:\n                    q.append(n.right)\n        return d\n",
+    "gotchas": [
+      "按层 BFS,层数即最大深度(也可递归 `1 + max(左, 右)`)。",
+      "同样要先 `len(q)` 固定本层。"
+    ]
   }
 }

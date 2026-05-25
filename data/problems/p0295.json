@@ -11,7 +11,16 @@
   "leetcode_url": "https://leetcode.cn/problems/find-median-from-data-stream/",
   "filename": "p295_median_data_stream.py",
   "doc": "🔹 直觉\n    维护两个堆:\n        lo:大顶堆(存小一半);hi:小顶堆(存大一半)。\n    保证 |lo| - |hi| ∈ {0,1}。中位数 = lo 顶 或 (lo顶+hi顶)/2。\n\n🔹 trick(Python 没大顶堆)\n    把 lo 入负值实现大顶。",
-  "solutions": [],
+  "solutions": [
+    {
+      "method": "MedianFinder",
+      "title": "标准实现",
+      "time": "",
+      "space": "",
+      "starred": true,
+      "code": "import heapq\n\nclass MedianFinder:\n    def __init__(self):\n        self.lo: list[int] = []        # 大顶(存负)\n        self.hi: list[int] = []        # 小顶\n\n    def addNum(self, num: int) -> None:\n        heapq.heappush(self.lo, -num)\n        heapq.heappush(self.hi, -heapq.heappop(self.lo))\n        if len(self.hi) > len(self.lo):\n            heapq.heappush(self.lo, -heapq.heappop(self.hi))\n\n    def findMedian(self) -> float:\n        if len(self.lo) > len(self.hi):\n            return float(-self.lo[0])\n        return (-self.lo[0] + self.hi[0]) / 2\n"
+    }
+  ],
   "raw_source": "# LC 295. 数据流的中位数 · Hard · 双堆\n\"\"\"\n🔹 直觉\n    维护两个堆:\n        lo:大顶堆(存小一半);hi:小顶堆(存大一半)。\n    保证 |lo| - |hi| ∈ {0,1}。中位数 = lo 顶 或 (lo顶+hi顶)/2。\n\n🔹 trick(Python 没大顶堆)\n    把 lo 入负值实现大顶。\n\"\"\"\nimport heapq\n\n\nclass MedianFinder:\n    def __init__(self):\n        self.lo: list[int] = []        # 大顶(存负)\n        self.hi: list[int] = []        # 小顶\n\n    def addNum(self, num: int) -> None:\n        heapq.heappush(self.lo, -num)\n        heapq.heappush(self.hi, -heapq.heappop(self.lo))\n        if len(self.hi) > len(self.lo):\n            heapq.heappush(self.lo, -heapq.heappop(self.hi))\n\n    def findMedian(self) -> float:\n        if len(self.lo) > len(self.hi):\n            return float(-self.lo[0])\n        return (-self.lo[0] + self.hi[0]) / 2\n\n\ndef _test() -> None:\n    mf = MedianFinder()\n    mf.addNum(1); mf.addNum(2)\n    assert mf.findMedian() == 1.5\n    mf.addNum(3)\n    assert mf.findMedian() == 2.0\n    print(\"✅ p295 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
   "viz": null,
   "explanation": {
@@ -26,5 +35,15 @@
       "time": "**O(log n)** 每次 add;**O(1)** find。",
       "space": "**O(n)**。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "MedianFinder",
+    "annotated": "import heapq\n\nclass MedianFinder:\n    def __init__(self):\n        self.lo: list[int] = []        # 放较小的一半(大顶堆,用负数模拟)\n        self.hi: list[int] = []        # 放较大的一半(小顶堆)\n\n    def addNum(self, num: int) -> None:\n        heapq.heappush(self.lo, -num)              # 先进 lo\n        heapq.heappush(self.hi, -heapq.heappop(self.lo))  # 把 lo 的最大值挪到 hi,保证 lo 全 <= hi\n        if len(self.hi) > len(self.lo):            # 维持 lo 个数 >= hi\n            heapq.heappush(self.lo, -heapq.heappop(self.hi))\n\n    def findMedian(self) -> float:\n        if len(self.lo) > len(self.hi):            # 总数为奇 -> 中位数在 lo 顶\n            return float(-self.lo[0])\n        return (-self.lo[0] + self.hi[0]) / 2      # 偶 -> 两个堆顶取平均\n",
+    "gotchas": [
+      "对顶堆:`lo` 放小的一半(大顶,负数模拟),`hi` 放大的一半(小顶)。",
+      "Python 的 heapq 只有小顶堆,所以 lo 存 `-num`,取出再取负还原。",
+      "始终让两堆数量差 ≤ 1,中位数就在堆顶。"
+    ]
   }
 }

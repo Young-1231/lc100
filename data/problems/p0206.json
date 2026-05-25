@@ -8,7 +8,7 @@
   "day": 3,
   "day_title": "链表",
   "category": "链表",
-  "leetcode_url": "https://leetcode.cn/problems/reverse-list/",
+  "leetcode_url": "https://leetcode.cn/problems/reverse-linked-list/",
   "filename": "p206_reverse_list.py",
   "doc": "🔹 题面\n    反转单链表。\n\n🔹 解法对比\n    | 方法     | 时间 | 空间    | 备注                        |\n    |----------|------|---------|-----------------------------|\n    | 迭代 ★  | O(n) | O(1)    | 三指针 prev/cur/nxt          |\n    | 递归     | O(n) | O(n) 栈 | 优雅,深递归可能爆栈        |",
   "solutions": [
@@ -18,7 +18,7 @@
       "time": "O(n)",
       "space": "O(1)",
       "starred": true,
-      "code": "def reverseList(self, head):\n    prev, cur = None, head\n    while cur:\n        nxt = cur.next\n        cur.next = prev\n        prev = cur\n        cur = nxt\n    return prev"
+      "code": "class Solution:\n    def reverseList(self, head):\n        prev, cur = None, head\n        while cur:\n            nxt = cur.next\n            cur.next = prev\n            prev = cur\n            cur = nxt\n        return prev\n"
     },
     {
       "method": "reverseList_recursive",
@@ -26,7 +26,7 @@
       "time": "O(n)",
       "space": "O(n)",
       "starred": false,
-      "code": "def reverseList_recursive(self, head):\n    if not head or not head.next:\n        return head\n    new_head = self.reverseList_recursive(head.next)\n    head.next.next = head\n    head.next = None\n    return new_head"
+      "code": "class Solution:\n    def reverseList(self, head):\n        if not head or not head.next:\n            return head\n        new_head = self.reverseList(head.next)\n        head.next.next = head\n        head.next = None\n        return new_head\n"
     }
   ],
   "raw_source": "# LC 206. 反转链表 · Easy · 链表基础\n\"\"\"\n🔹 题面\n    反转单链表。\n\n🔹 解法对比\n    | 方法     | 时间 | 空间    | 备注                        |\n    |----------|------|---------|-----------------------------|\n    | 迭代 ★  | O(n) | O(1)    | 三指针 prev/cur/nxt          |\n    | 递归     | O(n) | O(n) 栈 | 优雅,深递归可能爆栈        |\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import build_list, list_to_array\n\n\nclass Solution:\n    # 解法 1:迭代 ★ — O(n) / O(1)\n    def reverseList(self, head):\n        prev, cur = None, head\n        while cur:\n            nxt = cur.next\n            cur.next = prev\n            prev = cur\n            cur = nxt\n        return prev\n\n    # 解法 2:递归 — O(n) / O(n)\n    def reverseList_recursive(self, head):\n        if not head or not head.next:\n            return head\n        new_head = self.reverseList_recursive(head.next)\n        head.next.next = head\n        head.next = None\n        return new_head\n\n\ndef _test() -> None:\n    s = Solution()\n    for fn in (s.reverseList, s.reverseList_recursive):\n        assert list_to_array(fn(build_list([1, 2, 3, 4, 5]))) == [5, 4, 3, 2, 1]\n        assert list_to_array(fn(build_list([]))) == []\n        assert list_to_array(fn(build_list([1]))) == [1]\n    print(\"✅ p206 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -53,5 +53,14 @@
       "time": "**O(n)**。",
       "space": "**O(1)** 迭代 / **O(n)** 递归栈。"
     }
+  },
+  "n_sols": 2,
+  "code_explain": {
+    "method": "reverseList",
+    "annotated": "class Solution:\n    def reverseList(self, head):\n        prev, cur = None, head           # prev 是已反转部分的头(初始空)\n        while cur:\n            nxt = cur.next               # 先存下一个,别丢\n            cur.next = prev              # 当前结点反指前一个(核心反转)\n            prev = cur                   # prev、cur 各前进一格\n            cur = nxt\n        return prev                      # 末尾 prev 即新头\n",
+    "gotchas": [
+      "必须先用 `nxt` 存住 `cur.next`,否则改完指针就找不到后面了。",
+      "返回 `prev`(新头),不是 cur(此时为 None)。"
+    ]
   }
 }

@@ -43,7 +43,7 @@
     "tags": [
       "滑动窗口"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/longest-substring-no-repeat/",
+    "leetcode_url": "https://leetcode.cn/problems/longest-substring-without-repeating-characters/",
     "has_expl": true,
     "search": "无重复字符的最长子串 滑动窗口 滑动窗口 🔹 题面\n    返回最长不含重复字符的子串长度。\n\n🔹 直觉\n    维护一个窗口 [l, r],其中无重复;r 右移时若遇到重复字符,把 l 跳到该\n    字符上次位置 +1。**l 只前进不后退**。\n\n🔹 复杂度 o(n) / o(min(n, σ)) 经典『可变滑窗 + 哈希记位』:窗口右扩,遇重复就跳左指针到上次位置 +1。 **目标**:找最长的『窗口内字符不重复』的子串。 **两个不变量**:1) 窗口 `[l, r]` 内永远不重复;2) `last[c]` 记录字符 c 最近一次出现的下标。 **右扩**:每次把 `s[r]` 拉进窗口。如果 `s[r]` 已经在 `last` 里且位置 ≥ l,说明窗口重复了,把 l 跳到 `last[s[r]] + 1`。 **关键陷阱**:`l` 只能前进、不能后退。`last[c]` 可能比当前 `l` 还旧(说明已被甩出过),此时不跳 l。 **配合可视化**:`'abcabcbb'` 处理到 r=3('a')时,`last['a']=0`,`l` 从 0 跳到 1,窗口变成 `'bca'`,长度 3。 主解法"
   },
@@ -59,7 +59,7 @@
     "tags": [
       "二分"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/median-two-sorted/",
+    "leetcode_url": "https://leetcode.cn/problems/median-of-two-sorted-arrays/",
     "has_expl": true,
     "search": "寻找两个正序数组的中位数 二分 二分 🔹 题面\n    o(log min(m,n)) 求两个升序数组合并后的中位数。\n\n🔹 直觉(短数组上二分切分点)\n    把两数组各切一刀,左半总长 = (m+n+1)//2。\n    设 i 为短数组的左半长度,j = 总左半长度 - i。\n    要求 max(left) ≤ min(right) 即可:\n        a[i-1] ≤ b[j]   且   b[j-1] ≤ a[i]\n    若 a[i-1] > b[j],i 太大,r = i - 1;反之 l = i + 1。\n\n🔹 复杂度 o(log min(m,n)) **在短数组上二分切分位置**,使左半总长 = (m+n+1)/2 且 max(left) ≤ min(right)。o(log min(m,n))。 **目标**:把两个有序数组各切一刀,使左半总长固定,且左半最大 ≤ 右半最小。 **变量**:i = 短数组左半长度(0..m),j = (m+n+1)/2 - i。在 i 上二分。 **判断**:取 al = a[i-1] / ar = a[i] / bl = b[j-1] / br = b[j](越界用 ±∞)。需要 al ≤ br 且 bl ≤ ar。 **收缩**:al > br 说明 i 太大,r = i-1;反之 l = i+1。 **结果**:奇数总长答案 = max(al, bl);偶数 = (max(al,bl) + min(ar,br)) / 2。 主解法"
   },
@@ -77,7 +77,7 @@
       "DP",
       "Manacher"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/longest-palindrome/",
+    "leetcode_url": "https://leetcode.cn/problems/longest-palindromic-substring/",
     "has_expl": true,
     "search": "最长回文子串 中心扩展 dp manacher 多维dp 🔹 解法对比\n    | 方法            | 时间   | 空间   | 备注                                  |\n    |-----------------|--------|--------|---------------------------------------|\n    | dp              | o(n²)  | o(n²)  | f[i][j] = f[i+1][j-1] && s[i]==s[j]   |\n    | 中心扩展 ★     | o(n²)  | o(1)   | 面试默写,常数小                       |\n    | manacher        | o(n)   | o(n)   | 极致最优;实现细节多                  | **中心扩展**最简洁:枚举每个『中心』(奇 1 个 / 偶 2 个),向两侧扩展。manacher o(n) 是炫技款。 **奇偶两种中心**:奇长度 'aba' 中心是 1 个字符;偶长度 'abba' 中心是 2 个字符。每个 i 都尝试两种。 **扩展函数**:`while l>=0 and r<n and s[l]==s[r]: l--; r++;` 退出后实际边界 [l+1, r-1]。 **记录答案**:每次扩展后比较长度更新 best_l, best_r。 **manacher 思路**:在每两字符间插 # 把奇偶统一;维护中心 c 和右边界 r,利用对称性快速跳过部分位置。 中心扩展 dp manacher"
   },
@@ -109,7 +109,7 @@
     "tags": [
       "双指针"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/three-sum/",
+    "leetcode_url": "https://leetcode.cn/problems/3sum/",
     "has_expl": true,
     "search": "三数之和 双指针 双指针 🔹 题面\n    返回所有不重复三元组 (a,b,c),其中 a+b+c=0。\n\n🔹 解法对比\n    | 方法              | 时间   | 空间   | 备注                    |\n    |-------------------|--------|--------|-------------------------|\n    | 暴力三重循环+set  | o(n³)  | o(n)   | 排序后 set 去重         |\n    | 排序 + 双指针 ★  | o(n²)  | o(1)   | 经典模板,面试首选      |\n    | 排序 + 哈希       | o(n²)  | o(n)   | 固定 a,在剩余里 2sum   |\n\n🔹 直觉(双指针)\n    排序后固定 i,问题退化为\"在 i+1..n-1 找两数之和 = -nums[i]\" → 双指针。\n\n🔹 三处去重(出错率最高)\n    1) i 跳过相同的 (i>0 and nums[i]==nums[i-1])\n    2) 找到答案后 l 推进时跳过相同的\n    3) 找到答案后 r 退后时跳过相同的 排序后**固定 i**,问题退化为『在 i+1..n-1 找两数之和 = -nums[i]』,经典双指针。三处去重防止重复三元组。 **为什么排序?** 排序让『相同元素相邻』,可以一次跳过去重;并让双指针有方向性。 **外层 i**:i 跳过已用过的相同值(`if i>0 and nums[i]==nums[i-1]: continue`)。 **内层 l/r**:固定 i 后,target = -nums[i];和 < target 推 l,和 > target 退 r,等于则记录答案。 **两次去重**:命中后,l 跳过相同左值,r 跳过相同右值,避免相同三元组重复。 **剪枝**:`nums[i] > 0` 时三数和必 > 0,直接 break。 暴力 + set 去重 排序 + 双指针 排序 + 哈希(每对 a, b 在剩余里查"
   },
@@ -125,7 +125,7 @@
     "tags": [
       "回溯"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/letter-combinations/",
+    "leetcode_url": "https://leetcode.cn/problems/letter-combinations-of-a-phone-number/",
     "has_expl": true,
     "search": "电话号码的字母组合 回溯 回溯 🔹 直觉\n    逐位选取该数字对应字母,dfs。 **回溯**:逐位枚举该数字对应字母,dfs 拼接到长度等于 digits。 **字母表**:`{2:'abc', 3:'def', ...}` 是题面给定的固定映射。 **回溯三件套**:做选择 (push) → 递归 → 撤销 (pop)。 **base case**:`i == len(digits)` 时 path 长度 = 输入位数,collect 答案。 **输入空**:返回 [],而不是 [\"\"](题面要求)。 主解法"
   },
@@ -142,7 +142,7 @@
       "双指针",
       "哨兵"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/remove-nth-from-end/",
+    "leetcode_url": "https://leetcode.cn/problems/remove-nth-node-from-end-of-list/",
     "has_expl": true,
     "search": "删除链表的倒数第 n 个结点 双指针 哨兵 链表 🔹 题面\n    一次扫描删掉倒数第 n 个节点。\n\n🔹 直觉\n    哨兵 + 快慢指针:fast 先走 n+1 步,然后 fast/slow 同步,fast=none 时 slow.next 即待删。\n\n🔹 复杂度 o(l) / o(1)\n\n🔹 踩坑\n    必须用 dummy,否则删除头节点要分支处理。 **快慢指针 + 哨兵**:fast 先走 n+1 步,然后两指针同速;fast=none 时 slow.next 即待删。 **为何要哨兵?** 删除头节点也是合法情况;dummy 让所有删除都是 `slow.next = slow.next.next` 统一形式。 **fast 先走 n+1 步**:这样 fast 与 slow 之间永远隔 n 个节点;fast 跨过末尾时 slow 恰好指向待删的『前一个』。 **一次遍历**:`for _ in range(n+1): fast = fast.next` 不算遍历主体。 **边界**:n 等于链表长度时也对(slow 停在 dummy,删头节点)。 主解法"
   },
@@ -174,7 +174,7 @@
     "tags": [
       "链表归并"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/merge-two-lists/",
+    "leetcode_url": "https://leetcode.cn/problems/merge-two-sorted-lists/",
     "has_expl": true,
     "search": "合并两个有序链表 链表归并 链表 🔹 题面\n    合并两个升序链表为一个新升序链表。\n\n🔹 直觉\n    哨兵节点 dummy,谁小接谁;末尾接剩余。\n\n🔹 复杂度 o(m+n) / o(1)(若复用原节点) **哨兵 dummy + 双指针归并**:谁小接谁,末尾接剩余。 **dummy + tail**:dummy 简化首节点处理;tail 指向当前结果末尾。 **主循环**:`while l1 and l2`,比较 val,小的一侧:`tail.next = node; node = node.next; tail = tail.next`。 **收尾**:`tail.next = l1 or l2`,直接挂上还没用完的那条链。 **复用节点**:不需要新建 listnode,直接复用原节点指针,节省内存。 主解法"
   },
@@ -207,7 +207,7 @@
       "堆",
       "分治"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/merge-k-lists/",
+    "leetcode_url": "https://leetcode.cn/problems/merge-k-sorted-lists/",
     "has_expl": true,
     "search": "合并 k 个升序链表 堆 分治 链表 🔹 题面\n    合并 k 个升序链表,返回总升序链表。n 是总节点数,k 是链表数。\n\n🔹 解法对比\n    | 方法           | 时间        | 空间    | 备注                             |\n    |----------------|-------------|---------|----------------------------------|\n    | 顺次两两合并   | o(nk)       | o(1)    | 朴素                             |\n    | 小顶堆 ★      | o(n log k)  | o(k)    | 每次取最小,分布式 / 大数据流也用 |\n    | 分治两两归并   | o(n log k)  | o(log k)| 类似归并排序,递归栈              |\n\n🔹 trick(python heapq)\n    listnode 没定义 < ;入堆元组 (val, idx, node),idx 唯一防 tie。 **小顶堆**取最小,o(n log k);或**分治两两归并**,t(n) = 2t(n/2) + o(n) = o(n log k)。 **朴素**:顺次合并 k 次,时间 o(nk)(每次 n 元素被反复扫)。 **小顶堆**:把 k 个链表头入堆,每次弹出最小并把其 next 推入。每个节点入/出堆各一次,堆操作 o(log k)。 **python heapq 陷阱**:listnode 不可比较,入堆元组 `(val, idx, node)`,idx 唯一防 tie。 **分治**:把 k 个链表分两半各自归并,再合并两个有序链表 o(n)。共 log k 层,每层总扫 n。 小顶堆 分治两两归并 顺次两两合并"
   },
@@ -223,7 +223,7 @@
     "tags": [
       "链表"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/swap-pairs/",
+    "leetcode_url": "https://leetcode.cn/problems/swap-nodes-in-pairs/",
     "has_expl": true,
     "search": "两两交换链表中的节点 链表 链表 🔹 题面\n    两两交换相邻节点(不许只换值)。\n\n🔹 解法对比\n    | 方法     | 时间 | 空间    | 备注          |\n    |----------|------|---------|---------------|\n    | 迭代 ★  | o(n) | o(1)    | 哨兵 + prev   |\n    | 递归     | o(n) | o(n) 栈 | 优雅           | **哨兵 + prev**:每轮取相邻 a, b,改 3 个 next 完成局部交换。 **3 个 next 改写**:`prev.next = b; a.next = b.next; b.next = a`。 **前进 prev**:本轮交换后 a 已是『二人组的尾部』,下次的『二人组前驱』就是 a。 **循环条件**:`while prev.next and prev.next.next` —— 至少有 2 个待交换。 **递归版**:`f(a) = let b = a.next; b.next = a; a.next = f(b.next)`,优雅但 o(n) 栈。 迭代 递归"
   },
@@ -239,7 +239,7 @@
     "tags": [
       "链表"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/reverse-k-group/",
+    "leetcode_url": "https://leetcode.cn/problems/reverse-nodes-in-k-group/",
     "has_expl": true,
     "search": "k 个一组翻转链表 链表 链表 🔹 题面\n    每 k 个一组翻转节点;不足 k 不动。\n\n🔹 解法对比\n    | 方法    | 时间 | 空间   | 备注          |\n    |---------|------|--------|---------------|\n    | 迭代 ★ | o(n) | o(1)   | 工程实现      |\n    | 递归    | o(n) | o(n/k) | 实现简洁       | 哨兵 + 段前驱 group_prev。先看后面是否够 k 个,**够则反转 [group_prev.next, kth] 区间**,然后接回。 **为什么要哨兵?** 头节点可能也参与翻转,有 dummy 才统一处理。 **先探后翻**:从 group_prev 走 k 步,如果走不满直接收工返回;走满则得到 kth(段尾)。 **反转区间**:经典 prev/cur 三指针,但 prev 初始为 group_next(段尾的下一个)而不是 none,这样反转完成后 head 自然接到下段。 **接回**:旧的段头 `group_prev.next` 反转后变成新段尾,把它记下;`group_prev.next = kth`(新段头),`group_prev = 旧段头`(下次的前驱)。 迭代 递归"
   },
@@ -272,7 +272,7 @@
       "DP",
       "栈"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/longest-valid-parens/",
+    "leetcode_url": "https://leetcode.cn/problems/longest-valid-parentheses/",
     "has_expl": true,
     "search": "最长有效括号 dp 栈 dp 🔹 题面\n    返回最长有效括号子串长度。\n\n🔹 解法对比\n    | 方法            | 时间 | 空间 | 备注                          |\n    |-----------------|------|------|-------------------------------|\n    | 栈(下标)★    | o(n) | o(n) | 栈底放\"上一个未匹配位置\"     |\n    | dp              | o(n) | o(n) | f[i] 表 s[..i] 以 i 结尾的最长有效  |\n    | 双向计数(贪心) | o(n) | o(1) | 左右各扫一次,计 ( 与 )       | **栈记位置**:栈底为『上一个未匹配的位置』,实时计算 i - 栈顶 当前长度。 **初始 stack = [-1]**:作为虚拟前驱,首段长度 = i - (-1) - 1 = i。 **遇 `(`**:下标入栈。 **遇 `)`**:先弹栈;若栈空说明这是新的『未匹配右括号』,把 i 作为新基准入栈;否则当前有效长度 = i - 栈顶。 **dp 替代**:`f[i]` 表示以 i 结尾的最长有效长度;`s[i]==')'` 时分两种 sub-case 转移。 栈 dp 双向计数"
   },
@@ -288,7 +288,7 @@
     "tags": [
       "二分"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/search-rotated/",
+    "leetcode_url": "https://leetcode.cn/problems/search-in-rotated-sorted-array/",
     "has_expl": true,
     "search": "搜索旋转排序数组 二分 二分 🔹 直觉\n    每一步看 nums[l..mid] 与 nums[mid..r] 哪一段是升序的:\n        若左半升序:target 在 [nums[l], nums[mid]) 内 → 走左\n        否则:右半必升序,target 在 (nums[mid], nums[r]] 内 → 走右 二分时看 `nums[l..mid]` 是否升序:**升序则在 [l, mid) 判定 target,否则在 (mid, r] 判定**;每步至少缩半。 **旋转数组性质**:旋转后数组分为两段升序,而 mid 一定落在某一段里。 **分支判断**:`nums[l] <= nums[mid]` 说明左半 [l..mid] 是有序段。 **分支处理**:有序段内若 `nums[l] <= target < nums[mid]`,target 在左半,r = mid-1;否则在右半,l = mid+1。 **镜像分支**:右半有序时同理处理。 **为何 `<=`?** 当 l == mid(单元素)时,左半『可视为有序』。 主解法"
   },
@@ -304,7 +304,7 @@
     "tags": [
       "二分"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/first-last-position/",
+    "leetcode_url": "https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/",
     "has_expl": true,
     "search": "在排序数组中查找元素的第一个和最后一个位置 二分 二分 🔹 直觉\n    两次 lower_bound:\n        first = bisect_left(nums, target)\n        last  = bisect_right(nums, target) - 1 **两次二分**:`bisect_left` 找首,`bisect_right - 1` 找尾。 **bisect_left**:返回第一个 ≥ target 的下标 —— 也就是 target 的左边界(若存在)。 **bisect_right**:返回第一个 > target 的下标 —— 减 1 即右边界。 **判断不存在**:bisect_left 返回 n 或 nums[idx] != target,直接 [-1, -1]。 **手撕版**:把『闭右开』标准模板套两次,只改 `<` / `<=` 即可。 主解法"
   },
@@ -320,7 +320,7 @@
     "tags": [
       "二分"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/search-insert/",
+    "leetcode_url": "https://leetcode.cn/problems/search-insert-position/",
     "has_expl": true,
     "search": "搜索插入位置 二分 二分 🔹 直觉\n    标准 lower_bound:返回第一个 ≥ target 的位置。 **lower_bound**:返回第一个 ≥ target 的下标,即插入位置。 **等价于 bisect_left**:python 内置直接调用即可。 **手撕区间**:`l, r = 0, len(nums)`(注意 r 是 n 不是 n-1,允许返回 n 表示『插到末尾』)。 **不变量**:循环结束时 `l == r`,且 `nums[l-1] < target ≤ nums[l]`(边界外用 ±∞)。 **变种**:upper_bound 改成 `nums[m] <= target` → 返回第一个 > target 的位置。 主解法"
   },
@@ -468,7 +468,7 @@
       "DP",
       "分治"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/max-subarray/",
+    "leetcode_url": "https://leetcode.cn/problems/maximum-subarray/",
     "has_expl": true,
     "search": "最大子数组和 dp 分治 普通数组 🔹 题面\n    返回连续子数组最大和。\n\n🔹 解法对比\n    | 方法              | 时间       | 空间   | 备注                            |\n    |-------------------|------------|--------|---------------------------------|\n    | 暴力枚举所有区间  | o(n²)      | o(1)   | 容易写错(累加 vs 重新算)      |\n    | 前缀和 + 极值     | o(n)       | o(n)   | 等价于\"前缀和减去之前最小\"      |\n    | kadane dp ★      | o(n)       | o(1)   | 一次扫描,空间最优              |\n    | 分治              | o(n log n) | o(log n) | 经典分治套路(线段树思路)    |\n\n🔹 kadane 直觉\n    f(i) = max(nums[i], f(i-1) + nums[i])\n    \"前面累计到我这,要么和我搭伙,要么我重新开始。\" **kadane dp**:`f[i] = max(nums[i], f[i-1] + nums[i])` —— 累计到 i,要么和前面搭伙,要么从我重启。 **状态定义**:`f[i]` = 以 i 结尾的最大子数组和(必须包含 nums[i])。 **转移**:对 nums[i],只有两种命运 —— 接续前面(若 `f[i-1] > 0` 才有正贡献)或单独起步。 **空间压缩**:f 只用上一项,压成两个变量。 **全局答案**:遍历过程中维护全局最大值 best,而非单看 f[n-1]。 kadane dp 前缀和 + 维护历史最小前缀 分治"
   },
@@ -548,7 +548,7 @@
     "tags": [
       "多维 DP"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/min-path-sum/",
+    "leetcode_url": "https://leetcode.cn/problems/minimum-path-sum/",
     "has_expl": true,
     "search": "最小路径和 多维 dp 多维dp 🔹 状态\n    f[i][j] = grid[i][j] + min(f[i-1][j], f[i][j-1]) **二维 dp 原地覆盖**:`f[i][j] = grid[i][j] + min(f[i-1][j], f[i][j-1])`。 **状态**:从 (0,0) 到 (i,j) 最小路径和。 **转移**:只能从上或左过来,选最小再加自身。 **边界**:第一行 / 列只能水平或垂直累加。 **空间优化**:用一行 f,先初始化第一行;之后每行 `f[0] += grid[i][0]; f[j] = grid[i][j] + min(f[j], f[j-1])`。 主解法"
   },
@@ -564,7 +564,7 @@
     "tags": [
       "DP"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/climb-stairs/",
+    "leetcode_url": "https://leetcode.cn/problems/climbing-stairs/",
     "has_expl": true,
     "search": "爬楼梯 dp dp 🔹 题面\n    每次爬 1 或 2 阶,n 阶有多少种爬法。\n\n🔹 解法对比\n    | 方法            | 时间       | 空间 | 备注              |\n    |-----------------|------------|------|-------------------|\n    | dp 滚动两个变量 ★| o(n)      | o(1) | 斐波那契          |\n    | 矩阵快速幂      | o(log n)   | o(1) | 极致最优;复杂度炫技|\n    | binet 通项公式  | o(1)       | o(1) | 浮点精度问题      | **斐波那契**:`f(n) = f(n-1) + f(n-2)`,空间压缩到两个变量。 **状态**:`f(n)` = 爬到第 n 阶的方案数;每一阶可由 (n-1) 一步上来或 (n-2) 两步上来。 **边界**:f(0) = f(1) = 1。 **滚动**:`a, b = 1, 1; for _ in range(n): a, b = b, a + b`。 **矩阵快速幂**:[[1,1],[1,0]]^n 对应 fib,o(log n) 时间;面试加分项。 dp 滚动 矩阵快速幂"
   },
@@ -612,7 +612,7 @@
     "tags": [
       "二分"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/search-matrix/",
+    "leetcode_url": "https://leetcode.cn/problems/search-a-2d-matrix/",
     "has_expl": true,
     "search": "搜索二维矩阵 二分 二分 🔹 直觉\n    把 m×n 矩阵当成一根升序数组,下标 idx → (idx // n, idx % n)。 **当一维数组二分**:把 m×n 矩阵当 mn 长升序数组,下标 → (idx//n, idx%n)。 **前提**:每行升序 + 行尾 ≤ 下行行首 → 拍平后整体升序。 **二分模板**:`l, r = 0, m*n - 1`,标准闭区间二分。 **索引映射**:`row = mid // cols, col = mid % cols`。 **对比 lc 240**:那题只保证『行/列各自升序』,行间无序,只能 z 字搜索。 主解法"
   },
@@ -694,7 +694,7 @@
     "tags": [
       "单调栈"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/largest-rectangle/",
+    "leetcode_url": "https://leetcode.cn/problems/largest-rectangle-in-histogram/",
     "has_expl": true,
     "search": "柱状图中最大的矩形 单调栈 栈 🔹 解法对比\n    | 方法            | 时间   | 空间  | 备注                       |\n    |-----------------|--------|-------|----------------------------|\n    | 暴力枚举区间    | o(n²)  | o(1)  | n ≤ 10⁴ 可过                |\n    | 单调栈 ★       | o(n)   | o(n)  | 经典递增栈 + 两哨兵         | **单调递增栈 + 两哨兵**:对每根柱子算『以它为高的最大宽度』。栈顶被新柱压破时就结算。 **核心问题**:对每根柱子 i,若以 h[i] 为高,左/右边界各是多少? **左/右边界**:左边界 = i 左侧第一个『矮于 h[i]』的位置;右边界 = i 右侧第一个『矮于 h[i]』的位置。单调栈一次扫描可同时算两边。 **算法**:维护单调递增栈(存下标)。若新元素更小,弹栈结算 —— 弹出位置 top,左界 = 弹后的栈顶,右界 = 当前 i,宽 = i - 栈顶 - 1。 **两哨兵**:数组前后各加 0 简化边界(开头时栈顶为虚,结尾时把所有真柱子都强制结算)。 暴力 单调栈"
   },
@@ -710,7 +710,7 @@
     "tags": [
       "遍历"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/inorder-traversal/",
+    "leetcode_url": "https://leetcode.cn/problems/binary-tree-inorder-traversal/",
     "has_expl": true,
     "search": "二叉树的中序遍历 遍历 二叉树 🔹 题面\n    返回中序遍历(左-根-右)结果。\n\n🔹 解法对比\n    | 方法     | 时间 | 空间      | 备注                            |\n    |----------|------|-----------|---------------------------------|\n    | 递归     | o(n) | o(h)      | 简洁                            |\n    | 迭代+栈 ★| o(n) | o(h)      | 经典写法,一路向左,弹出向右     |\n    | morris   | o(n) | o(1)      | 临时改父指针,做完恢复;难度大   | 迭代:**一路向左压栈,弹栈访问,转向右子树**。morris 用临时线索把空间降到 o(1)。 **迭代框架**:`while cur or stack:` 内层 `while cur: stack.append(cur); cur = cur.left`(走到最左);弹栈 + 访问 + `cur = cur.right`。 **morris 思想**:对每个有左子树的节点,把它的『前驱』(左子树中最右节点)的 right 临时指向自己,形成线索。 **morris 流程**:`cur` 非空时,若有左:找前驱,前驱.right == none 则建线索往左走;否则线索已存在(说明左子树访问完),拆线索 + 访问 + 往右。无左:直接访问 + 往右。 **morris 正确性**:每条边最多被建/拆一次,所以总操作 o(n)。 迭代 + 栈 递归 morris 遍历"
   },
@@ -727,7 +727,7 @@
       "递归",
       "中序"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/validate-bst/",
+    "leetcode_url": "https://leetcode.cn/problems/validate-binary-search-tree/",
     "has_expl": true,
     "search": "验证二叉搜索树 递归 中序 二叉树 🔹 直觉\n    1. 递归带\"上下界\"边界:每个节点必须 ∈ (low, high)。\n    2. 中序遍历必须严格递增。\n    陷阱:仅检查\"父子大小关系\"是错的——不能保证孙子也在范围内。 **带边界递归**:每个节点必须 ∈ (lo, hi);左孩子 hi=自己,右孩子 lo=自己。 **陷阱**:仅检查父子关系是错的!`5 / 3 / null,7` 中父 5、左 3 看似合法,但 3 的右子树若 > 5 也会通过父子检查。 **正确思路**:每个节点必须落在祖先们传递下来的『允许区间』(lo, hi) 内。 **初始**:根的区间 (-∞, +∞);递归时 left 子树的 hi 变成根值,right 子树的 lo 变成根值。 **等价方案**:中序遍历必须严格递增 —— 用 prev 记录前一个值即可。 主解法"
   },
@@ -759,7 +759,7 @@
     "tags": [
       "BFS"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/level-order/",
+    "leetcode_url": "https://leetcode.cn/problems/binary-tree-level-order-traversal/",
     "has_expl": true,
     "search": "二叉树的层序遍历 bfs 二叉树 🔹 题面\n    返回层序遍历结果(每层一个数组)。\n\n🔹 解法对比\n    | 方法    | 时间 | 空间 | 备注                  |\n    |---------|------|------|-----------------------|\n    | bfs ★  | o(n) | o(w) | 队列,每层批量出队     |\n    | dfs+层号| o(n) | o(h) | 递归带 depth,按层 push | **bfs 队列**,每次按当前层节点数批量出队收集。 **为何要 sz = len(q)?** 进入循环时队列还可能加入下一层节点,直接 while q 会把多层混在一起。 **层批处理**:`for _ in range(sz)`,这一轮恰好弹出当前层的所有节点。 **写法对比**:dfs 带深度也可,层号 d 决定 push 进 res[d];出现新层就追加 []. **变体**:107 自底向上(reverse 一下)、103 锯齿(奇偶层倒序)。 bfs dfs + 层号"
   },
@@ -776,7 +776,7 @@
       "递归",
       "BFS"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/max-depth/",
+    "leetcode_url": "https://leetcode.cn/problems/maximum-depth-of-binary-tree/",
     "has_expl": true,
     "search": "二叉树的最大深度 递归 bfs 二叉树 🔹 解法对比\n    | 方法     | 时间 | 空间 | 备注              |\n    |----------|------|------|-------------------|\n    | 递归 dfs | o(n) | o(h) | 简洁              |\n    | 迭代 bfs | o(n) | o(w) | 层序逐层加        | **后序递归**:`f(n) = 1 + max(f(left), f(right))`,空节点为 0。 **最朴素的树 dp**:子树深度只取决于子节点深度。 **bfs 等价**:层序遍历每完成一层,depth +1,最终层数即深度。 **为什么 1 + max?** 当前节点贡献 1 层,子树最深的那一边决定整体深度。 **变体**:111 最小深度要小心 —— 仅左或仅右为空时,不能按 min 算(那一边深度算 0 是错的)。 递归 bfs"
   },
@@ -792,7 +792,7 @@
     "tags": [
       "递归 + 哈希"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/build-tree-pre-in/",
+    "leetcode_url": "https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/",
     "has_expl": true,
     "search": "从前序与中序构造二叉树 递归 + 哈希 二叉树 🔹 题面\n    给定前序与中序数组,构造唯一二叉树。\n\n🔹 解法对比\n    | 方法            | 时间 | 空间 | 备注              |\n    |-----------------|------|------|-------------------|\n    | 递归 + 哈希 ★  | o(n) | o(n) | 哈希 inorder 索引 |\n    | 迭代 + 栈       | o(n) | o(n) | 巧用前序 + 栈     |\n\n🔹 递归直觉\n    前序首元素是根,中序里左侧是左子树、右侧是右子树。 前序首元素是根;在中序里找到它的位置 idx,左侧长度 = `idx - in_l` 即左子树规模,递归四参数缩区间。**用 dict 把 inorder 索引预存为 o(1) 查询**。 **核心观察**:前序 = [根, 左子树前序, 右子树前序];中序 = [左子树中序, 根, 右子树中序]。 **递归参数**:`build(pre_l, pre_r, in_l, in_r)`,从 `pre[pre_l]` 取根,在 `inorder` 里找索引 i;左子树范围 `pre[pre_l+1..pre_l+left_len], in[in_l..i-1]`;右子树同理。 **优化**:每次在中序里线性找根 → 哈希预存 o(1) 查询,把整体从 o(n²) 优化到 o(n)。 **为何前序 + 中序就能唯一确定?** 前序定根,中序定『分界点』。后序 + 中序也行;但前序 + 后序不行(无法定分界)。 递归 + 哈希 迭代 + 栈"
   },
@@ -808,7 +808,7 @@
     "tags": [
       "递归构造"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/sorted-array-to-bst/",
+    "leetcode_url": "https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/",
     "has_expl": true,
     "search": "将有序数组转换为二叉搜索树 递归构造 二叉树 🔹 直觉\n    取中点为根,左右半分别递归,自然平衡。 **取中点为根递归**:升序数组的中点天然是 bst 根,左右半递归构造。 **为什么必平衡?** 每次取中点,左右子树元素数量差 ≤ 1,递归到底高度差 ≤ 1。 **递归签名**:`build(l, r)`,base 是 l > r 返回 none;mid = (l+r)//2 作根。 **多解性**:中点选 (l+r)//2 或 (l+r+1)//2 都能构造平衡 bst,只是结构不同。 **变体 109**:有序链表转 bst,需快慢指针找中点 / 中序构造。 主解法"
   },
@@ -825,7 +825,7 @@
       "后序",
       "反向先序"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/flatten-tree/",
+    "leetcode_url": "https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/",
     "has_expl": true,
     "search": "二叉树展开为链表 后序 反向先序 二叉树 🔹 题面\n    将二叉树原地展开为前序顺序的\"右侧链表\"(left 全 none)。\n\n🔹 直觉(反向先序)\n    定义 prev(全局),按\"右-左-根\"递归;访问到每个节点时:\n        node.right = prev\n        node.left  = none\n        prev = node\n    妙在它构成的就是 \"根-左-右\" 反过来 = 先序的逆序。 **反向先序**(右-左-根),全局 prev 指针每次接到当前节点的 right。 **目标先序顺序**:展开后链表节点顺序 = 原树先序遍历。 **反向构造**:把先序顺序倒过来 = 『右-左-根』后序;先访问最后一个节点,prev 一步步往前。 **单步**:`dfs(right) → dfs(left) → n.right = prev; n.left = none; prev = n`。 **变体迭代**:对每个有左孩子的节点,把它的左子树挂到右,旧右挂到左子树最右节点。 主解法"
   },
@@ -841,7 +841,7 @@
     "tags": [
       "DP"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/pascal-triangle/",
+    "leetcode_url": "https://leetcode.cn/problems/pascals-triangle/",
     "has_expl": true,
     "search": "杨辉三角 dp dp 🔹 直觉\n    每一行首尾为 1,中间 = 上一行相邻两数之和。 **直接 dp**:每行首尾为 1,中间 = 上一行相邻两数之和。 **状态**:`f[i][j] = f[i-1][j-1] + f[i-1][j]`,边界 j=0 或 j=i 时为 1。 **实现**:从第 0 行起逐行构造,中间元素引用上一行。 **单行优化**:从右往左更新可在一行数组上原地构造。 **变体 119**:只要第 k 行 — 用单行优化空间 o(k)。 主解法"
   },
@@ -858,7 +858,7 @@
       "贪心",
       "一次遍历"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/best-time-stock/",
+    "leetcode_url": "https://leetcode.cn/problems/best-time-to-buy-and-sell-stock/",
     "has_expl": true,
     "search": "买卖股票的最佳时机 贪心 一次遍历 贪心 🔹 直觉\n    扫一遍:维护历史最低价 lo,答案 = max(p[i] - lo)。 **一次扫描**:维护历史最低买入价 lo,答案 = max(price - lo)。 **问题转化**:在数组里找两个下标 i < j 使 prices[j] - prices[i] 最大。 **扫描**:线性遍历,把『遍历过的最小值』作为可能买入价 lo;每天尝试 ans = max(ans, prices[i] - lo)。 **为何只扫一遍?** 卖出价对应的最佳买入价一定是它之前的最小值,扫描时维护即可。 **变体 122**:可多次买卖 → 把所有上涨段累加;变体 309/188 状态机 dp。 主解法"
   },
@@ -874,7 +874,7 @@
     "tags": [
       "递归"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/max-path-sum/",
+    "leetcode_url": "https://leetcode.cn/problems/binary-tree-maximum-path-sum/",
     "has_expl": true,
     "search": "二叉树中的最大路径和 递归 二叉树 🔹 题面\n    求任意\"路径\"(任意两节点)节点和最大值。可只一个节点。\n\n🔹 直觉\n    后序返回\"以当前节点为顶端、必须包含它、向下走单边\"的最大贡献。\n    全局答案在每个节点处尝试\"左贡献 + 节点 + 右贡献\"。\n    单边贡献若 < 0,丢弃(置 0)。\n\n🔹 复杂度 o(n) / o(h) 后序返回『**单边贡献**』(单调向下),全局记录『**经过该节点的双边路径**』。负贡献用 max(0, ·) 砍掉。 **关键区分两种量**:1) 『以 n 为顶端、向下走单边』给祖先用;2) 『穿过 n 的整条路径』作为答案候选。 **单边定义**:`gain(n) = n.val + max(0, gain(left), gain(right))`(注意只取一边)。 **双边更新**:在 n 处尝试 `n.val + max(0, l) + max(0, r)`,与全局 best 比较。 **为何 max(0, ·)?** 子树贡献为负,带它进路径反而拉低,直接当作不要这边(贡献 0)。 主解法"
   },
@@ -939,7 +939,7 @@
       "哈希",
       "原地交织"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/copy-random-list/",
+    "leetcode_url": "https://leetcode.cn/problems/copy-list-with-random-pointer/",
     "has_expl": true,
     "search": "随机链表的复制 哈希 原地交织 链表 🔹 题面\n    每节点除 next 外多一个 random 指针,复制整张图。\n\n🔹 直觉(两种)\n    1. 哈希:旧节点 -> 新节点,先建副本节点,再串 next/random。  o(n)/o(n)\n    2. 原地交织:在每个原节点后插入复制节点 a→a'→b→b'→…,\n       让 a'.random = a.random.next;最后拆出。  o(n)/o(1)\n\n🔹 踩坑\n    random 可能指向自己或 none;构造好\"先映射,再连边\"。 **两遍扫**:第一遍 dict 映射 旧→新 节点,第二遍连 next/random 指针。 **关键问题**:random 可能指向链表中任何节点(可能还没创建),不能边扫边接。 **两遍法**:第一遍只创建副本节点,放进 dict;第二遍利用 dict 一对一映射 next 和 random。 **o(1) 空间法(原地交织)**:在每个原节点后插入复制 a→a'→b→b'→…;然后 a'.random = a.random.next;最后拆出。 **注意**:random 可能为 none,要 dict.get 兜底。 主解法"
   },
@@ -999,7 +999,7 @@
     "day": 3,
     "day_title": "链表",
     "filename": "p146_lru_cache.py",
-    "n_sols": 0,
+    "n_sols": 1,
     "tags": [
       "哈希 + 双向链表"
     ],
@@ -1015,7 +1015,7 @@
     "day": 3,
     "day_title": "链表",
     "filename": "p148_sort_list.py",
-    "n_sols": 4,
+    "n_sols": 2,
     "tags": [
       "归并排序"
     ],
@@ -1035,7 +1035,7 @@
     "tags": [
       "DP"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/max-product/",
+    "leetcode_url": "https://leetcode.cn/problems/maximum-product-subarray/",
     "has_expl": true,
     "search": "乘积最大子数组 dp dp 🔹 题面\n    返回乘积最大的连续子数组的乘积。\n\n🔹 解法对比\n    | 方法                | 时间 | 空间 | 备注                          |\n    |---------------------|------|------|-------------------------------|\n    | 双状态 dp(滚动)★ | o(n) | o(1) | 同时维护 fmax / fmin(负数翻转) |\n    | dp 数组             | o(n) | o(n) | 同上,但显式存数组             |\n\n🔹 直觉\n    维护\"截至当前的最大乘积 fmax\"和\"最小乘积 fmin\"。负负得正,\n    遇负数时 (fmax * x) 可能成为新的最小,(fmin * x) 反而成为新的最大。 **双状态 dp**:同时维护以 i 结尾的 fmax 和 fmin(因为负负得正)。 **为何不能像 lc 53 单变量?** 负数会让最大变最小、最小变最大。 **状态**:fmax / fmin 都是『以 i 结尾』的最大 / 最小积。 **转移**:对 nums[i],候选三个 — `nums[i]`、`fmax * nums[i]`、`fmin * nums[i]`,各取 max 与 min。 **全局答案**:每步更新 ans = max(ans, fmax)。 双状态 dp 滚动 dp 数组(更直观)"
   },
@@ -1051,7 +1051,7 @@
     "tags": [
       "二分"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/find-min-rotated/",
+    "leetcode_url": "https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array/",
     "has_expl": true,
     "search": "寻找旋转排序数组中的最小值 二分 二分 🔹 直觉\n    比较 nums[mid] 与 nums[r]:\n        > nums[r] → 最小在右半,l = mid + 1\n        ≤ nums[r] → 最小在左半(含 mid),r = mid\n    数组无重复,严格成立。 **比 nums[mid] 与 nums[r]**:大于 r 则最小在右半,否则在左半(含 mid)。 **为何不与 nums[l] 比较?** 旋转数组中 nums[l] 可能 > 或 < nums[mid],判定不唯一。 **与 nums[r] 比**:`nums[mid] > nums[r]` 说明 mid 还在『高位旋转段』,最小值在右半;`<=` 说明 mid 已在『低位段』(或本身就是最小),最小在左半含 mid。 **循环条件**:`l < r`,r = mid 时不会越界(因为 mid < r)。 **结果**:循环结束 l == r,即最小值下标。 **含重复版 154**:nums[mid] == nums[r] 时无法判断,r-- 缓慢线性退化最坏 o(n)。 主解法"
   },
@@ -1063,7 +1063,7 @@
     "day": 6,
     "day_title": "栈 / 堆 / 贪心",
     "filename": "p155_min_stack.py",
-    "n_sols": 0,
+    "n_sols": 1,
     "tags": [
       "栈"
     ],
@@ -1083,7 +1083,7 @@
     "tags": [
       "双指针"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/intersection-two-lists/",
+    "leetcode_url": "https://leetcode.cn/problems/intersection-of-two-linked-lists/",
     "has_expl": true,
     "search": "相交链表 双指针 链表 🔹 题面\n    返回两个链表相交的起点;不相交返回 none。要求 o(1) 额外空间。\n\n🔹 直觉(浪漫双指针)\n    a 走 a 完了走 b,b 走 b 完了走 a。\n    若相交,二者相遇于交点;若不相交,同时走到 none。\n    总步数 = lena + lenb,相同。\n\n🔹 复杂度 o(m+n) / o(1) **双指针互换跑道**:a 走完 a 切到 b,b 走完 b 切到 a;若有交点必相遇。 **为何必相遇?** 两指针总路程相等(都 = lena + lenb),若相交则同时到交点;若不相交则同时到 none。 **直观证明**:a 在 a 上走 lena - c 后切到 b,再走 lenb - lenc = lena + lenb - 2·lenc 后到达交点... 等等更简单:总步数都是 lena + lenb - lenc(交点处)。 **一行精髓**:`a = a.next if a else headb`,a 到 none 时切到另一条。 **陷阱**:不相交时 a/b 同时变成 none 退出循环,返回 none 而不是死循环。 主解法"
   },
@@ -1148,7 +1148,7 @@
       "BFS",
       "DFS"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/right-side-view/",
+    "leetcode_url": "https://leetcode.cn/problems/binary-tree-right-side-view/",
     "has_expl": true,
     "search": "二叉树的右视图 bfs dfs 二叉树 🔹 题面\n    返回从右侧能看到的节点(每层最右一个)。\n\n🔹 解法对比\n    | 方法    | 时间 | 空间 | 备注              |\n    |---------|------|------|-------------------|\n    | bfs ★  | o(n) | o(w) | 每层最后一个      |\n    | dfs     | o(n) | o(h) | 先右后左,每层第一次访问即可 | **bfs 取每层最后一个**;或 **dfs 先右后左**,每层第一次访问即右视图。 **bfs 写法**:`for i in range(sz): if i == sz-1: append(n.val)`,直观清晰。 **dfs 妙处**:递归带 depth,先递归右子树;若 depth == len(out),说明这层第一次到达,push 当前值。 **为何 dfs 这样能行?** 先右后左的 dfs,最早到达每个深度的节点必然来自右侧路径。 **变体**:左视图 — 把『先右后左』改成『先左后右』。 bfs dfs(先右后左)"
   },
@@ -1166,7 +1166,7 @@
       "BFS",
       "并查集"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/num-islands/",
+    "leetcode_url": "https://leetcode.cn/problems/number-of-islands/",
     "has_expl": true,
     "search": "岛屿数量 dfs bfs 并查集 图论 🔹 解法对比\n    | 方法    | 时间    | 空间    | 备注                       |\n    |---------|---------|---------|----------------------------|\n    | dfs ★  | o(mn)   | o(mn) 栈| 经典,代码最短              |\n    | bfs     | o(mn)   | o(min(m,n)) | 队列宽度受限           |\n    | 并查集  | o(mn α) | o(mn)   | 适合\"动态加陆地\"扩展        | 扫到 '1' 计数 +1 并 **dfs 把整连通块淹没成 '0'**,避免重复计数。 **为什么淹没?** 等价于『visited 标记』,但直接改原图省一份额外存储。 **dfs 边界**:四个 `if` 检查越界 + 当前格非 '1',触发就 return;否则置 '0' 并四向递归。 **bfs 等价**:用 queue 替代递归栈,适合栈深担心爆栈时。 **并查集思路**:对每个 '1',与右邻和下邻(若也是 '1')union;最后『连通分量数 = uf.count - 零的数量』。 dfs bfs 并查集"
   },
@@ -1182,7 +1182,7 @@
     "tags": [
       "链表基础"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/reverse-list/",
+    "leetcode_url": "https://leetcode.cn/problems/reverse-linked-list/",
     "has_expl": true,
     "search": "反转链表 链表基础 链表 🔹 题面\n    反转单链表。\n\n🔹 解法对比\n    | 方法     | 时间 | 空间    | 备注                        |\n    |----------|------|---------|-----------------------------|\n    | 迭代 ★  | o(n) | o(1)    | 三指针 prev/cur/nxt          |\n    | 递归     | o(n) | o(n) 栈 | 优雅,深递归可能爆栈        | **三指针迭代**:prev / cur / nxt,每次让 cur.next 指向 prev,前进。 **核心三步**:`nxt = cur.next; cur.next = prev; prev = cur; cur = nxt`。 **为何要先存 nxt?** 改 cur.next 后会丢失原 next 引用。 **初始 prev = none**:反转后原首节点的 next 应指向 none。 **递归版**:`f(h) = if h.next is none: return h; new_h = f(h.next); h.next.next = h; h.next = none; return new_h`。 迭代 递归"
   },
@@ -1210,7 +1210,7 @@
     "day": 5,
     "day_title": "图论 / 回溯 / 二分",
     "filename": "p208_trie.py",
-    "n_sols": 0,
+    "n_sols": 1,
     "tags": [
       "字典树"
     ],
@@ -1231,7 +1231,7 @@
       "堆",
       "快选"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/kth-largest/",
+    "leetcode_url": "https://leetcode.cn/problems/kth-largest-element-in-an-array/",
     "has_expl": true,
     "search": "数组中的第 k 个最大元素 堆 快选 堆 🔹 解法对比\n    | 方法                | 时间(平均) | 空间       | 备注                       |\n    |---------------------|--------------|------------|----------------------------|\n    | 排序                | o(n log n)   | o(1) 原地  | 最简单                     |\n    | 小顶堆 维持大小 k ★| o(n log k)   | o(k)       | 大数据流首选(在线)       |\n    | 快速选择            | o(n) 期望    | o(log n) 栈| 最优期望;最坏 o(n²)       | 三种递进:**排序 o(n log n)** → **小顶堆维持大小 k, o(n log k)** → **快速选择 o(n) 期望**。 **小顶堆做法**:堆内永远只留『目前最大的 k 个』,堆顶就是其中最小的(也即第 k 大候选)。每来新元素,push 后若 size > k,pop 一次。 **快速选择**:像 quicksort 但只递归含目标的那一半。随机选 pivot 把数组分成 < / = / > 三段,看目标下标在哪一段。 **为什么 o(n) 期望?** t(n) = t(n/2) + o(n) → o(n)。最坏 o(n²) 但随机 pivot 几乎不会触发。 **面试选择**:数据流场景用堆;一次性查询用快选。 排序 小顶堆 快速选择"
   },
@@ -1247,7 +1247,7 @@
     "tags": [
       "递归"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/invert-tree/",
+    "leetcode_url": "https://leetcode.cn/problems/invert-binary-tree/",
     "has_expl": true,
     "search": "翻转二叉树 递归 二叉树 🔹 题面\n    把二叉树的每个节点的左右子树交换。\n\n🔹 解法对比\n    | 方法     | 时间 | 空间 | 备注      |\n    |----------|------|------|-----------|\n    | 递归 ★  | o(n) | o(h) | 简洁       |\n    | bfs 迭代 | o(n) | o(w) | 用队列扫每层 | **递归交换左右**:左右子树先翻转后交换;天然适合后序。 **最简洁写法**:`root.left, root.right = invert(root.right), invert(root.left)`,python 同时赋值。 **先做后做无所谓**:由于左右独立,前序/后序顺序对结果无影响。 **bfs 等价**:用队列,每弹出一个就交换其左右孩子,然后入队。 **变体**:101 对称树需要『判断而非修改』,用相同的镜像递归思想。 递归 bfs 迭代"
   },
@@ -1263,7 +1263,7 @@
     "tags": [
       "中序"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/kth-smallest-bst/",
+    "leetcode_url": "https://leetcode.cn/problems/kth-smallest-element-in-a-bst/",
     "has_expl": true,
     "search": "bst 中第 k 小元素 中序 二叉树 🔹 直觉\n    bst 中序就是升序;迭代中序边走边数 k。 **中序遍历计数到 k**:bst 中序天然升序。 **关键性质**:bst 中序遍历得到升序序列 → 第 k 小 = 中序第 k 个被访问的节点。 **迭代实现**:经典中序栈 —— 一路向左压栈,弹栈时计数 k--,k=0 即答案。 **频繁查询的优化**:每节点存子树大小 size_left,o(log n) 直接定位。 **变体 173**:bst 迭代器,用栈惰性中序,next() o(1) 摊销。 主解法"
   },
@@ -1279,7 +1279,7 @@
     "tags": [
       "快慢指针 + 反转"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/palindrome-list/",
+    "leetcode_url": "https://leetcode.cn/problems/palindrome-linked-list/",
     "has_expl": true,
     "search": "回文链表 快慢指针 + 反转 链表 🔹 题面\n    判断单链表是否回文。\n\n🔹 解法对比\n    | 方法                | 时间 | 空间 | 备注                       |\n    |---------------------|------|------|----------------------------|\n    | 复制到数组对撞      | o(n) | o(n) | 写法最直观                  |\n    | 快慢指针+反转后半 ★ | o(n) | o(1) | 经典,需小心还原(若题面要求)| **找中点 + 反转后半 + 双指针对比**:o(1) 空间。 **3 步**:1) 快慢指针找中点(偶数取右中);2) 反转后半链表;3) 一头一尾对比直至右指针为 none。 **为何对偶数没问题?** 反转后 left 长度 ≥ right,`while right` 退出时 left 可能多 1 个(中点),不影响判定。 **复制到数组法**:更直观但 o(n) 空间;面试通常要 o(1)。 **还原(题面要求时)**:对比完再反转一次后半,链表回到原状。 快慢指针 + 反转后半 复制到数组双指针"
   },
@@ -1295,7 +1295,7 @@
     "tags": [
       "递归"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/lowest-common-ancestor/",
+    "leetcode_url": "https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/",
     "has_expl": true,
     "search": "二叉树的最近公共祖先 递归 二叉树 🔹 直觉\n    后序:在每节点处问\"左右子树各自找到了 p 还是 q\"。\n        - 都找到 → 当前就是 lca\n        - 只一边找到 → 把那个返回上去\n        - 都没找到 → 返回 none 后序:每节点问『左右子树各自找到了 p 还是 q』。**两边都找到 → 当前是 lca;只一边 → 把那边返回上去**。 **递归签名**:返回『以当前 root 为根的子树中,p/q 第一次同时被囊括的祖先』(若只囊括其一,则返回那一个)。 **终止**:`root is none / root is p / root is q` 直接返回 root。 **分情况**:`l, r = recurse(left), recurse(right)`。`l and r` → root 是 lca;只 l → 答案在左;只 r → 答案在右。 **正确性**:p 和 q 都存在于树中是题目保证,所以一定能在某个节点处『左右各一个』。 主解法"
   },
@@ -1311,7 +1311,7 @@
     "tags": [
       "前缀积"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/product-except-self/",
+    "leetcode_url": "https://leetcode.cn/problems/product-of-array-except-self/",
     "has_expl": true,
     "search": "除自身以外数组的乘积 前缀积 普通数组 🔹 题面\n    返回 ans[i] = 除 nums[i] 以外所有数的乘积,要求 o(n),不能用除法。\n\n🔹 直觉\n    左前缀积 + 右后缀积。两次遍历,空间利用 ans 复用即 o(1) 额外空间。\n\n🔹 复杂度 o(n) / o(1) 额外空间(ans 不计)\n\n🔹 踩坑\n    不能用除法是因为存在 0;并且整体乘积可能溢出语义(题面要求)。 **左前缀积 + 右后缀积**两次扫,空间 o(1)(复用输出数组)。 **禁用除法 + 防 0** :直接除会被 0 卡住;朴素思路 `total / nums[i]` 不可行。 **两个数组思路**:l[i] = nums[0..i-1] 的乘积,r[i] = nums[i+1..n-1] 的乘积。答案 ans[i] = l[i] × r[i]。 **空间优化**:第一次扫 ans 当 l 用;第二次反向扫,用一个变量 `right` 累乘后缀,直接乘到 ans。 **为什么不溢出问题?** 题面保证 32-bit 范围;python 无所谓任意大整数。 主解法"
   },
@@ -1327,7 +1327,7 @@
     "tags": [
       "单调队列"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/sliding-window-max/",
+    "leetcode_url": "https://leetcode.cn/problems/sliding-window-maximum/",
     "has_expl": true,
     "search": "滑动窗口最大值 单调队列 子串 🔹 题面\n    返回长度 k 的滑动窗口最大值序列。\n\n🔹 直觉(单调递减队列)\n    队列存的是**下标**,从队头到队尾对应的值**单调递减**。\n    新元素入队时弹出所有比它小的尾部(它们将永远不会成为答案);\n    队头若已超出窗口左界则弹出。窗口准备好后队头即最大值。\n\n🔹 复杂度 o(n) / o(k)\n    每个下标至多入/出队一次。\n\n🔹 踩坑\n    队列存下标,而不是值;否则无法判断是否过期。 **单调递减队列**(存下标):新元素入队前弹出所有比它小的尾部,过期则弹队头。队头始终是窗口最大值。 **为什么队列存下标而非值?** 需要判断队头是否过期(`dq[0] <= i - k`)。 **为什么单调递减?** 如果新元素 x 比队尾的旧值大,旧值永远不会再成为答案(它在窗口里、又比 x 小),弹掉。 **两步检查**:每个 i 都做两件事 —— 1) 维护单调性把比 nums[i] 小的尾部弹掉;2) 检查队头是否还在窗口内 (`dq[0] > i-k`)。 **配合可视化**:k=3,窗口 `[1,3,-1]` → 队列 `[1(idx)]`(1 = 3 在原数组下标);窗口右移到 `[3,-1,-3]` → 队头仍是 1,答案 3。 主解法"
   },
@@ -1343,7 +1343,7 @@
     "tags": [
       "矩阵"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/search-matrix-ii/",
+    "leetcode_url": "https://leetcode.cn/problems/search-a-2d-matrix-ii/",
     "has_expl": true,
     "search": "搜索二维矩阵 ii 矩阵 矩阵 🔹 题面\n    每行升序、每列升序,搜索目标 target。\n\n🔹 直觉(z 字搜索)\n    从右上角出发:\n        m[i][j] == target → 找到\n        m[i][j]  > target → j-=1   (该列下方都更大,可剪)\n        m[i][j]  < target → i+=1\n    每步至少减少一个维度,o(m+n)。\n\n🔹 复杂度 o(m+n) / o(1) **z 字搜索**:从右上角出发,大于 target 左移、小于则下移;每步至少消除一行或一列。 **为什么不能用普通二分?** 矩阵是『行/列分别升序』,但行间不全序;直接拍平用二分会错。 **起点选择**:右上角(或左下角)是关键 —— 它是『所在行的最大、所在列的最小』,提供二选一的判定方向。 **判定**:`m[i][j] > target` → 这一列下方都更大,j-- 抛弃此列;`<` → 这一行左侧都更小,i++ 抛弃此行。 **复杂度本质**:每步要么 i++ 要么 j--,最多 m+n 步。 主解法"
   },
@@ -1392,7 +1392,7 @@
     "tags": [
       "Floyd 链表环"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/find-duplicate/",
+    "leetcode_url": "https://leetcode.cn/problems/find-the-duplicate-number/",
     "has_expl": true,
     "search": "寻找重复数 floyd 链表环 技巧 🔹 题面\n    长度 n+1 数组,值 ∈ [1,n],只有一个数重复(可重复多次)。要求 o(1) 空间、不修改原数组。\n\n🔹 直觉(把数组当作\"函数\")\n    把 i 视作\"指针\",nums[i] 视作\"它指向的下一个位置\"。\n    存在重复 ⟺ 这张图存在环。\n    用 floyd 龟兔找入环点(参考 lc 142),即重复值。 **floyd 链表环**:把数组当成函数 f(i) = nums[i],『重复值』即环入口。 **为何能转化为环检测?** 把 i 看作指针、nums[i] 看作下一个指针;由于值 ∈ [1, n] 而下标 ∈ [0, n],存在重复 ⟺ 函数图有环。 **起点**:从 0 开始,因为题面保证无 0(值在 [1, n]),0 永不被指向 → 是『环外』入口。 **两阶段 floyd**:第一阶段相遇;第二阶段一指针从 0 出发,一指针从相遇点出发,同步前进必相遇于环入口 = 重复值。 **对比常规思路**:set o(n) 空间;排序 o(n log n) 但改原数组;二分计数 o(n log n) 不改数组。 主解法"
   },
@@ -1404,7 +1404,7 @@
     "day": 6,
     "day_title": "栈 / 堆 / 贪心",
     "filename": "p295_median_data_stream.py",
-    "n_sols": 0,
+    "n_sols": 1,
     "tags": [
       "双堆"
     ],
@@ -1425,7 +1425,7 @@
       "DP",
       "贪心+二分"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/lis/",
+    "leetcode_url": "https://leetcode.cn/problems/longest-increasing-subsequence/",
     "has_expl": true,
     "search": "最长递增子序列 dp 贪心+二分 dp 🔹 题面\n    返回最长严格递增子序列的长度。\n\n🔹 解法对比\n    | 方法               | 时间        | 空间 | 备注                        |\n    |--------------------|-------------|------|-----------------------------|\n    | dp 标准            | o(n²)       | o(n) | f[i] = max{f[j]+1 | a[j]<a[i]} |\n    | 贪心 + 二分(patience)★| o(n log n) | o(n) | 维护\"长度→最小末尾\"           |\n\n🔹 贪心 + 二分思想\n    tails[k] = 当前长度为 k+1 的 lis 的最小末尾。\n    新元素 x 用 bisect_left 找位置;若可追加则增加长度。\n    注意:tails 不一定是真正的 lis,但长度正确。 **贪心 + 二分**:维护 tails[k] = 长度 k+1 的 lis 中最小末尾;新值用 bisect_left 替换或追加。 **核心 trick**:tails 不是真正的 lis!它只保证『长度正确』。 **为什么 bisect_left?** 严格递增,新值要替换第一个 ≥ 它的位置(让该长度的 lis 末尾尽量小)。 **追加场景**:bisect_left 返回 len(tails),说明新值比所有都大,直接追加,长度 +1。 **变体**:lc 354 信封嵌套先按宽度升序、再按高度降序,问题转化为高度数组的 lis。 贪心 + 二分 dp"
   },
@@ -1458,7 +1458,7 @@
       "堆",
       "桶排序"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/top-k-frequent/",
+    "leetcode_url": "https://leetcode.cn/problems/top-k-frequent-elements/",
     "has_expl": true,
     "search": "前 k 个高频元素 堆 桶排序 堆 🔹 题面\n    返回出现频率前 k 高的元素。\n\n🔹 解法对比\n    | 方法                 | 时间      | 空间 | 备注                       |\n    |----------------------|-----------|------|----------------------------|\n    | 排序                 | o(n log n)| o(n) | 简单                       |\n    | 小顶堆 维持大小 k ★ | o(n log k)| o(n+k)| 大数据流首选                |\n    | 桶排序(频次桶)     | o(n)      | o(n) | 频次范围 ≤ n,严格 o(n)    | **counter + 桶排序**(o(n))或**小顶堆维持 k 大**(o(n log k))。 **counter**:python 一行 cnt = counter(nums) 拿到频次。 **堆方案**:`heapq.nlargest(k, cnt.items(), key=v)`,o(n log k)。 **桶排序方案**:频次范围是 [1, n],建 n+1 个桶,每个频次对应一个桶;倒序遍历桶取前 k 个。 **为什么桶排序 o(n)?** 桶建好 o(n);倒序找前 k 个是 o(n);跳出可控。 小顶堆 桶排序"
   },
@@ -1490,7 +1490,7 @@
     "tags": [
       "0-1 背包"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/partition-equal-subset/",
+    "leetcode_url": "https://leetcode.cn/problems/partition-equal-subset-sum/",
     "has_expl": true,
     "search": "分割等和子集 0-1 背包 dp 🔹 直觉\n    总和奇数直接 false。否则求是否存在子集和 = total // 2。\n    一维 0-1 背包,容量 = target,逆序更新。\n\n🔹 状态\n    f[v] 是否可凑出和 v;f[v] |= f[v - x]。 **0-1 背包**:总和为奇数直接 false;否则求是否能凑出 sum/2。一维 dp[v] 逆序更新。 **问题转化**:把数组分两半使和相等 ⟺ 选若干个数和恰好 = total/2。 **奇偶判**:total 为奇直接 false。 **0-1 背包模板**:`f[v]` = 能否凑出 v;`f[v] |= f[v - x]`。 **为何逆序?** 同一物品最多用一次。逆序时 f[v-x] 还是『上轮值』(不含 x),正序则会 self-update 重复使用。 主解法"
   },
@@ -1522,7 +1522,7 @@
     "tags": [
       "滑动窗口"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/find-all-anagrams/",
+    "leetcode_url": "https://leetcode.cn/problems/find-all-anagrams-in-a-string/",
     "has_expl": true,
     "search": "找到字符串中所有字母异位词 滑动窗口 滑动窗口 🔹 题面\n    s 中所有 p 的异位词起始下标。\n\n🔹 直觉\n    定长滑窗(长度 = len(p)),用计数器对比即可。\n    优化:维护一个 diff = \"still_needed\" 数,= 0 时即匹配。\n\n🔹 复杂度 o(n) / o(σ=26) **定长滑窗**(长度 = |p|):移动一格丢一加一,counter 相等即匹配。 **核心观察**:异位词 ⟺ 字符计数相等。窗口长度固定 = len(p)。 **初始化**:窗口 s[:m] 计数 win,目标 need = counter(p);若初窗 == need 则下标 0 是答案。 **滑动**:r 从 m 到 n-1,每步 win[s[r]]++,win[s[r-m]]-- 并清零(否则会有 dummy key 影响 ==)。 **优化**:维护 valid 计数,只在某字符精确达标时 +1,避免每次 dict 比较 o(|σ|)。 主解法"
   },
@@ -1538,7 +1538,7 @@
     "tags": [
       "递归"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/diameter-of-tree/",
+    "leetcode_url": "https://leetcode.cn/problems/diameter-of-binary-tree/",
     "has_expl": true,
     "search": "二叉树的直径 递归 二叉树 🔹 题面\n    返回任意两节点的最长路径(以\"边数\"计)。\n\n🔹 直觉\n    后序求\"以当前节点为最高点\"的最长路径 = 左深度 + 右深度。\n    全局取最大。注意:函数返回的是\"该节点向下的最长路径长度\"(深度),\n    而 best 记录\"穿过该节点的总路径\"。 **后序求深度,全局记直径**:某节点直径 = 左深 + 右深(以边数计)。 **核心区分**:函数返回的是『当前节点向下最长路径长度(深度)』,**全局答案**才是直径。 **为何是 l + r 而非 1+l+r?** 直径以『边』计;l 是左子树深度(边数),r 同理,经过当前节点的最长路径有 l + r 条边。 **全局更新**:每访问一个节点都尝试 best = max(best, l + r)。 **返回**:节点向上贡献仍是 1 + max(l, r)(单边)。 主解法"
   },
@@ -1555,7 +1555,7 @@
       "子串",
       "前缀和"
     ],
-    "leetcode_url": "https://leetcode.cn/problems/subarray-sum-k/",
+    "leetcode_url": "https://leetcode.cn/problems/subarray-sum-equals-k/",
     "has_expl": true,
     "search": "和为 k 的子数组 子串 前缀和 子串 🔹 题面\n    返回数组中和为 k 的连续子数组数量(可负)。\n\n🔹 直觉\n    令 p[i] 为前缀和,则 p[r]-p[l] = k → p[l] = p[r]-k。\n    扫描时维护 \"出现过的前缀和 → 次数\" 哈希,常数时间统计。\n\n🔹 复杂度 o(n) / o(n)\n\n🔹 踩坑\n    - 元素可负,**滑窗不可用**;只能前缀和+哈希。\n    - 初始化 cnt[0]=1 表示空前缀,这样能统计从下标 0 起的子数组。 前缀和 + 哈希:`p[r] - p[l] = k` ⟺ `p[l] = p[r] - k`。维护『前缀和 → 出现次数』即可 o(n)。 **为什么不能滑窗?** 元素可能为负,窗口和不单调,滑窗思路失效。 **前缀和转化**:子数组 `nums[l..r]` 的和 = `prefix[r+1] - prefix[l]`。问题变成:有多少对 (l, r) 使 prefix 差等于 k。 **哈希加速**:扫描时维护『见过的前缀和 → 出现次数』。每到一个新的 prefix,答案 += dict 里 `prefix - k` 的次数。 **初始化**:dict[0] = 1 表示空前缀,这样能正确统计『从下标 0 开始、和 = k』的子数组。 主解法"
   },

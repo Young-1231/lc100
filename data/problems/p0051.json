@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def solveNQueens(self, n: int) -> list[list[str]]:\n    cols, diag1, diag2 = set(), set(), set()\n    ans, board = [], [-1] * n\n\n    def render():\n        return [\n            \"\".join(\"Q\" if c == board[r] else \".\" for c in range(n))\n            for r in range(n)\n        ]\n\n    def bt(r):\n        if r == n:\n            ans.append(render())\n            return\n        for c in range(n):\n            if c in cols or (r - c) in diag1 or (r + c) in diag2:\n                continue\n            board[r] = c\n            cols.add(c); diag1.add(r - c); diag2.add(r + c)\n            bt(r + 1)\n            cols.remove(c); diag1.remove(r - c); diag2.remove(r + c)\n\n    bt(0)\n    return ans"
+      "code": "class Solution:\n    def solveNQueens(self, n: int) -> list[list[str]]:\n        cols, diag1, diag2 = set(), set(), set()\n        ans, board = [], [-1] * n\n\n        def render():\n            return [\n                \"\".join(\"Q\" if c == board[r] else \".\" for c in range(n))\n                for r in range(n)\n            ]\n\n        def bt(r):\n            if r == n:\n                ans.append(render())\n                return\n            for c in range(n):\n                if c in cols or (r - c) in diag1 or (r + c) in diag2:\n                    continue\n                board[r] = c\n                cols.add(c); diag1.add(r - c); diag2.add(r + c)\n                bt(r + 1)\n                cols.remove(c); diag1.remove(r - c); diag2.remove(r + c)\n\n        bt(0)\n        return ans\n"
     }
   ],
   "raw_source": "# LC 51. N 皇后 · Hard · 回溯\n\"\"\"\n🔹 直觉\n    按行放,每行枚举列;用三个集合记录\"已用列\"、\"已用主对角线 r-c\"、\"已用副对角线 r+c\"。\n\"\"\"\n\n\nclass Solution:\n    def solveNQueens(self, n: int) -> list[list[str]]:\n        cols, diag1, diag2 = set(), set(), set()\n        ans, board = [], [-1] * n\n\n        def render():\n            return [\n                \"\".join(\"Q\" if c == board[r] else \".\" for c in range(n))\n                for r in range(n)\n            ]\n\n        def bt(r):\n            if r == n:\n                ans.append(render())\n                return\n            for c in range(n):\n                if c in cols or (r - c) in diag1 or (r + c) in diag2:\n                    continue\n                board[r] = c\n                cols.add(c); diag1.add(r - c); diag2.add(r + c)\n                bt(r + 1)\n                cols.remove(c); diag1.remove(r - c); diag2.remove(r + c)\n\n        bt(0)\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert len(s.solveNQueens(4)) == 2\n    assert len(s.solveNQueens(1)) == 1\n    assert len(s.solveNQueens(8)) == 92\n    print(\"✅ p051 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -36,5 +36,14 @@
       "time": "**O(n!)** —— 每行最多 n 个选择。",
       "space": "**O(n)** —— 递归深度 + 三个 set。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "solveNQueens",
+    "annotated": "class Solution:\n    def solveNQueens(self, n: int) -> list[list[str]]:\n        cols, diag1, diag2 = set(), set(), set()   # 已占用的列、主对角线、副对角线\n        ans, board = [], [-1] * n      # board[r] = 第 r 行皇后所在列\n\n        def render():                  # 把 board 翻译成 [\"..Q.\", ...] 棋盘字符串\n            return [\n                \"\".join(\"Q\" if c == board[r] else \".\" for c in range(n))\n                for r in range(n)\n            ]\n\n        def bt(r):                     # 逐行放皇后\n            if r == n:\n                ans.append(render())\n                return\n            for c in range(n):\n                # 同列、主对角线(r-c 相同)、副对角线(r+c 相同)冲突则跳过\n                if c in cols or (r - c) in diag1 or (r + c) in diag2:\n                    continue\n                board[r] = c\n                cols.add(c); diag1.add(r - c); diag2.add(r + c)\n                bt(r + 1)\n                cols.remove(c); diag1.remove(r - c); diag2.remove(r + c)   # 回溯\n\n        bt(0)\n        return ans\n",
+    "gotchas": [
+      "三个集合判冲突:列 `c`、主对角线 `r-c`、副对角线 `r+c`(同一对角线上这两个值恒定)。",
+      "逐行放置、每行一个,自动避免行冲突。"
+    ]
   }
 }

@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def orangesRotting(self, g: list[list[int]]) -> int:\n    m, n = len(g), len(g[0])\n    q = deque()\n    fresh = 0\n    for i in range(m):\n        for j in range(n):\n            if g[i][j] == 2:\n                q.append((i, j))\n            elif g[i][j] == 1:\n                fresh += 1\n    if fresh == 0:\n        return 0\n    minutes = 0\n    while q and fresh:\n        for _ in range(len(q)):\n            x, y = q.popleft()\n            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):\n                nx, ny = x + dx, y + dy\n                if 0 <= nx < m and 0 <= ny < n and g[nx][ny] == 1:\n                    g[nx][ny] = 2\n                    fresh -= 1\n                    q.append((nx, ny))\n        minutes += 1\n    return minutes if fresh == 0 else -1"
+      "code": "from collections import deque\n\nclass Solution:\n    def orangesRotting(self, g: list[list[int]]) -> int:\n        m, n = len(g), len(g[0])\n        q = deque()\n        fresh = 0\n        for i in range(m):\n            for j in range(n):\n                if g[i][j] == 2:\n                    q.append((i, j))\n                elif g[i][j] == 1:\n                    fresh += 1\n        if fresh == 0:\n            return 0\n        minutes = 0\n        while q and fresh:\n            for _ in range(len(q)):\n                x, y = q.popleft()\n                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):\n                    nx, ny = x + dx, y + dy\n                    if 0 <= nx < m and 0 <= ny < n and g[nx][ny] == 1:\n                        g[nx][ny] = 2\n                        fresh -= 1\n                        q.append((nx, ny))\n            minutes += 1\n        return minutes if fresh == 0 else -1\n"
     }
   ],
   "raw_source": "# LC 994. 腐烂的橘子 · Medium · 多源 BFS\n\"\"\"\n🔹 题面\n    2 烂、1 鲜、0 空;每一分钟烂橘子四向感染。返回所有烂掉所需分钟,\n    若无法全烂返回 -1。\n\n🔹 直觉\n    多源 BFS:把所有初始烂橘子一起入队作为第 0 层,层序扩展。\n\"\"\"\nfrom collections import deque\n\n\nclass Solution:\n    def orangesRotting(self, g: list[list[int]]) -> int:\n        m, n = len(g), len(g[0])\n        q = deque()\n        fresh = 0\n        for i in range(m):\n            for j in range(n):\n                if g[i][j] == 2:\n                    q.append((i, j))\n                elif g[i][j] == 1:\n                    fresh += 1\n        if fresh == 0:\n            return 0\n        minutes = 0\n        while q and fresh:\n            for _ in range(len(q)):\n                x, y = q.popleft()\n                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):\n                    nx, ny = x + dx, y + dy\n                    if 0 <= nx < m and 0 <= ny < n and g[nx][ny] == 1:\n                        g[nx][ny] = 2\n                        fresh -= 1\n                        q.append((nx, ny))\n            minutes += 1\n        return minutes if fresh == 0 else -1\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.orangesRotting([[2, 1, 1], [1, 1, 0], [0, 1, 1]]) == 4\n    assert s.orangesRotting([[2, 1, 1], [0, 1, 1], [1, 0, 1]]) == -1\n    assert s.orangesRotting([[0, 2]]) == 0\n    print(\"✅ p994 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -35,5 +35,14 @@
       "time": "**O(mn)** —— 每格至多入队一次。",
       "space": "**O(mn)** —— 队列最坏。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "orangesRotting",
+    "annotated": "from collections import deque\n\nclass Solution:\n    def orangesRotting(self, g: list[list[int]]) -> int:\n        m, n = len(g), len(g[0])\n        q = deque()\n        fresh = 0\n        for i in range(m):           # 先收集所有初始腐烂橘子(多源)并数新鲜橘子\n            for j in range(n):\n                if g[i][j] == 2:\n                    q.append((i, j))\n                elif g[i][j] == 1:\n                    fresh += 1\n        if fresh == 0:               # 没有新鲜橘子 -> 0 分钟\n            return 0\n        minutes = 0\n        while q and fresh:           # 一层 = 一分钟,当前所有腐烂橘子同时向外传染\n            for _ in range(len(q)):\n                x, y = q.popleft()\n                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):\n                    nx, ny = x + dx, y + dy\n                    if 0 <= nx < m and 0 <= ny < n and g[nx][ny] == 1:\n                        g[nx][ny] = 2        # 传染:新鲜 -> 腐烂\n                        fresh -= 1\n                        q.append((nx, ny))\n            minutes += 1\n        return minutes if fresh == 0 else -1   # 仍有新鲜橘子(被隔开)-> -1\n",
+    "gotchas": [
+      "**多源 BFS**:所有初始腐烂橘子一起入队,按层扩散,层数 = 分钟数。",
+      "结束后若还有 fresh>0(被墙隔开),返回 -1;开局无新鲜橘子要特判返回 0。"
+    ]
   }
 }

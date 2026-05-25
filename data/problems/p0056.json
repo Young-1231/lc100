@@ -18,7 +18,7 @@
       "time": "O(n log n)",
       "space": "O(1)",
       "starred": true,
-      "code": "def merge(self, intervals: list[list[int]]) -> list[list[int]]:\n    intervals.sort(key=lambda x: x[0])\n    out: list[list[int]] = []\n    for s, e in intervals:\n        if out and s <= out[-1][1]:\n            out[-1][1] = max(out[-1][1], e)\n        else:\n            out.append([s, e])\n    return out"
+      "code": "class Solution:\n    def merge(self, intervals: list[list[int]]) -> list[list[int]]:\n        intervals.sort(key=lambda x: x[0])\n        out: list[list[int]] = []\n        for s, e in intervals:\n            if out and s <= out[-1][1]:\n                out[-1][1] = max(out[-1][1], e)\n            else:\n                out.append([s, e])\n        return out\n"
     },
     {
       "method": "merge_sweep",
@@ -26,7 +26,7 @@
       "time": "O(n + V)",
       "space": "O(V)",
       "starred": false,
-      "code": "def merge_sweep(self, intervals: list[list[int]]) -> list[list[int]]:\n    if not intervals:\n        return []\n    events = []\n    for s, e in intervals:\n        events.append((s, 0))      # 起\n        events.append((e, 1))      # 终(注意闭区间,稳定排序)\n    events.sort()\n    out, cnt, cur_s = [], 0, None\n    for x, t in events:\n        if t == 0:\n            if cnt == 0:\n                cur_s = x\n            cnt += 1\n        else:\n            cnt -= 1\n            if cnt == 0:\n                out.append([cur_s, x])\n    # 合并相邻共端点(对闭区间)\n    merged: list[list[int]] = []\n    for s, e in out:\n        if merged and s <= merged[-1][1]:\n            merged[-1][1] = max(merged[-1][1], e)\n        else:\n            merged.append([s, e])\n    return merged"
+      "code": "class Solution:\n    def merge(self, intervals: list[list[int]]) -> list[list[int]]:\n        if not intervals:\n            return []\n        events = []\n        for s, e in intervals:\n            events.append((s, 0))      # 起\n            events.append((e, 1))      # 终(注意闭区间,稳定排序)\n        events.sort()\n        out, cnt, cur_s = [], 0, None\n        for x, t in events:\n            if t == 0:\n                if cnt == 0:\n                    cur_s = x\n                cnt += 1\n            else:\n                cnt -= 1\n                if cnt == 0:\n                    out.append([cur_s, x])\n        # 合并相邻共端点(对闭区间)\n        merged: list[list[int]] = []\n        for s, e in out:\n            if merged and s <= merged[-1][1]:\n                merged[-1][1] = max(merged[-1][1], e)\n            else:\n                merged.append([s, e])\n        return merged\n"
     }
   ],
   "raw_source": "# LC 56. 合并区间 · Medium · 排序\n\"\"\"\n🔹 题面\n    合并重叠区间。\n        [[1,3],[2,6],[8,10],[15,18]] → [[1,6],[8,10],[15,18]]\n\n🔹 解法对比\n    | 方法            | 时间       | 空间   | 备注                       |\n    |-----------------|------------|--------|----------------------------|\n    | 排序 + 一次扫描 ★| O(n log n) | O(1)   | 通用,代码简洁              |\n    | 扫描线(差分)  | O(n + V)   | O(V)   | 当区间端点值范围 V 较小时   |\n\n🔹 排序合并直觉\n    按起点排序后,逐个尝试与\"末尾区间\"合并。\n\"\"\"\n\n\nclass Solution:\n    # 解法 1:排序 + 扫描 ★ — O(n log n) / O(1)\n    def merge(self, intervals: list[list[int]]) -> list[list[int]]:\n        intervals.sort(key=lambda x: x[0])\n        out: list[list[int]] = []\n        for s, e in intervals:\n            if out and s <= out[-1][1]:\n                out[-1][1] = max(out[-1][1], e)\n            else:\n                out.append([s, e])\n        return out\n\n    # 解法 2:扫描线(差分计数)— O(n + V) / O(V)\n    # 区间内 +1,出区间 -1;非零段即合并后的区间。仅在端点范围有限时实用。\n    def merge_sweep(self, intervals: list[list[int]]) -> list[list[int]]:\n        if not intervals:\n            return []\n        events = []\n        for s, e in intervals:\n            events.append((s, 0))      # 起\n            events.append((e, 1))      # 终(注意闭区间,稳定排序)\n        events.sort()\n        out, cnt, cur_s = [], 0, None\n        for x, t in events:\n            if t == 0:\n                if cnt == 0:\n                    cur_s = x\n                cnt += 1\n            else:\n                cnt -= 1\n                if cnt == 0:\n                    out.append([cur_s, x])\n        # 合并相邻共端点(对闭区间)\n        merged: list[list[int]] = []\n        for s, e in out:\n            if merged and s <= merged[-1][1]:\n                merged[-1][1] = max(merged[-1][1], e)\n            else:\n                merged.append([s, e])\n        return merged\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        ([[1, 3], [2, 6], [8, 10], [15, 18]], [[1, 6], [8, 10], [15, 18]]),\n        ([[1, 4], [4, 5]], [[1, 5]]),\n        ([[1, 4], [2, 3]], [[1, 4]]),\n        ([[1, 4]], [[1, 4]]),\n    ]\n    for arg, want in cases:\n        for fn in (s.merge, s.merge_sweep):\n            assert fn([x[:] for x in arg]) == want\n    print(\"✅ p056 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -42,5 +42,14 @@
       "time": "**O(n log n)** —— 排序主导。一次扫描 O(n)。",
       "space": "**O(1)** 不计输出 / **O(log n)** Tim sort 栈。"
     }
+  },
+  "n_sols": 2,
+  "code_explain": {
+    "method": "merge",
+    "annotated": "class Solution:\n    def merge(self, intervals: list[list[int]]) -> list[list[int]]:\n        intervals.sort(key=lambda x: x[0])       # 按区间起点排序\n        out: list[list[int]] = []\n        for s, e in intervals:\n            if out and s <= out[-1][1]:          # 当前起点 <= 上个区间终点 -> 重叠\n                out[-1][1] = max(out[-1][1], e)  # 合并:终点取更大的\n            else:\n                out.append([s, e])               # 不重叠 -> 新开一个区间\n        return out\n",
+    "gotchas": [
+      "必须先按起点排序,合并才成立。",
+      "合并时终点取 `max`:后一个区间可能被前一个完全包住。"
+    ]
   }
 }

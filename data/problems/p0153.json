@@ -8,7 +8,7 @@
   "day": 5,
   "day_title": "图论 / 回溯 / 二分",
   "category": "二分",
-  "leetcode_url": "https://leetcode.cn/problems/find-min-rotated/",
+  "leetcode_url": "https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array/",
   "filename": "p153_find_min_rotated.py",
   "doc": "🔹 直觉\n    比较 nums[mid] 与 nums[r]:\n        > nums[r] → 最小在右半,l = mid + 1\n        ≤ nums[r] → 最小在左半(含 mid),r = mid\n    数组无重复,严格成立。",
   "solutions": [
@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def findMin(self, nums: list[int]) -> int:\n    l, r = 0, len(nums) - 1\n    while l < r:\n        m = (l + r) // 2\n        if nums[m] > nums[r]:\n            l = m + 1\n        else:\n            r = m\n    return nums[l]"
+      "code": "class Solution:\n    def findMin(self, nums: list[int]) -> int:\n        l, r = 0, len(nums) - 1\n        while l < r:\n            m = (l + r) // 2\n            if nums[m] > nums[r]:\n                l = m + 1\n            else:\n                r = m\n        return nums[l]\n"
     }
   ],
   "raw_source": "# LC 153. 寻找旋转排序数组中的最小值 · Medium · 二分\n\"\"\"\n🔹 直觉\n    比较 nums[mid] 与 nums[r]:\n        > nums[r] → 最小在右半,l = mid + 1\n        ≤ nums[r] → 最小在左半(含 mid),r = mid\n    数组无重复,严格成立。\n\"\"\"\n\n\nclass Solution:\n    def findMin(self, nums: list[int]) -> int:\n        l, r = 0, len(nums) - 1\n        while l < r:\n            m = (l + r) // 2\n            if nums[m] > nums[r]:\n                l = m + 1\n            else:\n                r = m\n        return nums[l]\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.findMin([3, 4, 5, 1, 2]) == 1\n    assert s.findMin([4, 5, 6, 7, 0, 1, 2]) == 0\n    assert s.findMin([11, 13, 15, 17]) == 11\n    print(\"✅ p153 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -36,5 +36,14 @@
       "time": "**O(log n)**。",
       "space": "**O(1)**。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "findMin",
+    "annotated": "class Solution:\n    def findMin(self, nums: list[int]) -> int:\n        l, r = 0, len(nums) - 1\n        while l < r:\n            m = (l + r) // 2\n            if nums[m] > nums[r]:    # 中点比右端大 -> 最小值在右半 (m+1..r)\n                l = m + 1\n            else:                    # 中点 <= 右端 -> 最小值在左半(含 m)\n                r = m\n        return nums[l]\n",
+    "gotchas": [
+      "和 `nums[r]` 比较(不是 nums[l])才能正确判断最小值在哪半。",
+      "循环 `l < r`、`r = m`(不是 m-1),最后 l==r 即最小值位置。"
+    ]
   }
 }

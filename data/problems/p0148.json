@@ -18,7 +18,7 @@
       "time": "O(n log n)",
       "space": "O(log n)",
       "starred": true,
-      "code": "def sortList(self, head):\n    if not head or not head.next:\n        return head\n    prev, slow, fast = None, head, head\n    while fast and fast.next:\n        prev = slow\n        slow = slow.next\n        fast = fast.next.next\n    prev.next = None\n    return _merge(self.sortList(head), self.sortList(slow))"
+      "code": "def _merge(a, b):\n    dummy = ListNode()\n    t = dummy\n    while a and b:\n        if a.val <= b.val:\n            t.next, a = a, a.next\n        else:\n            t.next, b = b, b.next\n        t = t.next\n    t.next = a or b\n    return dummy.next\n\nclass Solution:\n    def sortList(self, head):\n        if not head or not head.next:\n            return head\n        prev, slow, fast = None, head, head\n        while fast and fast.next:\n            prev = slow\n            slow = slow.next\n            fast = fast.next.next\n        prev.next = None\n        return _merge(self.sortList(head), self.sortList(slow))\n"
     },
     {
       "method": "sortList_iter",
@@ -26,23 +26,7 @@
       "time": "O(n log n)",
       "space": "O(1)",
       "starred": false,
-      "code": "def sortList_iter(self, head):\n    if not head or not head.next:\n        return head\n    # 求长度\n    n = 0\n    cur = head\n    while cur:\n        n += 1\n        cur = cur.next\n    dummy = ListNode(0, head)\n    size = 1\n    while size < n:\n        prev = dummy\n        cur = dummy.next\n        while cur:\n            left = cur\n            right = self._split(left, size)\n            cur = self._split(right, size)\n            prev.next = _merge(left, right)\n            while prev.next:\n                prev = prev.next\n        size *= 2\n    return dummy.next\n\n@staticmethod"
-    },
-    {
-      "method": "_split",
-      "title": "主解法",
-      "time": "",
-      "space": "",
-      "starred": false,
-      "code": "def _split(head, size):\n    \"\"\"走 size 步,在第 size 个之后切断,返回切断后的下一段头。\"\"\"\n    for _ in range(size - 1):\n        if not head:\n            break\n        head = head.next\n    if not head:\n        return None\n    nxt = head.next\n    head.next = None\n    return nxt"
-    },
-    {
-      "method": "_merge",
-      "title": "主解法",
-      "time": "",
-      "space": "",
-      "starred": false,
-      "code": "def _merge(self, a, b):\n    return _merge(a, b)"
+      "code": "def _merge(a, b):\n    dummy = ListNode()\n    t = dummy\n    while a and b:\n        if a.val <= b.val:\n            t.next, a = a, a.next\n        else:\n            t.next, b = b, b.next\n        t = t.next\n    t.next = a or b\n    return dummy.next\n\nclass Solution:\n    def sortList(self, head):\n        if not head or not head.next:\n            return head\n        # 求长度\n        n = 0\n        cur = head\n        while cur:\n            n += 1\n            cur = cur.next\n        dummy = ListNode(0, head)\n        size = 1\n        while size < n:\n            prev = dummy\n            cur = dummy.next\n            while cur:\n                left = cur\n                right = self._split(left, size)\n                cur = self._split(right, size)\n                prev.next = _merge(left, right)\n                while prev.next:\n                    prev = prev.next\n            size *= 2\n        return dummy.next\n\n    @staticmethod\n    def _split(head, size):\n        \"\"\"走 size 步,在第 size 个之后切断,返回切断后的下一段头。\"\"\"\n        for _ in range(size - 1):\n            if not head:\n                break\n            head = head.next\n        if not head:\n            return None\n        nxt = head.next\n        head.next = None\n        return nxt\n"
     }
   ],
   "raw_source": "# LC 148. 排序链表 · Medium · 归并排序\n\"\"\"\n🔹 题面\n    O(n log n) 时间排序链表。\n\n🔹 解法对比\n    | 方法                | 时间       | 空间      | 备注                  |\n    |---------------------|------------|-----------|-----------------------|\n    | 自顶向下归并 ★     | O(n log n) | O(log n)  | 递归栈                |\n    | 自底向上归并        | O(n log n) | O(1)      | 严格 O(1) 非递归      |\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import ListNode, build_list, list_to_array\n\n\ndef _merge(a, b):\n    dummy = ListNode()\n    t = dummy\n    while a and b:\n        if a.val <= b.val:\n            t.next, a = a, a.next\n        else:\n            t.next, b = b, b.next\n        t = t.next\n    t.next = a or b\n    return dummy.next\n\n\nclass Solution:\n    # 解法 1:自顶向下归并 ★ — O(n log n) / O(log n)\n    def sortList(self, head):\n        if not head or not head.next:\n            return head\n        prev, slow, fast = None, head, head\n        while fast and fast.next:\n            prev = slow\n            slow = slow.next\n            fast = fast.next.next\n        prev.next = None\n        return _merge(self.sortList(head), self.sortList(slow))\n\n    # 解法 2:自底向上归并 — O(n log n) / O(1)\n    def sortList_iter(self, head):\n        if not head or not head.next:\n            return head\n        # 求长度\n        n = 0\n        cur = head\n        while cur:\n            n += 1\n            cur = cur.next\n        dummy = ListNode(0, head)\n        size = 1\n        while size < n:\n            prev = dummy\n            cur = dummy.next\n            while cur:\n                left = cur\n                right = self._split(left, size)\n                cur = self._split(right, size)\n                prev.next = _merge(left, right)\n                while prev.next:\n                    prev = prev.next\n            size *= 2\n        return dummy.next\n\n    @staticmethod\n    def _split(head, size):\n        \"\"\"走 size 步,在第 size 个之后切断,返回切断后的下一段头。\"\"\"\n        for _ in range(size - 1):\n            if not head:\n                break\n            head = head.next\n        if not head:\n            return None\n        nxt = head.next\n        head.next = None\n        return nxt\n\n    # 内部归并工具\n    def _merge(self, a, b):\n        return _merge(a, b)\n\n\ndef _test() -> None:\n    s = Solution()\n    for fn in (s.sortList, s.sortList_iter):\n        assert list_to_array(fn(build_list([4, 2, 1, 3]))) == [1, 2, 3, 4]\n        assert list_to_array(fn(build_list([-1, 5, 3, 4, 0]))) == [-1, 0, 3, 4, 5]\n        assert list_to_array(fn(build_list([]))) == []\n    print(\"✅ p148 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -69,5 +53,14 @@
       "time": "**O(n log n)** —— log n 层,每层归并总 O(n)。",
       "space": "**O(log n)** 递归栈 / **O(1)** 自底向上。"
     }
+  },
+  "n_sols": 2,
+  "code_explain": {
+    "method": "sortList",
+    "annotated": "def _merge(a, b):                    # 合并两条有序链表(同 #21)\n    dummy = ListNode()\n    t = dummy\n    while a and b:\n        if a.val <= b.val:\n            t.next, a = a, a.next\n        else:\n            t.next, b = b, b.next\n        t = t.next\n    t.next = a or b\n    return dummy.next\n\nclass Solution:\n    def sortList(self, head):\n        if not head or not head.next:    # 0 或 1 个结点,已有序\n            return head\n        # 快慢指针找中点,prev 停在中点前一个,用于断开\n        prev, slow, fast = None, head, head\n        while fast and fast.next:\n            prev = slow\n            slow = slow.next\n            fast = fast.next.next\n        prev.next = None                 # 从中间断成两半:head.. 和 slow..\n        return _merge(self.sortList(head), self.sortList(slow))  # 递归排两半再合并\n",
+    "gotchas": [
+      "归并排序:找中点 → 断开 → 递归排左右 → 合并,O(n log n)、稳定。",
+      "`prev.next = None` 必须做,否则两半没断开会无限递归。"
+    ]
   }
 }

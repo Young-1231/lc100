@@ -9,7 +9,7 @@
   "day": 7,
   "day_title": "DP / 多维DP / 技巧",
   "category": "DP",
-  "leetcode_url": "https://leetcode.cn/problems/lis/",
+  "leetcode_url": "https://leetcode.cn/problems/longest-increasing-subsequence/",
   "filename": "p300_lis.py",
   "doc": "🔹 题面\n    返回最长严格递增子序列的长度。\n\n🔹 解法对比\n    | 方法               | 时间        | 空间 | 备注                        |\n    |--------------------|-------------|------|-----------------------------|\n    | DP 标准            | O(n²)       | O(n) | f[i] = max{f[j]+1 | a[j]<a[i]} |\n    | 贪心 + 二分(patience)★| O(n log n) | O(n) | 维护\"长度→最小末尾\"           |\n\n🔹 贪心 + 二分思想\n    tails[k] = 当前长度为 k+1 的 LIS 的最小末尾。\n    新元素 x 用 bisect_left 找位置;若可追加则增加长度。\n    注意:tails 不一定是真正的 LIS,但长度正确。",
   "solutions": [
@@ -19,7 +19,7 @@
       "time": "O(n log n)",
       "space": "O(n)",
       "starred": true,
-      "code": "def lengthOfLIS(self, nums: list[int]) -> int:\n    tails: list[int] = []\n    for x in nums:\n        i = bisect_left(tails, x)\n        if i == len(tails):\n            tails.append(x)\n        else:\n            tails[i] = x\n    return len(tails)"
+      "code": "from bisect import bisect_left\n\nclass Solution:\n    def lengthOfLIS(self, nums: list[int]) -> int:\n        tails: list[int] = []\n        for x in nums:\n            i = bisect_left(tails, x)\n            if i == len(tails):\n                tails.append(x)\n            else:\n                tails[i] = x\n        return len(tails)\n"
     },
     {
       "method": "lengthOfLIS_dp",
@@ -27,7 +27,7 @@
       "time": "O(n²)",
       "space": "O(n)",
       "starred": false,
-      "code": "def lengthOfLIS_dp(self, nums: list[int]) -> int:\n    n = len(nums)\n    if n == 0:\n        return 0\n    f = [1] * n\n    for i in range(1, n):\n        for j in range(i):\n            if nums[j] < nums[i]:\n                f[i] = max(f[i], f[j] + 1)\n    return max(f)"
+      "code": "class Solution:\n    def lengthOfLIS(self, nums: list[int]) -> int:\n        n = len(nums)\n        if n == 0:\n            return 0\n        f = [1] * n\n        for i in range(1, n):\n            for j in range(i):\n                if nums[j] < nums[i]:\n                    f[i] = max(f[i], f[j] + 1)\n        return max(f)\n"
     }
   ],
   "raw_source": "# LC 300. 最长递增子序列 · Medium · DP / 贪心+二分\n\"\"\"\n🔹 题面\n    返回最长严格递增子序列的长度。\n\n🔹 解法对比\n    | 方法               | 时间        | 空间 | 备注                        |\n    |--------------------|-------------|------|-----------------------------|\n    | DP 标准            | O(n²)       | O(n) | f[i] = max{f[j]+1 | a[j]<a[i]} |\n    | 贪心 + 二分(patience)★| O(n log n) | O(n) | 维护\"长度→最小末尾\"           |\n\n🔹 贪心 + 二分思想\n    tails[k] = 当前长度为 k+1 的 LIS 的最小末尾。\n    新元素 x 用 bisect_left 找位置;若可追加则增加长度。\n    注意:tails 不一定是真正的 LIS,但长度正确。\n\"\"\"\nfrom bisect import bisect_left\n\n\nclass Solution:\n    # 解法 1:贪心 + 二分 ★ — O(n log n) / O(n)\n    def lengthOfLIS(self, nums: list[int]) -> int:\n        tails: list[int] = []\n        for x in nums:\n            i = bisect_left(tails, x)\n            if i == len(tails):\n                tails.append(x)\n            else:\n                tails[i] = x\n        return len(tails)\n\n    # 解法 2:DP — O(n²) / O(n)\n    def lengthOfLIS_dp(self, nums: list[int]) -> int:\n        n = len(nums)\n        if n == 0:\n            return 0\n        f = [1] * n\n        for i in range(1, n):\n            for j in range(i):\n                if nums[j] < nums[i]:\n                    f[i] = max(f[i], f[j] + 1)\n        return max(f)\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        ([10, 9, 2, 5, 3, 7, 101, 18], 4),\n        ([0, 1, 0, 3, 2, 3], 4),\n        ([7, 7, 7, 7], 1),\n        ([], 0),\n    ]\n    for arg, want in cases:\n        for fn in (s.lengthOfLIS, s.lengthOfLIS_dp):\n            assert fn(arg) == want\n    print(\"✅ p300 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -44,5 +44,14 @@
       "time": "**O(n log n)** —— 每元素一次 bisect。",
       "space": "**O(n)** —— tails 最坏全部递增。"
     }
+  },
+  "n_sols": 2,
+  "code_explain": {
+    "method": "lengthOfLIS",
+    "annotated": "from bisect import bisect_left\n\nclass Solution:\n    def lengthOfLIS(self, nums: list[int]) -> int:\n        tails: list[int] = []        # tails[k] = 长度为 k+1 的递增子序列的最小末尾\n        for x in nums:\n            i = bisect_left(tails, x)    # 找第一个 >= x 的位置\n            if i == len(tails):      # x 比所有都大 -> 接到末尾,LIS 变长\n                tails.append(x)\n            else:\n                tails[i] = x         # 否则替换,让该长度的末尾更小(更有潜力)\n        return len(tails)            # tails 的长度即 LIS 长度\n",
+    "gotchas": [
+      "`tails` 不是真正的 LIS,但其**长度**等于 LIS 长度。",
+      "用二分把每个数放到第一个 ≥ 它的位置,维持 tails 递增,O(n log n)。"
+    ]
   }
 }

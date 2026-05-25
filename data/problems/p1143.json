@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def longestCommonSubsequence(self, a: str, b: str) -> int:\n    m, n = len(a), len(b)\n    f = [[0] * (n + 1) for _ in range(m + 1)]\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if a[i - 1] == b[j - 1]:\n                f[i][j] = f[i - 1][j - 1] + 1\n            else:\n                f[i][j] = max(f[i - 1][j], f[i][j - 1])\n    return f[m][n]"
+      "code": "class Solution:\n    def longestCommonSubsequence(self, a: str, b: str) -> int:\n        m, n = len(a), len(b)\n        f = [[0] * (n + 1) for _ in range(m + 1)]\n        for i in range(1, m + 1):\n            for j in range(1, n + 1):\n                if a[i - 1] == b[j - 1]:\n                    f[i][j] = f[i - 1][j - 1] + 1\n                else:\n                    f[i][j] = max(f[i - 1][j], f[i][j - 1])\n        return f[m][n]\n"
     }
   ],
   "raw_source": "# LC 1143. 最长公共子序列 · Medium · 多维 DP\n\"\"\"\n🔹 状态\n    f[i][j] = LCS(text1[:i], text2[:j])\n    text1[i-1] == text2[j-1] → f[i][j] = f[i-1][j-1] + 1\n    否则 f[i][j] = max(f[i-1][j], f[i][j-1])\n\"\"\"\n\n\nclass Solution:\n    def longestCommonSubsequence(self, a: str, b: str) -> int:\n        m, n = len(a), len(b)\n        f = [[0] * (n + 1) for _ in range(m + 1)]\n        for i in range(1, m + 1):\n            for j in range(1, n + 1):\n                if a[i - 1] == b[j - 1]:\n                    f[i][j] = f[i - 1][j - 1] + 1\n                else:\n                    f[i][j] = max(f[i - 1][j], f[i][j - 1])\n        return f[m][n]\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.longestCommonSubsequence(\"abcde\", \"ace\") == 3\n    assert s.longestCommonSubsequence(\"abc\", \"abc\") == 3\n    assert s.longestCommonSubsequence(\"abc\", \"def\") == 0\n    print(\"✅ p1143 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -36,5 +36,14 @@
       "time": "**O(mn)**。",
       "space": "**O(mn)** / 滚动 **O(min(m,n))**。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "longestCommonSubsequence",
+    "annotated": "class Solution:\n    def longestCommonSubsequence(self, a: str, b: str) -> int:\n        m, n = len(a), len(b)\n        f = [[0] * (n + 1) for _ in range(m + 1)]   # f[i][j]:a 前 i、b 前 j 的 LCS 长度\n        for i in range(1, m + 1):\n            for j in range(1, n + 1):\n                if a[i - 1] == b[j - 1]:   # 末字符相同 -> 对角线 + 1\n                    f[i][j] = f[i - 1][j - 1] + 1\n                else:                # 不同 -> 去掉 a 末 或 b 末,取较大\n                    f[i][j] = max(f[i - 1][j], f[i][j - 1])\n        return f[m][n]\n",
+    "gotchas": [
+      "字符相同时来自对角线 +1;不同时取上/左较大。",
+      "子序列不要求连续(和子串不同)。"
+    ]
   }
 }

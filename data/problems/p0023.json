@@ -9,7 +9,7 @@
   "day": 3,
   "day_title": "链表",
   "category": "链表",
-  "leetcode_url": "https://leetcode.cn/problems/merge-k-lists/",
+  "leetcode_url": "https://leetcode.cn/problems/merge-k-sorted-lists/",
   "filename": "p023_merge_k_lists.py",
   "doc": "🔹 题面\n    合并 K 个升序链表,返回总升序链表。N 是总节点数,K 是链表数。\n\n🔹 解法对比\n    | 方法           | 时间        | 空间    | 备注                             |\n    |----------------|-------------|---------|----------------------------------|\n    | 顺次两两合并   | O(NK)       | O(1)    | 朴素                             |\n    | 小顶堆 ★      | O(N log K)  | O(K)    | 每次取最小,分布式 / 大数据流也用 |\n    | 分治两两归并   | O(N log K)  | O(log K)| 类似归并排序,递归栈              |\n\n🔹 trick(Python heapq)\n    ListNode 没定义 < ;入堆元组 (val, idx, node),idx 唯一防 tie。",
   "solutions": [
@@ -19,7 +19,7 @@
       "time": "O(N log K)",
       "space": "O(K)",
       "starred": true,
-      "code": "def mergeKLists(self, lists):\n    h: list = []\n    for i, head in enumerate(lists):\n        if head:\n            heapq.heappush(h, (head.val, i, head))\n    dummy = ListNode()\n    t = dummy\n    while h:\n        v, i, node = heapq.heappop(h)\n        t.next = node\n        t = t.next\n        if node.next:\n            heapq.heappush(h, (node.next.val, i, node.next))\n    return dummy.next"
+      "code": "import heapq\n\nclass Solution:\n    def mergeKLists(self, lists):\n        h: list = []\n        for i, head in enumerate(lists):\n            if head:\n                heapq.heappush(h, (head.val, i, head))\n        dummy = ListNode()\n        t = dummy\n        while h:\n            v, i, node = heapq.heappop(h)\n            t.next = node\n            t = t.next\n            if node.next:\n                heapq.heappush(h, (node.next.val, i, node.next))\n        return dummy.next\n"
     },
     {
       "method": "mergeKLists_divide",
@@ -27,7 +27,7 @@
       "time": "O(N log K)",
       "space": "O(log K)",
       "starred": false,
-      "code": "def mergeKLists_divide(self, lists):\n    if not lists:\n        return None\n\n    def go(l, r):\n        if l == r:\n            return lists[l]\n        m = (l + r) // 2\n        return _merge2(go(l, m), go(m + 1, r))\n\n    return go(0, len(lists) - 1)"
+      "code": "def _merge2(a, b):\n    dummy = ListNode()\n    t = dummy\n    while a and b:\n        if a.val <= b.val:\n            t.next, a = a, a.next\n        else:\n            t.next, b = b, b.next\n        t = t.next\n    t.next = a or b\n    return dummy.next\n\nclass Solution:\n    def mergeKLists(self, lists):\n        if not lists:\n            return None\n\n        def go(l, r):\n            if l == r:\n                return lists[l]\n            m = (l + r) // 2\n            return _merge2(go(l, m), go(m + 1, r))\n\n        return go(0, len(lists) - 1)\n"
     },
     {
       "method": "mergeKLists_seq",
@@ -35,7 +35,7 @@
       "time": "O(NK)",
       "space": "O(1)",
       "starred": false,
-      "code": "def mergeKLists_seq(self, lists):\n    head = None\n    for l in lists:\n        head = _merge2(head, l)\n    return head"
+      "code": "def _merge2(a, b):\n    dummy = ListNode()\n    t = dummy\n    while a and b:\n        if a.val <= b.val:\n            t.next, a = a, a.next\n        else:\n            t.next, b = b, b.next\n        t = t.next\n    t.next = a or b\n    return dummy.next\n\nclass Solution:\n    def mergeKLists(self, lists):\n        head = None\n        for l in lists:\n            head = _merge2(head, l)\n        return head\n"
     }
   ],
   "raw_source": "# LC 23. 合并 K 个升序链表 · Hard · 堆 / 分治\n\"\"\"\n🔹 题面\n    合并 K 个升序链表,返回总升序链表。N 是总节点数,K 是链表数。\n\n🔹 解法对比\n    | 方法           | 时间        | 空间    | 备注                             |\n    |----------------|-------------|---------|----------------------------------|\n    | 顺次两两合并   | O(NK)       | O(1)    | 朴素                             |\n    | 小顶堆 ★      | O(N log K)  | O(K)    | 每次取最小,分布式 / 大数据流也用 |\n    | 分治两两归并   | O(N log K)  | O(log K)| 类似归并排序,递归栈              |\n\n🔹 trick(Python heapq)\n    ListNode 没定义 < ;入堆元组 (val, idx, node),idx 唯一防 tie。\n\"\"\"\nimport heapq\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import ListNode, build_list, list_to_array\n\n\ndef _merge2(a, b):\n    dummy = ListNode()\n    t = dummy\n    while a and b:\n        if a.val <= b.val:\n            t.next, a = a, a.next\n        else:\n            t.next, b = b, b.next\n        t = t.next\n    t.next = a or b\n    return dummy.next\n\n\nclass Solution:\n    # 解法 1:小顶堆 ★ — O(N log K) / O(K)\n    def mergeKLists(self, lists):\n        h: list = []\n        for i, head in enumerate(lists):\n            if head:\n                heapq.heappush(h, (head.val, i, head))\n        dummy = ListNode()\n        t = dummy\n        while h:\n            v, i, node = heapq.heappop(h)\n            t.next = node\n            t = t.next\n            if node.next:\n                heapq.heappush(h, (node.next.val, i, node.next))\n        return dummy.next\n\n    # 解法 2:分治两两归并 — O(N log K) / O(log K)\n    def mergeKLists_divide(self, lists):\n        if not lists:\n            return None\n\n        def go(l, r):\n            if l == r:\n                return lists[l]\n            m = (l + r) // 2\n            return _merge2(go(l, m), go(m + 1, r))\n\n        return go(0, len(lists) - 1)\n\n    # 解法 3:顺次两两合并 — O(NK) / O(1)\n    def mergeKLists_seq(self, lists):\n        head = None\n        for l in lists:\n            head = _merge2(head, l)\n        return head\n\n\ndef _test() -> None:\n    s = Solution()\n    src = [[1, 4, 5], [1, 3, 4], [2, 6]]\n    want = [1, 1, 2, 3, 4, 4, 5, 6]\n    for fn in (s.mergeKLists, s.mergeKLists_divide, s.mergeKLists_seq):\n        ls = [build_list(x) for x in src]\n        assert list_to_array(fn(ls)) == want\n    assert s.mergeKLists([]) is None\n    assert s.mergeKLists([None]) is None\n    print(\"✅ p023 通过 3 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -65,5 +65,14 @@
       "time": "**O(N log K)** —— 堆和分治都达到此下界。",
       "space": "**O(K)** 堆 / **O(log K)** 分治递归栈。"
     }
+  },
+  "n_sols": 3,
+  "code_explain": {
+    "method": "mergeKLists",
+    "annotated": "import heapq                          # 堆(优先队列):每次 O(log) 取最小\n\nclass Solution:\n    def mergeKLists(self, lists):\n        h: list = []\n        for i, head in enumerate(lists):\n            if head:\n                heapq.heappush(h, (head.val, i, head))  # 元组先比 val;i 用来打破 val 相等\n        dummy = ListNode()\n        t = dummy\n        while h:\n            v, i, node = heapq.heappop(h)   # 弹出当前最小结点\n            t.next = node\n            t = t.next\n            if node.next:                   # 该链还有下一个 -> 入堆\n                heapq.heappush(h, (node.next.val, i, node.next))\n        return dummy.next\n",
+    "gotchas": [
+      "元组里放 `i`(链表编号):当 `val` 相等时,堆改比 i,避免去比较 ListNode(不可比较)而报错。",
+      "堆里始终只有 ≤k 个元素(每条链一个),空间 O(k)。"
+    ]
   }
 }

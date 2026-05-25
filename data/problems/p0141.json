@@ -18,7 +18,7 @@
       "time": "O(n)",
       "space": "O(1)",
       "starred": true,
-      "code": "def hasCycle(self, head) -> bool:\n    slow = fast = head\n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n        if slow is fast:\n            return True\n    return False"
+      "code": "class Solution:\n    def hasCycle(self, head) -> bool:\n        slow = fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n            if slow is fast:\n                return True\n        return False\n"
     },
     {
       "method": "hasCycle_set",
@@ -26,7 +26,7 @@
       "time": "O(n)",
       "space": "O(n)",
       "starred": false,
-      "code": "def hasCycle_set(self, head) -> bool:\n    seen = set()\n    cur = head\n    while cur:\n        if id(cur) in seen:\n            return True\n        seen.add(id(cur))\n        cur = cur.next\n    return False"
+      "code": "class Solution:\n    def hasCycle(self, head) -> bool:\n        seen = set()\n        cur = head\n        while cur:\n            if id(cur) in seen:\n                return True\n            seen.add(id(cur))\n            cur = cur.next\n        return False\n"
     }
   ],
   "raw_source": "# LC 141. 环形链表 · Easy · Floyd 龟兔\n\"\"\"\n🔹 题面\n    判断链表是否有环。\n\n🔹 解法对比\n    | 方法            | 时间 | 空间 | 备注                        |\n    |-----------------|------|------|-----------------------------|\n    | 哈希记录访问过  | O(n) | O(n) | 直观                        |\n    | Floyd 龟兔 ★   | O(n) | O(1) | 经典,面试默写              |\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import build_list\n\n\nclass Solution:\n    # 解法 1:Floyd 龟兔 ★ — O(n) / O(1)\n    def hasCycle(self, head) -> bool:\n        slow = fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n            if slow is fast:\n                return True\n        return False\n\n    # 解法 2:哈希 — O(n) / O(n)\n    def hasCycle_set(self, head) -> bool:\n        seen = set()\n        cur = head\n        while cur:\n            if id(cur) in seen:\n                return True\n            seen.add(id(cur))\n            cur = cur.next\n        return False\n\n\ndef _test() -> None:\n    s = Solution()\n    h = build_list([3, 2, 0, -4])\n    h.next.next.next.next = h.next\n    for fn in (s.hasCycle, s.hasCycle_set):\n        assert fn(h) is True\n        assert fn(build_list([1])) is False\n        assert fn(None) is False\n    print(\"✅ p141 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -53,5 +53,15 @@
       "time": "**O(n)**。",
       "space": "**O(1)** Floyd / **O(n)** 哈希。"
     }
+  },
+  "n_sols": 2,
+  "code_explain": {
+    "method": "hasCycle",
+    "annotated": "class Solution:\n    def hasCycle(self, head) -> bool:\n        slow = fast = head              # 快慢指针都从头出发\n        while fast and fast.next:       # 快指针走两步,需保证 fast、fast.next 都在\n            slow = slow.next            # 慢指针走一步\n            fast = fast.next.next       # 快指针走两步\n            if slow is fast:            # 相遇 -> 有环\n                return True\n        return False                    # 快指针到 None -> 无环\n",
+    "gotchas": [
+      "有环时快指针会在环内「追上」慢指针。",
+      "`while fast and fast.next` 缺一不可,否则 `fast.next.next` 会空指针。",
+      "用 `is`(同一对象判断),不是 `==`。"
+    ]
   }
 }

@@ -8,7 +8,7 @@
   "day": 6,
   "day_title": "栈 / 堆 / 贪心",
   "category": "栈",
-  "leetcode_url": "https://leetcode.cn/problems/largest-rectangle/",
+  "leetcode_url": "https://leetcode.cn/problems/largest-rectangle-in-histogram/",
   "filename": "p084_largest_rectangle.py",
   "doc": "🔹 解法对比\n    | 方法            | 时间   | 空间  | 备注                       |\n    |-----------------|--------|-------|----------------------------|\n    | 暴力枚举区间    | O(n²)  | O(1)  | n ≤ 10⁴ 可过                |\n    | 单调栈 ★       | O(n)   | O(n)  | 经典递增栈 + 两哨兵         |",
   "solutions": [
@@ -18,7 +18,7 @@
       "time": "O(n²)",
       "space": "O(1)",
       "starred": false,
-      "code": "def largestRectangleArea_brute(self, h: list[int]) -> int:\n    n, ans = len(h), 0\n    for i in range(n):\n        mn = h[i]\n        for j in range(i, n):\n            mn = min(mn, h[j])\n            ans = max(ans, mn * (j - i + 1))\n    return ans"
+      "code": "class Solution:\n    def largestRectangleArea(self, h: list[int]) -> int:\n        n, ans = len(h), 0\n        for i in range(n):\n            mn = h[i]\n            for j in range(i, n):\n                mn = min(mn, h[j])\n                ans = max(ans, mn * (j - i + 1))\n        return ans\n"
     },
     {
       "method": "largestRectangleArea",
@@ -26,7 +26,7 @@
       "time": "O(n)",
       "space": "O(n)",
       "starred": true,
-      "code": "def largestRectangleArea(self, h: list[int]) -> int:\n    h = [0] + h + [0]\n    st: list[int] = []\n    ans = 0\n    for i, x in enumerate(h):\n        while st and h[st[-1]] > x:\n            top = st.pop()\n            w = i - st[-1] - 1\n            ans = max(ans, h[top] * w)\n        st.append(i)\n    return ans"
+      "code": "class Solution:\n    def largestRectangleArea(self, h: list[int]) -> int:\n        h = [0] + h + [0]\n        st: list[int] = []\n        ans = 0\n        for i, x in enumerate(h):\n            while st and h[st[-1]] > x:\n                top = st.pop()\n                w = i - st[-1] - 1\n                ans = max(ans, h[top] * w)\n            st.append(i)\n        return ans\n"
     }
   ],
   "raw_source": "# LC 84. 柱状图中最大的矩形 · Hard · 单调栈\n\"\"\"\n🔹 解法对比\n    | 方法            | 时间   | 空间  | 备注                       |\n    |-----------------|--------|-------|----------------------------|\n    | 暴力枚举区间    | O(n²)  | O(1)  | n ≤ 10⁴ 可过                |\n    | 单调栈 ★       | O(n)   | O(n)  | 经典递增栈 + 两哨兵         |\n\"\"\"\n\n\nclass Solution:\n    # 解法 1:暴力 — O(n²) / O(1)\n    def largestRectangleArea_brute(self, h: list[int]) -> int:\n        n, ans = len(h), 0\n        for i in range(n):\n            mn = h[i]\n            for j in range(i, n):\n                mn = min(mn, h[j])\n                ans = max(ans, mn * (j - i + 1))\n        return ans\n\n    # 解法 2:单调栈 ★ — O(n) / O(n)\n    def largestRectangleArea(self, h: list[int]) -> int:\n        h = [0] + h + [0]\n        st: list[int] = []\n        ans = 0\n        for i, x in enumerate(h):\n            while st and h[st[-1]] > x:\n                top = st.pop()\n                w = i - st[-1] - 1\n                ans = max(ans, h[top] * w)\n            st.append(i)\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        ([2, 1, 5, 6, 2, 3], 10),\n        ([2, 4], 4),\n        ([1], 1),\n        ([1, 1], 2),\n    ]\n    for arg, want in cases:\n        for fn in (s.largestRectangleArea, s.largestRectangleArea_brute):\n            assert fn(arg) == want\n    print(\"✅ p084 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -43,5 +43,15 @@
       "time": "**O(n)** —— 每个下标入/出栈各 1 次。",
       "space": "**O(n)** —— 栈最坏存全部下标(单调递增数组)。"
     }
+  },
+  "n_sols": 2,
+  "code_explain": {
+    "method": "largestRectangleArea",
+    "annotated": "class Solution:\n    def largestRectangleArea(self, h: list[int]) -> int:\n        h = [0] + h + [0]              # 两端加哨兵 0:开头作左边界基准,结尾强制清空栈\n        st: list[int] = []             # 单调递增栈,存下标\n        ans = 0\n        for i, x in enumerate(h):\n            while st and h[st[-1]] > x: # 当前柱比栈顶矮 -> 栈顶柱子的右边界确定了\n                top = st.pop()         # 以 h[top] 为高的矩形\n                w = i - st[-1] - 1     # 宽 = 右边界 i 与新栈顶(左边界)之间\n                ans = max(ans, h[top] * w)\n            st.append(i)\n        return ans\n",
+    "gotchas": [
+      "两端加哨兵 `0`:左哨兵作左边界基准,右哨兵保证最后把栈里所有柱子都结算掉。",
+      "弹出栈顶时,宽度 = `i - st[-1] - 1`(左右两个更矮的边界之间)。",
+      "栈里存下标,保持对应高度单调递增。"
+    ]
   }
 }

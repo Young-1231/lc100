@@ -8,7 +8,7 @@
   "day": 2,
   "day_title": "数组 / 矩阵",
   "category": "普通数组",
-  "leetcode_url": "https://leetcode.cn/problems/product-except-self/",
+  "leetcode_url": "https://leetcode.cn/problems/product-of-array-except-self/",
   "filename": "p238_product_except_self.py",
   "doc": "🔹 题面\n    返回 ans[i] = 除 nums[i] 以外所有数的乘积,要求 O(n),不能用除法。\n\n🔹 直觉\n    左前缀积 + 右后缀积。两次遍历,空间利用 ans 复用即 O(1) 额外空间。\n\n🔹 复杂度 O(n) / O(1) 额外空间(ans 不计)\n\n🔹 踩坑\n    不能用除法是因为存在 0;并且整体乘积可能溢出语义(题面要求)。",
   "solutions": [
@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def productExceptSelf(self, nums: list[int]) -> list[int]:\n    n = len(nums)\n    ans = [1] * n\n    # 左前缀积:ans[i] = ∏ nums[0..i-1]\n    for i in range(1, n):\n        ans[i] = ans[i - 1] * nums[i - 1]\n    # 右乘累计\n    right = 1\n    for i in range(n - 1, -1, -1):\n        ans[i] *= right\n        right *= nums[i]\n    return ans"
+      "code": "class Solution:\n    def productExceptSelf(self, nums: list[int]) -> list[int]:\n        n = len(nums)\n        ans = [1] * n\n        # 左前缀积:ans[i] = ∏ nums[0..i-1]\n        for i in range(1, n):\n            ans[i] = ans[i - 1] * nums[i - 1]\n        # 右乘累计\n        right = 1\n        for i in range(n - 1, -1, -1):\n            ans[i] *= right\n            right *= nums[i]\n        return ans\n"
     }
   ],
   "raw_source": "# LC 238. 除自身以外数组的乘积 · Medium · 前缀积\n\"\"\"\n🔹 题面\n    返回 ans[i] = 除 nums[i] 以外所有数的乘积,要求 O(n),不能用除法。\n\n🔹 直觉\n    左前缀积 + 右后缀积。两次遍历,空间利用 ans 复用即 O(1) 额外空间。\n\n🔹 复杂度 O(n) / O(1) 额外空间(ans 不计)\n\n🔹 踩坑\n    不能用除法是因为存在 0;并且整体乘积可能溢出语义(题面要求)。\n\"\"\"\n\n\nclass Solution:\n    def productExceptSelf(self, nums: list[int]) -> list[int]:\n        n = len(nums)\n        ans = [1] * n\n        # 左前缀积:ans[i] = ∏ nums[0..i-1]\n        for i in range(1, n):\n            ans[i] = ans[i - 1] * nums[i - 1]\n        # 右乘累计\n        right = 1\n        for i in range(n - 1, -1, -1):\n            ans[i] *= right\n            right *= nums[i]\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.productExceptSelf([1, 2, 3, 4]) == [24, 12, 8, 6]\n    assert s.productExceptSelf([-1, 1, 0, -3, 3]) == [0, 0, 9, 0, 0]\n    print(\"✅ p238 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -44,5 +44,14 @@
       "time": "**O(n)** —— 两次扫描。",
       "space": "**O(1)** —— ans 不算。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "productExceptSelf",
+    "annotated": "class Solution:\n    def productExceptSelf(self, nums: list[int]) -> list[int]:\n        n = len(nums)\n        ans = [1] * n\n        # 第一遍:ans[i] = 它左边所有数的乘积(左前缀积)\n        for i in range(1, n):\n            ans[i] = ans[i - 1] * nums[i - 1]\n        # 第二遍:从右往左,用 right 累计右边乘积,乘进 ans[i]\n        right = 1\n        for i in range(n - 1, -1, -1):\n            ans[i] *= right             # 左积 × 右积 = 除自身外的乘积\n            right *= nums[i]            # 更新右侧累计积\n        return ans\n",
+    "gotchas": [
+      "不能用除法(题目禁止,且遇到 0 会出错)。",
+      "两遍扫描:先存左前缀积,再用一个变量累计右后缀积,O(1) 额外空间(输出数组不计)。"
+    ]
   }
 }

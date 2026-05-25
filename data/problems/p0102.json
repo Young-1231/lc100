@@ -8,7 +8,7 @@
   "day": 4,
   "day_title": "二叉树",
   "category": "二叉树",
-  "leetcode_url": "https://leetcode.cn/problems/level-order/",
+  "leetcode_url": "https://leetcode.cn/problems/binary-tree-level-order-traversal/",
   "filename": "p102_level_order.py",
   "doc": "🔹 题面\n    返回层序遍历结果(每层一个数组)。\n\n🔹 解法对比\n    | 方法    | 时间 | 空间 | 备注                  |\n    |---------|------|------|-----------------------|\n    | BFS ★  | O(n) | O(w) | 队列,每层批量出队     |\n    | DFS+层号| O(n) | O(h) | 递归带 depth,按层 push |",
   "solutions": [
@@ -18,7 +18,7 @@
       "time": "O(n)",
       "space": "O(w)",
       "starred": true,
-      "code": "def levelOrder(self, root) -> list[list[int]]:\n    if not root:\n        return []\n    out, q = [], deque([root])\n    while q:\n        level = []\n        for _ in range(len(q)):\n            n = q.popleft()\n            level.append(n.val)\n            if n.left:\n                q.append(n.left)\n            if n.right:\n                q.append(n.right)\n        out.append(level)\n    return out"
+      "code": "from collections import deque\n\nclass Solution:\n    def levelOrder(self, root) -> list[list[int]]:\n        if not root:\n            return []\n        out, q = [], deque([root])\n        while q:\n            level = []\n            for _ in range(len(q)):\n                n = q.popleft()\n                level.append(n.val)\n                if n.left:\n                    q.append(n.left)\n                if n.right:\n                    q.append(n.right)\n            out.append(level)\n        return out\n"
     },
     {
       "method": "levelOrder_dfs",
@@ -26,7 +26,7 @@
       "time": "O(n)",
       "space": "O(h)",
       "starred": false,
-      "code": "def levelOrder_dfs(self, root) -> list[list[int]]:\n    out: list[list[int]] = []\n\n    def dfs(n, d):\n        if not n:\n            return\n        if d == len(out):\n            out.append([])\n        out[d].append(n.val)\n        dfs(n.left, d + 1)\n        dfs(n.right, d + 1)\n\n    dfs(root, 0)\n    return out"
+      "code": "class Solution:\n    def levelOrder(self, root) -> list[list[int]]:\n        out: list[list[int]] = []\n\n        def dfs(n, d):\n            if not n:\n                return\n            if d == len(out):\n                out.append([])\n            out[d].append(n.val)\n            dfs(n.left, d + 1)\n            dfs(n.right, d + 1)\n\n        dfs(root, 0)\n        return out\n"
     }
   ],
   "raw_source": "# LC 102. 二叉树的层序遍历 · Medium · BFS\n\"\"\"\n🔹 题面\n    返回层序遍历结果(每层一个数组)。\n\n🔹 解法对比\n    | 方法    | 时间 | 空间 | 备注                  |\n    |---------|------|------|-----------------------|\n    | BFS ★  | O(n) | O(w) | 队列,每层批量出队     |\n    | DFS+层号| O(n) | O(h) | 递归带 depth,按层 push |\n\"\"\"\nfrom collections import deque\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import build_tree\n\n\nclass Solution:\n    # 解法 1:BFS ★ — O(n) / O(w)\n    def levelOrder(self, root) -> list[list[int]]:\n        if not root:\n            return []\n        out, q = [], deque([root])\n        while q:\n            level = []\n            for _ in range(len(q)):\n                n = q.popleft()\n                level.append(n.val)\n                if n.left:\n                    q.append(n.left)\n                if n.right:\n                    q.append(n.right)\n            out.append(level)\n        return out\n\n    # 解法 2:DFS + 层号 — O(n) / O(h)\n    def levelOrder_dfs(self, root) -> list[list[int]]:\n        out: list[list[int]] = []\n\n        def dfs(n, d):\n            if not n:\n                return\n            if d == len(out):\n                out.append([])\n            out[d].append(n.val)\n            dfs(n.left, d + 1)\n            dfs(n.right, d + 1)\n\n        dfs(root, 0)\n        return out\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        ([3, 9, 20, None, None, 15, 7], [[3], [9, 20], [15, 7]]),\n        ([], []),\n        ([1], [[1]]),\n    ]\n    for arg, want in cases:\n        for fn in (s.levelOrder, s.levelOrder_dfs):\n            assert fn(build_tree(arg)) == want\n    print(\"✅ p102 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -55,5 +55,14 @@
       "time": "**O(n)**。",
       "space": "**O(w)** 队列宽度。"
     }
+  },
+  "n_sols": 2,
+  "code_explain": {
+    "method": "levelOrder",
+    "annotated": "from collections import deque\n\nclass Solution:\n    def levelOrder(self, root) -> list[list[int]]:\n        if not root:\n            return []\n        out, q = [], deque([root])\n        while q:\n            level = []\n            for _ in range(len(q)):  # 关键:先固定本层结点数,只处理这么多个\n                n = q.popleft()\n                level.append(n.val)\n                if n.left:\n                    q.append(n.left)\n                if n.right:\n                    q.append(n.right)\n            out.append(level)        # 一层收集成一个列表\n        return out\n",
+    "gotchas": [
+      "进 for 前先用 `len(q)` 固定本层数量,因为循环里会往 q 加下一层结点。",
+      "用 `deque`,`popleft()` 是 O(1)(普通 list 的 `pop(0)` 是 O(n))。"
+    ]
   }
 }

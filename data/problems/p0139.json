@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def wordBreak(self, s: str, wordDict: list[str]) -> bool:\n    words = set(wordDict)\n    max_len = max((len(w) for w in words), default=0)\n    n = len(s)\n    f = [False] * (n + 1)\n    f[0] = True\n    for i in range(1, n + 1):\n        for j in range(max(0, i - max_len), i):\n            if f[j] and s[j:i] in words:\n                f[i] = True\n                break\n    return f[n]"
+      "code": "class Solution:\n    def wordBreak(self, s: str, wordDict: list[str]) -> bool:\n        words = set(wordDict)\n        max_len = max((len(w) for w in words), default=0)\n        n = len(s)\n        f = [False] * (n + 1)\n        f[0] = True\n        for i in range(1, n + 1):\n            for j in range(max(0, i - max_len), i):\n                if f[j] and s[j:i] in words:\n                    f[i] = True\n                    break\n        return f[n]\n"
     }
   ],
   "raw_source": "# LC 139. 单词拆分 · Medium · DP\n\"\"\"\n🔹 状态\n    f[i] 表示 s[:i] 是否可拆;\n    f[i] = ∃ j: f[j] ∧ s[j:i] ∈ wordDict\n\"\"\"\n\n\nclass Solution:\n    def wordBreak(self, s: str, wordDict: list[str]) -> bool:\n        words = set(wordDict)\n        max_len = max((len(w) for w in words), default=0)\n        n = len(s)\n        f = [False] * (n + 1)\n        f[0] = True\n        for i in range(1, n + 1):\n            for j in range(max(0, i - max_len), i):\n                if f[j] and s[j:i] in words:\n                    f[i] = True\n                    break\n        return f[n]\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.wordBreak(\"leetcode\", [\"leet\", \"code\"]) is True\n    assert s.wordBreak(\"applepenapple\", [\"apple\", \"pen\"]) is True\n    assert s.wordBreak(\"catsandog\", [\"cats\", \"dog\", \"sand\", \"and\", \"cat\"]) is False\n    print(\"✅ p139 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -35,5 +35,14 @@
       "time": "**O(n · L)** —— L = 词典最长词长。",
       "space": "**O(n + 词典)**。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "wordBreak",
+    "annotated": "class Solution:\n    def wordBreak(self, s: str, wordDict: list[str]) -> bool:\n        words = set(wordDict)        # 转 set,O(1) 查单词\n        max_len = max((len(w) for w in words), default=0)   # 最长单词长,用于剪枝\n        n = len(s)\n        f = [False] * (n + 1)        # f[i]:s 前 i 个字符能否被拆分\n        f[0] = True                  # 空串可拆\n        for i in range(1, n + 1):\n            # j 只需从 i-max_len 起,更靠前的切法词典里也没那么长的词\n            for j in range(max(0, i - max_len), i):\n                if f[j] and s[j:i] in words:   # 前 j 个能拆,且 s[j:i] 是个词\n                    f[i] = True\n                    break\n        return f[n]\n",
+    "gotchas": [
+      "`f[i]` 表示前缀能否拆分;转移看是否存在分割点 j 使 `f[j]` 为真且 `s[j:i]` 在词典。",
+      "用 max_len 限制 j 的起点,避免无谓检查。"
+    ]
   }
 }

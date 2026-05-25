@@ -18,7 +18,7 @@
       "time": "O(amount·c)",
       "space": "",
       "starred": true,
-      "code": "def coinChange(self, coins: list[int], amount: int) -> int:\n    INF = amount + 1\n    f = [0] + [INF] * amount\n    for x in range(1, amount + 1):\n        for c in coins:\n            if c <= x:\n                f[x] = min(f[x], f[x - c] + 1)\n    return -1 if f[amount] == INF else f[amount]"
+      "code": "class Solution:\n    def coinChange(self, coins: list[int], amount: int) -> int:\n        INF = amount + 1\n        f = [0] + [INF] * amount\n        for x in range(1, amount + 1):\n            for c in coins:\n                if c <= x:\n                    f[x] = min(f[x], f[x - c] + 1)\n        return -1 if f[amount] == INF else f[amount]\n"
     },
     {
       "method": "coinChange_memo",
@@ -26,7 +26,7 @@
       "time": "O(amount·c)",
       "space": "",
       "starred": false,
-      "code": "def coinChange_memo(self, coins: list[int], amount: int) -> int:\n    @lru_cache(None)\n    def dfs(x):\n        if x == 0:\n            return 0\n        if x < 0:\n            return -1\n        best = float(\"inf\")\n        for c in coins:\n            sub = dfs(x - c)\n            if sub != -1:\n                best = min(best, sub + 1)\n        return best if best != float(\"inf\") else -1\n    return dfs(amount)"
+      "code": "from functools import lru_cache\n\nclass Solution:\n    def coinChange(self, coins: list[int], amount: int) -> int:\n        @lru_cache(None)\n        def dfs(x):\n            if x == 0:\n                return 0\n            if x < 0:\n                return -1\n            best = float(\"inf\")\n            for c in coins:\n                sub = dfs(x - c)\n                if sub != -1:\n                    best = min(best, sub + 1)\n            return best if best != float(\"inf\") else -1\n        return dfs(amount)\n"
     }
   ],
   "raw_source": "# LC 322. 零钱兑换 · Medium · 完全背包\n\"\"\"\n🔹 解法对比\n    | 方法                | 时间       | 空间      | 备注                |\n    |---------------------|------------|-----------|---------------------|\n    | DFS + 记忆化(自顶) | O(amount·c)| O(amount) | 直观,递归栈        |\n    | DP 完全背包 ★      | O(amount·c)| O(amount) | 工程首选            |\n\n🔹 状态\n    f[x] = 1 + min{ f[x - c] | c ∈ coins }\n\"\"\"\nfrom functools import lru_cache\n\n\nclass Solution:\n    # 解法 1:DP 完全背包 ★ — O(amount·c)\n    def coinChange(self, coins: list[int], amount: int) -> int:\n        INF = amount + 1\n        f = [0] + [INF] * amount\n        for x in range(1, amount + 1):\n            for c in coins:\n                if c <= x:\n                    f[x] = min(f[x], f[x - c] + 1)\n        return -1 if f[amount] == INF else f[amount]\n\n    # 解法 2:DFS + 记忆化 — O(amount·c)\n    def coinChange_memo(self, coins: list[int], amount: int) -> int:\n        @lru_cache(None)\n        def dfs(x):\n            if x == 0:\n                return 0\n            if x < 0:\n                return -1\n            best = float(\"inf\")\n            for c in coins:\n                sub = dfs(x - c)\n                if sub != -1:\n                    best = min(best, sub + 1)\n            return best if best != float(\"inf\") else -1\n        return dfs(amount)\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        (([1, 2, 5], 11), 3),\n        (([2], 3), -1),\n        (([1], 0), 0),\n    ]\n    for args, want in cases:\n        for fn in (s.coinChange, s.coinChange_memo):\n            assert fn(*args) == want\n    print(\"✅ p322 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -43,5 +43,14 @@
       "time": "**O(amount × |coins|)**。",
       "space": "**O(amount)**。"
     }
+  },
+  "n_sols": 2,
+  "code_explain": {
+    "method": "coinChange",
+    "annotated": "class Solution:\n    def coinChange(self, coins: list[int], amount: int) -> int:\n        INF = amount + 1             # 用一个不可能的大值代表「凑不出」\n        f = [0] + [INF] * amount     # f[x]:凑出金额 x 所需最少硬币数\n        for x in range(1, amount + 1):\n            for c in coins:\n                if c <= x:           # 用一枚面值 c 的硬币\n                    f[x] = min(f[x], f[x - c] + 1)\n        return -1 if f[amount] == INF else f[amount]\n",
+    "gotchas": [
+      "完全背包:每种硬币可用多次,外层遍历金额、内层遍历硬币。",
+      "用 `INF=amount+1` 当哨兵判断是否凑不出(最多 amount 枚 1 元,绝到不了 amount+1)。"
+    ]
   }
 }

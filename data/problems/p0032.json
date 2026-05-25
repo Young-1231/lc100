@@ -9,7 +9,7 @@
   "day": 7,
   "day_title": "DP / 多维DP / 技巧",
   "category": "DP",
-  "leetcode_url": "https://leetcode.cn/problems/longest-valid-parens/",
+  "leetcode_url": "https://leetcode.cn/problems/longest-valid-parentheses/",
   "filename": "p032_longest_valid_parens.py",
   "doc": "🔹 题面\n    返回最长有效括号子串长度。\n\n🔹 解法对比\n    | 方法            | 时间 | 空间 | 备注                          |\n    |-----------------|------|------|-------------------------------|\n    | 栈(下标)★    | O(n) | O(n) | 栈底放\"上一个未匹配位置\"     |\n    | DP              | O(n) | O(n) | f[i] 表 s[..i] 以 i 结尾的最长有效  |\n    | 双向计数(贪心) | O(n) | O(1) | 左右各扫一次,计 ( 与 )       |",
   "solutions": [
@@ -19,7 +19,7 @@
       "time": "O(n)",
       "space": "O(n)",
       "starred": true,
-      "code": "def longestValidParentheses(self, s: str) -> int:\n    st = [-1]\n    ans = 0\n    for i, c in enumerate(s):\n        if c == \"(\":\n            st.append(i)\n        else:\n            st.pop()\n            if not st:\n                st.append(i)\n            else:\n                ans = max(ans, i - st[-1])\n    return ans"
+      "code": "class Solution:\n    def longestValidParentheses(self, s: str) -> int:\n        st = [-1]\n        ans = 0\n        for i, c in enumerate(s):\n            if c == \"(\":\n                st.append(i)\n            else:\n                st.pop()\n                if not st:\n                    st.append(i)\n                else:\n                    ans = max(ans, i - st[-1])\n        return ans\n"
     },
     {
       "method": "longestValidParentheses_dp",
@@ -27,7 +27,7 @@
       "time": "O(n)",
       "space": "O(n)",
       "starred": false,
-      "code": "def longestValidParentheses_dp(self, s: str) -> int:\n    n = len(s)\n    f = [0] * n\n    ans = 0\n    for i in range(1, n):\n        if s[i] != ')':\n            continue\n        if s[i - 1] == '(':\n            f[i] = (f[i - 2] if i >= 2 else 0) + 2\n        elif i - f[i - 1] - 1 >= 0 and s[i - f[i - 1] - 1] == '(':\n            f[i] = f[i - 1] + 2 + (f[i - f[i - 1] - 2] if i - f[i - 1] - 2 >= 0 else 0)\n        ans = max(ans, f[i])\n    return ans"
+      "code": "class Solution:\n    def longestValidParentheses(self, s: str) -> int:\n        n = len(s)\n        f = [0] * n\n        ans = 0\n        for i in range(1, n):\n            if s[i] != ')':\n                continue\n            if s[i - 1] == '(':\n                f[i] = (f[i - 2] if i >= 2 else 0) + 2\n            elif i - f[i - 1] - 1 >= 0 and s[i - f[i - 1] - 1] == '(':\n                f[i] = f[i - 1] + 2 + (f[i - f[i - 1] - 2] if i - f[i - 1] - 2 >= 0 else 0)\n            ans = max(ans, f[i])\n        return ans\n"
     },
     {
       "method": "longestValidParentheses_count",
@@ -35,7 +35,7 @@
       "time": "O(n)",
       "space": "O(1)",
       "starred": false,
-      "code": "def longestValidParentheses_count(self, s: str) -> int:\n    ans = l = r = 0\n    for c in s:\n        if c == '(': l += 1\n        else: r += 1\n        if l == r: ans = max(ans, 2 * r)\n        elif r > l: l = r = 0\n    l = r = 0\n    for c in reversed(s):\n        if c == '(': l += 1\n        else: r += 1\n        if l == r: ans = max(ans, 2 * l)\n        elif l > r: l = r = 0\n    return ans"
+      "code": "class Solution:\n    def longestValidParentheses(self, s: str) -> int:\n        ans = l = r = 0\n        for c in s:\n            if c == '(': l += 1\n            else: r += 1\n            if l == r: ans = max(ans, 2 * r)\n            elif r > l: l = r = 0\n        l = r = 0\n        for c in reversed(s):\n            if c == '(': l += 1\n            else: r += 1\n            if l == r: ans = max(ans, 2 * l)\n            elif l > r: l = r = 0\n        return ans\n"
     }
   ],
   "raw_source": "# LC 32. 最长有效括号 · Hard · DP / 栈\n\"\"\"\n🔹 题面\n    返回最长有效括号子串长度。\n\n🔹 解法对比\n    | 方法            | 时间 | 空间 | 备注                          |\n    |-----------------|------|------|-------------------------------|\n    | 栈(下标)★    | O(n) | O(n) | 栈底放\"上一个未匹配位置\"     |\n    | DP              | O(n) | O(n) | f[i] 表 s[..i] 以 i 结尾的最长有效  |\n    | 双向计数(贪心) | O(n) | O(1) | 左右各扫一次,计 ( 与 )       |\n\"\"\"\n\n\nclass Solution:\n    # 解法 1:栈 ★ — O(n) / O(n)\n    def longestValidParentheses(self, s: str) -> int:\n        st = [-1]\n        ans = 0\n        for i, c in enumerate(s):\n            if c == \"(\":\n                st.append(i)\n            else:\n                st.pop()\n                if not st:\n                    st.append(i)\n                else:\n                    ans = max(ans, i - st[-1])\n        return ans\n\n    # 解法 2:DP — O(n) / O(n)\n    # 当 s[i]==')':\n    #   若 s[i-1]=='(': f[i] = f[i-2] + 2\n    #   若 s[i-1]==')' 且 s[i-f[i-1]-1]=='(': f[i] = f[i-1] + 2 + f[i-f[i-1]-2]\n    def longestValidParentheses_dp(self, s: str) -> int:\n        n = len(s)\n        f = [0] * n\n        ans = 0\n        for i in range(1, n):\n            if s[i] != ')':\n                continue\n            if s[i - 1] == '(':\n                f[i] = (f[i - 2] if i >= 2 else 0) + 2\n            elif i - f[i - 1] - 1 >= 0 and s[i - f[i - 1] - 1] == '(':\n                f[i] = f[i - 1] + 2 + (f[i - f[i - 1] - 2] if i - f[i - 1] - 2 >= 0 else 0)\n            ans = max(ans, f[i])\n        return ans\n\n    # 解法 3:双向计数 — O(n) / O(1)\n    def longestValidParentheses_count(self, s: str) -> int:\n        ans = l = r = 0\n        for c in s:\n            if c == '(': l += 1\n            else: r += 1\n            if l == r: ans = max(ans, 2 * r)\n            elif r > l: l = r = 0\n        l = r = 0\n        for c in reversed(s):\n            if c == '(': l += 1\n            else: r += 1\n            if l == r: ans = max(ans, 2 * l)\n            elif l > r: l = r = 0\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [(\"(()\", 2), (\")()())\", 4), (\"\", 0), (\"()(()\", 2), (\"()(())\", 6)]\n    for arg, want in cases:\n        for fn in (s.longestValidParentheses, s.longestValidParentheses_dp, s.longestValidParentheses_count):\n            assert fn(arg) == want, f\"{fn.__name__}({arg!r}) -> {fn(arg)} != {want}\"\n    print(\"✅ p032 通过 3 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -52,5 +52,15 @@
       "time": "**O(n)**。",
       "space": "**O(n)**。"
     }
+  },
+  "n_sols": 3,
+  "code_explain": {
+    "method": "longestValidParentheses",
+    "annotated": "class Solution:\n    def longestValidParentheses(self, s: str) -> int:\n        st = [-1]                    # 栈底垫 -1,作「上一个未匹配位置」的基准\n        ans = 0\n        for i, c in enumerate(s):\n            if c == \"(\":\n                st.append(i)         # 左括号下标入栈\n            else:\n                st.pop()             # 右括号:弹出一个\n                if not st:           # 弹空了 -> 当前 ')' 没人配,作为新基准\n                    st.append(i)\n                else:                # 栈顶是最近未匹配位置,i 到它的距离即有效长度\n                    ans = max(ans, i - st[-1])\n        return ans\n",
+    "gotchas": [
+      "栈里存**下标**;栈底垫一个 `-1` 作长度计算基准。",
+      "遇 `)` 先 pop:若栈空说明它无法匹配,把它的下标作为新基准压入。",
+      "有效长度 = 当前下标 - 栈顶(最近未匹配位置)。"
+    ]
   }
 }

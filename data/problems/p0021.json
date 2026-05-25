@@ -8,7 +8,7 @@
   "day": 3,
   "day_title": "链表",
   "category": "链表",
-  "leetcode_url": "https://leetcode.cn/problems/merge-two-lists/",
+  "leetcode_url": "https://leetcode.cn/problems/merge-two-sorted-lists/",
   "filename": "p021_merge_two_lists.py",
   "doc": "🔹 题面\n    合并两个升序链表为一个新升序链表。\n\n🔹 直觉\n    哨兵节点 dummy,谁小接谁;末尾接剩余。\n\n🔹 复杂度 O(m+n) / O(1)(若复用原节点)",
   "solutions": [
@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def mergeTwoLists(self, l1, l2):\n    dummy = ListNode()\n    tail = dummy\n    while l1 and l2:\n        if l1.val <= l2.val:\n            tail.next, l1 = l1, l1.next\n        else:\n            tail.next, l2 = l2, l2.next\n        tail = tail.next\n    tail.next = l1 or l2\n    return dummy.next"
+      "code": "class Solution:\n    def mergeTwoLists(self, l1, l2):\n        dummy = ListNode()\n        tail = dummy\n        while l1 and l2:\n            if l1.val <= l2.val:\n                tail.next, l1 = l1, l1.next\n            else:\n                tail.next, l2 = l2, l2.next\n            tail = tail.next\n        tail.next = l1 or l2\n        return dummy.next\n"
     }
   ],
   "raw_source": "# LC 21. 合并两个有序链表 · Easy · 链表归并\n\"\"\"\n🔹 题面\n    合并两个升序链表为一个新升序链表。\n\n🔹 直觉\n    哨兵节点 dummy,谁小接谁;末尾接剩余。\n\n🔹 复杂度 O(m+n) / O(1)(若复用原节点)\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import ListNode, build_list, list_to_array\n\n\nclass Solution:\n    def mergeTwoLists(self, l1, l2):\n        dummy = ListNode()\n        tail = dummy\n        while l1 and l2:\n            if l1.val <= l2.val:\n                tail.next, l1 = l1, l1.next\n            else:\n                tail.next, l2 = l2, l2.next\n            tail = tail.next\n        tail.next = l1 or l2\n        return dummy.next\n\n\ndef _test() -> None:\n    s = Solution()\n    out = s.mergeTwoLists(build_list([1, 2, 4]), build_list([1, 3, 4]))\n    assert list_to_array(out) == [1, 1, 2, 3, 4, 4]\n    assert s.mergeTwoLists(None, None) is None\n    assert list_to_array(s.mergeTwoLists(None, build_list([0]))) == [0]\n    print(\"✅ p021 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -46,5 +46,14 @@
       "time": "**O(m + n)**。",
       "space": "**O(1)** 不计输出。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "mergeTwoLists",
+    "annotated": "class Solution:\n    def mergeTwoLists(self, l1, l2):\n        dummy = ListNode()\n        tail = dummy\n        while l1 and l2:                # 两条都还有结点时,挑小的接上\n            if l1.val <= l2.val:\n                tail.next, l1 = l1, l1.next   # 接 l1 并把 l1 前移\n            else:\n                tail.next, l2 = l2, l2.next\n            tail = tail.next\n        tail.next = l1 or l2            # 把还剩的那条整体接上(另一条已空)\n        return dummy.next\n",
+    "gotchas": [
+      "`tail.next = l1 or l2`:`or` 返回非空那条,直接整段接上。",
+      "`<=` 保证稳定(相等时先接 l1)。"
+    ]
   }
 }

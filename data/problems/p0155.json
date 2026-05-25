@@ -11,7 +11,16 @@
   "leetcode_url": "https://leetcode.cn/problems/min-stack/",
   "filename": "p155_min_stack.py",
   "doc": "🔹 直觉\n    用辅助栈,栈顶始终保存\"截至目前的最小值\"。\n    或单栈中存对 (x, cur_min);技巧:差值栈也行。",
-  "solutions": [],
+  "solutions": [
+    {
+      "method": "MinStack",
+      "title": "标准实现",
+      "time": "",
+      "space": "",
+      "starred": true,
+      "code": "class MinStack:\n    def __init__(self):\n        self.s: list[int] = []\n        self.m: list[int] = []           # 最小值栈\n\n    def push(self, val: int) -> None:\n        self.s.append(val)\n        self.m.append(val if not self.m else min(val, self.m[-1]))\n\n    def pop(self) -> None:\n        self.s.pop()\n        self.m.pop()\n\n    def top(self) -> int:\n        return self.s[-1]\n\n    def getMin(self) -> int:\n        return self.m[-1]\n"
+    }
+  ],
   "raw_source": "# LC 155. 最小栈 · Medium · 栈\n\"\"\"\n🔹 直觉\n    用辅助栈,栈顶始终保存\"截至目前的最小值\"。\n    或单栈中存对 (x, cur_min);技巧:差值栈也行。\n\"\"\"\n\n\nclass MinStack:\n    def __init__(self):\n        self.s: list[int] = []\n        self.m: list[int] = []           # 最小值栈\n\n    def push(self, val: int) -> None:\n        self.s.append(val)\n        self.m.append(val if not self.m else min(val, self.m[-1]))\n\n    def pop(self) -> None:\n        self.s.pop()\n        self.m.pop()\n\n    def top(self) -> int:\n        return self.s[-1]\n\n    def getMin(self) -> int:\n        return self.m[-1]\n\n\ndef _test() -> None:\n    ms = MinStack()\n    ms.push(-2); ms.push(0); ms.push(-3)\n    assert ms.getMin() == -3\n    ms.pop()\n    assert ms.top() == 0\n    assert ms.getMin() == -2\n    print(\"✅ p155 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
   "viz": null,
   "explanation": {
@@ -26,5 +35,14 @@
       "time": "**O(1)** 全部接口。",
       "space": "**O(n)**。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "MinStack",
+    "annotated": "class MinStack:\n    def __init__(self):\n        self.s: list[int] = []         # 主栈\n        self.m: list[int] = []         # 最小值栈:m[-1] 始终是当前主栈的最小值\n\n    def push(self, val: int) -> None:\n        self.s.append(val)\n        # 同步压入「到目前为止的最小值」\n        self.m.append(val if not self.m else min(val, self.m[-1]))\n\n    def pop(self) -> None:\n        self.s.pop()\n        self.m.pop()                   # 两栈同步弹出\n\n    def top(self) -> int:\n        return self.s[-1]\n\n    def getMin(self) -> int:\n        return self.m[-1]              # O(1) 取最小\n",
+    "gotchas": [
+      "用辅助栈 m,每次 push 同步记录「此刻最小值」,getMin 直接读栈顶 O(1)。",
+      "pop 时两个栈必须**同步**弹出。"
+    ]
   }
 }

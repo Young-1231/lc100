@@ -8,7 +8,7 @@
   "day": 5,
   "day_title": "图论 / 回溯 / 二分",
   "category": "二分",
-  "leetcode_url": "https://leetcode.cn/problems/search-rotated/",
+  "leetcode_url": "https://leetcode.cn/problems/search-in-rotated-sorted-array/",
   "filename": "p033_search_rotated.py",
   "doc": "🔹 直觉\n    每一步看 nums[l..mid] 与 nums[mid..r] 哪一段是升序的:\n        若左半升序:target 在 [nums[l], nums[mid]) 内 → 走左\n        否则:右半必升序,target 在 (nums[mid], nums[r]] 内 → 走右",
   "solutions": [
@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def search(self, nums: list[int], target: int) -> int:\n    l, r = 0, len(nums) - 1\n    while l <= r:\n        m = (l + r) // 2\n        if nums[m] == target:\n            return m\n        if nums[l] <= nums[m]:                # 左半升序\n            if nums[l] <= target < nums[m]:\n                r = m - 1\n            else:\n                l = m + 1\n        else:                                  # 右半升序\n            if nums[m] < target <= nums[r]:\n                l = m + 1\n            else:\n                r = m - 1\n    return -1"
+      "code": "class Solution:\n    def search(self, nums: list[int], target: int) -> int:\n        l, r = 0, len(nums) - 1\n        while l <= r:\n            m = (l + r) // 2\n            if nums[m] == target:\n                return m\n            if nums[l] <= nums[m]:                # 左半升序\n                if nums[l] <= target < nums[m]:\n                    r = m - 1\n                else:\n                    l = m + 1\n            else:                                  # 右半升序\n                if nums[m] < target <= nums[r]:\n                    l = m + 1\n                else:\n                    r = m - 1\n        return -1\n"
     }
   ],
   "raw_source": "# LC 33. 搜索旋转排序数组 · Medium · 二分\n\"\"\"\n🔹 直觉\n    每一步看 nums[l..mid] 与 nums[mid..r] 哪一段是升序的:\n        若左半升序:target 在 [nums[l], nums[mid]) 内 → 走左\n        否则:右半必升序,target 在 (nums[mid], nums[r]] 内 → 走右\n\"\"\"\n\n\nclass Solution:\n    def search(self, nums: list[int], target: int) -> int:\n        l, r = 0, len(nums) - 1\n        while l <= r:\n            m = (l + r) // 2\n            if nums[m] == target:\n                return m\n            if nums[l] <= nums[m]:                # 左半升序\n                if nums[l] <= target < nums[m]:\n                    r = m - 1\n                else:\n                    l = m + 1\n            else:                                  # 右半升序\n                if nums[m] < target <= nums[r]:\n                    l = m + 1\n                else:\n                    r = m - 1\n        return -1\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.search([4, 5, 6, 7, 0, 1, 2], 0) == 4\n    assert s.search([4, 5, 6, 7, 0, 1, 2], 3) == -1\n    assert s.search([1], 0) == -1\n    assert s.search([1], 1) == 0\n    print(\"✅ p033 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -36,5 +36,14 @@
       "time": "**O(log n)**。",
       "space": "**O(1)**。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "search",
+    "annotated": "class Solution:\n    def search(self, nums: list[int], target: int) -> int:\n        l, r = 0, len(nums) - 1\n        while l <= r:\n            m = (l + r) // 2\n            if nums[m] == target:\n                return m\n            if nums[l] <= nums[m]:               # 左半 [l..m] 是升序的\n                if nums[l] <= target < nums[m]:  # target 落在左半 -> 收右边界\n                    r = m - 1\n                else:\n                    l = m + 1\n            else:                                # 右半 [m..r] 是升序的\n                if nums[m] < target <= nums[r]:  # target 落在右半 -> 收左边界\n                    l = m + 1\n                else:\n                    r = m - 1\n        return -1\n",
+    "gotchas": [
+      "旋转数组里以 m 为界**至少一半有序**;先判哪半有序,再看 target 在不在那半。",
+      "边界判断用闭区间 `nums[l] <= target`、`target <= nums[r]`。"
+    ]
   }
 }

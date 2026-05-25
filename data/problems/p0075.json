@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def sortColors(self, nums: list[int]) -> None:\n    lo, mid, hi = 0, 0, len(nums) - 1\n    while mid <= hi:\n        x = nums[mid]\n        if x == 0:\n            nums[lo], nums[mid] = nums[mid], nums[lo]\n            lo += 1; mid += 1\n        elif x == 1:\n            mid += 1\n        else:\n            nums[mid], nums[hi] = nums[hi], nums[mid]\n            hi -= 1"
+      "code": "class Solution:\n    def sortColors(self, nums: list[int]) -> None:\n        lo, mid, hi = 0, 0, len(nums) - 1\n        while mid <= hi:\n            x = nums[mid]\n            if x == 0:\n                nums[lo], nums[mid] = nums[mid], nums[lo]\n                lo += 1; mid += 1\n            elif x == 1:\n                mid += 1\n            else:\n                nums[mid], nums[hi] = nums[hi], nums[mid]\n                hi -= 1\n"
     }
   ],
   "raw_source": "# LC 75. 颜色分类 · Medium · 三指针(荷兰国旗)\n\"\"\"\n🔹 直觉\n    三指针:lo / mid / hi,扫描时\n        nums[mid]==0 → swap(lo,mid), lo++, mid++\n        nums[mid]==1 → mid++\n        nums[mid]==2 → swap(mid,hi), hi--   (此时 mid 不动,因为换来的是未知)\n\"\"\"\n\n\nclass Solution:\n    def sortColors(self, nums: list[int]) -> None:\n        lo, mid, hi = 0, 0, len(nums) - 1\n        while mid <= hi:\n            x = nums[mid]\n            if x == 0:\n                nums[lo], nums[mid] = nums[mid], nums[lo]\n                lo += 1; mid += 1\n            elif x == 1:\n                mid += 1\n            else:\n                nums[mid], nums[hi] = nums[hi], nums[mid]\n                hi -= 1\n\n\ndef _test() -> None:\n    s = Solution()\n    a = [2, 0, 2, 1, 1, 0]; s.sortColors(a); assert a == [0, 0, 1, 1, 2, 2]\n    a = [2, 0, 1]; s.sortColors(a); assert a == [0, 1, 2]\n    a = [0]; s.sortColors(a); assert a == [0]\n    print(\"✅ p075 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -46,5 +46,15 @@
       "time": "**O(n)** —— 一次扫描。",
       "space": "**O(1)**。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "sortColors",
+    "annotated": "class Solution:\n    def sortColors(self, nums: list[int]) -> None:\n        lo, mid, hi = 0, 0, len(nums) - 1   # [0,lo)全是0,[lo,mid)全是1,(hi,末]全是2\n        while mid <= hi:\n            x = nums[mid]\n            if x == 0:               # 0 换到前区\n                nums[lo], nums[mid] = nums[mid], nums[lo]\n                lo += 1; mid += 1\n            elif x == 1:             # 1 留在中间\n                mid += 1\n            else:                    # 2 换到后区(换来的还没看,mid 不动)\n                nums[mid], nums[hi] = nums[hi], nums[mid]\n                hi -= 1\n",
+    "gotchas": [
+      "三指针一趟扫描(荷兰国旗问题),O(n)、原地。",
+      "换 2 到后面时 `mid` **不前进**:换来的 `nums[hi]` 还没检查过。",
+      "换 0 时 mid 与 lo 都前进(换来的一定是已处理过的 1)。"
+    ]
   }
 }

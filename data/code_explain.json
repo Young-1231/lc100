@@ -1,0 +1,826 @@
+{
+  "1": {
+    "method": "twoSum",
+    "annotated": "class Solution:\n    def twoSum(self, nums: list[int], target: int) -> list[int]:\n        seen: dict[int, int] = {}          # 字典:记录「见过的数 -> 它的下标」,查询 O(1)\n        for i, x in enumerate(nums):       # enumerate 同时拿到下标 i 和值 x\n            # := 海象运算符:先算 seen.get(target - x) 存进 j,再判断\n            # seen.get(k) 在 k 不存在时返回 None,不会报错\n            if (j := seen.get(target - x)) is not None:\n                return [j, i]              # 命中:之前那个数的下标 j + 当前下标 i\n            seen[x] = i                    # 没命中:把当前数和下标记进字典\n        return []                          # 题目保证有解,通常走不到这里\n",
+    "gotchas": [
+      "必须**先查表、再写入**,否则可能拿自己和自己配对。",
+      "用 `is not None` 判断而不是 `if j:` —— 下标可能是 `0`,`if 0` 会被当成假。",
+      "返回的是**下标**,不是数值。"
+    ]
+  },
+  "2": {
+    "method": "addTwoNumbers",
+    "annotated": "class Solution:\n    def addTwoNumbers(self, l1, l2):\n        dummy = ListNode()              # 哑结点:简化「建头」处理\n        tail = dummy                    # tail 始终指向结果链表最后一个结点\n        carry = 0                       # 进位\n        while l1 or l2 or carry:        # 任一还有结点、或还有进位,就继续\n            a = l1.val if l1 else 0     # 取当前位(到末尾就当 0)\n            b = l2.val if l2 else 0\n            s = a + b + carry\n            carry, d = divmod(s, 10)    # divmod 同时得到进位 s//10 和本位 s%10\n            tail.next = ListNode(d)     # 接上新结点\n            tail = tail.next\n            if l1:\n                l1 = l1.next\n            if l2:\n                l2 = l2.next\n        return dummy.next               # 跳过哑结点返回真正的头\n",
+    "gotchas": [
+      "循环条件带 `carry`:最高位可能再进一位(如 5+5=10)。",
+      "`divmod(s,10)` 一次拿到进位和本位,等价 `carry=s//10; d=s%10`。"
+    ]
+  },
+  "3": {
+    "method": "lengthOfLongestSubstring",
+    "annotated": "class Solution:\n    def lengthOfLongestSubstring(self, s: str) -> int:\n        last: dict[str, int] = {}          # 记录每个字符「最后一次出现的下标」\n        l = best = 0                       # l 是窗口左边界;best 是答案(最长长度)\n        for r, c in enumerate(s):          # r 是右边界(当前字符下标),c 是字符\n            # c 在窗口内出现过(last[c] >= l)-> 左边界跳到上次位置的右边一格\n            if c in last and last[c] >= l:\n                l = last[c] + 1\n            last[c] = r                    # 更新 c 的最新位置\n            best = max(best, r - l + 1)    # 当前窗口长度 = r - l + 1,取最大\n        return best\n",
+    "gotchas": [
+      "判断重复必须加 `last[c] >= l`:只有上次出现**在当前窗口内**才收缩左边界,否则是窗口外的旧记录。",
+      "窗口长度是 `r - l + 1`(左右端点都算)。"
+    ]
+  },
+  "4": {
+    "method": "findMedianSortedArrays",
+    "annotated": "class Solution:\n    def findMedianSortedArrays(self, a: list[int], b: list[int]) -> float:\n        if len(a) > len(b):          # 保证在较短数组 a 上二分,效率更高且 j 不越界\n            a, b = b, a\n        m, n = len(a), len(b)\n        half = (m + n + 1) // 2      # 左半部分应包含的元素总数\n        l, r = 0, m\n        INF = float(\"inf\")\n        while l <= r:\n            i = (l + r) // 2         # a 取前 i 个进左半\n            j = half - i             # b 取前 j 个,凑够 half 个\n            aL = a[i - 1] if i > 0 else -INF   # a 左半最大(越界用 ±∞ 兜底)\n            aR = a[i] if i < m else INF        # a 右半最小\n            bL = b[j - 1] if j > 0 else -INF\n            bR = b[j] if j < n else INF\n            if aL <= bR and bL <= aR:          # 切割合法:左半都 <= 右半\n                if (m + n) & 1:                # 总数为奇 -> 中位数 = 左半最大\n                    return float(max(aL, bL))\n                return (max(aL, bL) + min(aR, bR)) / 2   # 偶 -> 左半最大与右半最小取平均\n            if aL > bR:              # a 左半切多了 -> i 往左\n                r = i - 1\n            else:                    # a 左半切少了 -> i 往右\n                l = i + 1\n        return 0.0\n",
+    "gotchas": [
+      "在**较短**数组上二分,保证 j 不越界,复杂度 O(log min(m,n))。",
+      "越界处用 `±∞` 兜底,省去大量边界特判。",
+      "切割合法条件:`aL<=bR and bL<=aR`。"
+    ]
+  },
+  "5": {
+    "method": "longestPalindrome",
+    "annotated": "class Solution:\n    def longestPalindrome(self, s: str) -> str:\n        if not s:\n            return \"\"\n\n        def expand(l, r):            # 从中心向两边扩,返回最大回文的左右下标\n            while l >= 0 and r < len(s) and s[l] == s[r]:\n                l -= 1; r += 1\n            return l + 1, r - 1      # 退出时各多走一步,回退\n\n        bl, br = 0, 0\n        for i in range(len(s)):\n            # 两种中心:i(奇数长)和 i,i+1(偶数长)\n            for l0, r0 in (expand(i, i), expand(i, i + 1)):\n                if r0 - l0 > br - bl:    # 更长就更新\n                    bl, br = l0, r0\n        return s[bl:br + 1]\n",
+    "gotchas": [
+      "回文有奇/偶两种中心:分别从 `(i,i)` 和 `(i,i+1)` 扩展。",
+      "expand 退出时 l、r 各多走一步,所以返回 `l+1, r-1`。"
+    ]
+  },
+  "11": {
+    "method": "maxArea",
+    "annotated": "class Solution:\n    def maxArea(self, h: list[int]) -> int:\n        i, j, best = 0, len(h) - 1, 0      # 左右指针放两端,best 存最大面积\n        while i < j:\n            # 面积 = 底(j - i) × 高(两根线里较矮的那根)\n            best = max(best, (j - i) * min(h[i], h[j]))\n            if h[i] < h[j]:                # 谁矮就移动谁:矮的一边限制了高度\n                i += 1\n            else:\n                j -= 1\n        return best\n",
+    "gotchas": [
+      "移动**矮的**那根指针:面积受限于矮的一边,移动高的一边只会让面积变小或不变。",
+      "高度取 `min(h[i], h[j])`,不是相加。"
+    ]
+  },
+  "15": {
+    "method": "threeSum",
+    "annotated": "class Solution:\n    def threeSum(self, nums: list[int]) -> list[list[int]]:\n        nums.sort()                            # 先排序,才能用双指针 + 去重\n        n, ans = len(nums), []\n        for i in range(n - 2):                 # i 是第一个数,后面至少留两个数\n            if nums[i] > 0:                    # 排序后 nums[i] > 0,三数之和不可能为 0\n                break\n            if i and nums[i] == nums[i - 1]:   # 和上一个相同 -> 跳过,避免重复解\n                continue\n            l, r, target = i + 1, n - 1, -nums[i]   # 在 i 右侧找两数之和 = -nums[i]\n            while l < r:\n                s = nums[l] + nums[r]\n                if s == target:\n                    ans.append([nums[i], nums[l], nums[r]])\n                    l += 1; r -= 1\n                    while l < r and nums[l] == nums[l - 1]:  # 跳过重复的左值\n                        l += 1\n                    while l < r and nums[r] == nums[r + 1]:  # 跳过重复的右值\n                        r -= 1\n                elif s < target:               # 和太小 -> 左指针右移(变大)\n                    l += 1\n                else:                          # 和太大 -> 右指针左移(变小)\n                    r -= 1\n        return ans\n",
+    "gotchas": [
+      "排序是前提,否则双指针和去重都不成立。",
+      "三处去重:第一个数 `nums[i]==nums[i-1]`,以及找到解后跳过重复的 `l` / `r`。",
+      "`if i and ...` 里的 `i` 等价于 `i != 0`,防止 `i-1` 越界绕到末尾元素。"
+    ]
+  },
+  "17": {
+    "method": "letterCombinations",
+    "annotated": "_KEY = {                             # 数字 -> 字母(电话九宫格)\n    \"2\": \"abc\", \"3\": \"def\", \"4\": \"ghi\", \"5\": \"jkl\",\n    \"6\": \"mno\", \"7\": \"pqrs\", \"8\": \"tuv\", \"9\": \"wxyz\",\n}\n\nclass Solution:\n    def letterCombinations(self, digits: str) -> list[str]:\n        if not digits:\n            return []\n        ans, path = [], []           # path:当前正在拼的字母序列\n\n        def bt(i):                   # 处理第 i 个数字\n            if i == len(digits):     # 所有数字都选完 -> 收集结果\n                ans.append(\"\".join(path))\n                return\n            for c in _KEY[digits[i]]:    # 当前数字对应的每个字母都试一遍\n                path.append(c)       # 选\n                bt(i + 1)            # 递归下一位\n                path.pop()           # 撤销(回溯)\n\n        bt(0)\n        return ans\n",
+    "gotchas": [
+      "回溯三步:选(append)→ 递归 → 撤销(pop)。",
+      "用下标 i 表示「处理到第几个数字」,到末尾就收集。"
+    ]
+  },
+  "19": {
+    "method": "removeNthFromEnd",
+    "annotated": "class Solution:\n    def removeNthFromEnd(self, head, n: int):\n        dummy = ListNode(0, head)       # 哑结点,处理「删的是头结点」\n        fast = slow = dummy\n        for _ in range(n + 1):          # fast 先走 n+1 步,使 slow 停在「待删结点的前驱」\n            fast = fast.next\n        while fast:                     # 两指针同速前进,直到 fast 到末尾\n            fast = fast.next\n            slow = slow.next\n        slow.next = slow.next.next      # 跳过(删除)倒数第 n 个\n        return dummy.next\n",
+    "gotchas": [
+      "fast 先走 `n+1` 步,使 slow 最终停在「待删结点的前驱」。",
+      "用哑结点,删头结点也不用特判。"
+    ]
+  },
+  "20": {
+    "method": "isValid",
+    "annotated": "class Solution:\n    def isValid(self, s: str) -> bool:\n        m = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}   # 右括号 -> 对应的左括号\n        st: list[str] = []                   # 栈:存还没匹配的左括号\n        for c in s:\n            if c in m:                       # 遇到右括号\n                if not st or st.pop() != m[c]:   # 栈空、或栈顶不是对应左括号 -> 非法\n                    return False\n            else:                            # 左括号入栈\n                st.append(c)\n        return not st                        # 最后栈空才说明全部匹配\n",
+    "gotchas": [
+      "遇右括号就弹栈顶看是否匹配;栈为空也算失败。",
+      "结尾要检查栈是否为空(可能还剩没闭合的左括号)。"
+    ]
+  },
+  "21": {
+    "method": "mergeTwoLists",
+    "annotated": "class Solution:\n    def mergeTwoLists(self, l1, l2):\n        dummy = ListNode()\n        tail = dummy\n        while l1 and l2:                # 两条都还有结点时,挑小的接上\n            if l1.val <= l2.val:\n                tail.next, l1 = l1, l1.next   # 接 l1 并把 l1 前移\n            else:\n                tail.next, l2 = l2, l2.next\n            tail = tail.next\n        tail.next = l1 or l2            # 把还剩的那条整体接上(另一条已空)\n        return dummy.next\n",
+    "gotchas": [
+      "`tail.next = l1 or l2`:`or` 返回非空那条,直接整段接上。",
+      "`<=` 保证稳定(相等时先接 l1)。"
+    ]
+  },
+  "22": {
+    "method": "generateParenthesis",
+    "annotated": "class Solution:\n    def generateParenthesis(self, n: int) -> list[str]:\n        ans, path = [], []\n\n        def bt(left, right):         # left/right:还可用的左、右括号数\n            if not left and not right:   # 都用完 -> 一个合法组合\n                ans.append(\"\".join(path))\n                return\n            if left > 0:             # 还有左括号 -> 可放 '('\n                path.append(\"(\")\n                bt(left - 1, right)\n                path.pop()\n            if right > left:         # 右括号剩得比左多 -> 才能放 ')'\n                path.append(\")\")\n                bt(left, right - 1)\n                path.pop()\n\n        bt(n, n)\n        return ans\n",
+    "gotchas": [
+      "放 `)` 的条件是 `right > left`:保证任意前缀里 `)` 不会多于 `(`。",
+      "用剩余数量控制,天然只生成合法串。"
+    ]
+  },
+  "23": {
+    "method": "mergeKLists",
+    "annotated": "import heapq                          # 堆(优先队列):每次 O(log) 取最小\n\nclass Solution:\n    def mergeKLists(self, lists):\n        h: list = []\n        for i, head in enumerate(lists):\n            if head:\n                heapq.heappush(h, (head.val, i, head))  # 元组先比 val;i 用来打破 val 相等\n        dummy = ListNode()\n        t = dummy\n        while h:\n            v, i, node = heapq.heappop(h)   # 弹出当前最小结点\n            t.next = node\n            t = t.next\n            if node.next:                   # 该链还有下一个 -> 入堆\n                heapq.heappush(h, (node.next.val, i, node.next))\n        return dummy.next\n",
+    "gotchas": [
+      "元组里放 `i`(链表编号):当 `val` 相等时,堆改比 i,避免去比较 ListNode(不可比较)而报错。",
+      "堆里始终只有 ≤k 个元素(每条链一个),空间 O(k)。"
+    ]
+  },
+  "24": {
+    "method": "swapPairs",
+    "annotated": "class Solution:\n    def swapPairs(self, head):\n        dummy = ListNode(0, head)\n        prev = dummy                    # prev 是待交换这一对的前驱\n        while prev.next and prev.next.next:   # 还凑得齐两个结点\n            a, b = prev.next, prev.next.next  # a、b 是要交换的一对\n            prev.next = b               # 前驱接 b\n            a.next = b.next             # a 接到 b 后面的结点\n            b.next = a                  # b 接 a,完成交换\n            prev = a                    # a 成为这对的尾 -> 下一对的前驱\n        return dummy.next\n",
+    "gotchas": [
+      "改指针顺序不能乱:先 `prev.next=b`,再 `a.next=b.next`,最后 `b.next=a`。",
+      "循环条件 `prev.next and prev.next.next`:剩单个结点就停。"
+    ]
+  },
+  "25": {
+    "method": "reverseKGroup",
+    "annotated": "class Solution:\n    def reverseKGroup(self, head, k: int):\n        dummy = ListNode(0, head)\n        group_prev = dummy              # 每组的前驱\n        while True:\n            kth = group_prev            # 先找到本组第 k 个结点\n            for _ in range(k):\n                kth = kth.next\n                if not kth:             # 不足 k 个 -> 本组不翻转,直接结束\n                    return dummy.next\n            group_next = kth.next       # 下一组的头\n            # 翻转本组 [group_prev.next .. kth];prev 初始为 group_next,翻完自然接上下一组\n            prev, cur = group_next, group_prev.next\n            while cur is not group_next:\n                nxt = cur.next\n                cur.next = prev\n                prev = cur\n                cur = nxt\n            # 重接:原组头(现已变成组尾)成为下一轮的前驱\n            tmp = group_prev.next\n            group_prev.next = kth\n            group_prev = tmp\n",
+    "gotchas": [
+      "先数够 k 个,不足就整组保留不翻转(题目要求)。",
+      "`prev` 初始化为 `group_next`,翻转后本组尾自然接到下一组头。",
+      "用 `tmp` 记住原组头(翻转后变成组尾),作为下一组的前驱。"
+    ]
+  },
+  "31": {
+    "method": "nextPermutation",
+    "annotated": "class Solution:\n    def nextPermutation(self, nums: list[int]) -> None:\n        n = len(nums)\n        i = n - 2\n        while i >= 0 and nums[i] >= nums[i + 1]:   # 从右往左找第一个「下降」位置 i\n            i -= 1\n        if i >= 0:                                 # 存在(不是最后一个排列)\n            j = n - 1\n            while nums[j] <= nums[i]:              # 从右找第一个比 nums[i] 大的\n                j -= 1\n            nums[i], nums[j] = nums[j], nums[i]    # 交换\n        # 反转 i+1..n-1(原本递减,反转后变最小)\n        l, r = i + 1, n - 1\n        while l < r:\n            nums[l], nums[r] = nums[r], nums[l]\n            l += 1; r -= 1\n",
+    "gotchas": [
+      "三步:① 从右找第一个下降点 i;② 从右找第一个比 nums[i] 大的数交换;③ 反转 i 之后。",
+      "若整个降序(找不到 i),i=-1,直接反转整体 = 变升序(最小排列)。",
+      "原地操作,返回 None。"
+    ]
+  },
+  "32": {
+    "method": "longestValidParentheses",
+    "annotated": "class Solution:\n    def longestValidParentheses(self, s: str) -> int:\n        st = [-1]                    # 栈底垫 -1,作「上一个未匹配位置」的基准\n        ans = 0\n        for i, c in enumerate(s):\n            if c == \"(\":\n                st.append(i)         # 左括号下标入栈\n            else:\n                st.pop()             # 右括号:弹出一个\n                if not st:           # 弹空了 -> 当前 ')' 没人配,作为新基准\n                    st.append(i)\n                else:                # 栈顶是最近未匹配位置,i 到它的距离即有效长度\n                    ans = max(ans, i - st[-1])\n        return ans\n",
+    "gotchas": [
+      "栈里存**下标**;栈底垫一个 `-1` 作长度计算基准。",
+      "遇 `)` 先 pop:若栈空说明它无法匹配,把它的下标作为新基准压入。",
+      "有效长度 = 当前下标 - 栈顶(最近未匹配位置)。"
+    ]
+  },
+  "33": {
+    "method": "search",
+    "annotated": "class Solution:\n    def search(self, nums: list[int], target: int) -> int:\n        l, r = 0, len(nums) - 1\n        while l <= r:\n            m = (l + r) // 2\n            if nums[m] == target:\n                return m\n            if nums[l] <= nums[m]:               # 左半 [l..m] 是升序的\n                if nums[l] <= target < nums[m]:  # target 落在左半 -> 收右边界\n                    r = m - 1\n                else:\n                    l = m + 1\n            else:                                # 右半 [m..r] 是升序的\n                if nums[m] < target <= nums[r]:  # target 落在右半 -> 收左边界\n                    l = m + 1\n                else:\n                    r = m - 1\n        return -1\n",
+    "gotchas": [
+      "旋转数组里以 m 为界**至少一半有序**;先判哪半有序,再看 target 在不在那半。",
+      "边界判断用闭区间 `nums[l] <= target`、`target <= nums[r]`。"
+    ]
+  },
+  "34": {
+    "method": "searchRange",
+    "annotated": "from bisect import bisect_left, bisect_right   # 标准库二分\n\nclass Solution:\n    def searchRange(self, nums: list[int], target: int) -> list[int]:\n        l = bisect_left(nums, target)            # target 第一次出现的位置(左边界)\n        if l == len(nums) or nums[l] != target:  # 越界,或那位不是 target -> 不存在\n            return [-1, -1]\n        return [l, bisect_right(nums, target) - 1]   # 右边界 = bisect_right - 1\n",
+    "gotchas": [
+      "`bisect_left` 找第一个 ≥ target 的位置;`bisect_right` 找第一个 > target 的位置。",
+      "要先判断 `nums[l]` 是否真等于 target(否则 l 只是插入点)。"
+    ]
+  },
+  "35": {
+    "method": "searchInsert",
+    "annotated": "class Solution:\n    def searchInsert(self, nums: list[int], target: int) -> int:\n        l, r = 0, len(nums)          # 左闭右开 [l, r),所以 r 取 len(nums)\n        while l < r:\n            m = (l + r) // 2\n            if nums[m] < target:     # m 处偏小 -> 答案在右边\n                l = m + 1\n            else:                    # m >= target -> 答案在 m 或更左\n                r = m\n        return l                     # l 即第一个 >= target 的位置(插入点)\n",
+    "gotchas": [
+      "左闭右开 `[l, r)` 写法,`r = len(nums)`,循环 `l < r`。",
+      "返回第一个 ≥ target 的下标,正好是插入位置。"
+    ]
+  },
+  "39": {
+    "method": "combinationSum",
+    "annotated": "class Solution:\n    def combinationSum(self, candidates: list[int], target: int) -> list[list[int]]:\n        candidates.sort()            # 排序后可剪枝(超了就 break)\n        ans, path = [], []\n\n        def bt(start, remain):       # start:从哪个下标开始选;remain:还差多少到 target\n            if remain == 0:\n                ans.append(path[:])  # path[:] 拷贝一份,否则后续修改会影响已存结果\n                return\n            for i in range(start, len(candidates)):\n                x = candidates[i]\n                if x > remain:       # 排序后 x 超了,后面更大 -> 直接停\n                    break\n                path.append(x)\n                bt(i, remain - x)    # 传 i(不是 i+1):同一个数可重复选\n                path.pop()\n\n        bt(0, target)\n        return ans\n",
+    "gotchas": [
+      "可重复选同一个数 -> 递归传 `i`(不是 `i+1`)。",
+      "用 `start` 只往后选,避免 [2,3] 与 [3,2] 这种重复组合。",
+      "收集时务必 `path[:]` 拷贝。"
+    ]
+  },
+  "41": {
+    "method": "firstMissingPositive",
+    "annotated": "class Solution:\n    def firstMissingPositive(self, nums: list[int]) -> int:\n        n = len(nums)\n        for i in range(n):\n            # 把值在 [1,n] 内的数 x 放到它该在的位置(下标 x-1)\n            # 第二个条件 nums[nums[i]-1] != nums[i]:目标位还没放对,避免重复值死循环\n            while 1 <= nums[i] <= n and nums[nums[i] - 1] != nums[i]:\n                j = nums[i] - 1                       # x 应放到下标 j = x-1\n                nums[i], nums[j] = nums[j], nums[i]   # 交换,把 x 换到正确位置\n        for i in range(n):\n            if nums[i] != i + 1:                      # 第一个「下标 i 上不是 i+1」的位置\n                return i + 1                          # 缺失的就是 i+1\n        return n + 1                                  # 1..n 全在 -> 答案是 n+1\n",
+    "gotchas": [
+      "用 `while` 不是 `if`:一次交换可能又换来另一个需归位的数,要继续换到位。",
+      "条件 `nums[nums[i]-1] != nums[i]` 防止重复值导致**死循环**。",
+      "答案必在 `[1, n+1]`,所以只关心 1..n 的数,其余忽略。"
+    ]
+  },
+  "42": {
+    "method": "trap",
+    "annotated": "class Solution:\n    def trap(self, h: list[int]) -> int:\n        l, r = 0, len(h) - 1               # 左右指针\n        lmax = rmax = ans = 0              # lmax/rmax:左右两侧到目前为止的最高柱\n        while l < r:\n            if h[l] < h[r]:                # 左边更矮 -> 左边的存水由 lmax 决定\n                lmax = max(lmax, h[l])     # 更新左侧最高\n                ans += lmax - h[l]         # 当前列存水 = 左侧最高 - 自身高度\n                l += 1\n            else:                          # 右边更矮(或相等)-> 处理右边\n                rmax = max(rmax, h[r])\n                ans += rmax - h[r]\n                r -= 1\n        return ans\n",
+    "gotchas": [
+      "每根柱子存水 = `min(左侧最高, 右侧最高) - 自身高度`。",
+      "双指针关键:谁那边矮,就能确定那一侧的存水量(另一侧必有更高的挡着)。"
+    ]
+  },
+  "45": {
+    "method": "jump",
+    "annotated": "class Solution:\n    def jump(self, nums: list[int]) -> int:\n        steps = end = farthest = 0     # steps:跳数;end:当前这一跳的边界;farthest:下一跳最远\n        for i in range(len(nums) - 1): # 到 len-1 即可:到达最后一格不必再起跳\n            farthest = max(farthest, i + nums[i])   # 当前区间内更新能跳到的最远\n            if i == end:               # 走到这一跳的边界 -> 必须再跳一次\n                steps += 1\n                end = farthest         # 新边界 = 这段内能到的最远\n        return steps\n",
+    "gotchas": [
+      "贪心 / 隐式 BFS:把「当前一跳能覆盖的范围」当一层,到边界就 steps+1。",
+      "循环到 `len-1`:到达最后一格本身不需要再起跳。"
+    ]
+  },
+  "46": {
+    "method": "permute",
+    "annotated": "class Solution:\n    def permute(self, nums: list[int]) -> list[list[int]]:\n        n, ans = len(nums), []\n        path, used = [], [False] * n     # used 标记每个位置是否已用\n\n        def bt():\n            if len(path) == n:           # 选满 n 个 -> 一个排列\n                ans.append(path[:])\n                return\n            for i in range(n):\n                if used[i]:              # 已用过则跳过\n                    continue\n                used[i] = True           # 选 i\n                path.append(nums[i])\n                bt()\n                path.pop()               # 撤销\n                used[i] = False\n\n        bt()\n        return ans\n",
+    "gotchas": [
+      "排列每次从**头**扫所有位置、用 `used` 跳过已选,而不是用 start(那是组合的做法)。",
+      "`used` 和 `path` 要成对地选/撤销。"
+    ]
+  },
+  "48": {
+    "method": "rotate",
+    "annotated": "class Solution:\n    def rotate(self, m: list[list[int]]) -> None:\n        n = len(m)\n        # 第一步:沿主对角线转置(行列互换)\n        for i in range(n):\n            for j in range(i + 1, n):           # j 从 i+1 起,只换上三角,避免换回去\n                m[i][j], m[j][i] = m[j][i], m[i][j]\n        # 第二步:每行左右翻转。转置 + 翻转 = 顺时针旋转 90°\n        for row in m:\n            row.reverse()\n",
+    "gotchas": [
+      "`j` 从 `i+1` 开始:只遍历上三角,否则交换两次等于没换。",
+      "原地操作,返回 `None`。",
+      "顺时针 = 转置 + 每行反转;逆时针 = 转置 + 每列反转。"
+    ]
+  },
+  "49": {
+    "method": "groupAnagrams",
+    "annotated": "from collections import defaultdict   # 访问不存在的 key 时自动给默认值\n\nclass Solution:\n    def groupAnagrams(self, strs: list[str]) -> list[list[str]]:\n        bucket: dict[tuple, list[str]] = defaultdict(list)  # key 不存在时默认空列表 []\n        for s in strs:\n            cnt = [0] * 26                 # 26 个字母的计数桶\n            for c in s:\n                cnt[ord(c) - 97] += 1      # ord('a')=97,所以 'a'->0,'b'->1 ...\n            bucket[tuple(cnt)].append(s)   # 用「计数」当 key:计数相同 -> 同一组\n        return list(bucket.values())       # 取出所有分组\n",
+    "gotchas": [
+      "用 `tuple(cnt)` 当 key:列表 list 不可哈希、不能当字典 key,元组 tuple 可以。",
+      "字母计数相同即互为异位词,比「排序字符串当 key」更快(O(n) 对 O(n log n))。"
+    ]
+  },
+  "51": {
+    "method": "solveNQueens",
+    "annotated": "class Solution:\n    def solveNQueens(self, n: int) -> list[list[str]]:\n        cols, diag1, diag2 = set(), set(), set()   # 已占用的列、主对角线、副对角线\n        ans, board = [], [-1] * n      # board[r] = 第 r 行皇后所在列\n\n        def render():                  # 把 board 翻译成 [\"..Q.\", ...] 棋盘字符串\n            return [\n                \"\".join(\"Q\" if c == board[r] else \".\" for c in range(n))\n                for r in range(n)\n            ]\n\n        def bt(r):                     # 逐行放皇后\n            if r == n:\n                ans.append(render())\n                return\n            for c in range(n):\n                # 同列、主对角线(r-c 相同)、副对角线(r+c 相同)冲突则跳过\n                if c in cols or (r - c) in diag1 or (r + c) in diag2:\n                    continue\n                board[r] = c\n                cols.add(c); diag1.add(r - c); diag2.add(r + c)\n                bt(r + 1)\n                cols.remove(c); diag1.remove(r - c); diag2.remove(r + c)   # 回溯\n\n        bt(0)\n        return ans\n",
+    "gotchas": [
+      "三个集合判冲突:列 `c`、主对角线 `r-c`、副对角线 `r+c`(同一对角线上这两个值恒定)。",
+      "逐行放置、每行一个,自动避免行冲突。"
+    ]
+  },
+  "53": {
+    "method": "maxSubArray",
+    "annotated": "class Solution:\n    def maxSubArray(self, nums: list[int]) -> int:\n        cur = best = nums[0]                    # cur:以当前元素结尾的最大和;best:全局最大\n        for x in nums[1:]:\n            cur = max(x, cur + x)               # 要么接在前面,要么从 x 重新开始\n            best = max(best, cur)               # 随时更新全局最大\n        return best\n",
+    "gotchas": [
+      "`cur = max(x, cur + x)`:若前面累计为负,不如从当前 x 重新开始。",
+      "best 和 cur 都从 `nums[0]` 起步,别初始化成 0(数组可能全为负)。"
+    ]
+  },
+  "54": {
+    "method": "spiralOrder",
+    "annotated": "class Solution:\n    def spiralOrder(self, m: list[list[int]]) -> list[int]:\n        if not m:\n            return []\n        top, bottom, left, right = 0, len(m) - 1, 0, len(m[0]) - 1   # 四条边界\n        out: list[int] = []\n        while top <= bottom and left <= right:\n            for c in range(left, right + 1):    # ① 上边:从左到右\n                out.append(m[top][c])\n            top += 1                            # 上边用完,上界下移\n            for r in range(top, bottom + 1):    # ② 右边:从上到下\n                out.append(m[r][right])\n            right -= 1                          # 右边用完,右界左移\n            if top <= bottom:                   # ③ 下边:从右到左(需还有行)\n                for c in range(right, left - 1, -1):\n                    out.append(m[bottom][c])\n                bottom -= 1\n            if left <= right:                   # ④ 左边:从下到上(需还有列)\n                for r in range(bottom, top - 1, -1):\n                    out.append(m[r][left])\n                left += 1\n        return out\n",
+    "gotchas": [
+      "走下边、左边前要再判 `top<=bottom` / `left<=right`,防止单行/单列时重复输出。",
+      "每走完一条边立刻收缩对应边界。"
+    ]
+  },
+  "55": {
+    "method": "canJump",
+    "annotated": "class Solution:\n    def canJump(self, nums: list[int]) -> bool:\n        reach = 0                      # 目前能到达的最远下标\n        for i, x in enumerate(nums):\n            if i > reach:              # 当前位置都到不了 -> 失败\n                return False\n            reach = max(reach, i + x)  # 更新最远可达\n        return True\n",
+    "gotchas": [
+      "维护「最远可达 reach」;一旦某下标 i 超过 reach 说明断了。",
+      "不用关心具体怎么跳,只看能否覆盖到。"
+    ]
+  },
+  "56": {
+    "method": "merge",
+    "annotated": "class Solution:\n    def merge(self, intervals: list[list[int]]) -> list[list[int]]:\n        intervals.sort(key=lambda x: x[0])       # 按区间起点排序\n        out: list[list[int]] = []\n        for s, e in intervals:\n            if out and s <= out[-1][1]:          # 当前起点 <= 上个区间终点 -> 重叠\n                out[-1][1] = max(out[-1][1], e)  # 合并:终点取更大的\n            else:\n                out.append([s, e])               # 不重叠 -> 新开一个区间\n        return out\n",
+    "gotchas": [
+      "必须先按起点排序,合并才成立。",
+      "合并时终点取 `max`:后一个区间可能被前一个完全包住。"
+    ]
+  },
+  "62": {
+    "method": "uniquePaths",
+    "annotated": "class Solution:\n    def uniquePaths(self, m: int, n: int) -> int:\n        f = [1] * n                  # f[j] = 到当前行第 j 列的路径数;第一行全为 1\n        for _ in range(1, m):        # 逐行往下\n            for j in range(1, n):\n                f[j] += f[j - 1]     # 来自上方 f[j] + 来自左边 f[j-1]\n        return f[-1]\n",
+    "gotchas": [
+      "只能右/下走,`f[j] = 上方 + 左边`;一维滚动数组里 `f[j]` 旧值即「上方」。",
+      "第一行、第一列路径数都是 1。"
+    ]
+  },
+  "64": {
+    "method": "minPathSum",
+    "annotated": "class Solution:\n    def minPathSum(self, g: list[list[int]]) -> int:\n        m, n = len(g), len(g[0])\n        f = list(g[0])               # 第一行:只能从左来,做前缀和\n        for j in range(1, n):\n            f[j] += f[j - 1]\n        for i in range(1, m):\n            f[0] += g[i][0]          # 每行第一列只能从上来\n            for j in range(1, n):\n                f[j] = g[i][j] + min(f[j], f[j - 1])   # min(上方, 左边) + 当前格\n        return f[-1]\n",
+    "gotchas": [
+      "一维滚动:`f[j]`(旧值=上方)与 `f[j-1]`(左边)取小,加当前格。",
+      "第一行只能从左、第一列只能从上,需单独处理。"
+    ]
+  },
+  "70": {
+    "method": "climbStairs",
+    "annotated": "class Solution:\n    def climbStairs(self, n: int) -> int:\n        a, b = 1, 1                  # 斐波那契:a、b 为前两项\n        for _ in range(n):\n            a, b = b, a + b          # 走法数 = 前一阶 + 前两阶\n        return a\n",
+    "gotchas": [
+      "本质是斐波那契:到第 n 阶 = 到 n-1 阶 + 到 n-2 阶。",
+      "两个滚动变量,O(1) 空间。"
+    ]
+  },
+  "72": {
+    "method": "minDistance",
+    "annotated": "class Solution:\n    def minDistance(self, a: str, b: str) -> int:\n        m, n = len(a), len(b)\n        f = [[0] * (n + 1) for _ in range(m + 1)]   # f[i][j]:a 前 i 变成 b 前 j 的最少操作\n        for i in range(m + 1):\n            f[i][0] = i              # b 为空:删 i 次\n        for j in range(n + 1):\n            f[0][j] = j              # a 为空:插 j 次\n        for i in range(1, m + 1):\n            for j in range(1, n + 1):\n                if a[i - 1] == b[j - 1]:   # 末字符相同 -> 不操作,继承对角线\n                    f[i][j] = f[i - 1][j - 1]\n                else:                # 替换/删除/插入 三者取最小 + 1\n                    f[i][j] = 1 + min(f[i - 1][j - 1], f[i - 1][j], f[i][j - 1])\n        return f[m][n]\n",
+    "gotchas": [
+      "三个转移对应:`f[i-1][j-1]` 替换、`f[i-1][j]` 删除、`f[i][j-1]` 插入。",
+      "边界:一个串为空时,操作数 = 另一个串长度。"
+    ]
+  },
+  "73": {
+    "method": "setZeroes",
+    "annotated": "class Solution:\n    def setZeroes(self, m: list[list[int]]) -> None:\n        rows, cols = len(m), len(m[0])\n        # 先单独记录首行/首列自身是否含 0(它们将被用作标记区,会被覆盖)\n        first_row_zero = any(m[0][c] == 0 for c in range(cols))\n        first_col_zero = any(m[r][0] == 0 for r in range(rows))\n        # 用首行首列当标记:某格为 0,就把它的行首、列首标 0\n        for r in range(1, rows):\n            for c in range(1, cols):\n                if m[r][c] == 0:\n                    m[r][0] = m[0][c] = 0\n        # 根据标记,把内部对应格置零\n        for r in range(1, rows):\n            for c in range(1, cols):\n                if m[r][0] == 0 or m[0][c] == 0:\n                    m[r][c] = 0\n        # 最后再处理首行 / 首列本身\n        if first_row_zero:\n            for c in range(cols):\n                m[0][c] = 0\n        if first_col_zero:\n            for r in range(rows):\n                m[r][0] = 0\n",
+    "gotchas": [
+      "O(1) 额外空间技巧:把**首行首列复用**成标记数组。",
+      "必须**先单独存** first_row_zero / first_col_zero,因为标记过程会改写首行首列。",
+      "顺序关键:先打标记 → 再置内部 → 最后置首行首列。"
+    ]
+  },
+  "74": {
+    "method": "searchMatrix",
+    "annotated": "class Solution:\n    def searchMatrix(self, m: list[list[int]], target: int) -> bool:\n        if not m or not m[0]:\n            return False\n        rows, cols = len(m), len(m[0])\n        l, r = 0, rows * cols - 1    # 把整个矩阵看成长度 rows*cols 的有序数组\n        while l <= r:\n            mid = (l + r) // 2\n            v = m[mid // cols][mid % cols]   # 一维下标 mid -> 行 mid//cols,列 mid%cols\n            if v == target:\n                return True\n            if v < target:\n                l = mid + 1\n            else:\n                r = mid - 1\n        return False\n",
+    "gotchas": [
+      "本题每行递增且下一行首 > 上一行尾,可当**一维有序数组**直接二分。",
+      "一维 ↔ 二维:`行 = mid // cols`,`列 = mid % cols`。",
+      "与 #240 不同:#240 不满足整体有序,要走右上角法。"
+    ]
+  },
+  "75": {
+    "method": "sortColors",
+    "annotated": "class Solution:\n    def sortColors(self, nums: list[int]) -> None:\n        lo, mid, hi = 0, 0, len(nums) - 1   # [0,lo)全是0,[lo,mid)全是1,(hi,末]全是2\n        while mid <= hi:\n            x = nums[mid]\n            if x == 0:               # 0 换到前区\n                nums[lo], nums[mid] = nums[mid], nums[lo]\n                lo += 1; mid += 1\n            elif x == 1:             # 1 留在中间\n                mid += 1\n            else:                    # 2 换到后区(换来的还没看,mid 不动)\n                nums[mid], nums[hi] = nums[hi], nums[mid]\n                hi -= 1\n",
+    "gotchas": [
+      "三指针一趟扫描(荷兰国旗问题),O(n)、原地。",
+      "换 2 到后面时 `mid` **不前进**:换来的 `nums[hi]` 还没检查过。",
+      "换 0 时 mid 与 lo 都前进(换来的一定是已处理过的 1)。"
+    ]
+  },
+  "76": {
+    "method": "minWindow",
+    "annotated": "from collections import Counter      # 统计每个元素出现次数的字典\n\nclass Solution:\n    def minWindow(self, s: str, t: str) -> str:\n        if len(s) < len(t):                # s 比 t 还短,不可能覆盖\n            return \"\"\n        need = Counter(t)                  # t 里每个字符需要的个数\n        kinds = len(need)                  # 需要凑齐的「字符种类数」\n        have: dict[str, int] = {}          # 当前窗口里各字符的个数\n        valid = 0                          # 已经「数量达标」的种类数\n        l = 0\n        best_l, best_len = 0, float(\"inf\") # 最优窗口起点 / 长度(初始无穷大)\n        for r, c in enumerate(s):          # r 不断右扩窗口\n            if c in need:\n                have[c] = have.get(c, 0) + 1\n                if have[c] == need[c]:     # 这个字符刚好凑够 -> 达标种类 +1\n                    valid += 1\n            while valid == kinds:          # 窗口已覆盖 t -> 收缩左边求最短\n                if r - l + 1 < best_len:\n                    best_l, best_len = l, r - l + 1   # 记录更短的窗口\n                lc = s[l]\n                if lc in need:\n                    if have[lc] == need[lc]:   # 即将移出的字符会让数量不达标\n                        valid -= 1\n                    have[lc] -= 1\n                l += 1                     # 左边界右移\n        return \"\" if best_len == float(\"inf\") else s[best_l:best_l + best_len]\n",
+    "gotchas": [
+      "用**种类数** valid 是否等于 kinds 判断是否覆盖,避免每次比较整个计数表,更快。",
+      "收缩时,只有某字符数量从「刚好够」减到「不够」才 `valid -= 1`。",
+      "用 `float(\"inf\")` 作初始最短长度,方便比较。"
+    ]
+  },
+  "78": {
+    "method": "subsets",
+    "annotated": "class Solution:\n    def subsets(self, nums: list[int]) -> list[list[int]]:\n        out = [[]]                   # 从「只含空集」开始\n        for x in nums:\n            # 每加入新数 x:在已有所有子集后各复制一份并加上 x\n            out += [s + [x] for s in out]\n        return out\n",
+    "gotchas": [
+      "倍增思想:每多一个元素,子集数量翻倍(原有的 + 原有的各加该元素)。",
+      "`s + [x]` 生成新列表,不会改到原来的 s。"
+    ]
+  },
+  "79": {
+    "method": "exist",
+    "annotated": "class Solution:\n    def exist(self, board: list[list[str]], word: str) -> bool:\n        m, n = len(board), len(board[0])\n\n        def dfs(i, j, k):            # 从 (i,j) 出发匹配 word[k:]\n            if k == len(word):       # 整个单词匹配完成\n                return True\n            if i < 0 or j < 0 or i >= m or j >= n or board[i][j] != word[k]:\n                return False         # 越界或字符不匹配\n            board[i][j] = \"#\"        # 临时标记已访问(避免同一格重复用)\n            ok = (dfs(i + 1, j, k + 1) or dfs(i - 1, j, k + 1)\n                  or dfs(i, j + 1, k + 1) or dfs(i, j - 1, k + 1))   # 四个方向\n            board[i][j] = word[k]    # 回溯:恢复原字符\n            return ok\n\n        return any(dfs(i, j, 0) for i in range(m) for j in range(n))  # 每个格子都试作起点\n",
+    "gotchas": [
+      "走过的格子临时改 `'#'`,递归返回后必须**恢复**(回溯),否则污染其它路径。",
+      "四个方向用 `or` 短路:任一成功即 True。"
+    ]
+  },
+  "84": {
+    "method": "largestRectangleArea",
+    "annotated": "class Solution:\n    def largestRectangleArea(self, h: list[int]) -> int:\n        h = [0] + h + [0]              # 两端加哨兵 0:开头作左边界基准,结尾强制清空栈\n        st: list[int] = []             # 单调递增栈,存下标\n        ans = 0\n        for i, x in enumerate(h):\n            while st and h[st[-1]] > x: # 当前柱比栈顶矮 -> 栈顶柱子的右边界确定了\n                top = st.pop()         # 以 h[top] 为高的矩形\n                w = i - st[-1] - 1     # 宽 = 右边界 i 与新栈顶(左边界)之间\n                ans = max(ans, h[top] * w)\n            st.append(i)\n        return ans\n",
+    "gotchas": [
+      "两端加哨兵 `0`:左哨兵作左边界基准,右哨兵保证最后把栈里所有柱子都结算掉。",
+      "弹出栈顶时,宽度 = `i - st[-1] - 1`(左右两个更矮的边界之间)。",
+      "栈里存下标,保持对应高度单调递增。"
+    ]
+  },
+  "94": {
+    "method": "inorderTraversal",
+    "annotated": "class Solution:\n    def inorderTraversal(self, root) -> list[int]:\n        out, stack, cur = [], [], root\n        while cur or stack:\n            while cur:               # 一路向左,沿途结点压栈\n                stack.append(cur)\n                cur = cur.left\n            cur = stack.pop()        # 弹出最左(当前最小未访问)结点\n            out.append(cur.val)      # 访问它\n            cur = cur.right          # 再转向它的右子树\n        return out\n",
+    "gotchas": [
+      "中序 = 左 → 根 → 右;用栈模拟递归。",
+      "先把左链全压栈,弹出即按中序顺序。"
+    ]
+  },
+  "98": {
+    "method": "isValidBST",
+    "annotated": "class Solution:\n    def isValidBST(self, root) -> bool:\n        def ok(n, lo, hi):           # n 的值必须严格落在开区间 (lo, hi)\n            if not n:\n                return True\n            if n.val <= lo or n.val >= hi:\n                return False\n            # 左子树上界收紧为 n.val,右子树下界收紧为 n.val\n            return ok(n.left, lo, n.val) and ok(n.right, n.val, hi)\n        return ok(root, float(\"-inf\"), float(\"inf\"))\n",
+    "gotchas": [
+      "不能只比父子,要传**上下界**:每个结点必须落在所有祖先约束的区间内。",
+      "用 `<=` / `>=`(BST 不允许相等值)。"
+    ]
+  },
+  "101": {
+    "method": "isSymmetric",
+    "annotated": "class Solution:\n    def isSymmetric(self, root) -> bool:\n        def same(a, b):              # 判断两棵子树是否互为「镜像」\n            if not a and not b:\n                return True\n            if not a or not b or a.val != b.val:\n                return False\n            # 镜像:a 的左 对 b 的右,a 的右 对 b 的左\n            return same(a.left, b.right) and same(a.right, b.left)\n        return not root or same(root.left, root.right)\n",
+    "gotchas": [
+      "镜像比较是「外侧对外侧、内侧对内侧」:`a.left vs b.right`、`a.right vs b.left`。",
+      "先处理两个都空 / 只有一个空的边界。"
+    ]
+  },
+  "102": {
+    "method": "levelOrder",
+    "annotated": "from collections import deque\n\nclass Solution:\n    def levelOrder(self, root) -> list[list[int]]:\n        if not root:\n            return []\n        out, q = [], deque([root])\n        while q:\n            level = []\n            for _ in range(len(q)):  # 关键:先固定本层结点数,只处理这么多个\n                n = q.popleft()\n                level.append(n.val)\n                if n.left:\n                    q.append(n.left)\n                if n.right:\n                    q.append(n.right)\n            out.append(level)        # 一层收集成一个列表\n        return out\n",
+    "gotchas": [
+      "进 for 前先用 `len(q)` 固定本层数量,因为循环里会往 q 加下一层结点。",
+      "用 `deque`,`popleft()` 是 O(1)(普通 list 的 `pop(0)` 是 O(n))。"
+    ]
+  },
+  "104": {
+    "method": "maxDepth",
+    "annotated": "from collections import deque\n\nclass Solution:\n    def maxDepth(self, root) -> int:\n        if not root:\n            return 0\n        q = deque([root])\n        d = 0\n        while q:\n            d += 1                   # 每处理完一层,深度 +1\n            for _ in range(len(q)):  # 固定本层数量\n                n = q.popleft()\n                if n.left:\n                    q.append(n.left)\n                if n.right:\n                    q.append(n.right)\n        return d\n",
+    "gotchas": [
+      "按层 BFS,层数即最大深度(也可递归 `1 + max(左, 右)`)。",
+      "同样要先 `len(q)` 固定本层。"
+    ]
+  },
+  "105": {
+    "method": "buildTree",
+    "annotated": "class Solution:\n    def buildTree(self, preorder: list[int], inorder: list[int]):\n        idx = {v: i for i, v in enumerate(inorder)}   # 值 -> 在中序里的下标,O(1) 查根位置\n\n        def build(pl, pr, il, ir):   # 用前序[pl..pr] 与 中序[il..ir] 建子树\n            if pl > pr:\n                return None\n            root_val = preorder[pl]  # 前序第一个就是根\n            i = idx[root_val]        # 根在中序里的位置\n            left_len = i - il        # 左子树结点个数\n            return TreeNode(\n                root_val,\n                build(pl + 1, pl + left_len, il, i - 1),       # 左子树\n                build(pl + left_len + 1, pr, i + 1, ir),       # 右子树\n            )\n\n        return build(0, len(preorder) - 1, 0, len(inorder) - 1)\n",
+    "gotchas": [
+      "前序第一个 = 根;在中序里找到它,左边是左子树、右边是右子树。",
+      "用哈希表存中序下标,避免每次线性查找(否则 O(n²))。",
+      "`left_len = i - il` 用来切分前序区间。"
+    ]
+  },
+  "108": {
+    "method": "sortedArrayToBST",
+    "annotated": "class Solution:\n    def sortedArrayToBST(self, nums: list[int]):\n        def build(l, r):\n            if l > r:\n                return None\n            m = (l + r) // 2         # 取中点当根 -> 左右数量平衡(高度最小)\n            return TreeNode(nums[m], build(l, m - 1), build(m + 1, r))\n        return build(0, len(nums) - 1)\n",
+    "gotchas": [
+      "取中点当根 -> 左右子树元素数接近 -> 平衡 BST(高度 O(log n))。",
+      "有序数组本身就是 BST 的中序,递归分治即可。"
+    ]
+  },
+  "114": {
+    "method": "flatten",
+    "annotated": "class Solution:\n    def flatten(self, root) -> None:\n        self.prev = None             # prev:已展开部分的头(从最后一个结点往前接)\n\n        def dfs(n):\n            if not n:\n                return\n            dfs(n.right)             # 逆前序:右 -> 左 -> 根\n            dfs(n.left)\n            n.right = self.prev      # 当前结点的右指向「已处理好的下一段」\n            n.left = None            # 左指针清空(题目要求拉成单链)\n            self.prev = n            # 当前结点成为新的头\n\n        dfs(root)\n",
+    "gotchas": [
+      "按「右→左→根」逆前序遍历,边走边往前接,正好得到前序顺序的单链。",
+      "别忘了 `n.left = None`;原地操作,返回 None。"
+    ]
+  },
+  "118": {
+    "method": "generate",
+    "annotated": "class Solution:\n    def generate(self, n: int) -> list[list[int]]:\n        out: list[list[int]] = []\n        for r in range(n):\n            row = [1] * (r + 1)      # 每行首尾都是 1\n            for c in range(1, r):    # 中间元素 = 上一行相邻两数之和\n                row[c] = out[r - 1][c - 1] + out[r - 1][c]\n            out.append(row)\n        return out\n",
+    "gotchas": [
+      "每行两端是 1,中间 `row[c] = 上一行[c-1] + 上一行[c]`。",
+      "第 r 行(从 0 计)有 r+1 个数。"
+    ]
+  },
+  "121": {
+    "method": "maxProfit",
+    "annotated": "class Solution:\n    def maxProfit(self, prices: list[int]) -> int:\n        lo, best = float(\"inf\"), 0     # lo:目前见过的最低买入价;best:最大利润\n        for p in prices:\n            lo = min(lo, p)            # 更新最低买入价\n            best = max(best, p - lo)   # 今天卖出能赚 = 当前价 - 历史最低价\n        return best\n",
+    "gotchas": [
+      "一次遍历同时维护「历史最低价」和「最大利润」。",
+      "必须先买后卖,所以 lo 一定来自当前价之前(含)。"
+    ]
+  },
+  "124": {
+    "method": "maxPathSum",
+    "annotated": "class Solution:\n    def maxPathSum(self, root) -> int:\n        self.best = float(\"-inf\")    # 全局最大路径和(可不经过根)\n\n        def gain(n):                 # 返回「从 n 向下走一条边能贡献的最大增益」\n            if not n:\n                return 0\n            l = max(0, gain(n.left)) # 子树增益为负就当 0(不要这条)\n            r = max(0, gain(n.right))\n            self.best = max(self.best, n.val + l + r)  # 以 n 为「拐点」的完整路径和\n            return n.val + max(l, r) # 向上只能选左右其一(路径不能分叉)\n\n        gain(root)\n        return self.best\n",
+    "gotchas": [
+      "关键区分:更新答案用 `l + r`(经过 n 的完整路径);返回给父亲只能 `max(l, r)`(不分叉)。",
+      "子树增益为负就丢弃(`max(0, ...)`)。"
+    ]
+  },
+  "128": {
+    "method": "longestConsecutive",
+    "annotated": "class Solution:\n    def longestConsecutive(self, nums: list[int]) -> int:\n        S = set(nums)                      # 转集合:去重 + O(1) 判断某数是否存在\n        best = 0\n        for x in S:\n            if x - 1 in S:                 # x-1 也在 -> x 不是序列起点,跳过\n                continue                   # 只从「起点」开始数,保证每段只数一次\n            y = x\n            while y + 1 in S:              # 从起点 x 往上数连续的数\n                y += 1\n            best = max(best, y - x + 1)    # 这一段长度 = y - x + 1\n        return best\n",
+    "gotchas": [
+      "只从「起点」(`x-1` 不在集合里的数)开始向上数,保证整体 O(n),否则会重复数退化成 O(n²)。",
+      "必须先转 `set`,用列表做 `in` 判断是 O(n) 会超时。"
+    ]
+  },
+  "131": {
+    "method": "partition",
+    "annotated": "class Solution:\n    def partition(self, s: str) -> list[list[str]]:\n        ans, path = [], []\n        n = len(s)\n\n        def is_pal(l, r):            # 判断 s[l..r] 是否回文\n            while l < r:\n                if s[l] != s[r]:\n                    return False\n                l += 1; r -= 1\n            return True\n\n        def bt(start):               # 从下标 start 开始切\n            if start == n:           # 切到末尾 -> 一种合法分割\n                ans.append(path[:])\n                return\n            for end in range(start, n):\n                if is_pal(start, end):       # s[start..end] 是回文,才切这一刀\n                    path.append(s[start:end + 1])\n                    bt(end + 1)              # 从 end+1 继续切\n                    path.pop()\n\n        bt(0)\n        return ans\n",
+    "gotchas": [
+      "枚举每个回文前缀作为一段,递归切剩下的。",
+      "只有当前段是回文才递归,自动保证每段都回文。"
+    ]
+  },
+  "136": {
+    "method": "singleNumber",
+    "annotated": "from functools import reduce\nfrom operator import xor\n\nclass Solution:\n    def singleNumber(self, nums: list[int]) -> int:\n        return reduce(xor, nums)     # 全部异或:成对的相互抵消,剩下唯一那个\n",
+    "gotchas": [
+      "异或性质:`x^x=0`、`x^0=x`,成对数字异或后为 0,只剩出现一次的。",
+      "`reduce(xor, nums)` 把整个数组累计异或起来。"
+    ]
+  },
+  "138": {
+    "method": "copyRandomList",
+    "annotated": "class Node:                          # LeetCode 提供的结点(带 random 指针)\n    def __init__(self, x: int, nxt=None, rand=None):\n        self.val = x\n        self.next = nxt\n        self.random = rand\n\nclass Solution:\n    def copyRandomList(self, head):\n        if not head:\n            return None\n        m: dict = {}                    # 原结点 -> 新结点 的映射\n        cur = head\n        while cur:                      # 第一遍:只复制 val,建立映射\n            m[cur] = Node(cur.val)\n            cur = cur.next\n        cur = head\n        while cur:                      # 第二遍:照原结点连好 next 和 random\n            m[cur].next = m.get(cur.next)     # get 在 None(末尾/空)时返回 None\n            m[cur].random = m.get(cur.random)\n            cur = cur.next\n        return m[head]                  # 返回新链表头\n",
+    "gotchas": [
+      "两遍法:第一遍只建「原→新」映射,第二遍再连 next/random,避免引用尚未创建的结点。",
+      "用 `m.get(...)`:原结点的 next/random 可能为 None,`get` 返回 None 不报错。"
+    ]
+  },
+  "139": {
+    "method": "wordBreak",
+    "annotated": "class Solution:\n    def wordBreak(self, s: str, wordDict: list[str]) -> bool:\n        words = set(wordDict)        # 转 set,O(1) 查单词\n        max_len = max((len(w) for w in words), default=0)   # 最长单词长,用于剪枝\n        n = len(s)\n        f = [False] * (n + 1)        # f[i]:s 前 i 个字符能否被拆分\n        f[0] = True                  # 空串可拆\n        for i in range(1, n + 1):\n            # j 只需从 i-max_len 起,更靠前的切法词典里也没那么长的词\n            for j in range(max(0, i - max_len), i):\n                if f[j] and s[j:i] in words:   # 前 j 个能拆,且 s[j:i] 是个词\n                    f[i] = True\n                    break\n        return f[n]\n",
+    "gotchas": [
+      "`f[i]` 表示前缀能否拆分;转移看是否存在分割点 j 使 `f[j]` 为真且 `s[j:i]` 在词典。",
+      "用 max_len 限制 j 的起点,避免无谓检查。"
+    ]
+  },
+  "141": {
+    "method": "hasCycle",
+    "annotated": "class Solution:\n    def hasCycle(self, head) -> bool:\n        slow = fast = head              # 快慢指针都从头出发\n        while fast and fast.next:       # 快指针走两步,需保证 fast、fast.next 都在\n            slow = slow.next            # 慢指针走一步\n            fast = fast.next.next       # 快指针走两步\n            if slow is fast:            # 相遇 -> 有环\n                return True\n        return False                    # 快指针到 None -> 无环\n",
+    "gotchas": [
+      "有环时快指针会在环内「追上」慢指针。",
+      "`while fast and fast.next` 缺一不可,否则 `fast.next.next` 会空指针。",
+      "用 `is`(同一对象判断),不是 `==`。"
+    ]
+  },
+  "142": {
+    "method": "detectCycle",
+    "annotated": "class Solution:\n    def detectCycle(self, head):\n        slow = fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n            if slow is fast:            # 第一次相遇点\n                p = head                # 再放一个指针从头出发\n                while p is not slow:    # 头出发的 p 与相遇点同速走,相遇处即环入口\n                    p = p.next\n                    slow = slow.next\n                return p\n        return None\n",
+    "gotchas": [
+      "数学结论:相遇后,从**头**和从**相遇点**各放一指针同速走,会在**环入口**相遇。",
+      "无环则 fast 先到 None,返回 None。"
+    ]
+  },
+  "146": {
+    "method": "LRUCache",
+    "annotated": "class _Node:                         # 双向链表结点:存 key、val 和前后指针\n    __slots__ = (\"key\", \"val\", \"prev\", \"next\")   # __slots__ 省内存、稍快(固定属性)\n\n    def __init__(self, k=0, v=0):\n        self.key, self.val = k, v\n        self.prev = self.next = None\n\nclass LRUCache:\n    def __init__(self, capacity: int):\n        self.cap = capacity\n        self.map: dict[int, _Node] = {}  # key -> 结点,O(1) 定位\n        self.head, self.tail = _Node(), _Node()  # 哑头、哑尾,简化边界\n        self.head.next = self.tail\n        self.tail.prev = self.head\n\n    def _add(self, n: _Node) -> None:    # 把结点插到「头部之后」= 标记为最近使用\n        n.prev = self.head\n        n.next = self.head.next\n        self.head.next.prev = n\n        self.head.next = n\n\n    def _remove(self, n: _Node) -> None: # 从链表摘掉结点\n        n.prev.next = n.next\n        n.next.prev = n.prev\n\n    def get(self, key: int) -> int:\n        if key not in self.map:\n            return -1\n        n = self.map[key]\n        self._remove(n); self._add(n)    # 访问后移到头部(刷新为最近使用)\n        return n.val\n\n    def put(self, key: int, value: int) -> None:\n        if key in self.map:              # 已存在:更新值并移到头部\n            n = self.map[key]\n            n.val = value\n            self._remove(n); self._add(n)\n            return\n        if len(self.map) >= self.cap:    # 满了:淘汰尾部(最久未使用)\n            lru = self.tail.prev\n            self._remove(lru)\n            del self.map[lru.key]\n        n = _Node(key, value)            # 新建并插到头部\n        self._add(n)\n        self.map[key] = n\n",
+    "gotchas": [
+      "哈希表(O(1) 查)+ 双向链表(O(1) 移动/删除)组合,get/put 都是 O(1)。",
+      "哑头哑尾结点:插入/删除时无需判断边界为空。",
+      "get 命中也要把结点**移到头部**(它也算刚用过)。",
+      "淘汰的是 `tail.prev`(最久未用),别忘了同时从 map 里 `del`。"
+    ]
+  },
+  "148": {
+    "method": "sortList",
+    "annotated": "def _merge(a, b):                    # 合并两条有序链表(同 #21)\n    dummy = ListNode()\n    t = dummy\n    while a and b:\n        if a.val <= b.val:\n            t.next, a = a, a.next\n        else:\n            t.next, b = b, b.next\n        t = t.next\n    t.next = a or b\n    return dummy.next\n\nclass Solution:\n    def sortList(self, head):\n        if not head or not head.next:    # 0 或 1 个结点,已有序\n            return head\n        # 快慢指针找中点,prev 停在中点前一个,用于断开\n        prev, slow, fast = None, head, head\n        while fast and fast.next:\n            prev = slow\n            slow = slow.next\n            fast = fast.next.next\n        prev.next = None                 # 从中间断成两半:head.. 和 slow..\n        return _merge(self.sortList(head), self.sortList(slow))  # 递归排两半再合并\n",
+    "gotchas": [
+      "归并排序:找中点 → 断开 → 递归排左右 → 合并,O(n log n)、稳定。",
+      "`prev.next = None` 必须做,否则两半没断开会无限递归。"
+    ]
+  },
+  "152": {
+    "method": "maxProduct",
+    "annotated": "class Solution:\n    def maxProduct(self, nums: list[int]) -> int:\n        fmax = fmin = ans = nums[0]  # 同时维护「以当前结尾的最大积」与「最小积」\n        for x in nums[1:]:\n            # 负数会让最大变最小、最小变最大,故三者一起比\n            cands = (x, fmax * x, fmin * x)\n            fmax = max(cands)\n            fmin = min(cands)\n            ans = max(ans, fmax)\n        return ans\n",
+    "gotchas": [
+      "必须同时维护**最大积和最小积**:遇到负数时,最小(负)乘负会变最大。",
+      "候选三者:从 x 重新开始、fmax*x、fmin*x。"
+    ]
+  },
+  "153": {
+    "method": "findMin",
+    "annotated": "class Solution:\n    def findMin(self, nums: list[int]) -> int:\n        l, r = 0, len(nums) - 1\n        while l < r:\n            m = (l + r) // 2\n            if nums[m] > nums[r]:    # 中点比右端大 -> 最小值在右半 (m+1..r)\n                l = m + 1\n            else:                    # 中点 <= 右端 -> 最小值在左半(含 m)\n                r = m\n        return nums[l]\n",
+    "gotchas": [
+      "和 `nums[r]` 比较(不是 nums[l])才能正确判断最小值在哪半。",
+      "循环 `l < r`、`r = m`(不是 m-1),最后 l==r 即最小值位置。"
+    ]
+  },
+  "155": {
+    "method": "MinStack",
+    "annotated": "class MinStack:\n    def __init__(self):\n        self.s: list[int] = []         # 主栈\n        self.m: list[int] = []         # 最小值栈:m[-1] 始终是当前主栈的最小值\n\n    def push(self, val: int) -> None:\n        self.s.append(val)\n        # 同步压入「到目前为止的最小值」\n        self.m.append(val if not self.m else min(val, self.m[-1]))\n\n    def pop(self) -> None:\n        self.s.pop()\n        self.m.pop()                   # 两栈同步弹出\n\n    def top(self) -> int:\n        return self.s[-1]\n\n    def getMin(self) -> int:\n        return self.m[-1]              # O(1) 取最小\n",
+    "gotchas": [
+      "用辅助栈 m,每次 push 同步记录「此刻最小值」,getMin 直接读栈顶 O(1)。",
+      "pop 时两个栈必须**同步**弹出。"
+    ]
+  },
+  "160": {
+    "method": "getIntersectionNode",
+    "annotated": "class Solution:\n    def getIntersectionNode(self, headA, headB):\n        a, b = headA, headB\n        while a is not b:                # 两指针相等(同一结点或都为 None)时停\n            a = a.next if a else headB   # a 走完 A 就换到 B 头\n            b = b.next if b else headA   # b 走完 B 就换到 A 头\n        return a                         # 相交点;不相交则同时到 None,返回 None\n",
+    "gotchas": [
+      "两指针各走「A+B」的长度,到相交点时步数相等,必然相遇。",
+      "不相交时两者同时变 None(`None is None` 为真),返回 None。",
+      "换头用 `if a else headB`(a 为 None 时换),不是 `a.next`。"
+    ]
+  },
+  "169": {
+    "method": "majorityElement",
+    "annotated": "class Solution:\n    def majorityElement(self, nums: list[int]) -> int:\n        cand, cnt = 0, 0             # 候选 + 计票\n        for x in nums:\n            if cnt == 0:             # 票数归零 -> 换当前数为候选\n                cand = x\n            cnt += 1 if x == cand else -1   # 与候选相同 +1,否则 -1\n        return cand\n",
+    "gotchas": [
+      "摩尔投票:相同 +1、不同 -1,归零就换候选。",
+      "因为多数元素超过一半,最后留下的一定是它(题目保证存在)。"
+    ]
+  },
+  "189": {
+    "method": "rotate",
+    "annotated": "class Solution:\n    def rotate(self, nums: list[int], k: int) -> None:\n        n = len(nums)\n        k %= n                          # k 可能比 n 大,先取模\n        nums.reverse()                  # ① 整体反转\n        nums[:k] = reversed(nums[:k])   # ② 反转前 k 个\n        nums[k:] = reversed(nums[k:])   # ③ 反转剩下的\n",
+    "gotchas": [
+      "必须 `k %= n`,否则 k≥n 时无效。",
+      "三次反转原地完成右移 k 位,O(1) 空间。",
+      "切片赋值 `nums[:k] = ...` 是**原地**改原数组(题目要求)。"
+    ]
+  },
+  "198": {
+    "method": "rob",
+    "annotated": "class Solution:\n    def rob(self, nums: list[int]) -> int:\n        a = b = 0                    # a:到上上家的最大;b:到上一家的最大\n        for x in nums:\n            a, b = b, max(b, a + x)  # 当前家:不偷(b) 或 偷(a + x)\n        return b\n",
+    "gotchas": [
+      "不能偷相邻两家:偷当前家只能加 `a`(上上家),不偷则保持 `b`。",
+      "滚动两个变量,O(1) 空间。"
+    ]
+  },
+  "199": {
+    "method": "rightSideView",
+    "annotated": "from collections import deque\n\nclass Solution:\n    def rightSideView(self, root) -> list[int]:\n        if not root:\n            return []\n        out, q = [], deque([root])\n        while q:\n            sz = len(q)\n            for i in range(sz):\n                n = q.popleft()\n                if i == sz - 1:      # 本层最后一个 = 从右边看到的那个\n                    out.append(n.val)\n                if n.left:\n                    q.append(n.left)\n                if n.right:\n                    q.append(n.right)\n        return out\n",
+    "gotchas": [
+      "层序遍历,每层**最后一个**结点就是右视图。",
+      "左孩子也要入队(它可能是下一层的最右)。"
+    ]
+  },
+  "200": {
+    "method": "numIslands",
+    "annotated": "class Solution:\n    def numIslands(self, grid: list[list[str]]) -> int:\n        if not grid:\n            return 0\n        m, n = len(grid), len(grid[0])\n\n        def dfs(i, j):               # 把与 (i,j) 相连的整片陆地「淹掉」\n            if i < 0 or j < 0 or i >= m or j >= n or grid[i][j] != '1':\n                return\n            grid[i][j] = '0'         # 标记已访问(改成水)\n            dfs(i + 1, j); dfs(i - 1, j); dfs(i, j + 1); dfs(i, j - 1)  # 四个方向扩散\n\n        cnt = 0\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] == '1':    # 遇到没淹的陆地 -> 岛数 +1,并淹掉整片\n                    cnt += 1\n                    dfs(i, j)\n        return cnt\n",
+    "gotchas": [
+      "每发现一个 '1' 就 +1,并用 DFS 把整座岛淹成 '0',避免重复计数。",
+      "直接改 grid 当访问标记,省掉额外 visited 数组。"
+    ]
+  },
+  "206": {
+    "method": "reverseList",
+    "annotated": "class Solution:\n    def reverseList(self, head):\n        prev, cur = None, head           # prev 是已反转部分的头(初始空)\n        while cur:\n            nxt = cur.next               # 先存下一个,别丢\n            cur.next = prev              # 当前结点反指前一个(核心反转)\n            prev = cur                   # prev、cur 各前进一格\n            cur = nxt\n        return prev                      # 末尾 prev 即新头\n",
+    "gotchas": [
+      "必须先用 `nxt` 存住 `cur.next`,否则改完指针就找不到后面了。",
+      "返回 `prev`(新头),不是 cur(此时为 None)。"
+    ]
+  },
+  "207": {
+    "method": "canFinish",
+    "annotated": "from collections import defaultdict, deque\n\nclass Solution:\n    def canFinish(self, numCourses: int, prerequisites: list[list[int]]) -> bool:\n        g = defaultdict(list)        # 邻接表:g[b] = 学完 b 后可解锁的课\n        indeg = [0] * numCourses     # 每门课入度(还有多少先修没完成)\n        for a, b in prerequisites:   # a 依赖 b(先学 b 再学 a)\n            g[b].append(a)\n            indeg[a] += 1\n        q = deque(i for i, d in enumerate(indeg) if d == 0)   # 入度为 0 的课先入队\n        seen = 0                     # 已能学的课数\n        while q:\n            u = q.popleft()\n            seen += 1\n            for v in g[u]:           # u 学完 -> 解锁后继\n                indeg[v] -= 1\n                if indeg[v] == 0:    # 先修全完成 -> 可学\n                    q.append(v)\n        return seen == numCourses    # 能学完全部 = 无环\n",
+    "gotchas": [
+      "拓扑排序(Kahn):反复取入度为 0 的结点;若学到的数 < 总数,说明有**环**(死锁)。",
+      "建图方向:`g[b].append(a)` 表示 b 是 a 的先修。"
+    ]
+  },
+  "208": {
+    "method": "Trie",
+    "annotated": "class Trie:\n    def __init__(self):\n        self.ch: dict = {}           # 子结点:字符 -> 下一个 Trie 结点\n        self.end = False             # 标记是否有单词在此结尾\n\n    def insert(self, word: str) -> None:\n        cur = self\n        for c in word:\n            if c not in cur.ch:      # 没有这条边就新建\n                cur.ch[c] = Trie()\n            cur = cur.ch[c]          # 沿字符往下走\n        cur.end = True               # 单词结尾打标记\n\n    def _walk(self, prefix: str):    # 沿 prefix 走,返回终点结点(走不通则 None)\n        cur = self\n        for c in prefix:\n            if c not in cur.ch:\n                return None\n            cur = cur.ch[c]\n        return cur\n\n    def search(self, word: str) -> bool:\n        n = self._walk(word)\n        return n is not None and n.end   # 既要走得通,终点还得是某单词结尾\n\n    def startsWith(self, prefix: str) -> bool:\n        return self._walk(prefix) is not None   # 走得通即存在该前缀\n",
+    "gotchas": [
+      "每个结点用 dict 存子结点;`end` 用来区分「前缀」和「完整单词」。",
+      "search 要求 `end=True`,startsWith 只要走得通。"
+    ]
+  },
+  "215": {
+    "method": "findKthLargest",
+    "annotated": "import heapq\n\nclass Solution:\n    def findKthLargest(self, nums: list[int], k: int) -> int:\n        h: list[int] = []              # 大小为 k 的小顶堆,堆顶是这 k 个里最小的\n        for x in nums:\n            heapq.heappush(h, x)\n            if len(h) > k:             # 超过 k 个 -> 弹掉最小的\n                heapq.heappop(h)\n        return h[0]                    # 堆里留下最大的 k 个,堆顶即第 k 大\n",
+    "gotchas": [
+      "维护大小为 k 的**小顶堆**:堆里始终是最大的 k 个,堆顶就是第 k 大。",
+      "比全排序快:O(n log k)。"
+    ]
+  },
+  "226": {
+    "method": "invertTree",
+    "annotated": "class Solution:\n    def invertTree(self, root):\n        if not root:\n            return None\n        # 各自递归翻转后,交换左右子树\n        root.left, root.right = self.invertTree(root.right), self.invertTree(root.left)\n        return root\n",
+    "gotchas": [
+      "一行同时赋值:右侧先整体求值,再赋给左侧,无需临时变量。"
+    ]
+  },
+  "230": {
+    "method": "kthSmallest",
+    "annotated": "class Solution:\n    def kthSmallest(self, root, k: int) -> int:\n        stack, cur = [], root\n        while cur or stack:          # 中序遍历(BST 中序是升序)\n            while cur:\n                stack.append(cur)\n                cur = cur.left\n            cur = stack.pop()\n            k -= 1                   # 每访问一个,k 减 1\n            if k == 0:               # 减到 0 -> 当前就是第 k 小\n                return cur.val\n            cur = cur.right\n        return -1\n",
+    "gotchas": [
+      "BST 的中序遍历是**升序**,数到第 k 个即答案。",
+      "用迭代中序,找到就提前返回,不必遍历完。"
+    ]
+  },
+  "234": {
+    "method": "isPalindrome",
+    "annotated": "def _reverse(head):                  # 反转链表(同 #206)\n    prev, cur = None, head\n    while cur:\n        nxt = cur.next\n        cur.next = prev\n        prev = cur\n        cur = nxt\n    return prev\n\nclass Solution:\n    def isPalindrome(self, head) -> bool:\n        slow = fast = head               # 快慢指针找中点\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n        right = _reverse(slow)           # 反转后半段\n        left = head\n        while right:                     # 比较前半 left 与反转后的后半 right\n            if left.val != right.val:\n                return False\n            left = left.next\n            right = right.next\n        return True\n",
+    "gotchas": [
+      "找中点 + 反转后半 + 双向比较,O(n) 时间、O(1) 空间。",
+      "只需比到 `right` 走完(后半较短或等长),无需比整条。"
+    ]
+  },
+  "236": {
+    "method": "lowestCommonAncestor",
+    "annotated": "class Solution:\n    def lowestCommonAncestor(self, root, p, q):\n        if not root or root is p or root is q:   # 到底,或找到 p / q 之一\n            return root\n        l = self.lowestCommonAncestor(root.left, p, q)    # 左子树找\n        r = self.lowestCommonAncestor(root.right, p, q)   # 右子树找\n        if l and r:                  # p、q 分居左右两侧 -> 当前就是 LCA\n            return root\n        return l or r                # 都在一侧 -> 返回非空的那侧结果\n",
+    "gotchas": [
+      "左右各递归:若两侧都非空,说明 p、q 分居两侧,当前结点即最近公共祖先。",
+      "用 `is`(比较结点对象),不是 `==`。"
+    ]
+  },
+  "238": {
+    "method": "productExceptSelf",
+    "annotated": "class Solution:\n    def productExceptSelf(self, nums: list[int]) -> list[int]:\n        n = len(nums)\n        ans = [1] * n\n        # 第一遍:ans[i] = 它左边所有数的乘积(左前缀积)\n        for i in range(1, n):\n            ans[i] = ans[i - 1] * nums[i - 1]\n        # 第二遍:从右往左,用 right 累计右边乘积,乘进 ans[i]\n        right = 1\n        for i in range(n - 1, -1, -1):\n            ans[i] *= right             # 左积 × 右积 = 除自身外的乘积\n            right *= nums[i]            # 更新右侧累计积\n        return ans\n",
+    "gotchas": [
+      "不能用除法(题目禁止,且遇到 0 会出错)。",
+      "两遍扫描:先存左前缀积,再用一个变量累计右后缀积,O(1) 额外空间(输出数组不计)。"
+    ]
+  },
+  "239": {
+    "method": "maxSlidingWindow",
+    "annotated": "from collections import deque        # 双端队列,两头都能 O(1) 增删\n\nclass Solution:\n    def maxSlidingWindow(self, nums: list[int], k: int) -> list[int]:\n        dq: deque[int] = deque()           # 存「下标」,对应值从队头到队尾递减(单调队列)\n        ans: list[int] = []\n        for i, x in enumerate(nums):\n            while dq and nums[dq[-1]] <= x: # 队尾值 <= 当前值 -> 它不可能再是最大,弹掉\n                dq.pop()\n            dq.append(i)                   # 当前下标入队尾\n            if dq[0] <= i - k:             # 队头下标已滑出窗口 -> 弹掉\n                dq.popleft()\n            if i >= k - 1:                 # 窗口够 k 个后,队头即当前窗口最大值\n                ans.append(nums[dq[0]])\n        return ans\n",
+    "gotchas": [
+      "队列里存的是**下标**而非值,这样才能判断有没有滑出窗口。",
+      "队头永远是当前窗口最大值;队尾比当前值小的都没用,直接弹。"
+    ]
+  },
+  "240": {
+    "method": "searchMatrix",
+    "annotated": "class Solution:\n    def searchMatrix(self, m: list[list[int]], target: int) -> bool:\n        if not m or not m[0]:\n            return False\n        i, j = 0, len(m[0]) - 1         # 从右上角出发\n        while i < len(m) and j >= 0:\n            if m[i][j] == target:\n                return True\n            if m[i][j] > target:        # 当前值偏大 -> 左移(排除这一列)\n                j -= 1\n            else:                       # 当前值偏小 -> 下移(排除这一行)\n                i += 1\n        return False\n",
+    "gotchas": [
+      "从**右上角**(或左下角)开始:那里「向左变小、向下变大」,每步能排除一行或一列。",
+      "不能从左上角:左上角向右、向下都变大,无法二选一。"
+    ]
+  },
+  "279": {
+    "method": "numSquares",
+    "annotated": "class Solution:\n    def numSquares(self, n: int) -> int:\n        f = [0] + [float(\"inf\")] * n   # f[i]:凑出 i 所需最少完全平方数个数\n        for i in range(1, n + 1):\n            k = 1\n            while k * k <= i:          # 枚举减去一个平方数 k*k\n                f[i] = min(f[i], f[i - k * k] + 1)\n                k += 1\n        return f[n]\n",
+    "gotchas": [
+      "完全背包思路:`f[i] = min(f[i - k²] + 1)`,枚举所有 ≤ i 的平方数。",
+      "f[0]=0,其余初始化为无穷大。"
+    ]
+  },
+  "283": {
+    "method": "moveZeroes",
+    "annotated": "class Solution:\n    def moveZeroes(self, nums: list[int]) -> None:\n        slow = 0                           # slow 指向「下一个非零数该放的位置」\n        for fast in range(len(nums)):      # fast 扫描整个数组\n            if nums[fast]:                 # 当前是非零数(0 为假)\n                nums[slow], nums[fast] = nums[fast], nums[slow]  # 交换到前面\n                slow += 1                  # slow 前进一格\n",
+    "gotchas": [
+      "原地修改,返回 `None`(题目要求不返回新数组,直接改原数组)。",
+      "交换法天然保持非零元素的相对顺序。"
+    ]
+  },
+  "287": {
+    "method": "findDuplicate",
+    "annotated": "class Solution:\n    def findDuplicate(self, nums: list[int]) -> int:\n        # 把「下标 -> nums[下标]」看成链表,重复值导致成环,转化为找环入口\n        slow = fast = nums[0]\n        while True:                  # 第一阶段:快慢指针找相遇点\n            slow = nums[slow]\n            fast = nums[nums[fast]]\n            if slow == fast:\n                break\n        slow = nums[0]               # 第二阶段:从起点与相遇点同速走,相遇即环入口\n        while slow != fast:\n            slow = nums[slow]\n            fast = nums[fast]\n        return slow\n",
+    "gotchas": [
+      "把数组当链表(`i -> nums[i]`),有重复值必成环,环入口就是重复数。",
+      "不修改数组、O(1) 空间,本质同 #142 找环入口。"
+    ]
+  },
+  "295": {
+    "method": "MedianFinder",
+    "annotated": "import heapq\n\nclass MedianFinder:\n    def __init__(self):\n        self.lo: list[int] = []        # 放较小的一半(大顶堆,用负数模拟)\n        self.hi: list[int] = []        # 放较大的一半(小顶堆)\n\n    def addNum(self, num: int) -> None:\n        heapq.heappush(self.lo, -num)              # 先进 lo\n        heapq.heappush(self.hi, -heapq.heappop(self.lo))  # 把 lo 的最大值挪到 hi,保证 lo 全 <= hi\n        if len(self.hi) > len(self.lo):            # 维持 lo 个数 >= hi\n            heapq.heappush(self.lo, -heapq.heappop(self.hi))\n\n    def findMedian(self) -> float:\n        if len(self.lo) > len(self.hi):            # 总数为奇 -> 中位数在 lo 顶\n            return float(-self.lo[0])\n        return (-self.lo[0] + self.hi[0]) / 2      # 偶 -> 两个堆顶取平均\n",
+    "gotchas": [
+      "对顶堆:`lo` 放小的一半(大顶,负数模拟),`hi` 放大的一半(小顶)。",
+      "Python 的 heapq 只有小顶堆,所以 lo 存 `-num`,取出再取负还原。",
+      "始终让两堆数量差 ≤ 1,中位数就在堆顶。"
+    ]
+  },
+  "300": {
+    "method": "lengthOfLIS",
+    "annotated": "from bisect import bisect_left\n\nclass Solution:\n    def lengthOfLIS(self, nums: list[int]) -> int:\n        tails: list[int] = []        # tails[k] = 长度为 k+1 的递增子序列的最小末尾\n        for x in nums:\n            i = bisect_left(tails, x)    # 找第一个 >= x 的位置\n            if i == len(tails):      # x 比所有都大 -> 接到末尾,LIS 变长\n                tails.append(x)\n            else:\n                tails[i] = x         # 否则替换,让该长度的末尾更小(更有潜力)\n        return len(tails)            # tails 的长度即 LIS 长度\n",
+    "gotchas": [
+      "`tails` 不是真正的 LIS,但其**长度**等于 LIS 长度。",
+      "用二分把每个数放到第一个 ≥ 它的位置,维持 tails 递增,O(n log n)。"
+    ]
+  },
+  "322": {
+    "method": "coinChange",
+    "annotated": "class Solution:\n    def coinChange(self, coins: list[int], amount: int) -> int:\n        INF = amount + 1             # 用一个不可能的大值代表「凑不出」\n        f = [0] + [INF] * amount     # f[x]:凑出金额 x 所需最少硬币数\n        for x in range(1, amount + 1):\n            for c in coins:\n                if c <= x:           # 用一枚面值 c 的硬币\n                    f[x] = min(f[x], f[x - c] + 1)\n        return -1 if f[amount] == INF else f[amount]\n",
+    "gotchas": [
+      "完全背包:每种硬币可用多次,外层遍历金额、内层遍历硬币。",
+      "用 `INF=amount+1` 当哨兵判断是否凑不出(最多 amount 枚 1 元,绝到不了 amount+1)。"
+    ]
+  },
+  "347": {
+    "method": "topKFrequent",
+    "annotated": "from collections import Counter\nimport heapq\n\nclass Solution:\n    def topKFrequent(self, nums: list[int], k: int) -> list[int]:\n        cnt = Counter(nums)            # 统计每个数出现次数\n        # nlargest 按「出现次数」取前 k 个键值对,再只取键\n        return [x for x, _ in heapq.nlargest(k, cnt.items(), key=lambda kv: kv[1])]\n",
+    "gotchas": [
+      "`Counter` 统计频次,`heapq.nlargest(k, ..., key=频次)` 直接取频次最大的 k 个。",
+      "`cnt.items()` 是 (元素, 次数),`key=lambda kv: kv[1]` 按次数排。"
+    ]
+  },
+  "394": {
+    "method": "decodeString",
+    "annotated": "class Solution:\n    def decodeString(self, s: str) -> str:\n        num_stack: list[int] = []      # 存遇到 '[' 时的重复次数\n        str_stack: list[str] = []      # 存遇到 '[' 时已拼好的外层字符串\n        cur, k = \"\", 0                 # cur:当前层字符串;k:正在读的数字\n        for c in s:\n            if c.isdigit():\n                k = k * 10 + int(c)    # 多位数逐位累积\n            elif c == \"[\":             # 进入一层:把 k 和 cur 压栈并清零\n                num_stack.append(k); k = 0\n                str_stack.append(cur); cur = \"\"\n            elif c == \"]\":             # 出一层:外层串 + 当前串重复 k 次\n                cur = str_stack.pop() + cur * num_stack.pop()\n            else:\n                cur += c               # 普通字母接到当前串\n        return cur\n",
+    "gotchas": [
+      "两个栈分别存「外层数字」和「外层字符串」,遇 `[` 入栈、遇 `]` 出栈拼接。",
+      "数字可能多位,用 `k = k*10 + int(c)` 累积。",
+      "`]` 时拼接顺序是「外层 + 当前×次数」,不能反。"
+    ]
+  },
+  "416": {
+    "method": "canPartition",
+    "annotated": "class Solution:\n    def canPartition(self, nums: list[int]) -> bool:\n        s = sum(nums)\n        if s & 1:                    # 总和为奇,无法平分\n            return False\n        target = s // 2\n        f = [False] * (target + 1)   # f[v]:能否凑出和为 v 的子集\n        f[0] = True                  # 空集凑出 0\n        for x in nums:\n            for v in range(target, x - 1, -1):   # 倒序!保证每个数只用一次(0-1 背包)\n                f[v] = f[v] or f[v - x]\n        return f[target]\n",
+    "gotchas": [
+      "转化为:能否选出子集,和正好为 `总和/2`(0-1 背包可行性)。",
+      "内层 `v` 必须**倒序**遍历,保证每个数只用一次(正序会重复用)。",
+      "总和为奇数直接返回 False。"
+    ]
+  },
+  "437": {
+    "method": "pathSum",
+    "annotated": "from collections import defaultdict\n\nclass Solution:\n    def pathSum(self, root, targetSum: int) -> int:\n        cnt = defaultdict(int)       # 记录「根到当前结点路径」上各前缀和出现次数\n        cnt[0] = 1                   # 前缀和 0 预置一次(代表空前缀)\n        ans = 0\n\n        def dfs(n, cur):\n            nonlocal ans\n            if not n:\n                return\n            cur += n.val             # 当前路径前缀和\n            ans += cnt[cur - targetSum]   # 多少个祖先前缀和 = cur-target,就有多少条合法路径\n            cnt[cur] += 1            # 进子树前,登记当前前缀和\n            dfs(n.left, cur)\n            dfs(n.right, cur)\n            cnt[cur] -= 1            # 回溯:离开本结点,撤销其前缀和(不影响别的分支)\n\n        dfs(root, 0)\n        return ans\n",
+    "gotchas": [
+      "树上前缀和:思路同 #560,但要**回溯**——离开结点时 `cnt[cur] -= 1`,否则别的分支会误用。",
+      "`cnt[0] = 1` 处理「从根开始就凑够」的路径。"
+    ]
+  },
+  "438": {
+    "method": "findAnagrams",
+    "annotated": "from collections import Counter\n\nclass Solution:\n    def findAnagrams(self, s: str, p: str) -> list[int]:\n        m, n = len(p), len(s)\n        if n < m:                          # s 比 p 短,不可能有异位词\n            return []\n        need = Counter(p)                  # p 的字符计数(目标)\n        win = Counter(s[:m])               # 第一个长度为 m 的窗口的计数\n        ans = [0] if win == need else []   # 起点 0 是否匹配\n        for r in range(m, n):              # 窗口从下标 m 开始逐格右滑\n            win[s[r]] += 1                 # 新进入窗口的右端字符\n            win[s[r - m]] -= 1             # 滑出窗口的左端字符\n            if win[s[r - m]] == 0:         # 计数减到 0 必须删,否则 == 比较不相等\n                del win[s[r - m]]\n            if win == need:                # 两个 Counter 相等 = 异位词\n                ans.append(r - m + 1)      # 记录窗口左端下标\n        return ans\n",
+    "gotchas": [
+      "**定长**窗口(长度恒为 m),每右移一格:加一个新字符、减一个旧字符。",
+      "计数减到 0 一定要 `del`,否则 `win == need` 永不相等(`{'a':0}` ≠ 没有 'a')。",
+      "答案记录的是窗口**左端**下标 `r - m + 1`。"
+    ]
+  },
+  "543": {
+    "method": "diameterOfBinaryTree",
+    "annotated": "class Solution:\n    def diameterOfBinaryTree(self, root) -> int:\n        self.best = 0                # 最长路径的「边数」\n\n        def depth(n):                # 返回以 n 为根的高度(结点数)\n            if not n:\n                return 0\n            l = depth(n.left)\n            r = depth(n.right)\n            self.best = max(self.best, l + r)   # 经过 n 的路径边数 = 左高 + 右高\n            return 1 + max(l, r)     # 向上返回:取较高一侧 + 1\n\n        depth(root)\n        return self.best\n",
+    "gotchas": [
+      "直径 = 某结点「左子树高 + 右子树高」的最大值(按边计数)。",
+      "depth 返回的是高度;答案用 `self.best` 在遍历中维护。"
+    ]
+  },
+  "560": {
+    "method": "subarraySum",
+    "annotated": "from collections import defaultdict\n\nclass Solution:\n    def subarraySum(self, nums: list[int], k: int) -> int:\n        cnt = defaultdict(int)             # 记录「某个前缀和」出现过几次\n        cnt[0] = 1                         # 关键:前缀和为 0 预置 1 次(代表空前缀)\n        s = ans = 0                        # s 是当前前缀和,ans 是答案\n        for x in nums:\n            s += x                         # 累加前缀和\n            ans += cnt[s - k]              # 有几个旧前缀和 = s-k,它们到现在的子数组和正好 k\n            cnt[s] += 1                    # 把当前前缀和记一次\n        return ans\n",
+    "gotchas": [
+      "核心等式:子数组和 = `前缀和[i] - 前缀和[j]`,等于 k 即 `前缀和[j] = s - k`。",
+      "必须先 `cnt[0] = 1`,否则「从头开始、整段和正好为 k」会漏算。",
+      "要**先查 `cnt[s-k]` 再写 `cnt[s]`**,避免把当前这步算进去(k=0 时尤其重要)。"
+    ]
+  },
+  "739": {
+    "method": "dailyTemperatures",
+    "annotated": "class Solution:\n    def dailyTemperatures(self, t: list[int]) -> list[int]:\n        n = len(t)\n        ans = [0] * n                  # 默认 0(之后没有更暖的一天)\n        st: list[int] = []             # 单调递减栈,存「还没等到更暖天」的下标\n        for i, x in enumerate(t):\n            while st and t[st[-1]] < x: # 当前温度比栈顶高 -> 栈顶等到了更暖的一天\n                j = st.pop()\n                ans[j] = i - j         # 间隔天数\n            st.append(i)\n        return ans\n",
+    "gotchas": [
+      "单调栈存「尚未找到更高温度」的下标;遇更高温就逐个弹出结算。",
+      "答案是天数差 `i - j`,默认 0 表示之后再没更暖的。"
+    ]
+  },
+  "763": {
+    "method": "partitionLabels",
+    "annotated": "class Solution:\n    def partitionLabels(self, s: str) -> list[int]:\n        last = {c: i for i, c in enumerate(s)}   # 每个字母最后出现的位置\n        ans, start, end = [], 0, 0\n        for i, c in enumerate(s):\n            end = max(end, last[c])    # 当前片段至少要延伸到 c 最后出现处\n            if i == end:               # 走到片段右边界 -> 这一段可以切了\n                ans.append(end - start + 1)\n                start = i + 1\n        return ans\n",
+    "gotchas": [
+      "先记录每个字母**最后出现位置**;遍历时把片段右界不断扩到当前字母的最后位置。",
+      "当下标 i == 当前片段右界 end 时,说明段内字母都不再出现于后面,可切。"
+    ]
+  },
+  "994": {
+    "method": "orangesRotting",
+    "annotated": "from collections import deque\n\nclass Solution:\n    def orangesRotting(self, g: list[list[int]]) -> int:\n        m, n = len(g), len(g[0])\n        q = deque()\n        fresh = 0\n        for i in range(m):           # 先收集所有初始腐烂橘子(多源)并数新鲜橘子\n            for j in range(n):\n                if g[i][j] == 2:\n                    q.append((i, j))\n                elif g[i][j] == 1:\n                    fresh += 1\n        if fresh == 0:               # 没有新鲜橘子 -> 0 分钟\n            return 0\n        minutes = 0\n        while q and fresh:           # 一层 = 一分钟,当前所有腐烂橘子同时向外传染\n            for _ in range(len(q)):\n                x, y = q.popleft()\n                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):\n                    nx, ny = x + dx, y + dy\n                    if 0 <= nx < m and 0 <= ny < n and g[nx][ny] == 1:\n                        g[nx][ny] = 2        # 传染:新鲜 -> 腐烂\n                        fresh -= 1\n                        q.append((nx, ny))\n            minutes += 1\n        return minutes if fresh == 0 else -1   # 仍有新鲜橘子(被隔开)-> -1\n",
+    "gotchas": [
+      "**多源 BFS**:所有初始腐烂橘子一起入队,按层扩散,层数 = 分钟数。",
+      "结束后若还有 fresh>0(被墙隔开),返回 -1;开局无新鲜橘子要特判返回 0。"
+    ]
+  },
+  "1143": {
+    "method": "longestCommonSubsequence",
+    "annotated": "class Solution:\n    def longestCommonSubsequence(self, a: str, b: str) -> int:\n        m, n = len(a), len(b)\n        f = [[0] * (n + 1) for _ in range(m + 1)]   # f[i][j]:a 前 i、b 前 j 的 LCS 长度\n        for i in range(1, m + 1):\n            for j in range(1, n + 1):\n                if a[i - 1] == b[j - 1]:   # 末字符相同 -> 对角线 + 1\n                    f[i][j] = f[i - 1][j - 1] + 1\n                else:                # 不同 -> 去掉 a 末 或 b 末,取较大\n                    f[i][j] = max(f[i - 1][j], f[i][j - 1])\n        return f[m][n]\n",
+    "gotchas": [
+      "字符相同时来自对角线 +1;不同时取上/左较大。",
+      "子序列不要求连续(和子串不同)。"
+    ]
+  }
+}

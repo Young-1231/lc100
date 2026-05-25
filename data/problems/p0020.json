@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def isValid(self, s: str) -> bool:\n    m = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n    st: list[str] = []\n    for c in s:\n        if c in m:\n            if not st or st.pop() != m[c]:\n                return False\n        else:\n            st.append(c)\n    return not st"
+      "code": "class Solution:\n    def isValid(self, s: str) -> bool:\n        m = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n        st: list[str] = []\n        for c in s:\n            if c in m:\n                if not st or st.pop() != m[c]:\n                    return False\n            else:\n                st.append(c)\n        return not st\n"
     }
   ],
   "raw_source": "# LC 20. 有效的括号 · Easy · 栈\n\"\"\"\n🔹 直觉\n    左括号入栈;右括号必须匹配栈顶,否则失败。最终栈空才合法。\n\"\"\"\n\n\nclass Solution:\n    def isValid(self, s: str) -> bool:\n        m = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n        st: list[str] = []\n        for c in s:\n            if c in m:\n                if not st or st.pop() != m[c]:\n                    return False\n            else:\n                st.append(c)\n        return not st\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.isValid(\"()\") is True\n    assert s.isValid(\"()[]{}\") is True\n    assert s.isValid(\"(]\") is False\n    assert s.isValid(\"([)]\") is False\n    assert s.isValid(\"{[]}\") is True\n    assert s.isValid(\"\") is True\n    print(\"✅ p020 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -35,5 +35,14 @@
       "time": "**O(n)**。",
       "space": "**O(n)** —— 最坏全是左括号。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "isValid",
+    "annotated": "class Solution:\n    def isValid(self, s: str) -> bool:\n        m = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}   # 右括号 -> 对应的左括号\n        st: list[str] = []                   # 栈:存还没匹配的左括号\n        for c in s:\n            if c in m:                       # 遇到右括号\n                if not st or st.pop() != m[c]:   # 栈空、或栈顶不是对应左括号 -> 非法\n                    return False\n            else:                            # 左括号入栈\n                st.append(c)\n        return not st                        # 最后栈空才说明全部匹配\n",
+    "gotchas": [
+      "遇右括号就弹栈顶看是否匹配;栈为空也算失败。",
+      "结尾要检查栈是否为空(可能还剩没闭合的左括号)。"
+    ]
   }
 }

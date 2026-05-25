@@ -8,7 +8,7 @@
   "day": 4,
   "day_title": "二叉树",
   "category": "二叉树",
-  "leetcode_url": "https://leetcode.cn/problems/lowest-common-ancestor/",
+  "leetcode_url": "https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/",
   "filename": "p236_lowest_common_ancestor.py",
   "doc": "🔹 直觉\n    后序:在每节点处问\"左右子树各自找到了 p 还是 q\"。\n        - 都找到 → 当前就是 LCA\n        - 只一边找到 → 把那个返回上去\n        - 都没找到 → 返回 None",
   "solutions": [
@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def lowestCommonAncestor(self, root, p, q):\n    if not root or root is p or root is q:\n        return root\n    l = self.lowestCommonAncestor(root.left, p, q)\n    r = self.lowestCommonAncestor(root.right, p, q)\n    if l and r:\n        return root\n    return l or r"
+      "code": "class Solution:\n    def lowestCommonAncestor(self, root, p, q):\n        if not root or root is p or root is q:\n            return root\n        l = self.lowestCommonAncestor(root.left, p, q)\n        r = self.lowestCommonAncestor(root.right, p, q)\n        if l and r:\n            return root\n        return l or r\n"
     }
   ],
   "raw_source": "# LC 236. 二叉树的最近公共祖先 · Medium · 递归\n\"\"\"\n🔹 直觉\n    后序:在每节点处问\"左右子树各自找到了 p 还是 q\"。\n        - 都找到 → 当前就是 LCA\n        - 只一边找到 → 把那个返回上去\n        - 都没找到 → 返回 None\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import build_tree, TreeNode\n\n\nclass Solution:\n    def lowestCommonAncestor(self, root, p, q):\n        if not root or root is p or root is q:\n            return root\n        l = self.lowestCommonAncestor(root.left, p, q)\n        r = self.lowestCommonAncestor(root.right, p, q)\n        if l and r:\n            return root\n        return l or r\n\n\ndef _find(root, val):\n    if not root:\n        return None\n    if root.val == val:\n        return root\n    return _find(root.left, val) or _find(root.right, val)\n\n\ndef _test() -> None:\n    s = Solution()\n    t = build_tree([3, 5, 1, 6, 2, 0, 8, None, None, 7, 4])\n    p, q = _find(t, 5), _find(t, 1)\n    assert s.lowestCommonAncestor(t, p, q).val == 3\n    p, q = _find(t, 5), _find(t, 4)\n    assert s.lowestCommonAncestor(t, p, q).val == 5\n    print(\"✅ p236 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -51,5 +51,14 @@
       "time": "**O(n)**。",
       "space": "**O(h)** 递归栈。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "lowestCommonAncestor",
+    "annotated": "class Solution:\n    def lowestCommonAncestor(self, root, p, q):\n        if not root or root is p or root is q:   # 到底,或找到 p / q 之一\n            return root\n        l = self.lowestCommonAncestor(root.left, p, q)    # 左子树找\n        r = self.lowestCommonAncestor(root.right, p, q)   # 右子树找\n        if l and r:                  # p、q 分居左右两侧 -> 当前就是 LCA\n            return root\n        return l or r                # 都在一侧 -> 返回非空的那侧结果\n",
+    "gotchas": [
+      "左右各递归:若两侧都非空,说明 p、q 分居两侧,当前结点即最近公共祖先。",
+      "用 `is`(比较结点对象),不是 `==`。"
+    ]
   }
 }

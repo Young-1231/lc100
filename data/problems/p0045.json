@@ -19,7 +19,7 @@
       "time": "O(n)",
       "space": "O(1)",
       "starred": true,
-      "code": "def jump(self, nums: list[int]) -> int:\n    steps = end = farthest = 0\n    for i in range(len(nums) - 1):\n        farthest = max(farthest, i + nums[i])\n        if i == end:\n            steps += 1\n            end = farthest\n    return steps"
+      "code": "class Solution:\n    def jump(self, nums: list[int]) -> int:\n        steps = end = farthest = 0\n        for i in range(len(nums) - 1):\n            farthest = max(farthest, i + nums[i])\n            if i == end:\n                steps += 1\n                end = farthest\n        return steps\n"
     },
     {
       "method": "jump_dp",
@@ -27,7 +27,7 @@
       "time": "O(n²)",
       "space": "O(n)",
       "starred": false,
-      "code": "def jump_dp(self, nums: list[int]) -> int:\n    n = len(nums)\n    INF = float(\"inf\")\n    f = [INF] * n\n    f[0] = 0\n    for i in range(n):\n        for j in range(1, nums[i] + 1):\n            if i + j < n:\n                f[i + j] = min(f[i + j], f[i] + 1)\n    return int(f[-1])"
+      "code": "class Solution:\n    def jump(self, nums: list[int]) -> int:\n        n = len(nums)\n        INF = float(\"inf\")\n        f = [INF] * n\n        f[0] = 0\n        for i in range(n):\n            for j in range(1, nums[i] + 1):\n                if i + j < n:\n                    f[i + j] = min(f[i + j], f[i] + 1)\n        return int(f[-1])\n"
     }
   ],
   "raw_source": "# LC 45. 跳跃游戏 II · Medium · 贪心 / BFS\n\"\"\"\n🔹 题面\n    返回到达末尾的最少跳跃次数。\n\n🔹 解法对比\n    | 方法           | 时间  | 空间 | 备注                  |\n    |----------------|-------|------|-----------------------|\n    | DP             | O(n²) | O(n) | f[i] = 到 i 的最少步  |\n    | 贪心层次BFS ★ | O(n)  | O(1) | 维护当前层 end / 下一层 farthest |\n\"\"\"\n\n\nclass Solution:\n    # 解法 1:贪心层次 BFS ★ — O(n) / O(1)\n    def jump(self, nums: list[int]) -> int:\n        steps = end = farthest = 0\n        for i in range(len(nums) - 1):\n            farthest = max(farthest, i + nums[i])\n            if i == end:\n                steps += 1\n                end = farthest\n        return steps\n\n    # 解法 2:DP — O(n²) / O(n)\n    def jump_dp(self, nums: list[int]) -> int:\n        n = len(nums)\n        INF = float(\"inf\")\n        f = [INF] * n\n        f[0] = 0\n        for i in range(n):\n            for j in range(1, nums[i] + 1):\n                if i + j < n:\n                    f[i + j] = min(f[i + j], f[i] + 1)\n        return int(f[-1])\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [([2, 3, 1, 1, 4], 2), ([2, 3, 0, 1, 4], 2), ([1], 0)]\n    for arg, want in cases:\n        for fn in (s.jump, s.jump_dp):\n            assert fn(arg) == want\n    print(\"✅ p045 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -44,5 +44,14 @@
       "time": "**O(n)**。",
       "space": "**O(1)**。"
     }
+  },
+  "n_sols": 2,
+  "code_explain": {
+    "method": "jump",
+    "annotated": "class Solution:\n    def jump(self, nums: list[int]) -> int:\n        steps = end = farthest = 0     # steps:跳数;end:当前这一跳的边界;farthest:下一跳最远\n        for i in range(len(nums) - 1): # 到 len-1 即可:到达最后一格不必再起跳\n            farthest = max(farthest, i + nums[i])   # 当前区间内更新能跳到的最远\n            if i == end:               # 走到这一跳的边界 -> 必须再跳一次\n                steps += 1\n                end = farthest         # 新边界 = 这段内能到的最远\n        return steps\n",
+    "gotchas": [
+      "贪心 / 隐式 BFS:把「当前一跳能覆盖的范围」当一层,到边界就 steps+1。",
+      "循环到 `len-1`:到达最后一格本身不需要再起跳。"
+    ]
   }
 }

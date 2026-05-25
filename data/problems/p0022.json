@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def generateParenthesis(self, n: int) -> list[str]:\n    ans, path = [], []\n\n    def bt(left, right):\n        if not left and not right:\n            ans.append(\"\".join(path))\n            return\n        if left > 0:\n            path.append(\"(\")\n            bt(left - 1, right)\n            path.pop()\n        if right > left:\n            path.append(\")\")\n            bt(left, right - 1)\n            path.pop()\n\n    bt(n, n)\n    return ans"
+      "code": "class Solution:\n    def generateParenthesis(self, n: int) -> list[str]:\n        ans, path = [], []\n\n        def bt(left, right):\n            if not left and not right:\n                ans.append(\"\".join(path))\n                return\n            if left > 0:\n                path.append(\"(\")\n                bt(left - 1, right)\n                path.pop()\n            if right > left:\n                path.append(\")\")\n                bt(left, right - 1)\n                path.pop()\n\n        bt(n, n)\n        return ans\n"
     }
   ],
   "raw_source": "# LC 22. 括号生成 · Medium · 回溯\n\"\"\"\n🔹 直觉\n    剩余左括号 > 0 才放 '(';剩余右括号 > 剩余左括号 才放 ')'(保证有效)。\n\"\"\"\n\n\nclass Solution:\n    def generateParenthesis(self, n: int) -> list[str]:\n        ans, path = [], []\n\n        def bt(left, right):\n            if not left and not right:\n                ans.append(\"\".join(path))\n                return\n            if left > 0:\n                path.append(\"(\")\n                bt(left - 1, right)\n                path.pop()\n            if right > left:\n                path.append(\")\")\n                bt(left, right - 1)\n                path.pop()\n\n        bt(n, n)\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert sorted(s.generateParenthesis(3)) == sorted([\"((()))\", \"(()())\", \"(())()\", \"()(())\", \"()()()\"])\n    assert s.generateParenthesis(1) == [\"()\"]\n    print(\"✅ p022 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -36,5 +36,14 @@
       "time": "**O(C(2n,n)/(n+1) · n)** —— Catalan 个解,每个长度 2n。",
       "space": "**O(n)** —— path 与栈。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "generateParenthesis",
+    "annotated": "class Solution:\n    def generateParenthesis(self, n: int) -> list[str]:\n        ans, path = [], []\n\n        def bt(left, right):         # left/right:还可用的左、右括号数\n            if not left and not right:   # 都用完 -> 一个合法组合\n                ans.append(\"\".join(path))\n                return\n            if left > 0:             # 还有左括号 -> 可放 '('\n                path.append(\"(\")\n                bt(left - 1, right)\n                path.pop()\n            if right > left:         # 右括号剩得比左多 -> 才能放 ')'\n                path.append(\")\")\n                bt(left, right - 1)\n                path.pop()\n\n        bt(n, n)\n        return ans\n",
+    "gotchas": [
+      "放 `)` 的条件是 `right > left`:保证任意前缀里 `)` 不会多于 `(`。",
+      "用剩余数量控制,天然只生成合法串。"
+    ]
   }
 }

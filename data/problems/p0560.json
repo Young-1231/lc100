@@ -9,7 +9,7 @@
   "day": 1,
   "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
   "category": "子串",
-  "leetcode_url": "https://leetcode.cn/problems/subarray-sum-k/",
+  "leetcode_url": "https://leetcode.cn/problems/subarray-sum-equals-k/",
   "filename": "p560_subarray_sum_k.py",
   "doc": "🔹 题面\n    返回数组中和为 k 的连续子数组数量(可负)。\n\n🔹 直觉\n    令 p[i] 为前缀和,则 p[r]-p[l] = k → p[l] = p[r]-k。\n    扫描时维护 \"出现过的前缀和 → 次数\" 哈希,常数时间统计。\n\n🔹 复杂度 O(n) / O(n)\n\n🔹 踩坑\n    - 元素可负,**滑窗不可用**;只能前缀和+哈希。\n    - 初始化 cnt[0]=1 表示空前缀,这样能统计从下标 0 起的子数组。",
   "solutions": [
@@ -19,7 +19,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def subarraySum(self, nums: list[int], k: int) -> int:\n    cnt = defaultdict(int)\n    cnt[0] = 1\n    s = ans = 0\n    for x in nums:\n        s += x\n        ans += cnt[s - k]\n        cnt[s] += 1\n    return ans"
+      "code": "from collections import defaultdict\n\nclass Solution:\n    def subarraySum(self, nums: list[int], k: int) -> int:\n        cnt = defaultdict(int)\n        cnt[0] = 1\n        s = ans = 0\n        for x in nums:\n            s += x\n            ans += cnt[s - k]\n            cnt[s] += 1\n        return ans\n"
     }
   ],
   "raw_source": "# LC 560. 和为 K 的子数组 · Medium · 子串/前缀和\n\"\"\"\n🔹 题面\n    返回数组中和为 k 的连续子数组数量(可负)。\n\n🔹 直觉\n    令 p[i] 为前缀和,则 p[r]-p[l] = k → p[l] = p[r]-k。\n    扫描时维护 \"出现过的前缀和 → 次数\" 哈希,常数时间统计。\n\n🔹 复杂度 O(n) / O(n)\n\n🔹 踩坑\n    - 元素可负,**滑窗不可用**;只能前缀和+哈希。\n    - 初始化 cnt[0]=1 表示空前缀,这样能统计从下标 0 起的子数组。\n\"\"\"\nfrom collections import defaultdict\n\n\nclass Solution:\n    def subarraySum(self, nums: list[int], k: int) -> int:\n        cnt = defaultdict(int)\n        cnt[0] = 1\n        s = ans = 0\n        for x in nums:\n            s += x\n            ans += cnt[s - k]\n            cnt[s] += 1\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.subarraySum([1, 1, 1], 2) == 2\n    assert s.subarraySum([1, 2, 3], 3) == 2\n    assert s.subarraySum([-1, -1, 1], 0) == 1\n    print(\"✅ p560 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -44,5 +44,15 @@
       "time": "**O(n)** —— 一次遍历,每次 dict 查询/更新 O(1)。",
       "space": "**O(n)** —— 最坏所有前缀和不同。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "subarraySum",
+    "annotated": "from collections import defaultdict\n\nclass Solution:\n    def subarraySum(self, nums: list[int], k: int) -> int:\n        cnt = defaultdict(int)             # 记录「某个前缀和」出现过几次\n        cnt[0] = 1                         # 关键:前缀和为 0 预置 1 次(代表空前缀)\n        s = ans = 0                        # s 是当前前缀和,ans 是答案\n        for x in nums:\n            s += x                         # 累加前缀和\n            ans += cnt[s - k]              # 有几个旧前缀和 = s-k,它们到现在的子数组和正好 k\n            cnt[s] += 1                    # 把当前前缀和记一次\n        return ans\n",
+    "gotchas": [
+      "核心等式:子数组和 = `前缀和[i] - 前缀和[j]`,等于 k 即 `前缀和[j] = s - k`。",
+      "必须先 `cnt[0] = 1`,否则「从头开始、整段和正好为 k」会漏算。",
+      "要**先查 `cnt[s-k]` 再写 `cnt[s]`**,避免把当前这步算进去(k=0 时尤其重要)。"
+    ]
   }
 }

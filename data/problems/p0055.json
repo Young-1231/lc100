@@ -18,7 +18,7 @@
       "time": "O(n)",
       "space": "O(1)",
       "starred": true,
-      "code": "def canJump(self, nums: list[int]) -> bool:\n    reach = 0\n    for i, x in enumerate(nums):\n        if i > reach:\n            return False\n        reach = max(reach, i + x)\n    return True"
+      "code": "class Solution:\n    def canJump(self, nums: list[int]) -> bool:\n        reach = 0\n        for i, x in enumerate(nums):\n            if i > reach:\n                return False\n            reach = max(reach, i + x)\n        return True\n"
     },
     {
       "method": "canJump_dp",
@@ -26,7 +26,7 @@
       "time": "O(n²)",
       "space": "O(n)",
       "starred": false,
-      "code": "def canJump_dp(self, nums: list[int]) -> bool:\n    n = len(nums)\n    f = [False] * n\n    f[0] = True\n    for i in range(n):\n        if not f[i]:\n            continue\n        for j in range(1, nums[i] + 1):\n            if i + j < n:\n                f[i + j] = True\n            if i + j >= n - 1:\n                return True\n    return f[n - 1]"
+      "code": "class Solution:\n    def canJump(self, nums: list[int]) -> bool:\n        n = len(nums)\n        f = [False] * n\n        f[0] = True\n        for i in range(n):\n            if not f[i]:\n                continue\n            for j in range(1, nums[i] + 1):\n                if i + j < n:\n                    f[i + j] = True\n                if i + j >= n - 1:\n                    return True\n        return f[n - 1]\n"
     }
   ],
   "raw_source": "# LC 55. 跳跃游戏 · Medium · 贪心\n\"\"\"\n🔹 题面\n    站在 0,nums[i] 表示从 i 最远可跳的步数,问能否跳到末尾。\n\n🔹 解法对比\n    | 方法     | 时间 | 空间 | 备注                              |\n    |----------|------|------|-----------------------------------|\n    | DP       | O(n²)| O(n) | f[i] = 是否可达                    |\n    | 贪心 ★  | O(n) | O(1) | 维护\"已知可达最远\",超出即失败    |\n\"\"\"\n\n\nclass Solution:\n    # 解法 1:贪心 ★ — O(n) / O(1)\n    def canJump(self, nums: list[int]) -> bool:\n        reach = 0\n        for i, x in enumerate(nums):\n            if i > reach:\n                return False\n            reach = max(reach, i + x)\n        return True\n\n    # 解法 2:DP — O(n²) / O(n)\n    def canJump_dp(self, nums: list[int]) -> bool:\n        n = len(nums)\n        f = [False] * n\n        f[0] = True\n        for i in range(n):\n            if not f[i]:\n                continue\n            for j in range(1, nums[i] + 1):\n                if i + j < n:\n                    f[i + j] = True\n                if i + j >= n - 1:\n                    return True\n        return f[n - 1]\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [([2, 3, 1, 1, 4], True), ([3, 2, 1, 0, 4], False), ([0], True)]\n    for arg, want in cases:\n        for fn in (s.canJump, s.canJump_dp):\n            assert fn(arg) is want\n    print(\"✅ p055 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -43,5 +43,14 @@
       "time": "**O(n)**。",
       "space": "**O(1)**。"
     }
+  },
+  "n_sols": 2,
+  "code_explain": {
+    "method": "canJump",
+    "annotated": "class Solution:\n    def canJump(self, nums: list[int]) -> bool:\n        reach = 0                      # 目前能到达的最远下标\n        for i, x in enumerate(nums):\n            if i > reach:              # 当前位置都到不了 -> 失败\n                return False\n            reach = max(reach, i + x)  # 更新最远可达\n        return True\n",
+    "gotchas": [
+      "维护「最远可达 reach」;一旦某下标 i 超过 reach 说明断了。",
+      "不用关心具体怎么跳,只看能否覆盖到。"
+    ]
   }
 }

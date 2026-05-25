@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def dailyTemperatures(self, t: list[int]) -> list[int]:\n    n = len(t)\n    ans = [0] * n\n    st: list[int] = []\n    for i, x in enumerate(t):\n        while st and t[st[-1]] < x:\n            j = st.pop()\n            ans[j] = i - j\n        st.append(i)\n    return ans"
+      "code": "class Solution:\n    def dailyTemperatures(self, t: list[int]) -> list[int]:\n        n = len(t)\n        ans = [0] * n\n        st: list[int] = []\n        for i, x in enumerate(t):\n            while st and t[st[-1]] < x:\n                j = st.pop()\n                ans[j] = i - j\n            st.append(i)\n        return ans\n"
     }
   ],
   "raw_source": "# LC 739. 每日温度 · Medium · 单调栈\n\"\"\"\n🔹 题面\n    返回每天距下一个更高温度的天数。\n\n🔹 直觉\n    维护\"温度递减\"的下标栈。新的更高温度时,把栈中所有 ≤ 它的弹出,\n    并填它们的答案。\n\"\"\"\n\n\nclass Solution:\n    def dailyTemperatures(self, t: list[int]) -> list[int]:\n        n = len(t)\n        ans = [0] * n\n        st: list[int] = []\n        for i, x in enumerate(t):\n            while st and t[st[-1]] < x:\n                j = st.pop()\n                ans[j] = i - j\n            st.append(i)\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.dailyTemperatures([73, 74, 75, 71, 69, 72, 76, 73]) == [1, 1, 4, 2, 1, 1, 0, 0]\n    assert s.dailyTemperatures([30, 40, 50, 60]) == [1, 1, 1, 0]\n    assert s.dailyTemperatures([30, 60, 90]) == [1, 1, 0]\n    print(\"✅ p739 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -35,5 +35,14 @@
       "time": "**O(n)**。",
       "space": "**O(n)**。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "dailyTemperatures",
+    "annotated": "class Solution:\n    def dailyTemperatures(self, t: list[int]) -> list[int]:\n        n = len(t)\n        ans = [0] * n                  # 默认 0(之后没有更暖的一天)\n        st: list[int] = []             # 单调递减栈,存「还没等到更暖天」的下标\n        for i, x in enumerate(t):\n            while st and t[st[-1]] < x: # 当前温度比栈顶高 -> 栈顶等到了更暖的一天\n                j = st.pop()\n                ans[j] = i - j         # 间隔天数\n            st.append(i)\n        return ans\n",
+    "gotchas": [
+      "单调栈存「尚未找到更高温度」的下标;遇更高温就逐个弹出结算。",
+      "答案是天数差 `i - j`,默认 0 表示之后再没更暖的。"
+    ]
   }
 }

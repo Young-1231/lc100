@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def rotate(self, m: list[list[int]]) -> None:\n    n = len(m)\n    for i in range(n):\n        for j in range(i + 1, n):\n            m[i][j], m[j][i] = m[j][i], m[i][j]\n    for row in m:\n        row.reverse()"
+      "code": "class Solution:\n    def rotate(self, m: list[list[int]]) -> None:\n        n = len(m)\n        for i in range(n):\n            for j in range(i + 1, n):\n                m[i][j], m[j][i] = m[j][i], m[i][j]\n        for row in m:\n            row.reverse()\n"
     }
   ],
   "raw_source": "# LC 48. 旋转图像 · Medium · 矩阵\n\"\"\"\n🔹 题面\n    将 n×n 矩阵原地顺时针旋转 90°。\n\n🔹 直觉(转置 + 行翻转)\n    顺时针 90° = 主对角线转置 + 每行反转。\n    逆时针 90° = 副对角线转置 = 主转置 + 每列反转。\n\n🔹 复杂度 O(n²) / O(1)\n\"\"\"\n\n\nclass Solution:\n    def rotate(self, m: list[list[int]]) -> None:\n        n = len(m)\n        for i in range(n):\n            for j in range(i + 1, n):\n                m[i][j], m[j][i] = m[j][i], m[i][j]\n        for row in m:\n            row.reverse()\n\n\ndef _test() -> None:\n    s = Solution()\n    a = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\n    s.rotate(a)\n    assert a == [[7, 4, 1], [8, 5, 2], [9, 6, 3]]\n    a = [[5, 1, 9, 11], [2, 4, 8, 10], [13, 3, 6, 7], [15, 14, 12, 16]]\n    s.rotate(a)\n    assert a == [[15, 13, 2, 5], [14, 3, 4, 1], [12, 6, 8, 9], [16, 7, 10, 11]]\n    print(\"✅ p048 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -35,5 +35,15 @@
       "time": "**O(n²)** —— 每对元素被 swap 1 次。",
       "space": "**O(1)** —— 原地。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "rotate",
+    "annotated": "class Solution:\n    def rotate(self, m: list[list[int]]) -> None:\n        n = len(m)\n        # 第一步:沿主对角线转置(行列互换)\n        for i in range(n):\n            for j in range(i + 1, n):           # j 从 i+1 起,只换上三角,避免换回去\n                m[i][j], m[j][i] = m[j][i], m[i][j]\n        # 第二步:每行左右翻转。转置 + 翻转 = 顺时针旋转 90°\n        for row in m:\n            row.reverse()\n",
+    "gotchas": [
+      "`j` 从 `i+1` 开始:只遍历上三角,否则交换两次等于没换。",
+      "原地操作,返回 `None`。",
+      "顺时针 = 转置 + 每行反转;逆时针 = 转置 + 每列反转。"
+    ]
   }
 }

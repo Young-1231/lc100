@@ -19,7 +19,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def numSquares(self, n: int) -> int:\n    f = [0] + [float(\"inf\")] * n\n    for i in range(1, n + 1):\n        k = 1\n        while k * k <= i:\n            f[i] = min(f[i], f[i - k * k] + 1)\n            k += 1\n    return f[n]"
+      "code": "class Solution:\n    def numSquares(self, n: int) -> int:\n        f = [0] + [float(\"inf\")] * n\n        for i in range(1, n + 1):\n            k = 1\n            while k * k <= i:\n                f[i] = min(f[i], f[i - k * k] + 1)\n                k += 1\n        return f[n]\n"
     }
   ],
   "raw_source": "# LC 279. 完全平方数 · Medium · DP / BFS\n\"\"\"\n🔹 题面\n    n 拆成尽量少的完全平方数之和。\n\n🔹 直觉\n    f(i) = 1 + min{ f(i - k²) },k² ≤ i。\n\"\"\"\n\n\nclass Solution:\n    def numSquares(self, n: int) -> int:\n        f = [0] + [float(\"inf\")] * n\n        for i in range(1, n + 1):\n            k = 1\n            while k * k <= i:\n                f[i] = min(f[i], f[i - k * k] + 1)\n                k += 1\n        return f[n]\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.numSquares(12) == 3\n    assert s.numSquares(13) == 2\n    assert s.numSquares(1) == 1\n    print(\"✅ p279 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -36,5 +36,14 @@
       "time": "**O(n √n)** —— 每个 x 内层枚举 √x 个 k。",
       "space": "**O(n)**。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "numSquares",
+    "annotated": "class Solution:\n    def numSquares(self, n: int) -> int:\n        f = [0] + [float(\"inf\")] * n   # f[i]:凑出 i 所需最少完全平方数个数\n        for i in range(1, n + 1):\n            k = 1\n            while k * k <= i:          # 枚举减去一个平方数 k*k\n                f[i] = min(f[i], f[i - k * k] + 1)\n                k += 1\n        return f[n]\n",
+    "gotchas": [
+      "完全背包思路:`f[i] = min(f[i - k²] + 1)`,枚举所有 ≤ i 的平方数。",
+      "f[0]=0,其余初始化为无穷大。"
+    ]
   }
 }

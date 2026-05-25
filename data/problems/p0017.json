@@ -8,7 +8,7 @@
   "day": 5,
   "day_title": "图论 / 回溯 / 二分",
   "category": "回溯",
-  "leetcode_url": "https://leetcode.cn/problems/letter-combinations/",
+  "leetcode_url": "https://leetcode.cn/problems/letter-combinations-of-a-phone-number/",
   "filename": "p017_letter_combinations.py",
   "doc": "🔹 直觉\n    逐位选取该数字对应字母,DFS。",
   "solutions": [
@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def letterCombinations(self, digits: str) -> list[str]:\n    if not digits:\n        return []\n    ans, path = [], []\n\n    def bt(i):\n        if i == len(digits):\n            ans.append(\"\".join(path))\n            return\n        for c in _KEY[digits[i]]:\n            path.append(c)\n            bt(i + 1)\n            path.pop()\n\n    bt(0)\n    return ans"
+      "code": "_KEY = {\n    \"2\": \"abc\", \"3\": \"def\", \"4\": \"ghi\", \"5\": \"jkl\",\n    \"6\": \"mno\", \"7\": \"pqrs\", \"8\": \"tuv\", \"9\": \"wxyz\",\n}\n\nclass Solution:\n    def letterCombinations(self, digits: str) -> list[str]:\n        if not digits:\n            return []\n        ans, path = [], []\n\n        def bt(i):\n            if i == len(digits):\n                ans.append(\"\".join(path))\n                return\n            for c in _KEY[digits[i]]:\n                path.append(c)\n                bt(i + 1)\n                path.pop()\n\n        bt(0)\n        return ans\n"
     }
   ],
   "raw_source": "# LC 17. 电话号码的字母组合 · Medium · 回溯\n\"\"\"\n🔹 直觉\n    逐位选取该数字对应字母,DFS。\n\"\"\"\n\n\n_KEY = {\n    \"2\": \"abc\", \"3\": \"def\", \"4\": \"ghi\", \"5\": \"jkl\",\n    \"6\": \"mno\", \"7\": \"pqrs\", \"8\": \"tuv\", \"9\": \"wxyz\",\n}\n\n\nclass Solution:\n    def letterCombinations(self, digits: str) -> list[str]:\n        if not digits:\n            return []\n        ans, path = [], []\n\n        def bt(i):\n            if i == len(digits):\n                ans.append(\"\".join(path))\n                return\n            for c in _KEY[digits[i]]:\n                path.append(c)\n                bt(i + 1)\n                path.pop()\n\n        bt(0)\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert sorted(s.letterCombinations(\"23\")) == sorted(\n        [\"ad\", \"ae\", \"af\", \"bd\", \"be\", \"bf\", \"cd\", \"ce\", \"cf\"]\n    )\n    assert s.letterCombinations(\"\") == []\n    assert s.letterCombinations(\"2\") == [\"a\", \"b\", \"c\"]\n    print(\"✅ p017 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -35,5 +35,14 @@
       "time": "**O(4ⁿ · n)** —— 每位最多 4 字母,叶节点 join 字符串 O(n)。",
       "space": "**O(n)** 递归 + path。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "letterCombinations",
+    "annotated": "_KEY = {                             # 数字 -> 字母(电话九宫格)\n    \"2\": \"abc\", \"3\": \"def\", \"4\": \"ghi\", \"5\": \"jkl\",\n    \"6\": \"mno\", \"7\": \"pqrs\", \"8\": \"tuv\", \"9\": \"wxyz\",\n}\n\nclass Solution:\n    def letterCombinations(self, digits: str) -> list[str]:\n        if not digits:\n            return []\n        ans, path = [], []           # path:当前正在拼的字母序列\n\n        def bt(i):                   # 处理第 i 个数字\n            if i == len(digits):     # 所有数字都选完 -> 收集结果\n                ans.append(\"\".join(path))\n                return\n            for c in _KEY[digits[i]]:    # 当前数字对应的每个字母都试一遍\n                path.append(c)       # 选\n                bt(i + 1)            # 递归下一位\n                path.pop()           # 撤销(回溯)\n\n        bt(0)\n        return ans\n",
+    "gotchas": [
+      "回溯三步:选(append)→ 递归 → 撤销(pop)。",
+      "用下标 i 表示「处理到第几个数字」,到末尾就收集。"
+    ]
   }
 }

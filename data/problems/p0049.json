@@ -18,7 +18,7 @@
       "time": "O(n·k log k)",
       "space": "",
       "starred": false,
-      "code": "def groupAnagrams_sort(self, strs: list[str]) -> list[list[str]]:\n    bucket: dict[str, list[str]] = defaultdict(list)\n    for s in strs:\n        bucket[\"\".join(sorted(s))].append(s)\n    return list(bucket.values())"
+      "code": "from collections import defaultdict\n\nclass Solution:\n    def groupAnagrams(self, strs: list[str]) -> list[list[str]]:\n        bucket: dict[str, list[str]] = defaultdict(list)\n        for s in strs:\n            bucket[\"\".join(sorted(s))].append(s)\n        return list(bucket.values())\n"
     },
     {
       "method": "groupAnagrams",
@@ -26,7 +26,7 @@
       "time": "O(n·k)",
       "space": "",
       "starred": true,
-      "code": "def groupAnagrams(self, strs: list[str]) -> list[list[str]]:\n    bucket: dict[tuple, list[str]] = defaultdict(list)\n    for s in strs:\n        cnt = [0] * 26\n        for c in s:\n            cnt[ord(c) - 97] += 1\n        bucket[tuple(cnt)].append(s)\n    return list(bucket.values())"
+      "code": "from collections import defaultdict\n\nclass Solution:\n    def groupAnagrams(self, strs: list[str]) -> list[list[str]]:\n        bucket: dict[tuple, list[str]] = defaultdict(list)\n        for s in strs:\n            cnt = [0] * 26\n            for c in s:\n                cnt[ord(c) - 97] += 1\n            bucket[tuple(cnt)].append(s)\n        return list(bucket.values())\n"
     }
   ],
   "raw_source": "# LC 49. 字母异位词分组 · Medium · 哈希\n\"\"\"\n🔹 题面\n    把字符串数组按字母异位词分组。\n\n🔹 解法对比\n    | 方法                  | 时间          | 空间   | 备注                       |\n    |-----------------------|---------------|--------|----------------------------|\n    | 排序作 key            | O(n·k log k)  | O(n·k) | 简洁,普适(支持任意字符)|\n    | 计数元组作 key ★     | O(n·k)        | O(n·k) | 仅小写字母时更快            |\n\n    n=字符串数,k=字符串平均长度。\n\n🔹 直觉\n    异位词 ≡ 排序后字符串相同 ≡ 字符计数元组相同。让\"特征\"做哈希键。\n\n🔹 踩坑\n    - tuple(count) 作 key:list 不可哈希。\n\"\"\"\nfrom collections import defaultdict\n\n\nclass Solution:\n    # 解法 1:排序作 key — O(n·k log k)\n    def groupAnagrams_sort(self, strs: list[str]) -> list[list[str]]:\n        bucket: dict[str, list[str]] = defaultdict(list)\n        for s in strs:\n            bucket[\"\".join(sorted(s))].append(s)\n        return list(bucket.values())\n\n    # 解法 2:计数元组作 key ★  — O(n·k)\n    def groupAnagrams(self, strs: list[str]) -> list[list[str]]:\n        bucket: dict[tuple, list[str]] = defaultdict(list)\n        for s in strs:\n            cnt = [0] * 26\n            for c in s:\n                cnt[ord(c) - 97] += 1\n            bucket[tuple(cnt)].append(s)\n        return list(bucket.values())\n\n\ndef _norm(out):\n    return sorted(sorted(g) for g in out)\n\n\ndef _test() -> None:\n    s = Solution()\n    arg = [\"eat\", \"tea\", \"tan\", \"ate\", \"nat\", \"bat\"]\n    want = [[\"bat\"], [\"nat\", \"tan\"], [\"ate\", \"eat\", \"tea\"]]\n    for fn in (s.groupAnagrams, s.groupAnagrams_sort):\n        assert _norm(fn(arg)) == _norm(want)\n    assert s.groupAnagrams([\"\"]) == [[\"\"]]\n    print(\"✅ p049 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -43,5 +43,14 @@
       "time": "**O(n · k)** —— n 个字符串,每个长度 k,计数法每串扫一遍 O(k)。排序法多个 log k 因子。",
       "space": "**O(n · k)** —— 存储所有字符串引用 + 哈希 key。"
     }
+  },
+  "n_sols": 2,
+  "code_explain": {
+    "method": "groupAnagrams",
+    "annotated": "from collections import defaultdict   # 访问不存在的 key 时自动给默认值\n\nclass Solution:\n    def groupAnagrams(self, strs: list[str]) -> list[list[str]]:\n        bucket: dict[tuple, list[str]] = defaultdict(list)  # key 不存在时默认空列表 []\n        for s in strs:\n            cnt = [0] * 26                 # 26 个字母的计数桶\n            for c in s:\n                cnt[ord(c) - 97] += 1      # ord('a')=97,所以 'a'->0,'b'->1 ...\n            bucket[tuple(cnt)].append(s)   # 用「计数」当 key:计数相同 -> 同一组\n        return list(bucket.values())       # 取出所有分组\n",
+    "gotchas": [
+      "用 `tuple(cnt)` 当 key:列表 list 不可哈希、不能当字典 key,元组 tuple 可以。",
+      "字母计数相同即互为异位词,比「排序字符串当 key」更快(O(n) 对 O(n log n))。"
+    ]
   }
 }

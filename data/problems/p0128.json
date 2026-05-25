@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def longestConsecutive(self, nums: list[int]) -> int:\n    S = set(nums)\n    best = 0\n    for x in S:\n        if x - 1 in S:\n            continue            # 不是序列起点,跳过\n        y = x\n        while y + 1 in S:\n            y += 1\n        best = max(best, y - x + 1)\n    return best"
+      "code": "class Solution:\n    def longestConsecutive(self, nums: list[int]) -> int:\n        S = set(nums)\n        best = 0\n        for x in S:\n            if x - 1 in S:\n                continue            # 不是序列起点,跳过\n            y = x\n            while y + 1 in S:\n                y += 1\n            best = max(best, y - x + 1)\n        return best\n"
     }
   ],
   "raw_source": "# LC 128. 最长连续序列 · Medium · 哈希\n\"\"\"\n🔹 题面\n    O(n) 找出未排序数组中最长连续元素序列长度。\n\n🔹 直觉\n    将数组扔进 set。只从\"序列起点\"出发计数(x-1 不在 set 中),保证每个元素最多被\n    访问 2 次,均摊 O(n)。\n\n🔹 复杂度  O(n) / O(n)\n\n🔹 踩坑\n    - 必须先判断 x-1 not in S,否则 O(n²)。\n    - 重复元素 set 自动去重,无需特别处理。\n\"\"\"\n\n\nclass Solution:\n    def longestConsecutive(self, nums: list[int]) -> int:\n        S = set(nums)\n        best = 0\n        for x in S:\n            if x - 1 in S:\n                continue            # 不是序列起点,跳过\n            y = x\n            while y + 1 in S:\n                y += 1\n            best = max(best, y - x + 1)\n        return best\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.longestConsecutive([100, 4, 200, 1, 3, 2]) == 4\n    assert s.longestConsecutive([0, 3, 7, 2, 5, 8, 4, 6, 0, 1]) == 9\n    assert s.longestConsecutive([]) == 0\n    print(\"✅ p128 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -35,5 +35,14 @@
       "time": "**O(n)** —— 见上方均摊分析。",
       "space": "**O(n)** —— set 存所有元素。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "longestConsecutive",
+    "annotated": "class Solution:\n    def longestConsecutive(self, nums: list[int]) -> int:\n        S = set(nums)                      # 转集合:去重 + O(1) 判断某数是否存在\n        best = 0\n        for x in S:\n            if x - 1 in S:                 # x-1 也在 -> x 不是序列起点,跳过\n                continue                   # 只从「起点」开始数,保证每段只数一次\n            y = x\n            while y + 1 in S:              # 从起点 x 往上数连续的数\n                y += 1\n            best = max(best, y - x + 1)    # 这一段长度 = y - x + 1\n        return best\n",
+    "gotchas": [
+      "只从「起点」(`x-1` 不在集合里的数)开始向上数,保证整体 O(n),否则会重复数退化成 O(n²)。",
+      "必须先转 `set`,用列表做 `in` 判断是 O(n) 会超时。"
+    ]
   }
 }

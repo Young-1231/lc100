@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def partition(self, s: str) -> list[list[str]]:\n    ans, path = [], []\n    n = len(s)\n\n    def is_pal(l, r):\n        while l < r:\n            if s[l] != s[r]:\n                return False\n            l += 1; r -= 1\n        return True\n\n    def bt(start):\n        if start == n:\n            ans.append(path[:])\n            return\n        for end in range(start, n):\n            if is_pal(start, end):\n                path.append(s[start:end + 1])\n                bt(end + 1)\n                path.pop()\n\n    bt(0)\n    return ans"
+      "code": "class Solution:\n    def partition(self, s: str) -> list[list[str]]:\n        ans, path = [], []\n        n = len(s)\n\n        def is_pal(l, r):\n            while l < r:\n                if s[l] != s[r]:\n                    return False\n                l += 1; r -= 1\n            return True\n\n        def bt(start):\n            if start == n:\n                ans.append(path[:])\n                return\n            for end in range(start, n):\n                if is_pal(start, end):\n                    path.append(s[start:end + 1])\n                    bt(end + 1)\n                    path.pop()\n\n        bt(0)\n        return ans\n"
     }
   ],
   "raw_source": "# LC 131. 分割回文串 · Medium · 回溯\n\"\"\"\n🔹 直觉\n    枚举切割点 i:s[start..i] 若为回文,递归处理 s[i+1..]。\n\"\"\"\n\n\nclass Solution:\n    def partition(self, s: str) -> list[list[str]]:\n        ans, path = [], []\n        n = len(s)\n\n        def is_pal(l, r):\n            while l < r:\n                if s[l] != s[r]:\n                    return False\n                l += 1; r -= 1\n            return True\n\n        def bt(start):\n            if start == n:\n                ans.append(path[:])\n                return\n            for end in range(start, n):\n                if is_pal(start, end):\n                    path.append(s[start:end + 1])\n                    bt(end + 1)\n                    path.pop()\n\n        bt(0)\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert sorted(s.partition(\"aab\")) == sorted([[\"a\", \"a\", \"b\"], [\"aa\", \"b\"]])\n    assert s.partition(\"a\") == [[\"a\"]]\n    print(\"✅ p131 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -35,5 +35,14 @@
       "time": "**O(n · 2ⁿ)** —— 最坏方案数 × 每个长度。",
       "space": "**O(n²)** DP / **O(n)** 递归。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "partition",
+    "annotated": "class Solution:\n    def partition(self, s: str) -> list[list[str]]:\n        ans, path = [], []\n        n = len(s)\n\n        def is_pal(l, r):            # 判断 s[l..r] 是否回文\n            while l < r:\n                if s[l] != s[r]:\n                    return False\n                l += 1; r -= 1\n            return True\n\n        def bt(start):               # 从下标 start 开始切\n            if start == n:           # 切到末尾 -> 一种合法分割\n                ans.append(path[:])\n                return\n            for end in range(start, n):\n                if is_pal(start, end):       # s[start..end] 是回文,才切这一刀\n                    path.append(s[start:end + 1])\n                    bt(end + 1)              # 从 end+1 继续切\n                    path.pop()\n\n        bt(0)\n        return ans\n",
+    "gotchas": [
+      "枚举每个回文前缀作为一段,递归切剩下的。",
+      "只有当前段是回文才递归,自动保证每段都回文。"
+    ]
   }
 }

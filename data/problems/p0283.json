@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def moveZeroes(self, nums: list[int]) -> None:\n    slow = 0\n    for fast in range(len(nums)):\n        if nums[fast]:\n            nums[slow], nums[fast] = nums[fast], nums[slow]\n            slow += 1"
+      "code": "class Solution:\n    def moveZeroes(self, nums: list[int]) -> None:\n        slow = 0\n        for fast in range(len(nums)):\n            if nums[fast]:\n                nums[slow], nums[fast] = nums[fast], nums[slow]\n                slow += 1\n"
     }
   ],
   "raw_source": "# LC 283. 移动零 · Easy · 双指针\n\"\"\"\n🔹 题面\n    原地把 0 移到末尾,保持非零元素相对顺序。\n\n🔹 直觉\n    \"快慢指针\":slow 指向下一个非零落点,fast 扫描;遇到非零就交换。\n    交换比赋零再补零更优(只 1 次写入)。\n\n🔹 复杂度 O(n) / O(1)\n\"\"\"\n\n\nclass Solution:\n    def moveZeroes(self, nums: list[int]) -> None:\n        slow = 0\n        for fast in range(len(nums)):\n            if nums[fast]:\n                nums[slow], nums[fast] = nums[fast], nums[slow]\n                slow += 1\n\n\ndef _test() -> None:\n    s = Solution()\n    a = [0, 1, 0, 3, 12]\n    s.moveZeroes(a)\n    assert a == [1, 3, 12, 0, 0]\n    a = [0]; s.moveZeroes(a); assert a == [0]\n    a = [1, 2, 3]; s.moveZeroes(a); assert a == [1, 2, 3]\n    print(\"✅ p283 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -128,5 +128,14 @@
       "time": "**O(n)** —— 一次遍历,常数次 swap。",
       "space": "**O(1)** —— 原地。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "moveZeroes",
+    "annotated": "class Solution:\n    def moveZeroes(self, nums: list[int]) -> None:\n        slow = 0                           # slow 指向「下一个非零数该放的位置」\n        for fast in range(len(nums)):      # fast 扫描整个数组\n            if nums[fast]:                 # 当前是非零数(0 为假)\n                nums[slow], nums[fast] = nums[fast], nums[slow]  # 交换到前面\n                slow += 1                  # slow 前进一格\n",
+    "gotchas": [
+      "原地修改,返回 `None`(题目要求不返回新数组,直接改原数组)。",
+      "交换法天然保持非零元素的相对顺序。"
+    ]
   }
 }

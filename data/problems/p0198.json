@@ -18,7 +18,7 @@
       "time": "O(n)",
       "space": "O(1)",
       "starred": true,
-      "code": "def rob(self, nums: list[int]) -> int:\n    a = b = 0\n    for x in nums:\n        a, b = b, max(b, a + x)\n    return b"
+      "code": "class Solution:\n    def rob(self, nums: list[int]) -> int:\n        a = b = 0\n        for x in nums:\n            a, b = b, max(b, a + x)\n        return b\n"
     },
     {
       "method": "rob_dp",
@@ -26,7 +26,7 @@
       "time": "O(n)",
       "space": "O(n)",
       "starred": false,
-      "code": "def rob_dp(self, nums: list[int]) -> int:\n    if not nums:\n        return 0\n    n = len(nums)\n    f = [0] * (n + 1)\n    f[1] = nums[0]\n    for i in range(2, n + 1):\n        f[i] = max(f[i - 1], f[i - 2] + nums[i - 1])\n    return f[n]"
+      "code": "class Solution:\n    def rob(self, nums: list[int]) -> int:\n        if not nums:\n            return 0\n        n = len(nums)\n        f = [0] * (n + 1)\n        f[1] = nums[0]\n        for i in range(2, n + 1):\n            f[i] = max(f[i - 1], f[i - 2] + nums[i - 1])\n        return f[n]\n"
     }
   ],
   "raw_source": "# LC 198. 打家劫舍 · Medium · DP\n\"\"\"\n🔹 题面\n    相邻房屋不能同时偷,求最大金额。\n\n🔹 解法对比\n    | 方法            | 时间 | 空间 | 备注                  |\n    |-----------------|------|------|-----------------------|\n    | DP 二维数组     | O(n) | O(n) | f[i] = max(f[i-1], f[i-2]+a[i]) |\n    | 滚动两变量 ★   | O(n) | O(1) | 经典空间压缩          |\n\"\"\"\n\n\nclass Solution:\n    # 解法 1:滚动变量 ★ — O(n) / O(1)\n    def rob(self, nums: list[int]) -> int:\n        a = b = 0\n        for x in nums:\n            a, b = b, max(b, a + x)\n        return b\n\n    # 解法 2:二维 DP 数组 — O(n) / O(n)\n    def rob_dp(self, nums: list[int]) -> int:\n        if not nums:\n            return 0\n        n = len(nums)\n        f = [0] * (n + 1)\n        f[1] = nums[0]\n        for i in range(2, n + 1):\n            f[i] = max(f[i - 1], f[i - 2] + nums[i - 1])\n        return f[n]\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [([1, 2, 3, 1], 4), ([2, 7, 9, 3, 1], 12), ([], 0), ([5], 5)]\n    for arg, want in cases:\n        for fn in (s.rob, s.rob_dp):\n            assert fn(arg) == want\n    print(\"✅ p198 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -43,5 +43,14 @@
       "time": "**O(n)**。",
       "space": "**O(1)**。"
     }
+  },
+  "n_sols": 2,
+  "code_explain": {
+    "method": "rob",
+    "annotated": "class Solution:\n    def rob(self, nums: list[int]) -> int:\n        a = b = 0                    # a:到上上家的最大;b:到上一家的最大\n        for x in nums:\n            a, b = b, max(b, a + x)  # 当前家:不偷(b) 或 偷(a + x)\n        return b\n",
+    "gotchas": [
+      "不能偷相邻两家:偷当前家只能加 `a`(上上家),不偷则保持 `b`。",
+      "滚动两个变量,O(1) 空间。"
+    ]
   }
 }

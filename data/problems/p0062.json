@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def uniquePaths(self, m: int, n: int) -> int:\n    f = [1] * n\n    for _ in range(1, m):\n        for j in range(1, n):\n            f[j] += f[j - 1]\n    return f[-1]"
+      "code": "class Solution:\n    def uniquePaths(self, m: int, n: int) -> int:\n        f = [1] * n\n        for _ in range(1, m):\n            for j in range(1, n):\n                f[j] += f[j - 1]\n        return f[-1]\n"
     }
   ],
   "raw_source": "# LC 62. 不同路径 · Medium · 多维 DP\n\"\"\"\n🔹 直觉\n    f[i][j] = f[i-1][j] + f[i][j-1];可滚动到一维。\n    数学解:C(m+n-2, m-1)。\n\"\"\"\n\n\nclass Solution:\n    def uniquePaths(self, m: int, n: int) -> int:\n        f = [1] * n\n        for _ in range(1, m):\n            for j in range(1, n):\n                f[j] += f[j - 1]\n        return f[-1]\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.uniquePaths(3, 7) == 28\n    assert s.uniquePaths(3, 2) == 3\n    assert s.uniquePaths(1, 1) == 1\n    print(\"✅ p062 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -36,5 +36,14 @@
       "time": "**O(mn)** DP / **O(min(m,n))** 数学。",
       "space": "**O(min(m,n))** 滚动 / **O(mn)** 二维。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "uniquePaths",
+    "annotated": "class Solution:\n    def uniquePaths(self, m: int, n: int) -> int:\n        f = [1] * n                  # f[j] = 到当前行第 j 列的路径数;第一行全为 1\n        for _ in range(1, m):        # 逐行往下\n            for j in range(1, n):\n                f[j] += f[j - 1]     # 来自上方 f[j] + 来自左边 f[j-1]\n        return f[-1]\n",
+    "gotchas": [
+      "只能右/下走,`f[j] = 上方 + 左边`;一维滚动数组里 `f[j]` 旧值即「上方」。",
+      "第一行、第一列路径数都是 1。"
+    ]
   }
 }

@@ -8,7 +8,7 @@
   "day": 3,
   "day_title": "链表",
   "category": "链表",
-  "leetcode_url": "https://leetcode.cn/problems/palindrome-list/",
+  "leetcode_url": "https://leetcode.cn/problems/palindrome-linked-list/",
   "filename": "p234_palindrome_list.py",
   "doc": "🔹 题面\n    判断单链表是否回文。\n\n🔹 解法对比\n    | 方法                | 时间 | 空间 | 备注                       |\n    |---------------------|------|------|----------------------------|\n    | 复制到数组对撞      | O(n) | O(n) | 写法最直观                  |\n    | 快慢指针+反转后半 ★ | O(n) | O(1) | 经典,需小心还原(若题面要求)|",
   "solutions": [
@@ -18,7 +18,7 @@
       "time": "O(n)",
       "space": "O(1)",
       "starred": true,
-      "code": "def isPalindrome(self, head) -> bool:\n    slow = fast = head\n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n    right = _reverse(slow)\n    left = head\n    while right:\n        if left.val != right.val:\n            return False\n        left = left.next\n        right = right.next\n    return True"
+      "code": "def _reverse(head):\n    prev, cur = None, head\n    while cur:\n        nxt = cur.next\n        cur.next = prev\n        prev = cur\n        cur = nxt\n    return prev\n\nclass Solution:\n    def isPalindrome(self, head) -> bool:\n        slow = fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n        right = _reverse(slow)\n        left = head\n        while right:\n            if left.val != right.val:\n                return False\n            left = left.next\n            right = right.next\n        return True\n"
     },
     {
       "method": "isPalindrome_array",
@@ -26,7 +26,7 @@
       "time": "O(n)",
       "space": "O(n)",
       "starred": false,
-      "code": "def isPalindrome_array(self, head) -> bool:\n    a = []\n    cur = head\n    while cur:\n        a.append(cur.val)\n        cur = cur.next\n    l, r = 0, len(a) - 1\n    while l < r:\n        if a[l] != a[r]:\n            return False\n        l += 1; r -= 1\n    return True"
+      "code": "class Solution:\n    def isPalindrome(self, head) -> bool:\n        a = []\n        cur = head\n        while cur:\n            a.append(cur.val)\n            cur = cur.next\n        l, r = 0, len(a) - 1\n        while l < r:\n            if a[l] != a[r]:\n                return False\n            l += 1; r -= 1\n        return True\n"
     }
   ],
   "raw_source": "# LC 234. 回文链表 · Easy · 快慢指针 + 反转\n\"\"\"\n🔹 题面\n    判断单链表是否回文。\n\n🔹 解法对比\n    | 方法                | 时间 | 空间 | 备注                       |\n    |---------------------|------|------|----------------------------|\n    | 复制到数组对撞      | O(n) | O(n) | 写法最直观                  |\n    | 快慢指针+反转后半 ★ | O(n) | O(1) | 经典,需小心还原(若题面要求)|\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import build_list\n\n\ndef _reverse(head):\n    prev, cur = None, head\n    while cur:\n        nxt = cur.next\n        cur.next = prev\n        prev = cur\n        cur = nxt\n    return prev\n\n\nclass Solution:\n    # 解法 1:快慢指针 + 反转后半 ★ — O(n) / O(1)\n    def isPalindrome(self, head) -> bool:\n        slow = fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n        right = _reverse(slow)\n        left = head\n        while right:\n            if left.val != right.val:\n                return False\n            left = left.next\n            right = right.next\n        return True\n\n    # 解法 2:复制到数组双指针 — O(n) / O(n)\n    def isPalindrome_array(self, head) -> bool:\n        a = []\n        cur = head\n        while cur:\n            a.append(cur.val)\n            cur = cur.next\n        l, r = 0, len(a) - 1\n        while l < r:\n            if a[l] != a[r]:\n                return False\n            l += 1; r -= 1\n        return True\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [([1, 2, 2, 1], True), ([1, 2], False), ([1], True), ([1, 2, 3, 2, 1], True)]\n    for arg, want in cases:\n        for fn in (s.isPalindrome_array,):       # 测原数组解法\n            assert fn(build_list(arg)) is want\n        # 反转法会破坏链表,每次重建\n        assert s.isPalindrome(build_list(arg)) is want\n    print(\"✅ p234 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -53,5 +53,14 @@
       "time": "**O(n)** —— 找中 + 反转 + 对比。",
       "space": "**O(1)** —— 原地反转。"
     }
+  },
+  "n_sols": 2,
+  "code_explain": {
+    "method": "isPalindrome",
+    "annotated": "def _reverse(head):                  # 反转链表(同 #206)\n    prev, cur = None, head\n    while cur:\n        nxt = cur.next\n        cur.next = prev\n        prev = cur\n        cur = nxt\n    return prev\n\nclass Solution:\n    def isPalindrome(self, head) -> bool:\n        slow = fast = head               # 快慢指针找中点\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n        right = _reverse(slow)           # 反转后半段\n        left = head\n        while right:                     # 比较前半 left 与反转后的后半 right\n            if left.val != right.val:\n                return False\n            left = left.next\n            right = right.next\n        return True\n",
+    "gotchas": [
+      "找中点 + 反转后半 + 双向比较,O(n) 时间、O(1) 空间。",
+      "只需比到 `right` 走完(后半较短或等长),无需比整条。"
+    ]
   }
 }

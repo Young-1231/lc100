@@ -8,7 +8,7 @@
   "day": 1,
   "day_title": "哈希 / 双指针 / 滑动窗口 / 子串",
   "category": "滑动窗口",
-  "leetcode_url": "https://leetcode.cn/problems/longest-substring-no-repeat/",
+  "leetcode_url": "https://leetcode.cn/problems/longest-substring-without-repeating-characters/",
   "filename": "p003_longest_substring_no_repeat.py",
   "doc": "🔹 题面\n    返回最长不含重复字符的子串长度。\n\n🔹 直觉\n    维护一个窗口 [l, r],其中无重复;r 右移时若遇到重复字符,把 l 跳到该\n    字符上次位置 +1。**l 只前进不后退**。\n\n🔹 复杂度 O(n) / O(min(n, Σ))",
   "solutions": [
@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def lengthOfLongestSubstring(self, s: str) -> int:\n    last: dict[str, int] = {}\n    l = best = 0\n    for r, c in enumerate(s):\n        if c in last and last[c] >= l:\n            l = last[c] + 1\n        last[c] = r\n        best = max(best, r - l + 1)\n    return best"
+      "code": "class Solution:\n    def lengthOfLongestSubstring(self, s: str) -> int:\n        last: dict[str, int] = {}\n        l = best = 0\n        for r, c in enumerate(s):\n            if c in last and last[c] >= l:\n                l = last[c] + 1\n            last[c] = r\n            best = max(best, r - l + 1)\n        return best\n"
     }
   ],
   "raw_source": "# LC 3. 无重复字符的最长子串 · Medium · 滑动窗口\n\"\"\"\n🔹 题面\n    返回最长不含重复字符的子串长度。\n\n🔹 直觉\n    维护一个窗口 [l, r],其中无重复;r 右移时若遇到重复字符,把 l 跳到该\n    字符上次位置 +1。**l 只前进不后退**。\n\n🔹 复杂度 O(n) / O(min(n, Σ))\n\"\"\"\n\n\nclass Solution:\n    def lengthOfLongestSubstring(self, s: str) -> int:\n        last: dict[str, int] = {}\n        l = best = 0\n        for r, c in enumerate(s):\n            if c in last and last[c] >= l:\n                l = last[c] + 1\n            last[c] = r\n            best = max(best, r - l + 1)\n        return best\n\n\ndef _test() -> None:\n    sol = Solution()\n    assert sol.lengthOfLongestSubstring(\"abcabcbb\") == 3\n    assert sol.lengthOfLongestSubstring(\"bbbbb\") == 1\n    assert sol.lengthOfLongestSubstring(\"pwwkew\") == 3\n    assert sol.lengthOfLongestSubstring(\"\") == 0\n    print(\"✅ p003 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -122,5 +122,14 @@
       "time": "**O(n)** —— r 单调右移 n 次;l 每次只前进、累计也最多 n。每个字符进出窗口各 1 次。",
       "space": "**O(min(n, |Σ|))** —— last 字典最多存 |Σ| 个字符种类;短字符串则受 n 限制。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "lengthOfLongestSubstring",
+    "annotated": "class Solution:\n    def lengthOfLongestSubstring(self, s: str) -> int:\n        last: dict[str, int] = {}          # 记录每个字符「最后一次出现的下标」\n        l = best = 0                       # l 是窗口左边界;best 是答案(最长长度)\n        for r, c in enumerate(s):          # r 是右边界(当前字符下标),c 是字符\n            # c 在窗口内出现过(last[c] >= l)-> 左边界跳到上次位置的右边一格\n            if c in last and last[c] >= l:\n                l = last[c] + 1\n            last[c] = r                    # 更新 c 的最新位置\n            best = max(best, r - l + 1)    # 当前窗口长度 = r - l + 1,取最大\n        return best\n",
+    "gotchas": [
+      "判断重复必须加 `last[c] >= l`:只有上次出现**在当前窗口内**才收缩左边界,否则是窗口外的旧记录。",
+      "窗口长度是 `r - l + 1`(左右端点都算)。"
+    ]
   }
 }

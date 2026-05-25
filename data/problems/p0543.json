@@ -8,7 +8,7 @@
   "day": 4,
   "day_title": "二叉树",
   "category": "二叉树",
-  "leetcode_url": "https://leetcode.cn/problems/diameter-of-tree/",
+  "leetcode_url": "https://leetcode.cn/problems/diameter-of-binary-tree/",
   "filename": "p543_diameter_of_tree.py",
   "doc": "🔹 题面\n    返回任意两节点的最长路径(以\"边数\"计)。\n\n🔹 直觉\n    后序求\"以当前节点为最高点\"的最长路径 = 左深度 + 右深度。\n    全局取最大。注意:函数返回的是\"该节点向下的最长路径长度\"(深度),\n    而 best 记录\"穿过该节点的总路径\"。",
   "solutions": [
@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def diameterOfBinaryTree(self, root) -> int:\n    self.best = 0\n\n    def depth(n):\n        if not n:\n            return 0\n        l = depth(n.left)\n        r = depth(n.right)\n        self.best = max(self.best, l + r)\n        return 1 + max(l, r)\n\n    depth(root)\n    return self.best"
+      "code": "class Solution:\n    def diameterOfBinaryTree(self, root) -> int:\n        self.best = 0\n\n        def depth(n):\n            if not n:\n                return 0\n            l = depth(n.left)\n            r = depth(n.right)\n            self.best = max(self.best, l + r)\n            return 1 + max(l, r)\n\n        depth(root)\n        return self.best\n"
     }
   ],
   "raw_source": "# LC 543. 二叉树的直径 · Easy · 递归\n\"\"\"\n🔹 题面\n    返回任意两节点的最长路径(以\"边数\"计)。\n\n🔹 直觉\n    后序求\"以当前节点为最高点\"的最长路径 = 左深度 + 右深度。\n    全局取最大。注意:函数返回的是\"该节点向下的最长路径长度\"(深度),\n    而 best 记录\"穿过该节点的总路径\"。\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import build_tree\n\n\nclass Solution:\n    def diameterOfBinaryTree(self, root) -> int:\n        self.best = 0\n\n        def depth(n):\n            if not n:\n                return 0\n            l = depth(n.left)\n            r = depth(n.right)\n            self.best = max(self.best, l + r)\n            return 1 + max(l, r)\n\n        depth(root)\n        return self.best\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.diameterOfBinaryTree(build_tree([1, 2, 3, 4, 5])) == 3\n    assert s.diameterOfBinaryTree(build_tree([1, 2])) == 1\n    assert s.diameterOfBinaryTree(build_tree([1])) == 0\n    print(\"✅ p543 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -45,5 +45,14 @@
       "time": "**O(n)**。",
       "space": "**O(h)** 递归。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "diameterOfBinaryTree",
+    "annotated": "class Solution:\n    def diameterOfBinaryTree(self, root) -> int:\n        self.best = 0                # 最长路径的「边数」\n\n        def depth(n):                # 返回以 n 为根的高度(结点数)\n            if not n:\n                return 0\n            l = depth(n.left)\n            r = depth(n.right)\n            self.best = max(self.best, l + r)   # 经过 n 的路径边数 = 左高 + 右高\n            return 1 + max(l, r)     # 向上返回:取较高一侧 + 1\n\n        depth(root)\n        return self.best\n",
+    "gotchas": [
+      "直径 = 某结点「左子树高 + 右子树高」的最大值(按边计数)。",
+      "depth 返回的是高度;答案用 `self.best` 在遍历中维护。"
+    ]
   }
 }

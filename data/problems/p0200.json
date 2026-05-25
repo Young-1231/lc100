@@ -10,7 +10,7 @@
   "day": 5,
   "day_title": "图论 / 回溯 / 二分",
   "category": "图论",
-  "leetcode_url": "https://leetcode.cn/problems/num-islands/",
+  "leetcode_url": "https://leetcode.cn/problems/number-of-islands/",
   "filename": "p200_num_islands.py",
   "doc": "🔹 解法对比\n    | 方法    | 时间    | 空间    | 备注                       |\n    |---------|---------|---------|----------------------------|\n    | DFS ★  | O(mn)   | O(mn) 栈| 经典,代码最短              |\n    | BFS     | O(mn)   | O(min(m,n)) | 队列宽度受限           |\n    | 并查集  | O(mn α) | O(mn)   | 适合\"动态加陆地\"扩展        |",
   "solutions": [
@@ -20,7 +20,7 @@
       "time": "O(mn)",
       "space": "O(mn)",
       "starred": true,
-      "code": "def numIslands(self, grid: list[list[str]]) -> int:\n    if not grid:\n        return 0\n    m, n = len(grid), len(grid[0])\n\n    def dfs(i, j):\n        if i < 0 or j < 0 or i >= m or j >= n or grid[i][j] != '1':\n            return\n        grid[i][j] = '0'\n        dfs(i + 1, j); dfs(i - 1, j); dfs(i, j + 1); dfs(i, j - 1)\n\n    cnt = 0\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == '1':\n                cnt += 1\n                dfs(i, j)\n    return cnt"
+      "code": "class Solution:\n    def numIslands(self, grid: list[list[str]]) -> int:\n        if not grid:\n            return 0\n        m, n = len(grid), len(grid[0])\n\n        def dfs(i, j):\n            if i < 0 or j < 0 or i >= m or j >= n or grid[i][j] != '1':\n                return\n            grid[i][j] = '0'\n            dfs(i + 1, j); dfs(i - 1, j); dfs(i, j + 1); dfs(i, j - 1)\n\n        cnt = 0\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] == '1':\n                    cnt += 1\n                    dfs(i, j)\n        return cnt\n"
     },
     {
       "method": "numIslands_bfs",
@@ -28,7 +28,7 @@
       "time": "O(mn)",
       "space": "O(min(m,n)",
       "starred": false,
-      "code": "def numIslands_bfs(self, grid: list[list[str]]) -> int:\n    if not grid:\n        return 0\n    m, n = len(grid), len(grid[0])\n    cnt = 0\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] != '1':\n                continue\n            cnt += 1\n            q = deque([(i, j)])\n            grid[i][j] = '0'\n            while q:\n                x, y = q.popleft()\n                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):\n                    nx, ny = x + dx, y + dy\n                    if 0 <= nx < m and 0 <= ny < n and grid[nx][ny] == '1':\n                        grid[nx][ny] = '0'\n                        q.append((nx, ny))\n    return cnt"
+      "code": "from collections import deque\n\nclass Solution:\n    def numIslands(self, grid: list[list[str]]) -> int:\n        if not grid:\n            return 0\n        m, n = len(grid), len(grid[0])\n        cnt = 0\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] != '1':\n                    continue\n                cnt += 1\n                q = deque([(i, j)])\n                grid[i][j] = '0'\n                while q:\n                    x, y = q.popleft()\n                    for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):\n                        nx, ny = x + dx, y + dy\n                        if 0 <= nx < m and 0 <= ny < n and grid[nx][ny] == '1':\n                            grid[nx][ny] = '0'\n                            q.append((nx, ny))\n        return cnt\n"
     },
     {
       "method": "numIslands_uf",
@@ -36,7 +36,7 @@
       "time": "O(mn α)",
       "space": "O(mn)",
       "starred": false,
-      "code": "def numIslands_uf(self, grid: list[list[str]]) -> int:\n    if not grid:\n        return 0\n    m, n = len(grid), len(grid[0])\n    uf = UnionFind(m * n)\n    zeros = 0\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == '0':\n                zeros += 1\n                continue\n            for di, dj in ((1, 0), (0, 1)):\n                ni, nj = i + di, j + dj\n                if 0 <= ni < m and 0 <= nj < n and grid[ni][nj] == '1':\n                    uf.union(i * n + j, ni * n + nj)\n    return uf.count - zeros"
+      "code": "class UnionFind:\n    def __init__(self, n):\n        self.parent = list(range(n))\n        self.rank = [0] * n\n        self.count = n\n\n    def find(self, x):\n        while self.parent[x] != x:\n            self.parent[x] = self.parent[self.parent[x]]\n            x = self.parent[x]\n        return x\n\n    def union(self, a, b):\n        ra, rb = self.find(a), self.find(b)\n        if ra == rb:\n            return\n        if self.rank[ra] < self.rank[rb]:\n            ra, rb = rb, ra\n        self.parent[rb] = ra\n        if self.rank[ra] == self.rank[rb]:\n            self.rank[ra] += 1\n        self.count -= 1\n\nclass Solution:\n    def numIslands(self, grid: list[list[str]]) -> int:\n        if not grid:\n            return 0\n        m, n = len(grid), len(grid[0])\n        uf = UnionFind(m * n)\n        zeros = 0\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] == '0':\n                    zeros += 1\n                    continue\n                for di, dj in ((1, 0), (0, 1)):\n                    ni, nj = i + di, j + dj\n                    if 0 <= ni < m and 0 <= nj < n and grid[ni][nj] == '1':\n                        uf.union(i * n + j, ni * n + nj)\n        return uf.count - zeros\n"
     }
   ],
   "raw_source": "# LC 200. 岛屿数量 · Medium · DFS / BFS / 并查集\n\"\"\"\n🔹 解法对比\n    | 方法    | 时间    | 空间    | 备注                       |\n    |---------|---------|---------|----------------------------|\n    | DFS ★  | O(mn)   | O(mn) 栈| 经典,代码最短              |\n    | BFS     | O(mn)   | O(min(m,n)) | 队列宽度受限           |\n    | 并查集  | O(mn α) | O(mn)   | 适合\"动态加陆地\"扩展        |\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import UnionFind\nfrom collections import deque\n\n\nclass Solution:\n    # 解法 1:DFS ★ — O(mn) / O(mn)\n    def numIslands(self, grid: list[list[str]]) -> int:\n        if not grid:\n            return 0\n        m, n = len(grid), len(grid[0])\n\n        def dfs(i, j):\n            if i < 0 or j < 0 or i >= m or j >= n or grid[i][j] != '1':\n                return\n            grid[i][j] = '0'\n            dfs(i + 1, j); dfs(i - 1, j); dfs(i, j + 1); dfs(i, j - 1)\n\n        cnt = 0\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] == '1':\n                    cnt += 1\n                    dfs(i, j)\n        return cnt\n\n    # 解法 2:BFS — O(mn) / O(min(m,n))\n    def numIslands_bfs(self, grid: list[list[str]]) -> int:\n        if not grid:\n            return 0\n        m, n = len(grid), len(grid[0])\n        cnt = 0\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] != '1':\n                    continue\n                cnt += 1\n                q = deque([(i, j)])\n                grid[i][j] = '0'\n                while q:\n                    x, y = q.popleft()\n                    for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):\n                        nx, ny = x + dx, y + dy\n                        if 0 <= nx < m and 0 <= ny < n and grid[nx][ny] == '1':\n                            grid[nx][ny] = '0'\n                            q.append((nx, ny))\n        return cnt\n\n    # 解法 3:并查集 — O(mn α) / O(mn)\n    def numIslands_uf(self, grid: list[list[str]]) -> int:\n        if not grid:\n            return 0\n        m, n = len(grid), len(grid[0])\n        uf = UnionFind(m * n)\n        zeros = 0\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] == '0':\n                    zeros += 1\n                    continue\n                for di, dj in ((1, 0), (0, 1)):\n                    ni, nj = i + di, j + dj\n                    if 0 <= ni < m and 0 <= nj < n and grid[ni][nj] == '1':\n                        uf.union(i * n + j, ni * n + nj)\n        return uf.count - zeros\n\n\ndef _test() -> None:\n    s = Solution()\n    g1 = [[\"1\", \"1\", \"1\", \"1\", \"0\"], [\"1\", \"1\", \"0\", \"1\", \"0\"],\n          [\"1\", \"1\", \"0\", \"0\", \"0\"], [\"0\", \"0\", \"0\", \"0\", \"0\"]]\n    g2 = [[\"1\", \"1\", \"0\", \"0\", \"0\"], [\"1\", \"1\", \"0\", \"0\", \"0\"],\n          [\"0\", \"0\", \"1\", \"0\", \"0\"], [\"0\", \"0\", \"0\", \"1\", \"1\"]]\n    for fn in (s.numIslands, s.numIslands_bfs, s.numIslands_uf):\n        assert fn([row[:] for row in g1]) == 1\n        assert fn([row[:] for row in g2]) == 3\n    print(\"✅ p200 通过 3 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -53,5 +53,14 @@
       "time": "**O(mn)** —— 每个格子访问 O(1) 次。",
       "space": "**O(mn)** 最坏 DFS 栈深 / **O(min(m,n))** BFS 队列。"
     }
+  },
+  "n_sols": 3,
+  "code_explain": {
+    "method": "numIslands",
+    "annotated": "class Solution:\n    def numIslands(self, grid: list[list[str]]) -> int:\n        if not grid:\n            return 0\n        m, n = len(grid), len(grid[0])\n\n        def dfs(i, j):               # 把与 (i,j) 相连的整片陆地「淹掉」\n            if i < 0 or j < 0 or i >= m or j >= n or grid[i][j] != '1':\n                return\n            grid[i][j] = '0'         # 标记已访问(改成水)\n            dfs(i + 1, j); dfs(i - 1, j); dfs(i, j + 1); dfs(i, j - 1)  # 四个方向扩散\n\n        cnt = 0\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] == '1':    # 遇到没淹的陆地 -> 岛数 +1,并淹掉整片\n                    cnt += 1\n                    dfs(i, j)\n        return cnt\n",
+    "gotchas": [
+      "每发现一个 '1' 就 +1,并用 DFS 把整座岛淹成 '0',避免重复计数。",
+      "直接改 grid 当访问标记,省掉额外 visited 数组。"
+    ]
   }
 }

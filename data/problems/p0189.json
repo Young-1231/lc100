@@ -18,7 +18,7 @@
       "time": "O(n)",
       "space": "O(n)",
       "starred": false,
-      "code": "def rotate_extra(self, nums: list[int], k: int) -> None:\n    n = len(nums)\n    k %= n\n    nums[:] = nums[-k:] + nums[:-k]"
+      "code": "class Solution:\n    def rotate(self, nums: list[int], k: int) -> None:\n        n = len(nums)\n        k %= n\n        nums[:] = nums[-k:] + nums[:-k]\n"
     },
     {
       "method": "rotate",
@@ -26,7 +26,7 @@
       "time": "O(n)",
       "space": "O(1)",
       "starred": true,
-      "code": "def rotate(self, nums: list[int], k: int) -> None:\n    n = len(nums)\n    k %= n\n    nums.reverse()\n    nums[:k] = reversed(nums[:k])\n    nums[k:] = reversed(nums[k:])"
+      "code": "class Solution:\n    def rotate(self, nums: list[int], k: int) -> None:\n        n = len(nums)\n        k %= n\n        nums.reverse()\n        nums[:k] = reversed(nums[:k])\n        nums[k:] = reversed(nums[k:])\n"
     },
     {
       "method": "rotate_cyclic",
@@ -34,7 +34,7 @@
       "time": "O(n)",
       "space": "O(1)",
       "starred": false,
-      "code": "def rotate_cyclic(self, nums: list[int], k: int) -> None:\n    n = len(nums)\n    k %= n\n    cnt = gcd(k, n)\n    for start in range(cnt):\n        cur, prev = start, nums[start]\n        while True:\n            nxt = (cur + k) % n\n            nums[nxt], prev = prev, nums[nxt]\n            cur = nxt\n            if cur == start:\n                break"
+      "code": "from math import gcd\n\nclass Solution:\n    def rotate(self, nums: list[int], k: int) -> None:\n        n = len(nums)\n        k %= n\n        cnt = gcd(k, n)\n        for start in range(cnt):\n            cur, prev = start, nums[start]\n            while True:\n                nxt = (cur + k) % n\n                nums[nxt], prev = prev, nums[nxt]\n                cur = nxt\n                if cur == start:\n                    break\n"
     }
   ],
   "raw_source": "# LC 189. 轮转数组 · Medium · 数组技巧\n\"\"\"\n🔹 题面\n    向右轮转数组 k 步。\n\n🔹 解法对比\n    | 方法               | 时间 | 空间 | 备注                  |\n    |--------------------|------|------|-----------------------|\n    | 借助新数组         | O(n) | O(n) | 思路最直接            |\n    | 三次反转 ★        | O(n) | O(1) | 经典技巧,面试首选    |\n    | 环状替换           | O(n) | O(1) | 数学优雅,边界细节多  |\n\n🔹 三次反转思路\n    1. 整体反转\n    2. 反转前 k 个\n    3. 反转后 n-k 个\n\"\"\"\nfrom math import gcd\n\n\nclass Solution:\n    # 解法 1:借助新数组 — O(n) / O(n)\n    def rotate_extra(self, nums: list[int], k: int) -> None:\n        n = len(nums)\n        k %= n\n        nums[:] = nums[-k:] + nums[:-k]\n\n    # 解法 2:三次反转 ★ — O(n) / O(1)\n    def rotate(self, nums: list[int], k: int) -> None:\n        n = len(nums)\n        k %= n\n        nums.reverse()\n        nums[:k] = reversed(nums[:k])\n        nums[k:] = reversed(nums[k:])\n\n    # 解法 3:环状替换 — O(n) / O(1)\n    def rotate_cyclic(self, nums: list[int], k: int) -> None:\n        n = len(nums)\n        k %= n\n        cnt = gcd(k, n)\n        for start in range(cnt):\n            cur, prev = start, nums[start]\n            while True:\n                nxt = (cur + k) % n\n                nums[nxt], prev = prev, nums[nxt]\n                cur = nxt\n                if cur == start:\n                    break\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        (([1, 2, 3, 4, 5, 6, 7], 3), [5, 6, 7, 1, 2, 3, 4]),\n        (([-1, -100, 3, 99], 2), [3, 99, -1, -100]),\n        (([1, 2], 3), [2, 1]),\n    ]\n    for (arr, k), want in cases:\n        for fn in (s.rotate, s.rotate_extra, s.rotate_cyclic):\n            a = arr[:]\n            fn(a, k)\n            assert a == want, f\"{fn.__name__}({arr}, {k}) -> {a}\"\n    print(\"✅ p189 通过 3 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -63,5 +63,15 @@
       "time": "**O(n)** —— 三次反转各 O(n)。",
       "space": "**O(1)** —— 原地。"
     }
+  },
+  "n_sols": 3,
+  "code_explain": {
+    "method": "rotate",
+    "annotated": "class Solution:\n    def rotate(self, nums: list[int], k: int) -> None:\n        n = len(nums)\n        k %= n                          # k 可能比 n 大,先取模\n        nums.reverse()                  # ① 整体反转\n        nums[:k] = reversed(nums[:k])   # ② 反转前 k 个\n        nums[k:] = reversed(nums[k:])   # ③ 反转剩下的\n",
+    "gotchas": [
+      "必须 `k %= n`,否则 k≥n 时无效。",
+      "三次反转原地完成右移 k 位,O(1) 空间。",
+      "切片赋值 `nums[:k] = ...` 是**原地**改原数组(题目要求)。"
+    ]
   }
 }

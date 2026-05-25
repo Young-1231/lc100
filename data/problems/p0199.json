@@ -9,7 +9,7 @@
   "day": 4,
   "day_title": "二叉树",
   "category": "二叉树",
-  "leetcode_url": "https://leetcode.cn/problems/right-side-view/",
+  "leetcode_url": "https://leetcode.cn/problems/binary-tree-right-side-view/",
   "filename": "p199_right_side_view.py",
   "doc": "🔹 题面\n    返回从右侧能看到的节点(每层最右一个)。\n\n🔹 解法对比\n    | 方法    | 时间 | 空间 | 备注              |\n    |---------|------|------|-------------------|\n    | BFS ★  | O(n) | O(w) | 每层最后一个      |\n    | DFS     | O(n) | O(h) | 先右后左,每层第一次访问即可 |",
   "solutions": [
@@ -19,7 +19,7 @@
       "time": "O(n)",
       "space": "O(w)",
       "starred": true,
-      "code": "def rightSideView(self, root) -> list[int]:\n    if not root:\n        return []\n    out, q = [], deque([root])\n    while q:\n        sz = len(q)\n        for i in range(sz):\n            n = q.popleft()\n            if i == sz - 1:\n                out.append(n.val)\n            if n.left:\n                q.append(n.left)\n            if n.right:\n                q.append(n.right)\n    return out"
+      "code": "from collections import deque\n\nclass Solution:\n    def rightSideView(self, root) -> list[int]:\n        if not root:\n            return []\n        out, q = [], deque([root])\n        while q:\n            sz = len(q)\n            for i in range(sz):\n                n = q.popleft()\n                if i == sz - 1:\n                    out.append(n.val)\n                if n.left:\n                    q.append(n.left)\n                if n.right:\n                    q.append(n.right)\n        return out\n"
     },
     {
       "method": "rightSideView_dfs",
@@ -27,7 +27,7 @@
       "time": "O(n)",
       "space": "O(h)",
       "starred": false,
-      "code": "def rightSideView_dfs(self, root) -> list[int]:\n    out: list[int] = []\n\n    def dfs(n, d):\n        if not n:\n            return\n        if d == len(out):\n            out.append(n.val)\n        dfs(n.right, d + 1)\n        dfs(n.left, d + 1)\n\n    dfs(root, 0)\n    return out"
+      "code": "class Solution:\n    def rightSideView(self, root) -> list[int]:\n        out: list[int] = []\n\n        def dfs(n, d):\n            if not n:\n                return\n            if d == len(out):\n                out.append(n.val)\n            dfs(n.right, d + 1)\n            dfs(n.left, d + 1)\n\n        dfs(root, 0)\n        return out\n"
     }
   ],
   "raw_source": "# LC 199. 二叉树的右视图 · Medium · BFS / DFS\n\"\"\"\n🔹 题面\n    返回从右侧能看到的节点(每层最右一个)。\n\n🔹 解法对比\n    | 方法    | 时间 | 空间 | 备注              |\n    |---------|------|------|-------------------|\n    | BFS ★  | O(n) | O(w) | 每层最后一个      |\n    | DFS     | O(n) | O(h) | 先右后左,每层第一次访问即可 |\n\"\"\"\nfrom collections import deque\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import build_tree\n\n\nclass Solution:\n    # 解法 1:BFS ★ — O(n) / O(w)\n    def rightSideView(self, root) -> list[int]:\n        if not root:\n            return []\n        out, q = [], deque([root])\n        while q:\n            sz = len(q)\n            for i in range(sz):\n                n = q.popleft()\n                if i == sz - 1:\n                    out.append(n.val)\n                if n.left:\n                    q.append(n.left)\n                if n.right:\n                    q.append(n.right)\n        return out\n\n    # 解法 2:DFS(先右后左)— O(n) / O(h)\n    def rightSideView_dfs(self, root) -> list[int]:\n        out: list[int] = []\n\n        def dfs(n, d):\n            if not n:\n                return\n            if d == len(out):\n                out.append(n.val)\n            dfs(n.right, d + 1)\n            dfs(n.left, d + 1)\n\n        dfs(root, 0)\n        return out\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        ([1, 2, 3, None, 5, None, 4], [1, 3, 4]),\n        ([1, None, 3], [1, 3]),\n        ([], []),\n    ]\n    for arg, want in cases:\n        for fn in (s.rightSideView, s.rightSideView_dfs):\n            assert fn(build_tree(arg)) == want\n    print(\"✅ p199 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -61,5 +61,14 @@
       "time": "**O(n)**。",
       "space": "**O(h)** DFS / **O(w)** BFS。"
     }
+  },
+  "n_sols": 2,
+  "code_explain": {
+    "method": "rightSideView",
+    "annotated": "from collections import deque\n\nclass Solution:\n    def rightSideView(self, root) -> list[int]:\n        if not root:\n            return []\n        out, q = [], deque([root])\n        while q:\n            sz = len(q)\n            for i in range(sz):\n                n = q.popleft()\n                if i == sz - 1:      # 本层最后一个 = 从右边看到的那个\n                    out.append(n.val)\n                if n.left:\n                    q.append(n.left)\n                if n.right:\n                    q.append(n.right)\n        return out\n",
+    "gotchas": [
+      "层序遍历,每层**最后一个**结点就是右视图。",
+      "左孩子也要入队(它可能是下一层的最右)。"
+    ]
   }
 }

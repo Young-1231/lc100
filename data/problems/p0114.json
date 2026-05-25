@@ -9,7 +9,7 @@
   "day": 4,
   "day_title": "二叉树",
   "category": "二叉树",
-  "leetcode_url": "https://leetcode.cn/problems/flatten-tree/",
+  "leetcode_url": "https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/",
   "filename": "p114_flatten_tree.py",
   "doc": "🔹 题面\n    将二叉树原地展开为前序顺序的\"右侧链表\"(left 全 None)。\n\n🔹 直觉(反向先序)\n    定义 prev(全局),按\"右-左-根\"递归;访问到每个节点时:\n        node.right = prev\n        node.left  = None\n        prev = node\n    妙在它构成的就是 \"根-左-右\" 反过来 = 先序的逆序。",
   "solutions": [
@@ -19,7 +19,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def flatten(self, root) -> None:\n    self.prev = None\n\n    def dfs(n):\n        if not n:\n            return\n        dfs(n.right)\n        dfs(n.left)\n        n.right = self.prev\n        n.left = None\n        self.prev = n\n\n    dfs(root)"
+      "code": "class Solution:\n    def flatten(self, root) -> None:\n        self.prev = None\n\n        def dfs(n):\n            if not n:\n                return\n            dfs(n.right)\n            dfs(n.left)\n            n.right = self.prev\n            n.left = None\n            self.prev = n\n\n        dfs(root)\n"
     }
   ],
   "raw_source": "# LC 114. 二叉树展开为链表 · Medium · 后序 / 反向先序\n\"\"\"\n🔹 题面\n    将二叉树原地展开为前序顺序的\"右侧链表\"(left 全 None)。\n\n🔹 直觉(反向先序)\n    定义 prev(全局),按\"右-左-根\"递归;访问到每个节点时:\n        node.right = prev\n        node.left  = None\n        prev = node\n    妙在它构成的就是 \"根-左-右\" 反过来 = 先序的逆序。\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import build_tree\n\n\nclass Solution:\n    def flatten(self, root) -> None:\n        self.prev = None\n\n        def dfs(n):\n            if not n:\n                return\n            dfs(n.right)\n            dfs(n.left)\n            n.right = self.prev\n            n.left = None\n            self.prev = n\n\n        dfs(root)\n\n\ndef _to_chain(root) -> list[int]:\n    out = []\n    while root:\n        out.append(root.val)\n        assert root.left is None\n        root = root.right\n    return out\n\n\ndef _test() -> None:\n    s = Solution()\n    t = build_tree([1, 2, 5, 3, 4, None, 6])\n    s.flatten(t)\n    assert _to_chain(t) == [1, 2, 3, 4, 5, 6]\n    s.flatten(None)\n    print(\"✅ p114 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -48,5 +48,14 @@
       "time": "**O(n)**。",
       "space": "**O(h)** 递归栈。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "flatten",
+    "annotated": "class Solution:\n    def flatten(self, root) -> None:\n        self.prev = None             # prev:已展开部分的头(从最后一个结点往前接)\n\n        def dfs(n):\n            if not n:\n                return\n            dfs(n.right)             # 逆前序:右 -> 左 -> 根\n            dfs(n.left)\n            n.right = self.prev      # 当前结点的右指向「已处理好的下一段」\n            n.left = None            # 左指针清空(题目要求拉成单链)\n            self.prev = n            # 当前结点成为新的头\n\n        dfs(root)\n",
+    "gotchas": [
+      "按「右→左→根」逆前序遍历,边走边往前接,正好得到前序顺序的单链。",
+      "别忘了 `n.left = None`;原地操作,返回 None。"
+    ]
   }
 }

@@ -8,7 +8,7 @@
   "day": 2,
   "day_title": "数组 / 矩阵",
   "category": "矩阵",
-  "leetcode_url": "https://leetcode.cn/problems/search-matrix-ii/",
+  "leetcode_url": "https://leetcode.cn/problems/search-a-2d-matrix-ii/",
   "filename": "p240_search_matrix_ii.py",
   "doc": "🔹 题面\n    每行升序、每列升序,搜索目标 target。\n\n🔹 直觉(Z 字搜索)\n    从右上角出发:\n        m[i][j] == target → 找到\n        m[i][j]  > target → j-=1   (该列下方都更大,可剪)\n        m[i][j]  < target → i+=1\n    每步至少减少一个维度,O(m+n)。\n\n🔹 复杂度 O(m+n) / O(1)",
   "solutions": [
@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def searchMatrix(self, m: list[list[int]], target: int) -> bool:\n    if not m or not m[0]:\n        return False\n    i, j = 0, len(m[0]) - 1\n    while i < len(m) and j >= 0:\n        if m[i][j] == target:\n            return True\n        if m[i][j] > target:\n            j -= 1\n        else:\n            i += 1\n    return False"
+      "code": "class Solution:\n    def searchMatrix(self, m: list[list[int]], target: int) -> bool:\n        if not m or not m[0]:\n            return False\n        i, j = 0, len(m[0]) - 1\n        while i < len(m) and j >= 0:\n            if m[i][j] == target:\n                return True\n            if m[i][j] > target:\n                j -= 1\n            else:\n                i += 1\n        return False\n"
     }
   ],
   "raw_source": "# LC 240. 搜索二维矩阵 II · Medium · 矩阵\n\"\"\"\n🔹 题面\n    每行升序、每列升序,搜索目标 target。\n\n🔹 直觉(Z 字搜索)\n    从右上角出发:\n        m[i][j] == target → 找到\n        m[i][j]  > target → j-=1   (该列下方都更大,可剪)\n        m[i][j]  < target → i+=1\n    每步至少减少一个维度,O(m+n)。\n\n🔹 复杂度 O(m+n) / O(1)\n\"\"\"\n\n\nclass Solution:\n    def searchMatrix(self, m: list[list[int]], target: int) -> bool:\n        if not m or not m[0]:\n            return False\n        i, j = 0, len(m[0]) - 1\n        while i < len(m) and j >= 0:\n            if m[i][j] == target:\n                return True\n            if m[i][j] > target:\n                j -= 1\n            else:\n                i += 1\n        return False\n\n\ndef _test() -> None:\n    s = Solution()\n    M = [[1, 4, 7, 11, 15], [2, 5, 8, 12, 19], [3, 6, 9, 16, 22],\n         [10, 13, 14, 17, 24], [18, 21, 23, 26, 30]]\n    assert s.searchMatrix(M, 5) is True\n    assert s.searchMatrix(M, 20) is False\n    assert s.searchMatrix([], 1) is False\n    print(\"✅ p240 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -35,5 +35,14 @@
       "time": "**O(m + n)** —— Z 字路径。",
       "space": "**O(1)**。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "searchMatrix",
+    "annotated": "class Solution:\n    def searchMatrix(self, m: list[list[int]], target: int) -> bool:\n        if not m or not m[0]:\n            return False\n        i, j = 0, len(m[0]) - 1         # 从右上角出发\n        while i < len(m) and j >= 0:\n            if m[i][j] == target:\n                return True\n            if m[i][j] > target:        # 当前值偏大 -> 左移(排除这一列)\n                j -= 1\n            else:                       # 当前值偏小 -> 下移(排除这一行)\n                i += 1\n        return False\n",
+    "gotchas": [
+      "从**右上角**(或左下角)开始:那里「向左变小、向下变大」,每步能排除一行或一列。",
+      "不能从左上角:左上角向右、向下都变大,无法二选一。"
+    ]
   }
 }

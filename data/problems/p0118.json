@@ -8,7 +8,7 @@
   "day": 7,
   "day_title": "DP / 多维DP / 技巧",
   "category": "DP",
-  "leetcode_url": "https://leetcode.cn/problems/pascal-triangle/",
+  "leetcode_url": "https://leetcode.cn/problems/pascals-triangle/",
   "filename": "p118_pascal_triangle.py",
   "doc": "🔹 直觉\n    每一行首尾为 1,中间 = 上一行相邻两数之和。",
   "solutions": [
@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def generate(self, n: int) -> list[list[int]]:\n    out: list[list[int]] = []\n    for r in range(n):\n        row = [1] * (r + 1)\n        for c in range(1, r):\n            row[c] = out[r - 1][c - 1] + out[r - 1][c]\n        out.append(row)\n    return out"
+      "code": "class Solution:\n    def generate(self, n: int) -> list[list[int]]:\n        out: list[list[int]] = []\n        for r in range(n):\n            row = [1] * (r + 1)\n            for c in range(1, r):\n                row[c] = out[r - 1][c - 1] + out[r - 1][c]\n            out.append(row)\n        return out\n"
     }
   ],
   "raw_source": "# LC 118. 杨辉三角 · Easy · DP\n\"\"\"\n🔹 直觉\n    每一行首尾为 1,中间 = 上一行相邻两数之和。\n\"\"\"\n\n\nclass Solution:\n    def generate(self, n: int) -> list[list[int]]:\n        out: list[list[int]] = []\n        for r in range(n):\n            row = [1] * (r + 1)\n            for c in range(1, r):\n                row[c] = out[r - 1][c - 1] + out[r - 1][c]\n            out.append(row)\n        return out\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.generate(5) == [[1], [1, 1], [1, 2, 1], [1, 3, 3, 1], [1, 4, 6, 4, 1]]\n    assert s.generate(1) == [[1]]\n    assert s.generate(0) == []\n    print(\"✅ p118 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -35,5 +35,14 @@
       "time": "**O(n²)** —— 总元素数。",
       "space": "**O(n²)** —— 输出本身 / **O(1)** 单行模式不计输出。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "generate",
+    "annotated": "class Solution:\n    def generate(self, n: int) -> list[list[int]]:\n        out: list[list[int]] = []\n        for r in range(n):\n            row = [1] * (r + 1)      # 每行首尾都是 1\n            for c in range(1, r):    # 中间元素 = 上一行相邻两数之和\n                row[c] = out[r - 1][c - 1] + out[r - 1][c]\n            out.append(row)\n        return out\n",
+    "gotchas": [
+      "每行两端是 1,中间 `row[c] = 上一行[c-1] + 上一行[c]`。",
+      "第 r 行(从 0 计)有 r+1 个数。"
+    ]
   }
 }

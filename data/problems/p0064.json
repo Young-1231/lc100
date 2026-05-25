@@ -8,7 +8,7 @@
   "day": 7,
   "day_title": "DP / 多维DP / 技巧",
   "category": "多维DP",
-  "leetcode_url": "https://leetcode.cn/problems/min-path-sum/",
+  "leetcode_url": "https://leetcode.cn/problems/minimum-path-sum/",
   "filename": "p064_min_path_sum.py",
   "doc": "🔹 状态\n    f[i][j] = grid[i][j] + min(f[i-1][j], f[i][j-1])",
   "solutions": [
@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def minPathSum(self, g: list[list[int]]) -> int:\n    m, n = len(g), len(g[0])\n    f = list(g[0])\n    for j in range(1, n):\n        f[j] += f[j - 1]\n    for i in range(1, m):\n        f[0] += g[i][0]\n        for j in range(1, n):\n            f[j] = g[i][j] + min(f[j], f[j - 1])\n    return f[-1]"
+      "code": "class Solution:\n    def minPathSum(self, g: list[list[int]]) -> int:\n        m, n = len(g), len(g[0])\n        f = list(g[0])\n        for j in range(1, n):\n            f[j] += f[j - 1]\n        for i in range(1, m):\n            f[0] += g[i][0]\n            for j in range(1, n):\n                f[j] = g[i][j] + min(f[j], f[j - 1])\n        return f[-1]\n"
     }
   ],
   "raw_source": "# LC 64. 最小路径和 · Medium · 多维 DP\n\"\"\"\n🔹 状态\n    f[i][j] = grid[i][j] + min(f[i-1][j], f[i][j-1])\n\"\"\"\n\n\nclass Solution:\n    def minPathSum(self, g: list[list[int]]) -> int:\n        m, n = len(g), len(g[0])\n        f = list(g[0])\n        for j in range(1, n):\n            f[j] += f[j - 1]\n        for i in range(1, m):\n            f[0] += g[i][0]\n            for j in range(1, n):\n                f[j] = g[i][j] + min(f[j], f[j - 1])\n        return f[-1]\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.minPathSum([[1, 3, 1], [1, 5, 1], [4, 2, 1]]) == 7\n    assert s.minPathSum([[1, 2, 3], [4, 5, 6]]) == 12\n    print(\"✅ p064 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -35,5 +35,14 @@
       "time": "**O(mn)**。",
       "space": "**O(n)** 滚动 / 原地 O(1)。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "minPathSum",
+    "annotated": "class Solution:\n    def minPathSum(self, g: list[list[int]]) -> int:\n        m, n = len(g), len(g[0])\n        f = list(g[0])               # 第一行:只能从左来,做前缀和\n        for j in range(1, n):\n            f[j] += f[j - 1]\n        for i in range(1, m):\n            f[0] += g[i][0]          # 每行第一列只能从上来\n            for j in range(1, n):\n                f[j] = g[i][j] + min(f[j], f[j - 1])   # min(上方, 左边) + 当前格\n        return f[-1]\n",
+    "gotchas": [
+      "一维滚动:`f[j]`(旧值=上方)与 `f[j-1]`(左边)取小,加当前格。",
+      "第一行只能从左、第一列只能从上,需单独处理。"
+    ]
   }
 }

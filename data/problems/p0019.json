@@ -9,7 +9,7 @@
   "day": 3,
   "day_title": "链表",
   "category": "链表",
-  "leetcode_url": "https://leetcode.cn/problems/remove-nth-from-end/",
+  "leetcode_url": "https://leetcode.cn/problems/remove-nth-node-from-end-of-list/",
   "filename": "p019_remove_nth_from_end.py",
   "doc": "🔹 题面\n    一次扫描删掉倒数第 N 个节点。\n\n🔹 直觉\n    哨兵 + 快慢指针:fast 先走 n+1 步,然后 fast/slow 同步,fast=None 时 slow.next 即待删。\n\n🔹 复杂度 O(L) / O(1)\n\n🔹 踩坑\n    必须用 dummy,否则删除头节点要分支处理。",
   "solutions": [
@@ -19,7 +19,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def removeNthFromEnd(self, head, n: int):\n    dummy = ListNode(0, head)\n    fast = slow = dummy\n    for _ in range(n + 1):\n        fast = fast.next\n    while fast:\n        fast = fast.next\n        slow = slow.next\n    slow.next = slow.next.next\n    return dummy.next"
+      "code": "class Solution:\n    def removeNthFromEnd(self, head, n: int):\n        dummy = ListNode(0, head)\n        fast = slow = dummy\n        for _ in range(n + 1):\n            fast = fast.next\n        while fast:\n            fast = fast.next\n            slow = slow.next\n        slow.next = slow.next.next\n        return dummy.next\n"
     }
   ],
   "raw_source": "# LC 19. 删除链表的倒数第 N 个结点 · Medium · 双指针 / 哨兵\n\"\"\"\n🔹 题面\n    一次扫描删掉倒数第 N 个节点。\n\n🔹 直觉\n    哨兵 + 快慢指针:fast 先走 n+1 步,然后 fast/slow 同步,fast=None 时 slow.next 即待删。\n\n🔹 复杂度 O(L) / O(1)\n\n🔹 踩坑\n    必须用 dummy,否则删除头节点要分支处理。\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import ListNode, build_list, list_to_array\n\n\nclass Solution:\n    def removeNthFromEnd(self, head, n: int):\n        dummy = ListNode(0, head)\n        fast = slow = dummy\n        for _ in range(n + 1):\n            fast = fast.next\n        while fast:\n            fast = fast.next\n            slow = slow.next\n        slow.next = slow.next.next\n        return dummy.next\n\n\ndef _test() -> None:\n    s = Solution()\n    assert list_to_array(s.removeNthFromEnd(build_list([1, 2, 3, 4, 5]), 2)) == [1, 2, 3, 5]\n    assert list_to_array(s.removeNthFromEnd(build_list([1]), 1)) == []\n    assert list_to_array(s.removeNthFromEnd(build_list([1, 2]), 1)) == [1]\n    assert list_to_array(s.removeNthFromEnd(build_list([1, 2]), 2)) == [2]\n    print(\"✅ p019 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -49,5 +49,14 @@
       "time": "**O(L)** —— L 是链表长度。",
       "space": "**O(1)**。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "removeNthFromEnd",
+    "annotated": "class Solution:\n    def removeNthFromEnd(self, head, n: int):\n        dummy = ListNode(0, head)       # 哑结点,处理「删的是头结点」\n        fast = slow = dummy\n        for _ in range(n + 1):          # fast 先走 n+1 步,使 slow 停在「待删结点的前驱」\n            fast = fast.next\n        while fast:                     # 两指针同速前进,直到 fast 到末尾\n            fast = fast.next\n            slow = slow.next\n        slow.next = slow.next.next      # 跳过(删除)倒数第 n 个\n        return dummy.next\n",
+    "gotchas": [
+      "fast 先走 `n+1` 步,使 slow 最终停在「待删结点的前驱」。",
+      "用哑结点,删头结点也不用特判。"
+    ]
   }
 }

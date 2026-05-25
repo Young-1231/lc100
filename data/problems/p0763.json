@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def partitionLabels(self, s: str) -> list[int]:\n    last = {c: i for i, c in enumerate(s)}\n    ans, start, end = [], 0, 0\n    for i, c in enumerate(s):\n        end = max(end, last[c])\n        if i == end:\n            ans.append(end - start + 1)\n            start = i + 1\n    return ans"
+      "code": "class Solution:\n    def partitionLabels(self, s: str) -> list[int]:\n        last = {c: i for i, c in enumerate(s)}\n        ans, start, end = [], 0, 0\n        for i, c in enumerate(s):\n            end = max(end, last[c])\n            if i == end:\n                ans.append(end - start + 1)\n                start = i + 1\n        return ans\n"
     }
   ],
   "raw_source": "# LC 763. 划分字母区间 · Medium · 贪心\n\"\"\"\n🔹 题面\n    把 s 划分尽量多的片段,要求同一字母只出现在一个片段里。\n\n🔹 直觉\n    预处理每个字母的最远下标 last[c]。扫描时维护当前段右界 end:\n        end = max(end, last[s[i]])\n    i == end 时收一段。\n\"\"\"\n\n\nclass Solution:\n    def partitionLabels(self, s: str) -> list[int]:\n        last = {c: i for i, c in enumerate(s)}\n        ans, start, end = [], 0, 0\n        for i, c in enumerate(s):\n            end = max(end, last[c])\n            if i == end:\n                ans.append(end - start + 1)\n                start = i + 1\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.partitionLabels(\"ababcbacadefegdehijhklij\") == [9, 7, 8]\n    assert s.partitionLabels(\"eccbbbbdec\") == [10]\n    print(\"✅ p763 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -35,5 +35,14 @@
       "time": "**O(n)**。",
       "space": "**O(|Σ|)**。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "partitionLabels",
+    "annotated": "class Solution:\n    def partitionLabels(self, s: str) -> list[int]:\n        last = {c: i for i, c in enumerate(s)}   # 每个字母最后出现的位置\n        ans, start, end = [], 0, 0\n        for i, c in enumerate(s):\n            end = max(end, last[c])    # 当前片段至少要延伸到 c 最后出现处\n            if i == end:               # 走到片段右边界 -> 这一段可以切了\n                ans.append(end - start + 1)\n                start = i + 1\n        return ans\n",
+    "gotchas": [
+      "先记录每个字母**最后出现位置**;遍历时把片段右界不断扩到当前字母的最后位置。",
+      "当下标 i == 当前片段右界 end 时,说明段内字母都不再出现于后面,可切。"
+    ]
   }
 }

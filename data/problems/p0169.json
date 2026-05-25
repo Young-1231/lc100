@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def majorityElement(self, nums: list[int]) -> int:\n    cand, cnt = 0, 0\n    for x in nums:\n        if cnt == 0:\n            cand = x\n        cnt += 1 if x == cand else -1\n    return cand"
+      "code": "class Solution:\n    def majorityElement(self, nums: list[int]) -> int:\n        cand, cnt = 0, 0\n        for x in nums:\n            if cnt == 0:\n                cand = x\n            cnt += 1 if x == cand else -1\n        return cand\n"
     }
   ],
   "raw_source": "# LC 169. 多数元素 · Easy · Boyer-Moore 投票\n\"\"\"\n🔹 直觉\n    \"众数计数 +1,他人 -1\";票数为 0 时换候选。多数元素必然胜出。\n\"\"\"\n\n\nclass Solution:\n    def majorityElement(self, nums: list[int]) -> int:\n        cand, cnt = 0, 0\n        for x in nums:\n            if cnt == 0:\n                cand = x\n            cnt += 1 if x == cand else -1\n        return cand\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.majorityElement([3, 2, 3]) == 3\n    assert s.majorityElement([2, 2, 1, 1, 1, 2, 2]) == 2\n    assert s.majorityElement([1]) == 1\n    print(\"✅ p169 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -53,5 +53,14 @@
       "time": "**O(n)**。",
       "space": "**O(1)**。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "majorityElement",
+    "annotated": "class Solution:\n    def majorityElement(self, nums: list[int]) -> int:\n        cand, cnt = 0, 0             # 候选 + 计票\n        for x in nums:\n            if cnt == 0:             # 票数归零 -> 换当前数为候选\n                cand = x\n            cnt += 1 if x == cand else -1   # 与候选相同 +1,否则 -1\n        return cand\n",
+    "gotchas": [
+      "摩尔投票:相同 +1、不同 -1,归零就换候选。",
+      "因为多数元素超过一半,最后留下的一定是它(题目保证存在)。"
+    ]
   }
 }

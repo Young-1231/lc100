@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def isSymmetric(self, root) -> bool:\n    def same(a, b):\n        if not a and not b:\n            return True\n        if not a or not b or a.val != b.val:\n            return False\n        return same(a.left, b.right) and same(a.right, b.left)\n    return not root or same(root.left, root.right)"
+      "code": "class Solution:\n    def isSymmetric(self, root) -> bool:\n        def same(a, b):\n            if not a and not b:\n                return True\n            if not a or not b or a.val != b.val:\n                return False\n            return same(a.left, b.right) and same(a.right, b.left)\n        return not root or same(root.left, root.right)\n"
     }
   ],
   "raw_source": "# LC 101. 对称二叉树 · Easy · 递归\n\"\"\"\n🔹 直觉\n    左右子树是否互为镜像:\n        same(a, b) ⇔ a.val == b.val ∧ same(a.left, b.right) ∧ same(a.right, b.left)\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import build_tree\n\n\nclass Solution:\n    def isSymmetric(self, root) -> bool:\n        def same(a, b):\n            if not a and not b:\n                return True\n            if not a or not b or a.val != b.val:\n                return False\n            return same(a.left, b.right) and same(a.right, b.left)\n        return not root or same(root.left, root.right)\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.isSymmetric(build_tree([1, 2, 2, 3, 4, 4, 3])) is True\n    assert s.isSymmetric(build_tree([1, 2, 2, None, 3, None, 3])) is False\n    assert s.isSymmetric(None) is True\n    print(\"✅ p101 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -47,5 +47,14 @@
       "time": "**O(n)**。",
       "space": "**O(h)**。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "isSymmetric",
+    "annotated": "class Solution:\n    def isSymmetric(self, root) -> bool:\n        def same(a, b):              # 判断两棵子树是否互为「镜像」\n            if not a and not b:\n                return True\n            if not a or not b or a.val != b.val:\n                return False\n            # 镜像:a 的左 对 b 的右,a 的右 对 b 的左\n            return same(a.left, b.right) and same(a.right, b.left)\n        return not root or same(root.left, root.right)\n",
+    "gotchas": [
+      "镜像比较是「外侧对外侧、内侧对内侧」:`a.left vs b.right`、`a.right vs b.left`。",
+      "先处理两个都空 / 只有一个空的边界。"
+    ]
   }
 }
