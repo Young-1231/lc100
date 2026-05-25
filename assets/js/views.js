@@ -51,6 +51,13 @@ function diffClass(d) {
 }
 
 const SVG_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+const SVG_EXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+
+// LeetCode 直达练习按钮。url 为空时不渲染。
+function lcButton(url, { large = false, label = "去 LeetCode 练习" } = {}) {
+  if (!url) return "";
+  return `<a class="lc-btn ${large ? "lc-btn-lg" : ""}" href="${url}" target="_blank" rel="noopener" title="在 LeetCode 上打开本题,边看边练">${SVG_EXT}<span>${escapeHtml(label)}</span></a>`;
+}
 
 // ===================== Home =====================
 export async function renderHome() {
@@ -100,9 +107,12 @@ export async function renderHome() {
     <section class="container">
       <h2 class="section-title">使用说明</h2>
       <p class="section-sub" style="font-size:14px;line-height:1.8;">
-        点击任意一题查看详解;每题包含<strong>题面 → 直觉 → 多种解法对比 → 复杂度 → 踩坑 → 同类变体</strong>。
+        点击任意一题查看详解;每题包含<strong>题面 → 直觉 → 多种解法对比 → 复杂度 → 踩坑 → 同类变体</strong>,
+        并提供 <strong style="color:var(--lc-text)">「去 LeetCode 练习」</strong> 橙色按钮,一键跳到原题盖码默写。
+        第一次用 LeetCode?先看 <a href="#/guide">练习指南 →</a>。
         进度自动保存在浏览器 localStorage,清浏览器数据会重置。
-        快捷键:<span class="kbd">/</span> 聚焦搜索,<span class="kbd">D</span> 切换暗色,<span class="kbd">Esc</span> 返回首页。
+        快捷键:<span class="kbd">/</span> 搜索,<span class="kbd">←</span><span class="kbd">→</span> 翻题,
+        <span class="kbd">O</span> 打开 LeetCode,<span class="kbd">D</span> 切换暗色,<span class="kbd">Esc</span> 返回首页。
       </p>
     </section>
     <section class="container">
@@ -190,6 +200,7 @@ export async function renderAll() {
           <button class="pill" data-state="done">已完成</button>
           <button class="pill" data-state="todo">未做</button>
         </div>
+        <button class="pill" id="random-btn" title="从当前筛选结果中随机抽一题">🎲 随机一题</button>
       </div>
       <div class="prob-list" id="prob-list"></div>
     </div>`;
@@ -198,6 +209,7 @@ export async function renderAll() {
   const urlQ = new URLSearchParams(location.search).get("q") || "";
   const state = { q: urlQ, diff: "all", day: "all", st: "all" };
   if (urlQ) document.getElementById("search").value = urlQ;
+  let lastFiltered = list;
 
   function apply() {
     let v = list.slice();
@@ -226,8 +238,15 @@ export async function renderAll() {
     if (state.day !== "all")  v = v.filter(p => p.day === Number(state.day));
     if (state.st === "done")  v = v.filter(p => progress.isDone(p.id));
     if (state.st === "todo")  v = v.filter(p => !progress.isDone(p.id));
+    lastFiltered = v;
     renderProblemList(document.getElementById("prob-list"), v, snippetMap);
   }
+
+  document.getElementById("random-btn").addEventListener("click", () => {
+    const pool = lastFiltered.length ? lastFiltered : list;
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    if (pick) location.hash = `#/p/${pick.id}`;
+  });
 
   document.getElementById("search").oninput = e => { state.q = e.target.value; apply(); };
   document.getElementById("filter-diff").addEventListener("click", e => {
@@ -276,12 +295,23 @@ function renderProblemList(container, items, snippetMap) {
         <span class="diff ${diffClass(p.difficulty)}">${escapeHtml(p.difficulty)}</span>
         <div class="prob-cat">${escapeHtml(p.category || "")}</div>
         <div class="prob-day">Day ${p.day}</div>
+        <div class="prob-practice">${
+          p.leetcode_url
+            ? `<button class="lc-btn" type="button" data-url="${p.leetcode_url}" title="在 LeetCode 上打开本题">${SVG_EXT}<span>练习</span></button>`
+            : ""
+        }</div>
       </a>`);
     row.querySelector(".prob-check").addEventListener("click", e => {
       e.preventDefault(); e.stopPropagation();
       const newDone = progress.toggle(p.id);
       row.classList.toggle("done", newDone);
       e.currentTarget.classList.toggle("checked", newDone);
+    });
+    // 行内的"练习"按钮在新标签打开 LeetCode,不触发整行跳转(避免 <a> 嵌套)
+    const lc = row.querySelector(".prob-practice .lc-btn");
+    if (lc) lc.addEventListener("click", e => {
+      e.preventDefault(); e.stopPropagation();
+      window.open(lc.dataset.url, "_blank", "noopener");
     });
     container.appendChild(row);
   }
@@ -292,9 +322,9 @@ export async function renderProblem(id) {
   id = Number(id);
   const app = document.getElementById("app");
   app.innerHTML = `<div class="loader"></div>`;
-  let data;
+  let data, list;
   try {
-    data = await getProblem(id);
+    [data, list] = await Promise.all([getProblem(id), getProblems()]);
   } catch {
     app.innerHTML = `<div class="container empty">题目 #${id} 不存在。</div>`;
     return;
@@ -302,6 +332,17 @@ export async function renderProblem(id) {
   const done = progress.isDone(id);
   const sols = data.solutions || [];
   const hasMulti = sols.length >= 2;
+
+  // 上一题 / 下一题(按题单顺序)
+  const idx = list.findIndex(p => p.id === id);
+  const prev = idx > 0 ? list[idx - 1] : null;
+  const next = idx >= 0 && idx < list.length - 1 ? list[idx + 1] : null;
+  // 暴露给全局快捷键(J/K 翻题、O 打开 LeetCode)
+  window.__lc = {
+    prev: prev ? prev.id : null,
+    next: next ? next.id : null,
+    leetcode: data.leetcode_url || null,
+  };
 
   app.innerHTML = `
     <div class="container">
@@ -316,13 +357,15 @@ export async function renderProblem(id) {
           <span>#${data.id}</span>
           <span class="sep">·</span>
           <span>${escapeHtml(data.category || "")}</span>
-          <span class="sep">·</span>
-          <a href="${data.leetcode_url}" target="_blank" rel="noopener">LeetCode 原题 ↗</a>
         </div>
         <h1>${escapeHtml(data.title)}</h1>
-        <div style="display:flex;gap:12px;margin-top:14px;align-items:center;">
-          <button id="toggle-done" class="prob-check ${done ? "checked" : ""}" style="position:relative;width:auto;height:34px;border-radius:6px;padding:0 12px;font-size:13px;font-weight:500;display:inline-flex;gap:6px;color:${done ? "white" : "var(--text-soft)"};background:${done ? "var(--accent)" : "var(--bg-elev)"}">${SVG_CHECK} <span>${done ? "已完成" : "标记完成"}</span></button>
+        <div style="display:flex;gap:12px;margin-top:14px;align-items:center;flex-wrap:wrap;">
+          ${lcButton(data.leetcode_url, { large: true })}
+          <button id="toggle-done" class="prob-check ${done ? "checked" : ""}" style="position:relative;width:auto;height:36px;border-radius:999px;padding:0 16px;font-size:14px;font-weight:600;display:inline-flex;gap:6px;align-items:center;color:${done ? "white" : "var(--text-soft)"};background:${done ? "var(--accent)" : "var(--bg-elev)"};border:1px solid ${done ? "var(--accent)" : "var(--border)"}">${SVG_CHECK} <span>${done ? "已完成" : "标记完成"}</span></button>
         </div>
+        <p style="margin:12px 0 0;font-size:12.5px;color:var(--text-mute)">
+          💡 建议:先在本页读懂思路,再点「去 LeetCode 练习」盖住代码独立默写。第一次用 LeetCode?看 <a href="#/guide">练习指南 →</a>
+        </p>
       </div>
       <div class="detail-layout">
         <article id="detail-main">
@@ -371,6 +414,7 @@ export async function renderProblem(id) {
           ${hasMulti ? `
           <section class="detail-section" id="sec-solutions">
             <h2>多解法对比 <span class="badge">${sols.length} 种</span></h2>
+            <p class="sol-tip">每种解法都是 LeetCode 可直接提交的完整 <code>class Solution</code>,点「复制」即可粘贴提交。</p>
             <div class="sol-tabs" id="sol-tabs">
               ${sols.map((s, i) => `
                 <button class="sol-tab ${i === pickStarIdx(sols) ? "active" : ""}" data-i="${i}">
@@ -394,16 +438,25 @@ export async function renderProblem(id) {
           <section class="detail-section" id="sec-solution">
             <h2>解法</h2>
             ${sols[0] ? `
+              <p class="sol-tip">这是 LeetCode 可直接提交的完整代码,点「复制」即可粘贴提交。</p>`: ""}
+            ${sols[0] ? `
               <div class="sol-meta">
                 ${sols[0].time  ? `<span class="chip"><strong>时间</strong>${escapeHtml(sols[0].time)}</span>` : ""}
                 ${sols[0].space ? `<span class="chip"><strong>空间</strong>${escapeHtml(sols[0].space)}</span>` : ""}
               </div>
-              ${codeBlock(sols[0].code, "python")}` : `<p class="md">题目可能为类设计题(如 LRU/MinStack 等),完整源码见下方。</p>`}
+              ${codeBlock(sols[0].code, "python")}` : `<p class="md">本题暂无可提交代码。</p>`}
           </section>`}
-          <section class="detail-section" id="sec-source">
-            <h2>完整源码 <span class="badge">${escapeHtml(data.filename)}</span></h2>
-            ${codeBlock(data.raw_source, "python", true)}
-          </section>
+          ${data.code_explain ? `
+          <section class="detail-section" id="sec-walk">
+            <h2>📖 代码讲解 <span class="badge">逐行</span></h2>
+            <p class="sol-tip">下面是 ★ 首选解法的<strong>逐行中文注释版</strong>,帮你看懂每一行在做什么;提交时请用上面「解法」里的干净代码。</p>
+            ${codeBlock(data.code_explain.annotated, "python")}
+            ${(data.code_explain.gotchas && data.code_explain.gotchas.length) ? `
+            <div class="gotchas">
+              <div class="gotchas-title">⚠️ 注意点 / 易错点</div>
+              <ul>${data.code_explain.gotchas.map(g => `<li>${escInlineMd(g)}</li>`).join("")}</ul>
+            </div>` : ""}
+          </section>` : ""}
           <section class="detail-section" id="sec-personal">
             <h2>📝 我的笔记 & 难度自评</h2>
             <div class="personal-grid">
@@ -430,11 +483,19 @@ export async function renderProblem(id) {
             ${data.explanation ? `<li><a href="#sec-expl">💡 解题思路</a></li>` : ""}
             ${data.explanation && data.explanation.complexity ? `<li><a href="#sec-complexity">🧮 复杂度推导</a></li>` : ""}
             ${hasMulti ? `<li><a href="#sec-solutions">多解法对比</a></li>` : `<li><a href="#sec-solution">解法</a></li>`}
-            <li><a href="#sec-source">完整源码</a></li>
+            ${data.code_explain ? `<li><a href="#sec-walk">📖 代码讲解</a></li>` : ""}
             <li><a href="#sec-personal">📝 笔记 & 自评</a></li>
           </ol>
         </aside>
       </div>
+      <nav class="prob-nav">
+        ${prev
+          ? `<a class="prev" href="#/p/${prev.id}"><span class="nav-dir">← 上一题 · #${prev.id}</span><span class="nav-title">${escapeHtml(prev.title)}</span></a>`
+          : `<span class="prev nav-empty"></span>`}
+        ${next
+          ? `<a class="next" href="#/p/${next.id}"><span class="nav-dir">下一题 · #${next.id} →</span><span class="nav-title">${escapeHtml(next.title)}</span></a>`
+          : `<span class="next nav-empty"></span>`}
+      </nav>
     </div>`;
 
   // 难度自评 & 笔记
@@ -679,6 +740,77 @@ export async function renderPattern(slug) {
   } catch {
     app.innerHTML = `<div class="container empty">未找到 pattern: ${slug}</div>`;
   }
+}
+
+// ===================== Guide (LeetCode 新手练习指南) =====================
+export function renderGuide() {
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    <div class="container guide">
+      <div class="hero">
+        <h1>如何在 LeetCode 上练习 Hot 100</h1>
+        <p class="lead">第一次用 LeetCode?跟着这份指南走一遍。本站负责讲透思路,LeetCode 负责真实判题——
+          两者配合,效率最高。建议用 <strong>leetcode.cn(中国版,中文题面、国内访问快)</strong>。</p>
+      </div>
+
+      <section class="detail-section">
+        <h2>① 注册 & 基础设置(5 分钟,一次性)</h2>
+        <ol class="guide-list">
+          <li>打开 <a href="https://leetcode.cn/" target="_blank" rel="noopener">leetcode.cn ↗</a>,用手机号 / 微信注册登录。</li>
+          <li>进入任意一题,右上角语言选择器把默认语言设为 <span class="kbd">Python3</span>(本站题解都是 Python)。</li>
+          <li>右上角头像 → 设置里可开启<strong>暗色主题</strong>、调字号,和本站对照看更舒服。</li>
+        </ol>
+      </section>
+
+      <section class="detail-section">
+        <h2>② 一道题的完整练习流程</h2>
+        <p class="guide-p">这是本项目期望你养成的核心循环。每题都这样走一遍:</p>
+        <div class="guide-steps">
+          <div class="guide-step"><span class="gs-num">1</span><div><strong>在本站读懂</strong><p>看「题面 → 直觉 → 复杂度 → 多解法」,先把<em>为什么这么做</em>想明白,别急着背代码。</p></div></div>
+          <div class="guide-step"><span class="gs-num">2</span><div><strong>点「去 LeetCode 练习」</strong><p>每道题详情页右上、列表每行右侧都有橙色按钮,新标签打开对应原题。</p></div></div>
+          <div class="guide-step"><span class="gs-num">3</span><div><strong>盖住答案独立写</strong><p>在 LeetCode 代码框里凭理解默写。卡住了再回本站瞄一眼关键句,而不是整段抄。</p></div></div>
+          <div class="guide-step"><span class="gs-num">4</span><div><strong>Run Code 先自测</strong><p>点「执行代码 / Run」用样例跑一遍,看输出对不对、有没有报错。这一步不计入提交。</p></div></div>
+          <div class="guide-step"><span class="gs-num">5</span><div><strong>Submit 提交判题</strong><p>点「提交 / Submit」跑全部隐藏测试。通过(Accepted)后会显示击败百分比 (Runtime / Memory)。</p></div></div>
+          <div class="guide-step"><span class="gs-num">6</span><div><strong>回本站标记 & 记笔记</strong><p>回到本题点「标记完成」,做 1–5 星难度自评,把卡点写进笔记区——这些都存在你本机浏览器里。</p></div></div>
+        </div>
+      </section>
+
+      <section class="detail-section">
+        <h2>③ 看懂 LeetCode 的判题结果</h2>
+        <ul class="guide-list">
+          <li><strong style="color:var(--easy)">Accepted</strong>:通过全部用例,搞定。看一眼 Runtime/Memory 击败比例即可,不必追求 100%。</li>
+          <li><strong style="color:var(--hard)">Wrong Answer</strong>:逻辑错。它会给出<em>出错的那个输入</em>和你的输出 vs 期望输出,照着这个最小用例 debug。</li>
+          <li><strong style="color:var(--hard)">Time Limit Exceeded (TLE)</strong>:思路对但太慢,说明复杂度不达标——回本站看「面试首选 ★」那版更优解法。</li>
+          <li><strong style="color:var(--hard)">Runtime Error</strong>:崩了,通常是越界 / 空指针 / 除零。看报错行号。</li>
+          <li>卡住超过 20–30 分钟很正常,直接回本站看详解,理解后<strong>第二天再裸写一遍</strong>,比硬磕更高效。</li>
+        </ul>
+      </section>
+
+      <section class="detail-section">
+        <h2>④ 高效练习的几个习惯</h2>
+        <ul class="guide-list">
+          <li>📅 <strong>按本站 7 天计划推进</strong>:每个 Day 是一个题型簇,集中练同一类手感更扎实。</li>
+          <li>🔁 <strong>错题二刷</strong>:自评 4–5 星的题用「进度」页找出来,隔几天重做,直到能裸写。</li>
+          <li>⏱️ <strong>限时</strong>:Easy 10 分钟、Medium 20–25 分钟还没思路就看解,不要干耗。</li>
+          <li>🧠 <strong>先讲再写</strong>:能用一句话说清「这题用什么 + 为什么」,再动手写代码。</li>
+          <li>💾 <strong>定期导出进度</strong>:进度页可导出 JSON,换设备 / 清缓存前备份。</li>
+        </ul>
+      </section>
+
+      <section class="detail-section">
+        <h2>⑤ 本站快捷键</h2>
+        <div class="kbd-grid">
+          <div><span class="kbd">/</span> 跳到全部题目并聚焦搜索</div>
+          <div><span class="kbd">←</span> <span class="kbd">→</span> 详情页上一题 / 下一题</div>
+          <div><span class="kbd">O</span> 在 LeetCode 打开当前题</div>
+          <div><span class="kbd">D</span> 切换暗 / 亮主题</div>
+          <div><span class="kbd">Esc</span> 返回首页</div>
+        </div>
+        <p class="guide-p" style="margin-top:24px">
+          准备好了?<a href="#/list">→ 去全部题目</a> 或 <a href="#/day/1">从 Day 1 开始</a>。
+        </p>
+      </section>
+    </div>`;
 }
 
 // ===================== About =====================

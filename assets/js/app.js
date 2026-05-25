@@ -2,7 +2,7 @@
 import { on, start, go } from "./router.js";
 import {
   renderHome, renderDay, renderAll, renderProblem,
-  renderProgress, renderPattern, renderAbout,
+  renderProgress, renderPattern, renderAbout, renderGuide,
 } from "./views.js";
 
 // ===== Theme =====
@@ -31,6 +31,7 @@ const NAV = [
   { path: "#/",          label: "首页"     },
   { path: "#/list",      label: "全部题目" },
   { path: "#/day/1",     label: "7 天计划" },
+  { path: "#/guide",     label: "练习指南" },
   { path: "#/progress",  label: "进度"     },
   { path: "#/about",     label: "关于"     },
 ];
@@ -56,6 +57,7 @@ on(/^#\/day\/(\d+)$/,       renderDay);
 on(/^#\/p\/(\d+)$/,         renderProblem);
 on(/^#\/progress$/,         renderProgress);
 on(/^#\/pattern\/(.+)$/,    renderPattern);
+on(/^#\/guide$/,            renderGuide);
 on(/^#\/about$/,            renderAbout);
 on(/^#\/404$/,              () => {
   document.getElementById("app").innerHTML = `
@@ -91,5 +93,17 @@ document.addEventListener("keydown", e => {
   }
   if (e.key === "Escape") {
     if (location.hash !== "#/") go("/");
+  }
+  // 题目详情页:← / → 翻题,O 打开 LeetCode 原题
+  if (location.hash.startsWith("#/p/") && window.__lc) {
+    if (e.key === "ArrowLeft" && window.__lc.prev) {
+      go(`/p/${window.__lc.prev}`); e.preventDefault();
+    }
+    if (e.key === "ArrowRight" && window.__lc.next) {
+      go(`/p/${window.__lc.next}`); e.preventDefault();
+    }
+    if ((e.key === "o" || e.key === "O") && window.__lc.leetcode) {
+      window.open(window.__lc.leetcode, "_blank", "noopener");
+    }
   }
 });

@@ -16,6 +16,9 @@
   --hard: #dc2626;
   --hard-bg: #fee2e2;
   --star: #eab308;
+  --lc: #ffa116;
+  --lc-bg: #fff4e0;
+  --lc-text: #b8650a;
   --shadow: 0 1px 3px rgba(0,0,0,.05), 0 1px 2px rgba(0,0,0,.03);
   --shadow-md: 0 4px 12px rgba(0,0,0,.06), 0 2px 4px rgba(0,0,0,.04);
   --radius: 10px;
@@ -42,6 +45,8 @@
   --med-bg: #7c2d12;
   --hard: #f87171;
   --hard-bg: #7f1d1d;
+  --lc-bg: #3a2a10;
+  --lc-text: #ffc266;
   --shadow: 0 1px 2px rgba(0,0,0,.4);
   --shadow-md: 0 4px 12px rgba(0,0,0,.5);
 }
@@ -328,7 +333,7 @@ button { font-family: inherit; cursor: pointer; }
 }
 .prob-row {
   display: grid;
-  grid-template-columns: 32px 50px 1fr 90px 110px 100px;
+  grid-template-columns: 32px 50px 1fr 90px 110px 100px 78px;
   gap: 16px;
   padding: 14px 18px;
   border-bottom: 1px solid var(--border);
@@ -416,11 +421,70 @@ button { font-family: inherit; cursor: pointer; }
   font-size: 12px;
   color: var(--text-mute);
 }
+/* ===== LeetCode practice button ===== */
+.lc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--lc);
+  color: var(--lc-text);
+  background: var(--lc-bg);
+  transition: all var(--duration);
+  flex-shrink: 0;
+}
+.lc-btn:hover {
+  background: var(--lc);
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(255, 161, 22, .35);
+}
+.lc-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+.lc-btn.lc-btn-lg { font-size: 14px; padding: 8px 16px; height: 36px; }
+.prob-practice { display: flex; justify-content: flex-end; }
+
+/* ===== Detail prev/next nav ===== */
+.prob-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 40px;
+}
+.prob-nav a {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 14px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+  color: inherit;
+  transition: all var(--duration);
+  min-width: 0;
+}
+.prob-nav a:hover { border-color: var(--accent); text-decoration: none; box-shadow: var(--shadow-md); }
+.prob-nav a.next { text-align: right; align-items: flex-end; }
+.prob-nav .nav-dir { font-size: 12px; color: var(--text-mute); }
+.prob-nav .nav-title {
+  font-weight: 600; font-size: 14px; color: var(--text);
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.prob-nav .nav-empty { opacity: .4; cursor: default; pointer-events: none; }
+
 @media (max-width: 720px) {
   .prob-row {
-    grid-template-columns: 28px 42px 1fr 70px;
+    grid-template-columns: 28px 42px 1fr 70px 40px;
+    gap: 10px;
   }
   .prob-cat, .prob-day { display: none; }
+  /* 窄屏只留图标,避免挤占标题 */
+  .prob-practice .lc-btn span { display: none; }
+  .prob-practice .lc-btn { padding: 6px; }
 }
 
 /* ===== Problem detail ===== */
@@ -940,3 +1004,71 @@ pre.code {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-mute); }
+
+/* ===== Guide page ===== */
+.guide .detail-section { margin-top: 36px; }
+.guide-list { margin: 0; padding-left: 22px; line-height: 1.9; font-size: 14.5px; }
+.guide-list li { margin: 8px 0; }
+.guide-list li em { color: var(--accent); font-style: normal; }
+.guide-p { font-size: 14.5px; line-height: 1.8; color: var(--text-soft); }
+.guide-steps { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
+.guide-step {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 16px 18px; border: 1px solid var(--border);
+  border-radius: var(--radius); background: var(--bg-elev);
+}
+.guide-step .gs-num {
+  flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+  background: var(--accent); color: #fff; font-weight: 700; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+}
+.guide-step strong { display: block; font-size: 15px; margin-bottom: 2px; }
+.guide-step p { margin: 0; font-size: 13.5px; color: var(--text-soft); line-height: 1.7; }
+.guide-step em { color: var(--accent); font-style: normal; font-weight: 600; }
+.kbd-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px; font-size: 14px;
+}
+.kbd-grid > div {
+  padding: 12px 16px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--bg-elev);
+}
+
+/* ===== Solution submit hint ===== */
+.sol-tip {
+  font-size: 13px;
+  color: var(--text-mute);
+  margin: -4px 0 16px;
+  padding: 8px 12px;
+  background: var(--lc-bg);
+  border-left: 3px solid var(--lc);
+  border-radius: var(--radius-sm);
+}
+.sol-tip code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--bg-soft);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+/* ===== Code walkthrough gotchas ===== */
+.gotchas {
+  margin-top: 18px;
+  padding: 14px 18px;
+  background: var(--med-bg);
+  border: 1px solid var(--med);
+  border-radius: var(--radius);
+}
+.gotchas-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--med);
+  margin-bottom: 8px;
+}
+.gotchas ul { margin: 0; padding-left: 20px; }
+.gotchas li { font-size: 14px; line-height: 1.85; color: var(--text); }
+.gotchas li code {
+  font-family: var(--font-mono); font-size: 12px;
+  background: var(--bg-elev); padding: 1px 5px; border-radius: 4px;
+}
