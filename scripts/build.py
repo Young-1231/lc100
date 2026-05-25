@@ -10,8 +10,12 @@ import argparse
 import json
 import re
 import shutil
+import sys
 from pathlib import Path
 from typing import Any
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from standardize_solutions import standardize_problem
 
 DAY_LABEL = {
     "day1_hash_two_pointer_window":         (1, "哈希 / 双指针 / 滑动窗口 / 子串"),
@@ -21,6 +25,40 @@ DAY_LABEL = {
     "day5_graph_backtrack_binary_search":   (5, "图论 / 回溯 / 二分"),
     "day6_stack_heap_greedy":               (6, "栈 / 堆 / 贪心"),
     "day7_dp_multi_dp_tricks":              (7, "DP / 多维DP / 技巧"),
+}
+
+# 题号 -> LeetCode 官方 slug(已逐题对 leetcode.cn 校验,og:title 题号匹配)。
+# 注意:不能用文件名缩写拼 slug,否则约半数题目链接 404。
+SLUG_BY_ID: dict[int, str] = {
+    1: "two-sum", 2: "add-two-numbers", 3: "longest-substring-without-repeating-characters",
+    4: "median-of-two-sorted-arrays", 5: "longest-palindromic-substring", 11: "container-with-most-water",
+    15: "3sum", 17: "letter-combinations-of-a-phone-number", 19: "remove-nth-node-from-end-of-list",
+    20: "valid-parentheses", 21: "merge-two-sorted-lists", 22: "generate-parentheses", 23: "merge-k-sorted-lists",
+    24: "swap-nodes-in-pairs", 25: "reverse-nodes-in-k-group", 31: "next-permutation", 32: "longest-valid-parentheses",
+    33: "search-in-rotated-sorted-array", 34: "find-first-and-last-position-of-element-in-sorted-array",
+    35: "search-insert-position", 39: "combination-sum", 41: "first-missing-positive", 42: "trapping-rain-water",
+    45: "jump-game-ii", 46: "permutations", 48: "rotate-image", 49: "group-anagrams", 51: "n-queens",
+    53: "maximum-subarray", 54: "spiral-matrix", 55: "jump-game", 56: "merge-intervals", 62: "unique-paths",
+    64: "minimum-path-sum", 70: "climbing-stairs", 72: "edit-distance", 73: "set-matrix-zeroes",
+    74: "search-a-2d-matrix", 75: "sort-colors", 76: "minimum-window-substring", 78: "subsets", 79: "word-search",
+    84: "largest-rectangle-in-histogram", 94: "binary-tree-inorder-traversal", 98: "validate-binary-search-tree",
+    101: "symmetric-tree", 102: "binary-tree-level-order-traversal", 104: "maximum-depth-of-binary-tree",
+    105: "construct-binary-tree-from-preorder-and-inorder-traversal", 108: "convert-sorted-array-to-binary-search-tree",
+    114: "flatten-binary-tree-to-linked-list", 118: "pascals-triangle", 121: "best-time-to-buy-and-sell-stock",
+    124: "binary-tree-maximum-path-sum", 128: "longest-consecutive-sequence", 131: "palindrome-partitioning",
+    136: "single-number", 138: "copy-list-with-random-pointer", 139: "word-break", 141: "linked-list-cycle",
+    142: "linked-list-cycle-ii", 146: "lru-cache", 148: "sort-list", 152: "maximum-product-subarray",
+    153: "find-minimum-in-rotated-sorted-array", 155: "min-stack", 160: "intersection-of-two-linked-lists",
+    169: "majority-element", 189: "rotate-array", 198: "house-robber", 199: "binary-tree-right-side-view",
+    200: "number-of-islands", 206: "reverse-linked-list", 207: "course-schedule", 208: "implement-trie-prefix-tree",
+    215: "kth-largest-element-in-an-array", 226: "invert-binary-tree", 230: "kth-smallest-element-in-a-bst",
+    234: "palindrome-linked-list", 236: "lowest-common-ancestor-of-a-binary-tree", 238: "product-of-array-except-self",
+    239: "sliding-window-maximum", 240: "search-a-2d-matrix-ii", 279: "perfect-squares", 283: "move-zeroes",
+    287: "find-the-duplicate-number", 295: "find-median-from-data-stream", 300: "longest-increasing-subsequence",
+    322: "coin-change", 347: "top-k-frequent-elements", 394: "decode-string", 416: "partition-equal-subset-sum",
+    437: "path-sum-iii", 438: "find-all-anagrams-in-a-string", 543: "diameter-of-binary-tree",
+    560: "subarray-sum-equals-k", 739: "daily-temperatures", 763: "partition-labels", 994: "rotting-oranges",
+    1143: "longest-common-subsequence",
 }
 
 CATEGORY_BY_ID: dict[int, str] = {
@@ -199,18 +237,12 @@ def parse_problem(py_path: Path, day: int, day_title: str) -> dict[str, Any]:
     # category 归类(用人工 map 兜底)
     category = CATEGORY_BY_ID.get(num, tag_text.split("/")[-1].strip() or "其他")
 
-    # leetcode url:用文件名 slug 拼
-    slug = py_path.stem.split("_", 1)[1] if "_" in py_path.stem else ""
-    slug = slug.replace("_", "-")
-    url_map_special = {
-        "p146_lru_cache": "lru-cache",
-        "p208_trie": "implement-trie-prefix-tree",
-        "p155_min_stack": "min-stack",
-        "p295_median_data_stream": "find-median-from-data-stream",
-        "p1143_lcs": "longest-common-subsequence",
-        "p128_longest_consecutive": "longest-consecutive-sequence",
-    }
-    leet_slug = url_map_special.get(py_path.stem, slug)
+    # leetcode url:优先用权威题号->slug 映射(SLUG_BY_ID),
+    # 仅当题号缺失时才退回文件名拼 slug(并告警,提醒补全映射)。
+    leet_slug = SLUG_BY_ID.get(num)
+    if not leet_slug:
+        leet_slug = (py_path.stem.split("_", 1)[1] if "_" in py_path.stem else "").replace("_", "-")
+        print(f"  ⚠ 题 {num} ({py_path.stem}) 缺少 SLUG_BY_ID 映射,退回文件名 slug='{leet_slug}',请补全。")
     leet_url = f"https://leetcode.cn/problems/{leet_slug}/"
 
     return {
@@ -347,6 +379,12 @@ def main() -> None:
     if expl_path.exists():
         explanations = json.loads(expl_path.read_text(encoding="utf-8"))
 
+    # 读取手写「代码逐行讲解 + 注意点」(独立文件,重建时不会丢)
+    ce_path = dst / "data" / "code_explain.json"
+    code_explains: dict[str, dict] = {}
+    if ce_path.exists():
+        code_explains = json.loads(ce_path.read_text(encoding="utf-8"))
+
     all_problems: list[dict[str, Any]] = []
     days: dict[int, dict[str, Any]] = {}
 
@@ -358,10 +396,16 @@ def main() -> None:
         day_problems: list[int] = []
         for py in sorted(day_path.glob("p*.py")):
             data = parse_problem(py, day_idx, day_title)
+            # 把解法代码标准化成 LeetCode 可直接提交的 class Solution(方法名规范化、内联依赖、补 import)
+            standardize_problem(data)
             # 合并手写解释
             expl = explanations.get(str(data["id"]))
             if expl and not str(expl.get("short", "")).startswith("_"):
                 data["explanation"] = expl
+            # 合并代码逐行讲解
+            ce = code_explains.get(str(data["id"]))
+            if ce:
+                data["code_explain"] = ce
             (problems_dir / f"p{data['id']:04d}.json").write_text(
                 json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
             )
