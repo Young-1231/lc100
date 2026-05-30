@@ -15,12 +15,12 @@ import heapq
 
 
 class Solution:
-    # 解法 1:小顶堆 ★ — O(n log k)
+    # 解法 1:小顶堆 ★ — O(n log k) / O(n+k)
     def topKFrequent(self, nums: list[int], k: int) -> list[int]:
         cnt = Counter(nums)
         return [x for x, _ in heapq.nlargest(k, cnt.items(), key=lambda kv: kv[1])]
 
-    # 解法 2:桶排序 — O(n)
+    # 解法 2:桶排序 — O(n) / O(n)
     def topKFrequent_bucket(self, nums: list[int], k: int) -> list[int]:
         cnt = Counter(nums)
         buckets: list[list[int]] = [[] for _ in range(len(nums) + 1)]

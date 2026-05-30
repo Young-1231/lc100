@@ -33,7 +33,7 @@
       "method": "maxSubArray_divide",
       "title": "分治",
       "time": "O(n log n)",
-      "space": "",
+      "space": "O(log n)",
       "starred": false,
       "code": "class Solution:\n    def maxSubArray(self, nums: list[int]) -> int:\n        def solve(l, r):\n            if l == r:\n                return nums[l], nums[l], nums[l], nums[l]\n            m = (l + r) // 2\n            l_total, l_left, l_right, l_max = solve(l, m)\n            r_total, r_left, r_right, r_max = solve(m + 1, r)\n            total = l_total + r_total\n            left = max(l_left, l_total + r_left)\n            right = max(r_right, r_total + l_right)\n            best = max(l_max, r_max, l_right + r_left)\n            return total, left, right, best\n        return solve(0, len(nums) - 1)[3]\n"
     }

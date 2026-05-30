@@ -17,7 +17,7 @@
       "method": "topKFrequent",
       "title": "小顶堆",
       "time": "O(n log k)",
-      "space": "",
+      "space": "O(n+k)",
       "starred": true,
       "code": "from collections import Counter\nimport heapq\n\nclass Solution:\n    def topKFrequent(self, nums: list[int], k: int) -> list[int]:\n        cnt = Counter(nums)\n        return [x for x, _ in heapq.nlargest(k, cnt.items(), key=lambda kv: kv[1])]\n"
     },
@@ -25,7 +25,7 @@
       "method": "topKFrequent_bucket",
       "title": "桶排序",
       "time": "O(n)",
-      "space": "",
+      "space": "O(n)",
       "starred": false,
       "code": "from collections import Counter\n\nclass Solution:\n    def topKFrequent(self, nums: list[int], k: int) -> list[int]:\n        cnt = Counter(nums)\n        buckets: list[list[int]] = [[] for _ in range(len(nums) + 1)]\n        for x, c in cnt.items():\n            buckets[c].append(x)\n        out: list[int] = []\n        for f in range(len(buckets) - 1, 0, -1):\n            for x in buckets[f]:\n                out.append(x)\n                if len(out) == k:\n                    return out\n        return out\n"
     }

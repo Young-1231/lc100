@@ -18,7 +18,7 @@
       "method": "subsets",
       "title": "迭代倍增",
       "time": "O(n·2ⁿ)",
-      "space": "",
+      "space": "O(n·2ⁿ)",
       "starred": true,
       "code": "class Solution:\n    def subsets(self, nums: list[int]) -> list[list[int]]:\n        out = [[]]\n        for x in nums:\n            out += [s + [x] for s in out]\n        return out\n"
     },
@@ -26,7 +26,7 @@
       "method": "subsets_backtrack",
       "title": "回溯",
       "time": "O(n·2ⁿ)",
-      "space": "",
+      "space": "O(n)",
       "starred": false,
       "code": "class Solution:\n    def subsets(self, nums: list[int]) -> list[list[int]]:\n        ans, path = [], []\n\n        def bt(i):\n            if i == len(nums):\n                ans.append(path[:])\n                return\n            bt(i + 1)\n            path.append(nums[i])\n            bt(i + 1)\n            path.pop()\n\n        bt(0)\n        return ans\n"
     },
@@ -34,7 +34,7 @@
       "method": "subsets_bitmask",
       "title": "位掩码",
       "time": "O(n·2ⁿ)",
-      "space": "",
+      "space": "O(n)",
       "starred": false,
       "code": "class Solution:\n    def subsets(self, nums: list[int]) -> list[list[int]]:\n        n = len(nums)\n        out = []\n        for mask in range(1 << n):\n            sub = [nums[i] for i in range(n) if mask & (1 << i)]\n            out.append(sub)\n        return out\n"
     }

@@ -16,7 +16,7 @@
       "method": "groupAnagrams_sort",
       "title": "排序作 key",
       "time": "O(n·k log k)",
-      "space": "",
+      "space": "O(n·k)",
       "starred": false,
       "code": "from collections import defaultdict\n\nclass Solution:\n    def groupAnagrams(self, strs: list[str]) -> list[list[str]]:\n        bucket: dict[str, list[str]] = defaultdict(list)\n        for s in strs:\n            bucket[\"\".join(sorted(s))].append(s)\n        return list(bucket.values())\n"
     },
@@ -24,7 +24,7 @@
       "method": "groupAnagrams",
       "title": "计数元组作 key",
       "time": "O(n·k)",
-      "space": "",
+      "space": "O(n·k)",
       "starred": true,
       "code": "from collections import defaultdict\n\nclass Solution:\n    def groupAnagrams(self, strs: list[str]) -> list[list[str]]:\n        bucket: dict[tuple, list[str]] = defaultdict(list)\n        for s in strs:\n            cnt = [0] * 26\n            for c in s:\n                cnt[ord(c) - 97] += 1\n            bucket[tuple(cnt)].append(s)\n        return list(bucket.values())\n"
     }

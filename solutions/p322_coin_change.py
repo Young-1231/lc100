@@ -13,7 +13,7 @@ from functools import lru_cache
 
 
 class Solution:
-    # 解法 1:DP 完全背包 ★ — O(amount·c)
+    # 解法 1:DP 完全背包 ★ — O(amount·c) / O(amount)
     def coinChange(self, coins: list[int], amount: int) -> int:
         INF = amount + 1
         f = [0] + [INF] * amount
@@ -23,7 +23,7 @@ class Solution:
                     f[x] = min(f[x], f[x - c] + 1)
         return -1 if f[amount] == INF else f[amount]
 
-    # 解法 2:DFS + 记忆化 — O(amount·c)
+    # 解法 2:DFS + 记忆化 — O(amount·c) / O(amount)
     def coinChange_memo(self, coins: list[int], amount: int) -> int:
         @lru_cache(None)
         def dfs(x):

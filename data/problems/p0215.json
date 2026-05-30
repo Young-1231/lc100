@@ -17,7 +17,7 @@
       "method": "findKthLargest_sort",
       "title": "排序",
       "time": "O(n log n)",
-      "space": "",
+      "space": "O(1)",
       "starred": false,
       "code": "class Solution:\n    def findKthLargest(self, nums: list[int], k: int) -> int:\n        return sorted(nums)[-k]\n"
     },
@@ -25,7 +25,7 @@
       "method": "findKthLargest",
       "title": "小顶堆",
       "time": "O(n log k)",
-      "space": "",
+      "space": "O(k)",
       "starred": true,
       "code": "import heapq\n\nclass Solution:\n    def findKthLargest(self, nums: list[int], k: int) -> int:\n        h: list[int] = []\n        for x in nums:\n            heapq.heappush(h, x)\n            if len(h) > k:\n                heapq.heappop(h)\n        return h[0]\n"
     },
@@ -33,7 +33,7 @@
       "method": "findKthLargest_quick",
       "title": "快速选择",
       "time": "O(n)",
-      "space": "",
+      "space": "O(log n)",
       "starred": false,
       "code": "import random\n\nclass Solution:\n    def findKthLargest(self, nums: list[int], k: int) -> int:\n        nums = nums[:]\n        target = len(nums) - k\n\n        def partition(l, r):\n            p = random.randint(l, r)\n            nums[p], nums[r] = nums[r], nums[p]\n            pivot = nums[r]\n            store = l\n            for i in range(l, r):\n                if nums[i] < pivot:\n                    nums[store], nums[i] = nums[i], nums[store]\n                    store += 1\n            nums[store], nums[r] = nums[r], nums[store]\n            return store\n\n        l, r = 0, len(nums) - 1\n        while True:\n            p = partition(l, r)\n            if p == target:\n                return nums[p]\n            if p < target:\n                l = p + 1\n            else:\n                r = p - 1\n"
     }

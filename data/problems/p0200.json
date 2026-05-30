@@ -26,7 +26,7 @@
       "method": "numIslands_bfs",
       "title": "BFS",
       "time": "O(mn)",
-      "space": "O(min(m,n)",
+      "space": "O(min(m,n))",
       "starred": false,
       "code": "from collections import deque\n\nclass Solution:\n    def numIslands(self, grid: list[list[str]]) -> int:\n        if not grid:\n            return 0\n        m, n = len(grid), len(grid[0])\n        cnt = 0\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] != '1':\n                    continue\n                cnt += 1\n                q = deque([(i, j)])\n                grid[i][j] = '0'\n                while q:\n                    x, y = q.popleft()\n                    for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):\n                        nx, ny = x + dx, y + dy\n                        if 0 <= nx < m and 0 <= ny < n and grid[nx][ny] == '1':\n                            grid[nx][ny] = '0'\n                            q.append((nx, ny))\n        return cnt\n"
     },

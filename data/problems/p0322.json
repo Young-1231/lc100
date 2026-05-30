@@ -16,7 +16,7 @@
       "method": "coinChange",
       "title": "DP 完全背包",
       "time": "O(amount·c)",
-      "space": "",
+      "space": "O(amount)",
       "starred": true,
       "code": "class Solution:\n    def coinChange(self, coins: list[int], amount: int) -> int:\n        INF = amount + 1\n        f = [0] + [INF] * amount\n        for x in range(1, amount + 1):\n            for c in coins:\n                if c <= x:\n                    f[x] = min(f[x], f[x - c] + 1)\n        return -1 if f[amount] == INF else f[amount]\n"
     },
@@ -24,7 +24,7 @@
       "method": "coinChange_memo",
       "title": "DFS + 记忆化",
       "time": "O(amount·c)",
-      "space": "",
+      "space": "O(amount)",
       "starred": false,
       "code": "from functools import lru_cache\n\nclass Solution:\n    def coinChange(self, coins: list[int], amount: int) -> int:\n        @lru_cache(None)\n        def dfs(x):\n            if x == 0:\n                return 0\n            if x < 0:\n                return -1\n            best = float(\"inf\")\n            for c in coins:\n                sub = dfs(x - c)\n                if sub != -1:\n                    best = min(best, sub + 1)\n            return best if best != float(\"inf\") else -1\n        return dfs(amount)\n"
     }

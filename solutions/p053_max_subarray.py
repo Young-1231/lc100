@@ -35,7 +35,7 @@ class Solution:
             min_pre = min(min_pre, s)
         return best
 
-    # 解法 3:分治 — O(n log n)
+    # 解法 3:分治 — O(n log n) / O(log n)
     def maxSubArray_divide(self, nums: list[int]) -> int:
         def solve(l, r):
             if l == r:

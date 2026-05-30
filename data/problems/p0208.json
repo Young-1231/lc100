@@ -7,7 +7,7 @@
   ],
   "day": 5,
   "day_title": "图论 / 回溯 / 二分",
-  "category": "图论",
+  "category": "字典树",
   "leetcode_url": "https://leetcode.cn/problems/implement-trie-prefix-tree/",
   "filename": "p208_trie.py",
   "doc": "🔹 直觉\n    每节点用 dict 保存子节点;is_end 标记完整单词。\n    insert/search/startsWith 均 O(L)。",

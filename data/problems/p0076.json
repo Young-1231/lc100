@@ -24,7 +24,7 @@
       "method": "minWindow_naive",
       "title": "滑窗 + Counter 直接对比",
       "time": "O(n·|Σ|)",
-      "space": "",
+      "space": "O(|Σ|)",
       "starred": false,
       "code": "from collections import Counter\n\nclass Solution:\n    def minWindow(self, s: str, t: str) -> str:\n        if len(s) < len(t):\n            return \"\"\n        need = Counter(t)\n        win: Counter = Counter()\n        l = 0\n        best = (float(\"inf\"), 0, 0)\n        for r, c in enumerate(s):\n            win[c] += 1\n            while all(win[k] >= v for k, v in need.items()):\n                if r - l + 1 < best[0]:\n                    best = (r - l + 1, l, r + 1)\n                win[s[l]] -= 1\n                l += 1\n        return \"\" if best[0] == float(\"inf\") else s[best[1]:best[2]]\n"
     }

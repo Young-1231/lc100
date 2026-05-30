@@ -10,14 +10,14 @@
 
 
 class Solution:
-    # 解法 1:迭代倍增 ★ — O(n·2ⁿ)
+    # 解法 1:迭代倍增 ★ — O(n·2ⁿ) / O(n·2ⁿ)
     def subsets(self, nums: list[int]) -> list[list[int]]:
         out = [[]]
         for x in nums:
             out += [s + [x] for s in out]
         return out
 
-    # 解法 2:回溯 — O(n·2ⁿ)
+    # 解法 2:回溯 — O(n·2ⁿ) / O(n)
     def subsets_backtrack(self, nums: list[int]) -> list[list[int]]:
         ans, path = [], []
 
@@ -33,7 +33,7 @@ class Solution:
         bt(0)
         return ans
 
-    # 解法 3:位掩码 — O(n·2ⁿ)
+    # 解法 3:位掩码 — O(n·2ⁿ) / O(n)
     def subsets_bitmask(self, nums: list[int]) -> list[list[int]]:
         n = len(nums)
         out = []

@@ -30,7 +30,7 @@
     },
     {
       "method": "threeSum_hash",
-      "title": "排序 + 哈希(每对 a, b 在剩余里查",
+      "title": "排序 + 哈希(每对 a, b 在剩余里查 -a-b)",
       "time": "O(n²)",
       "space": "O(n)",
       "starred": false,
