@@ -52,5 +52,27 @@
       "用 `tuple(cnt)` 当 key:列表 list 不可哈希、不能当字典 key,元组 tuple 可以。",
       "字母计数相同即互为异位词,比「排序字符串当 key」更快(O(n) 对 O(n log n))。"
     ]
+  },
+  "statement": {
+    "description": "给你一个字符串数组,请你将 **字母异位词** 组合在一起。可以按任意顺序返回结果列表。\n\n**字母异位词** 是由重新排列源单词的所有字母得到的一个新单词。",
+    "examples": [
+      {
+        "input": "strs = [\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]",
+        "output": "[[\"bat\"],[\"nat\",\"tan\"],[\"ate\",\"eat\",\"tea\"]]"
+      },
+      {
+        "input": "strs = [\"\"]",
+        "output": "[[\"\"]]"
+      },
+      {
+        "input": "strs = [\"a\"]",
+        "output": "[[\"a\"]]"
+      }
+    ],
+    "constraints": [
+      "1 <= strs.length <= 10^4",
+      "0 <= strs[i].length <= 100",
+      "strs[i] 仅包含小写字母"
+    ]
   }
 }

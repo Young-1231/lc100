@@ -62,5 +62,23 @@
       "找中点 + 反转后半 + 双向比较,O(n) 时间、O(1) 空间。",
       "只需比到 `right` 走完(后半较短或等长),无需比整条。"
     ]
+  },
+  "statement": {
+    "description": "给你一个单链表的头节点 `head` ,请你判断该链表是否为回文链表。如果是,返回 `true` ;否则,返回 `false` 。",
+    "examples": [
+      {
+        "input": "head = [1,2,2,1]",
+        "output": "true"
+      },
+      {
+        "input": "head = [1,2]",
+        "output": "false"
+      }
+    ],
+    "constraints": [
+      "链表中节点数目在范围 [1, 10^5] 内",
+      "0 <= Node.val <= 9"
+    ],
+    "follow_up": "你能否用 O(n) 时间复杂度和 O(1) 空间复杂度解决此题?"
   }
 }

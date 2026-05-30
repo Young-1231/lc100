@@ -44,5 +44,23 @@
       "先记录每个字母**最后出现位置**;遍历时把片段右界不断扩到当前字母的最后位置。",
       "当下标 i == 当前片段右界 end 时,说明段内字母都不再出现于后面,可切。"
     ]
+  },
+  "statement": {
+    "description": "给你一个字符串 `s` 。我们要把这个字符串划分为尽可能多的片段,同一字母最多出现在一个片段中。\n\n注意,划分结果需要满足:将所有划分结果按顺序连接,得到的字符串仍然是 `s` 。\n\n返回一个表示每个字符串片段的长度的列表。",
+    "examples": [
+      {
+        "input": "s = \"ababcbacadefegdehijhklij\"",
+        "output": "[9,7,8]",
+        "explanation": "划分结果为 \"ababcbaca\"、\"defegde\"、\"hijhklij\" 。\n每个字母最多出现在一个片段中。\n像 \"ababcbacadefegde\", \"hijhklij\" 这样的划分是不正确的,因为划分的片段数较少。"
+      },
+      {
+        "input": "s = \"eccbbbbdec\"",
+        "output": "[10]"
+      }
+    ],
+    "constraints": [
+      "1 <= s.length <= 500",
+      "s 仅由小写英文字母组成"
+    ]
   }
 }

@@ -56,5 +56,23 @@
       "镜像比较是「外侧对外侧、内侧对内侧」:`a.left vs b.right`、`a.right vs b.left`。",
       "先处理两个都空 / 只有一个空的边界。"
     ]
+  },
+  "statement": {
+    "description": "给你一个二叉树的根节点 `root` , 检查它是否轴对称。",
+    "examples": [
+      {
+        "input": "root = [1,2,2,3,4,4,3]",
+        "output": "true"
+      },
+      {
+        "input": "root = [1,2,2,null,3,null,3]",
+        "output": "false"
+      }
+    ],
+    "constraints": [
+      "树中节点数目在范围 [1, 1000] 内",
+      "-100 <= Node.val <= 100"
+    ],
+    "follow_up": "你可以运用递归和迭代两种方法解决这个问题吗?"
   }
 }

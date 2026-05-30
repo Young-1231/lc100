@@ -52,5 +52,28 @@
       "完全背包:每种硬币可用多次,外层遍历金额、内层遍历硬币。",
       "用 `INF=amount+1` 当哨兵判断是否凑不出(最多 amount 枚 1 元,绝到不了 amount+1)。"
     ]
+  },
+  "statement": {
+    "description": "给你一个整数数组 `coins` ,表示不同面额的硬币;以及一个整数 `amount` ,表示总金额。\n\n计算并返回可以凑成总金额所需的 **最少的硬币个数** 。如果没有任何一种硬币组合能组成总金额,返回 `-1` 。\n\n你可以认为每种硬币的数量是无限的。",
+    "examples": [
+      {
+        "input": "coins = [1,2,5], amount = 11",
+        "output": "3",
+        "explanation": "11 = 5 + 5 + 1"
+      },
+      {
+        "input": "coins = [2], amount = 3",
+        "output": "-1"
+      },
+      {
+        "input": "coins = [1], amount = 0",
+        "output": "0"
+      }
+    ],
+    "constraints": [
+      "1 <= coins.length <= 12",
+      "1 <= coins[i] <= 2^31 - 1",
+      "0 <= amount <= 10^4"
+    ]
   }
 }

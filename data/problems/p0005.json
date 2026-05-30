@@ -62,5 +62,23 @@
       "回文有奇/偶两种中心:分别从 `(i,i)` 和 `(i,i+1)` 扩展。",
       "expand 退出时 l、r 各多走一步,所以返回 `l+1, r-1`。"
     ]
+  },
+  "statement": {
+    "description": "给你一个字符串 `s`,找到 `s` 中最长的 **回文子串**。",
+    "examples": [
+      {
+        "input": "s = \"babad\"",
+        "output": "\"bab\"",
+        "explanation": "\"aba\" 同样是符合题意的答案。"
+      },
+      {
+        "input": "s = \"cbbd\"",
+        "output": "\"bb\""
+      }
+    ],
+    "constraints": [
+      "1 <= s.length <= 1000",
+      "s 仅由数字和英文字母组成"
+    ]
   }
 }

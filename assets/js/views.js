@@ -43,6 +43,57 @@ function escInlineMd(s) {
   return r;
 }
 
+// Inline renderer tuned for problem statements: like escInlineMd but also
+// prettifies math — x^y → superscript, <= / >= → ≤ / ≥.
+function escStmt(s) {
+  let r = escapeHtml(s);
+  r = r.replace(/\^([0-9a-zA-Z]+)/g, (_, p) => `<sup>${p}</sup>`);
+  r = r.replace(/&lt;=/g, "≤").replace(/&gt;=/g, "≥");
+  r = r.replace(/`([^`]+)`/g, (_, c) => `<code>${c}</code>`);
+  r = r.replace(/\*\*([^*]+)\*\*/g, (_, c) => `<strong>${c}</strong>`);
+  return r;
+}
+
+// Render the description body: blank-line-separated blocks; a block whose lines
+// all start with "- " becomes a <ul>, otherwise a <p> with <br> line breaks.
+function renderStmtDesc(text) {
+  if (!text) return "";
+  const blocks = String(text).replace(/\r\n/g, "\n").split(/\n\s*\n/);
+  return blocks.map(b => {
+    const lines = b.split("\n").filter(l => l.trim() !== "");
+    if (!lines.length) return "";
+    if (lines.every(l => /^\s*[-*]\s+/.test(l))) {
+      return `<ul>${lines.map(l => `<li>${escStmt(l.replace(/^\s*[-*]\s+/, ""))}</li>`).join("")}</ul>`;
+    }
+    return `<p>${lines.map(escStmt).join("<br>")}</p>`;
+  }).join("");
+}
+
+// Render the full structured problem statement (description / examples / constraints).
+function renderStatement(stmt) {
+  if (!stmt) return "";
+  const desc = stmt.description ? `<div class="stmt-desc md">${renderStmtDesc(stmt.description)}</div>` : "";
+  const examples = Array.isArray(stmt.examples) && stmt.examples.length
+    ? `<div class="stmt-examples">${stmt.examples.map((ex, i) => `
+        <div class="example-card">
+          <div class="ex-title">示例 ${i + 1}</div>
+          ${ex.input  != null ? `<div class="ex-row"><span class="ex-label">输入</span><code class="ex-val">${escapeHtml(ex.input)}</code></div>` : ""}
+          ${ex.output != null ? `<div class="ex-row"><span class="ex-label">输出</span><code class="ex-val">${escapeHtml(ex.output)}</code></div>` : ""}
+          ${ex.explanation ? `<div class="ex-row ex-expl"><span class="ex-label">解释</span><span class="ex-val">${escStmt(ex.explanation).replace(/\n/g, "<br>")}</span></div>` : ""}
+        </div>`).join("")}</div>`
+    : "";
+  const constraints = Array.isArray(stmt.constraints) && stmt.constraints.length
+    ? `<div class="stmt-constraints">
+         <div class="stmt-sub">提示</div>
+         <ul>${stmt.constraints.map(c => `<li>${escStmt(c)}</li>`).join("")}</ul>
+       </div>`
+    : "";
+  const followUp = stmt.follow_up
+    ? `<div class="stmt-followup"><span class="stmt-sub">进阶</span> ${escStmt(stmt.follow_up)}</div>`
+    : "";
+  return `<div class="statement">${desc}${examples}${constraints}${followUp}</div>`;
+}
+
 function diffClass(d) {
   d = (d || "").toLowerCase();
   if (d.startsWith("e")) return "easy";
@@ -369,8 +420,13 @@ export async function renderProblem(id) {
       </div>
       <div class="detail-layout">
         <article id="detail-main">
+          ${data.statement ? `
+          <section class="detail-section statement-section" id="sec-statement">
+            <h2>📋 题目描述 <span class="badge">完整题面</span></h2>
+            ${renderStatement(data.statement)}
+          </section>` : ""}
           <section class="detail-section" id="sec-doc">
-            <h2>题面 & 直觉</h2>
+            <h2>💡 思路 & 直觉</h2>
             <div class="md">${renderDoc(data.doc)}</div>
           </section>
           ${data.viz ? `
@@ -478,7 +534,8 @@ export async function renderProblem(id) {
         <aside class="toc">
           <div class="toc-title">本页目录</div>
           <ol>
-            <li><a href="#sec-doc">题面 & 直觉</a></li>
+            ${data.statement ? `<li><a href="#sec-statement">📋 题目描述</a></li>` : ""}
+            <li><a href="#sec-doc">💡 思路 & 直觉</a></li>
             ${data.viz ? `<li><a href="#sec-viz">可视化</a></li>` : ""}
             ${data.explanation ? `<li><a href="#sec-expl">💡 解题思路</a></li>` : ""}
             ${data.explanation && data.explanation.complexity ? `<li><a href="#sec-complexity">🧮 复杂度推导</a></li>` : ""}

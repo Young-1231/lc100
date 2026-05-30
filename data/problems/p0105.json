@@ -65,5 +65,27 @@
       "用哈希表存中序下标,避免每次线性查找(否则 O(n²))。",
       "`left_len = i - il` 用来切分前序区间。"
     ]
+  },
+  "statement": {
+    "description": "给定两个整数数组 `preorder` 和 `inorder` ,其中 `preorder` 是二叉树的 **先序遍历** , `inorder` 是同一棵树的 **中序遍历** ,请构造二叉树并返回其根节点。",
+    "examples": [
+      {
+        "input": "preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]",
+        "output": "[3,9,20,null,null,15,7]"
+      },
+      {
+        "input": "preorder = [-1], inorder = [-1]",
+        "output": "[-1]"
+      }
+    ],
+    "constraints": [
+      "1 <= preorder.length <= 3000",
+      "inorder.length == preorder.length",
+      "-3000 <= preorder[i], inorder[i] <= 3000",
+      "preorder 和 inorder 均 无重复 元素",
+      "inorder 均出现在 preorder",
+      "preorder 保证 为二叉树的前序遍历序列",
+      "inorder 保证 为二叉树的中序遍历序列"
+    ]
   }
 }

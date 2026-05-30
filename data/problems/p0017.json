@@ -44,5 +44,26 @@
       "回溯三步:选(append)→ 递归 → 撤销(pop)。",
       "用下标 i 表示「处理到第几个数字」,到末尾就收集。"
     ]
+  },
+  "statement": {
+    "description": "给定一个仅包含数字 `2-9` 的字符串,返回所有它能表示的字母组合。答案可以按 **任意顺序** 返回。\n\n给出数字到字母的映射如下(与电话按键相同)。注意 `1` 不对应任何字母。\n\n- `2` → abc\n- `3` → def\n- `4` → ghi\n- `5` → jkl\n- `6` → mno\n- `7` → pqrs\n- `8` → tuv\n- `9` → wxyz",
+    "examples": [
+      {
+        "input": "digits = \"23\"",
+        "output": "[\"ad\",\"ae\",\"af\",\"bd\",\"be\",\"bf\",\"cd\",\"ce\",\"cf\"]"
+      },
+      {
+        "input": "digits = \"\"",
+        "output": "[]"
+      },
+      {
+        "input": "digits = \"2\"",
+        "output": "[\"a\",\"b\",\"c\"]"
+      }
+    ],
+    "constraints": [
+      "0 <= digits.length <= 4",
+      "digits[i] 是范围 ['2', '9'] 的一个数字"
+    ]
   }
 }

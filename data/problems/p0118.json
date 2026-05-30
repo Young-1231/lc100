@@ -44,5 +44,21 @@
       "每行两端是 1,中间 `row[c] = 上一行[c-1] + 上一行[c]`。",
       "第 r 行(从 0 计)有 r+1 个数。"
     ]
+  },
+  "statement": {
+    "description": "给定一个非负整数 `numRows`,生成「杨辉三角」的前 `numRows` 行。\n\n在「杨辉三角」中,每个数是它左上方和右上方的数的和。",
+    "examples": [
+      {
+        "input": "numRows = 5",
+        "output": "[[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]"
+      },
+      {
+        "input": "numRows = 1",
+        "output": "[[1]]"
+      }
+    ],
+    "constraints": [
+      "1 <= numRows <= 30"
+    ]
   }
 }

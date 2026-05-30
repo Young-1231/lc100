@@ -1072,3 +1072,91 @@ pre.code {
   font-family: var(--font-mono); font-size: 12px;
   background: var(--bg-elev); padding: 1px 5px; border-radius: 4px;
 }
+
+/* ===== Problem statement (题目描述) ===== */
+.statement-section {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+}
+.statement-section > h2 { margin-top: 0; }
+.stmt-desc { font-size: 15px; line-height: 1.85; color: var(--text); }
+.stmt-desc p { margin: 0 0 12px; }
+.stmt-desc p:last-child { margin-bottom: 0; }
+.stmt-desc sup { font-size: 0.72em; }
+.stmt-desc code {
+  font-family: var(--font-mono); font-size: 0.86em;
+  background: var(--bg-soft); color: var(--accent);
+  padding: 1px 5px; border-radius: 4px;
+}
+
+.stmt-examples {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  margin: 18px 0 6px;
+}
+.example-card {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+.ex-title {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.03em;
+  color: var(--text-mute); margin-bottom: 8px; text-transform: uppercase;
+}
+.ex-row {
+  display: flex; gap: 8px; align-items: baseline;
+  margin-bottom: 6px; font-size: 13.5px; line-height: 1.7;
+}
+.ex-row:last-child { margin-bottom: 0; }
+.ex-label {
+  flex: 0 0 auto; min-width: 32px;
+  font-weight: 600; color: var(--text-soft); font-size: 12.5px;
+}
+.ex-val {
+  font-family: var(--font-mono); font-size: 12.5px;
+  color: var(--text); word-break: break-word; white-space: pre-wrap;
+}
+.ex-expl .ex-val {
+  font-family: inherit; font-size: 13px; color: var(--text-soft); line-height: 1.75;
+}
+.ex-expl .ex-val sup { font-size: 0.72em; }
+.ex-expl .ex-val code {
+  font-family: var(--font-mono); font-size: 0.86em;
+  background: var(--bg-elev); padding: 1px 4px; border-radius: 4px;
+}
+
+.stmt-constraints { margin-top: 18px; }
+.stmt-sub {
+  font-size: 13px; font-weight: 700; color: var(--text-soft);
+  letter-spacing: 0.02em;
+}
+.stmt-constraints ul {
+  margin: 8px 0 0; padding-left: 20px;
+  list-style: none;
+}
+.stmt-constraints li {
+  position: relative; padding-left: 2px;
+  font-family: var(--font-mono); font-size: 13px; line-height: 1.95;
+  color: var(--text-soft);
+}
+.stmt-constraints li::before {
+  content: "•"; position: absolute; left: -14px; color: var(--accent);
+}
+.stmt-constraints li sup { font-size: 0.72em; }
+.stmt-constraints li code {
+  font-family: var(--font-mono);
+  background: var(--bg-soft); color: var(--accent);
+  padding: 0 4px; border-radius: 4px;
+}
+.stmt-followup {
+  margin-top: 16px; padding: 10px 14px;
+  background: var(--accent-soft);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px; line-height: 1.75; color: var(--text);
+}
+.stmt-followup .stmt-sub { color: var(--accent); margin-right: 4px; }

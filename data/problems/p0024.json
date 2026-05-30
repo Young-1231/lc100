@@ -61,5 +61,26 @@
       "改指针顺序不能乱:先 `prev.next=b`,再 `a.next=b.next`,最后 `b.next=a`。",
       "循环条件 `prev.next and prev.next.next`:剩单个结点就停。"
     ]
+  },
+  "statement": {
+    "description": "给你一个链表,两两交换其中相邻的节点,并返回交换后链表的头节点。你必须在不修改节点内部的值的情况下完成本题(即,只能进行节点交换)。",
+    "examples": [
+      {
+        "input": "head = [1,2,3,4]",
+        "output": "[2,1,4,3]"
+      },
+      {
+        "input": "head = []",
+        "output": "[]"
+      },
+      {
+        "input": "head = [1]",
+        "output": "[1]"
+      }
+    ],
+    "constraints": [
+      "链表中节点的数目在范围 [0, 100] 内",
+      "0 <= Node.val <= 100"
+    ]
   }
 }
