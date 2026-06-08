@@ -45,5 +45,16 @@
       "time": "**O(m + n)**。",
       "space": "**O(1)**。"
     }
+  },
+  "modes": {
+    "core": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def getIntersectionNode(self, headA, headB):\n        a, b = headA, headB\n        while a is not b:\n            a = a.next if a else headB\n            b = b.next if b else headA\n        return a\n",
+    "interview": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(vals):\n    dummy = cur = ListNode()\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\n\ndef to_list(head):\n    out = []\n    while head:\n        out.append(head.val)\n        head = head.next\n    return out\n\n\ndef attach(only, common):\n    if not only:\n        return common\n    t = only\n    while t.next:\n        t = t.next\n    t.next = common\n    return only\n\nclass Solution:\n    def getIntersectionNode(self, headA, headB):\n        a, b = headA, headB\n        while a is not b:\n            a = a.next if a else headB\n            b = b.next if b else headA\n        return a\n\nif __name__ == \"__main__\":\n    common = build_list([8, 4, 5])\n    a = attach(build_list([4, 1]), common)\n    b = attach(build_list([5, 6, 1]), common)\n    node = Solution().getIntersectionNode(a, b)\n    print(node.val if node else \"null\")   # 8\n",
+    "acm": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(vals):\n    dummy = cur = ListNode()\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\n\ndef to_list(head):\n    out = []\n    while head:\n        out.append(head.val)\n        head = head.next\n    return out\n\n\ndef attach(only, common):\n    if not only:\n        return common\n    t = only\n    while t.next:\n        t = t.next\n    t.next = common\n    return only\n\nclass Solution:\n    def getIntersectionNode(self, headA, headB):\n        a, b = headA, headB\n        while a is not b:\n            a = a.next if a else headB\n            b = b.next if b else headA\n        return a\n\ndef main():\n    a_only = list(map(int, input().split()))\n    b_only = list(map(int, input().split()))\n    common = build_list(list(map(int, input().split())))\n    a = attach(build_list(a_only), common)\n    b = attach(build_list(b_only), common)\n    node = Solution().getIntersectionNode(a, b)\n    print(node.val if node else \"null\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:A 相交前独有部分\n第 2 行:B 相交前独有部分\n第 3 行:公共部分(相交后共享)",
+      "stdout": "相交节点的值;不相交输出 null",
+      "sample_in": "4 1\n5 6 1\n8 4 5",
+      "sample_out": "8"
+    }
   }
 }

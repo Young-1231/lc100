@@ -53,5 +53,16 @@
       "time": "**O(n)** —— 找中 + 反转 + 对比。",
       "space": "**O(1)** —— 原地反转。"
     }
+  },
+  "modes": {
+    "core": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def isPalindrome(self, head):\n        slow = fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n        right = _reverse(slow)\n        left = head\n        while right:\n            if left.val != right.val:\n                return False\n            left = left.next\n            right = right.next\n        return True\n",
+    "interview": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(vals):\n    dummy = cur = ListNode()\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\n\ndef to_list(head):\n    out = []\n    while head:\n        out.append(head.val)\n        head = head.next\n    return out\n\n\ndef _reverse(head):\n    prev = None\n    while head:\n        head.next, prev, head = prev, head, head.next\n    return prev\n\nclass Solution:\n    def isPalindrome(self, head):\n        slow = fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n        right = _reverse(slow)\n        left = head\n        while right:\n            if left.val != right.val:\n                return False\n            left = left.next\n            right = right.next\n        return True\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.isPalindrome(build_list([1, 2, 2, 1])))   # True\n    print(s.isPalindrome(build_list([1, 2, 3])))      # False\n",
+    "acm": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(vals):\n    dummy = cur = ListNode()\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\n\ndef to_list(head):\n    out = []\n    while head:\n        out.append(head.val)\n        head = head.next\n    return out\n\n\ndef _reverse(head):\n    prev = None\n    while head:\n        head.next, prev, head = prev, head, head.next\n    return prev\n\nclass Solution:\n    def isPalindrome(self, head):\n        slow = fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n        right = _reverse(slow)\n        left = head\n        while right:\n            if left.val != right.val:\n                return False\n            left = left.next\n            right = right.next\n        return True\n\ndef main():\n    vals = list(map(int, input().split()))\n    print(\"true\" if Solution().isPalindrome(build_list(vals)) else \"false\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:链表值(空格分隔)",
+      "stdout": "是否回文(true / false)",
+      "sample_in": "1 2 2 1",
+      "sample_out": "true"
+    }
   }
 }

@@ -53,5 +53,16 @@
       "time": "**O(n)**。",
       "space": "**O(1)** Floyd / **O(n)** 哈希。"
     }
+  },
+  "modes": {
+    "core": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def hasCycle(self, head):\n        slow = fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n            if slow is fast:\n                return True\n        return False\n",
+    "interview": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_cycle(vals, pos):\n    dummy = cur = ListNode()\n    nodes = []\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n        nodes.append(cur)\n    if pos >= 0 and nodes:\n        cur.next = nodes[pos]\n    return dummy.next\n\nclass Solution:\n    def hasCycle(self, head):\n        slow = fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n            if slow is fast:\n                return True\n        return False\n\nif __name__ == \"__main__\":\n    head = build_cycle([3, 2, 0, -4], 1)   # 尾节点连回下标 1\n    print(Solution().hasCycle(head))        # True\n",
+    "acm": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_cycle(vals, pos):\n    dummy = cur = ListNode()\n    nodes = []\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n        nodes.append(cur)\n    if pos >= 0 and nodes:\n        cur.next = nodes[pos]\n    return dummy.next\n\nclass Solution:\n    def hasCycle(self, head):\n        slow = fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n            if slow is fast:\n                return True\n        return False\n\ndef main():\n    vals = list(map(int, input().split()))\n    pos = int(input())\n    print(\"true\" if Solution().hasCycle(build_cycle(vals, pos)) else \"false\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:链表值(空格分隔)\n第 2 行:pos(环连接到的下标,-1 表示无环)",
+      "stdout": "是否有环(true / false)",
+      "sample_in": "3 2 0 -4\n1",
+      "sample_out": "true"
+    }
   }
 }

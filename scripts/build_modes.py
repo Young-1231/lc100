@@ -859,6 +859,633 @@ if __name__ == "__main__":
     },
 }
 
+# ==================== Day 3:链表 ====================
+
+_LL = '''class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def build_list(vals):
+    dummy = cur = ListNode()
+    for v in vals:
+        cur.next = ListNode(v)
+        cur = cur.next
+    return dummy.next
+
+
+def to_list(head):
+    out = []
+    while head:
+        out.append(head.val)
+        head = head.next
+    return out'''
+
+MODES[2] = {
+    "core_note": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution",
+    "prelude": _LL,
+    "core": '''class Solution:
+    def addTwoNumbers(self, l1, l2):
+        dummy = tail = ListNode()
+        carry = 0
+        while l1 or l2 or carry:
+            a = l1.val if l1 else 0
+            b = l2.val if l2 else 0
+            carry, d = divmod(a + b + carry, 10)
+            tail.next = ListNode(d)
+            tail = tail.next
+            if l1:
+                l1 = l1.next
+            if l2:
+                l2 = l2.next
+        return dummy.next''',
+    "demo": '''if __name__ == "__main__":
+    l1 = build_list([2, 4, 3])
+    l2 = build_list([5, 6, 4])
+    print(to_list(Solution().addTwoNumbers(l1, l2)))   # [7, 0, 8]''',
+    "demo_out": "[7, 0, 8]",
+    "acm": {
+        "stdin": "第 1 行:l1 各位(低位在前,空格分隔)\n第 2 行:l2 各位",
+        "stdout": "相加结果链表(低位在前,空格分隔)",
+        "sample_in": "2 4 3\n5 6 4",
+        "sample_out": "7 0 8",
+        "main": '''def main():
+    l1 = build_list(list(map(int, input().split())))
+    l2 = build_list(list(map(int, input().split())))
+    print(*to_list(Solution().addTwoNumbers(l1, l2)))
+
+
+if __name__ == "__main__":
+    main()''',
+    },
+}
+
+MODES[19] = {
+    "core_note": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution",
+    "prelude": _LL,
+    "core": '''class Solution:
+    def removeNthFromEnd(self, head, n):
+        dummy = ListNode(0, head)
+        fast = slow = dummy
+        for _ in range(n + 1):
+            fast = fast.next
+        while fast:
+            fast = fast.next
+            slow = slow.next
+        slow.next = slow.next.next
+        return dummy.next''',
+    "demo": '''if __name__ == "__main__":
+    head = build_list([1, 2, 3, 4, 5])
+    print(to_list(Solution().removeNthFromEnd(head, 2)))   # [1, 2, 3, 5]''',
+    "demo_out": "[1, 2, 3, 5]",
+    "acm": {
+        "stdin": "第 1 行:链表值(空格分隔)\n第 2 行:n",
+        "stdout": "删除倒数第 n 个后的链表(空格分隔)",
+        "sample_in": "1 2 3 4 5\n2",
+        "sample_out": "1 2 3 5",
+        "main": '''def main():
+    vals = list(map(int, input().split()))
+    n = int(input())
+    print(*to_list(Solution().removeNthFromEnd(build_list(vals), n)))
+
+
+if __name__ == "__main__":
+    main()''',
+    },
+}
+
+MODES[21] = {
+    "core_note": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution",
+    "prelude": _LL,
+    "core": '''class Solution:
+    def mergeTwoLists(self, l1, l2):
+        dummy = tail = ListNode()
+        while l1 and l2:
+            if l1.val <= l2.val:
+                tail.next, l1 = l1, l1.next
+            else:
+                tail.next, l2 = l2, l2.next
+            tail = tail.next
+        tail.next = l1 or l2
+        return dummy.next''',
+    "demo": '''if __name__ == "__main__":
+    l1 = build_list([1, 2, 4])
+    l2 = build_list([1, 3, 4])
+    print(to_list(Solution().mergeTwoLists(l1, l2)))   # [1, 1, 2, 3, 4, 4]''',
+    "demo_out": "[1, 1, 2, 3, 4, 4]",
+    "acm": {
+        "stdin": "第 1 行:l1(空格分隔)\n第 2 行:l2",
+        "stdout": "合并后的有序链表(空格分隔)",
+        "sample_in": "1 2 4\n1 3 4",
+        "sample_out": "1 1 2 3 4 4",
+        "main": '''def main():
+    l1 = build_list(list(map(int, input().split())))
+    l2 = build_list(list(map(int, input().split())))
+    print(*to_list(Solution().mergeTwoLists(l1, l2)))
+
+
+if __name__ == "__main__":
+    main()''',
+    },
+}
+
+MODES[23] = {
+    "core_note": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution",
+    "prelude": _LL,
+    "core": '''import heapq
+
+
+class Solution:
+    def mergeKLists(self, lists):
+        h = []
+        for i, head in enumerate(lists):
+            if head:
+                heapq.heappush(h, (head.val, i, head))
+        dummy = t = ListNode()
+        while h:
+            v, i, node = heapq.heappop(h)
+            t.next = node
+            t = t.next
+            if node.next:
+                heapq.heappush(h, (node.next.val, i, node.next))
+        return dummy.next''',
+    "demo": '''if __name__ == "__main__":
+    lists = [build_list([1, 4, 5]), build_list([1, 3, 4]), build_list([2, 6])]
+    print(to_list(Solution().mergeKLists(lists)))
+    # [1, 1, 2, 3, 4, 4, 5, 6]''',
+    "demo_out": "[1, 1, 2, 3, 4, 4, 5, 6]",
+    "acm": {
+        "stdin": "第 1 行:链表数 k\n随后 k 行:每行一条链表(空格分隔,空行表示空链表)",
+        "stdout": "合并后的有序链表(空格分隔)",
+        "sample_in": "3\n1 4 5\n1 3 4\n2 6",
+        "sample_out": "1 1 2 3 4 4 5 6",
+        "main": '''def main():
+    k = int(input())
+    lists = [build_list(list(map(int, input().split()))) for _ in range(k)]
+    print(*to_list(Solution().mergeKLists(lists)))
+
+
+if __name__ == "__main__":
+    main()''',
+    },
+}
+
+MODES[24] = {
+    "core_note": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution",
+    "prelude": _LL,
+    "core": '''class Solution:
+    def swapPairs(self, head):
+        dummy = ListNode(0, head)
+        prev = dummy
+        while prev.next and prev.next.next:
+            a, b = prev.next, prev.next.next
+            prev.next = b
+            a.next = b.next
+            b.next = a
+            prev = a
+        return dummy.next''',
+    "demo": '''if __name__ == "__main__":
+    head = build_list([1, 2, 3, 4])
+    print(to_list(Solution().swapPairs(head)))   # [2, 1, 4, 3]''',
+    "demo_out": "[2, 1, 4, 3]",
+    "acm": {
+        "stdin": "一行:链表值(空格分隔)",
+        "stdout": "两两交换后的链表(空格分隔)",
+        "sample_in": "1 2 3 4",
+        "sample_out": "2 1 4 3",
+        "main": '''def main():
+    vals = list(map(int, input().split()))
+    print(*to_list(Solution().swapPairs(build_list(vals))))
+
+
+if __name__ == "__main__":
+    main()''',
+    },
+}
+
+MODES[25] = {
+    "core_note": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution",
+    "prelude": _LL,
+    "core": '''class Solution:
+    def reverseKGroup(self, head, k):
+        dummy = ListNode(0, head)
+        group_prev = dummy
+        while True:
+            kth = group_prev
+            for _ in range(k):
+                kth = kth.next
+                if not kth:
+                    return dummy.next
+            group_next = kth.next
+            prev, cur = group_next, group_prev.next
+            while cur is not group_next:
+                nxt = cur.next
+                cur.next = prev
+                prev = cur
+                cur = nxt
+            tmp = group_prev.next
+            group_prev.next = kth
+            group_prev = tmp''',
+    "demo": '''if __name__ == "__main__":
+    head = build_list([1, 2, 3, 4, 5])
+    print(to_list(Solution().reverseKGroup(head, 2)))   # [2, 1, 4, 3, 5]''',
+    "demo_out": "[2, 1, 4, 3, 5]",
+    "acm": {
+        "stdin": "第 1 行:链表值(空格分隔)\n第 2 行:k",
+        "stdout": "每 k 个一组翻转后的链表(空格分隔)",
+        "sample_in": "1 2 3 4 5\n2",
+        "sample_out": "2 1 4 3 5",
+        "main": '''def main():
+    vals = list(map(int, input().split()))
+    k = int(input())
+    print(*to_list(Solution().reverseKGroup(build_list(vals), k)))
+
+
+if __name__ == "__main__":
+    main()''',
+    },
+}
+
+MODES[234] = {
+    "core_note": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution",
+    "prelude": _LL + '''
+
+
+def _reverse(head):
+    prev = None
+    while head:
+        head.next, prev, head = prev, head, head.next
+    return prev''',
+    "core": '''class Solution:
+    def isPalindrome(self, head):
+        slow = fast = head
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+        right = _reverse(slow)
+        left = head
+        while right:
+            if left.val != right.val:
+                return False
+            left = left.next
+            right = right.next
+        return True''',
+    "demo": '''if __name__ == "__main__":
+    s = Solution()
+    print(s.isPalindrome(build_list([1, 2, 2, 1])))   # True
+    print(s.isPalindrome(build_list([1, 2, 3])))      # False''',
+    "demo_out": "True\nFalse",
+    "acm": {
+        "stdin": "一行:链表值(空格分隔)",
+        "stdout": "是否回文(true / false)",
+        "sample_in": "1 2 2 1",
+        "sample_out": "true",
+        "main": '''def main():
+    vals = list(map(int, input().split()))
+    print("true" if Solution().isPalindrome(build_list(vals)) else "false")
+
+
+if __name__ == "__main__":
+    main()''',
+    },
+}
+
+# ---- Day 3 特殊 IO:环 / 相交 / 随机指针 / LRU ----
+
+_CYC = '''class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def build_cycle(vals, pos):
+    dummy = cur = ListNode()
+    nodes = []
+    for v in vals:
+        cur.next = ListNode(v)
+        cur = cur.next
+        nodes.append(cur)
+    if pos >= 0 and nodes:
+        cur.next = nodes[pos]
+    return dummy.next'''
+
+MODES[138] = {
+    "core_note": "# 随机指针节点 Node 由 LeetCode 平台内置,提交时只需 Solution",
+    "prelude": '''class Node:
+    def __init__(self, val=0, next=None, random=None):
+        self.val = val
+        self.next = next
+        self.random = random
+
+
+def build_random(rows):
+    nodes = [Node(v) for v, _ in rows]
+    for i, (_, r) in enumerate(rows):
+        if i + 1 < len(nodes):
+            nodes[i].next = nodes[i + 1]
+        if r != -1:
+            nodes[i].random = nodes[r]
+    return nodes[0] if nodes else None
+
+
+def dump_random(head):
+    idx = {}
+    cur, i = head, 0
+    while cur:
+        idx[id(cur)] = i
+        cur = cur.next
+        i += 1
+    out = []
+    cur = head
+    while cur:
+        r = idx[id(cur.random)] if cur.random else -1
+        out.append((cur.val, r))
+        cur = cur.next
+    return out''',
+    "core": '''class Solution:
+    def copyRandomList(self, head):
+        if not head:
+            return None
+        m = {}
+        cur = head
+        while cur:
+            m[cur] = Node(cur.val)
+            cur = cur.next
+        cur = head
+        while cur:
+            m[cur].next = m.get(cur.next)
+            m[cur].random = m.get(cur.random)
+            cur = cur.next
+        return m[head]''',
+    "demo": '''if __name__ == "__main__":
+    head = build_random([(7, -1), (13, 0), (11, 4), (10, 2), (1, 0)])
+    print(dump_random(Solution().copyRandomList(head)))
+    # [(7, -1), (13, 0), (11, 4), (10, 2), (1, 0)]''',
+    "demo_out": "[(7, -1), (13, 0), (11, 4), (10, 2), (1, 0)]",
+    "acm": {
+        "stdin": "第 1 行:节点数 n\n随后 n 行:`val random下标`(random 为 -1 表示 None)",
+        "stdout": "复制后的链表,每行 `val random下标`",
+        "sample_in": "5\n7 -1\n13 0\n11 4\n10 2\n1 0",
+        "sample_out": "7 -1\n13 0\n11 4\n10 2\n1 0",
+        "main": '''def main():
+    n = int(input())
+    rows = [tuple(map(int, input().split())) for _ in range(n)]
+    res = Solution().copyRandomList(build_random(rows))
+    for val, r in dump_random(res):
+        print(val, r)
+
+
+if __name__ == "__main__":
+    main()''',
+    },
+}
+
+MODES[141] = {
+    "core_note": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution",
+    "prelude": _CYC,
+    "core": '''class Solution:
+    def hasCycle(self, head):
+        slow = fast = head
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+            if slow is fast:
+                return True
+        return False''',
+    "demo": '''if __name__ == "__main__":
+    head = build_cycle([3, 2, 0, -4], 1)   # 尾节点连回下标 1
+    print(Solution().hasCycle(head))        # True''',
+    "demo_out": "True",
+    "acm": {
+        "stdin": "第 1 行:链表值(空格分隔)\n第 2 行:pos(环连接到的下标,-1 表示无环)",
+        "stdout": "是否有环(true / false)",
+        "sample_in": "3 2 0 -4\n1",
+        "sample_out": "true",
+        "main": '''def main():
+    vals = list(map(int, input().split()))
+    pos = int(input())
+    print("true" if Solution().hasCycle(build_cycle(vals, pos)) else "false")
+
+
+if __name__ == "__main__":
+    main()''',
+    },
+}
+
+MODES[142] = {
+    "core_note": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution",
+    "prelude": _CYC,
+    "core": '''class Solution:
+    def detectCycle(self, head):
+        slow = fast = head
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+            if slow is fast:
+                p = head
+                while p is not slow:
+                    p = p.next
+                    slow = slow.next
+                return p
+        return None''',
+    "demo": '''if __name__ == "__main__":
+    head = build_cycle([3, 2, 0, -4], 1)
+    node = Solution().detectCycle(head)
+    print(node.val if node else -1)   # 2''',
+    "demo_out": "2",
+    "acm": {
+        "stdin": "第 1 行:链表值(空格分隔)\n第 2 行:pos(环连接到的下标,-1 表示无环)",
+        "stdout": "环入口节点的值;无环输出 -1",
+        "sample_in": "3 2 0 -4\n1",
+        "sample_out": "2",
+        "main": '''def main():
+    vals = list(map(int, input().split()))
+    pos = int(input())
+    node = Solution().detectCycle(build_cycle(vals, pos))
+    print(node.val if node else -1)
+
+
+if __name__ == "__main__":
+    main()''',
+    },
+}
+
+MODES[146] = {
+    "core_note": "# 题目要求设计数据结构,直接实现 LRUCache(get / put 均 O(1))",
+    "core": '''class _Node:
+    __slots__ = ("key", "val", "prev", "next")
+
+    def __init__(self, k=0, v=0):
+        self.key, self.val = k, v
+        self.prev = self.next = None
+
+
+class LRUCache:
+    def __init__(self, capacity):
+        self.cap = capacity
+        self.map = {}
+        self.head, self.tail = _Node(), _Node()
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _add(self, n):
+        n.prev = self.head
+        n.next = self.head.next
+        self.head.next.prev = n
+        self.head.next = n
+
+    def _remove(self, n):
+        n.prev.next = n.next
+        n.next.prev = n.prev
+
+    def get(self, key):
+        if key not in self.map:
+            return -1
+        n = self.map[key]
+        self._remove(n)
+        self._add(n)
+        return n.val
+
+    def put(self, key, value):
+        if key in self.map:
+            n = self.map[key]
+            n.val = value
+            self._remove(n)
+            self._add(n)
+            return
+        if len(self.map) >= self.cap:
+            lru = self.tail.prev
+            self._remove(lru)
+            del self.map[lru.key]
+        n = _Node(key, value)
+        self._add(n)
+        self.map[key] = n''',
+    "demo": '''if __name__ == "__main__":
+    c = LRUCache(2)
+    c.put(1, 1)
+    c.put(2, 2)
+    print(c.get(1))    # 1
+    c.put(3, 3)        # 淘汰 2
+    print(c.get(2))    # -1
+    print(c.get(3))    # 3''',
+    "demo_out": "1\n-1\n3",
+    "acm": {
+        "stdin": "第 1 行:容量 capacity\n第 2 行:操作数 q\n随后 q 行:`put k v` 或 `get k`",
+        "stdout": "每个 get 的返回值(空格分隔)",
+        "sample_in": "2\n6\nput 1 1\nput 2 2\nget 1\nput 3 3\nget 2\nget 3",
+        "sample_out": "1 -1 3",
+        "main": '''def main():
+    cap = int(input())
+    q = int(input())
+    cache = LRUCache(cap)
+    out = []
+    for _ in range(q):
+        op = input().split()
+        if op[0] == "put":
+            cache.put(int(op[1]), int(op[2]))
+        else:
+            out.append(str(cache.get(int(op[1]))))
+    print(*out)
+
+
+if __name__ == "__main__":
+    main()''',
+    },
+}
+
+MODES[148] = {
+    "core_note": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution",
+    "prelude": _LL + '''
+
+
+def _merge(a, b):
+    dummy = tail = ListNode()
+    while a and b:
+        if a.val <= b.val:
+            tail.next, a = a, a.next
+        else:
+            tail.next, b = b, b.next
+        tail = tail.next
+    tail.next = a or b
+    return dummy.next''',
+    "core": '''class Solution:
+    def sortList(self, head):
+        if not head or not head.next:
+            return head
+        prev, slow, fast = None, head, head
+        while fast and fast.next:
+            prev = slow
+            slow = slow.next
+            fast = fast.next.next
+        prev.next = None
+        return _merge(self.sortList(head), self.sortList(slow))''',
+    "demo": '''if __name__ == "__main__":
+    head = build_list([4, 2, 1, 3])
+    print(to_list(Solution().sortList(head)))   # [1, 2, 3, 4]''',
+    "demo_out": "[1, 2, 3, 4]",
+    "acm": {
+        "stdin": "一行:链表值(空格分隔)",
+        "stdout": "升序排序后的链表(空格分隔)",
+        "sample_in": "4 2 1 3",
+        "sample_out": "1 2 3 4",
+        "main": '''def main():
+    vals = list(map(int, input().split()))
+    print(*to_list(Solution().sortList(build_list(vals))))
+
+
+if __name__ == "__main__":
+    main()''',
+    },
+}
+
+MODES[160] = {
+    "core_note": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution",
+    "prelude": _LL + '''
+
+
+def attach(only, common):
+    if not only:
+        return common
+    t = only
+    while t.next:
+        t = t.next
+    t.next = common
+    return only''',
+    "core": '''class Solution:
+    def getIntersectionNode(self, headA, headB):
+        a, b = headA, headB
+        while a is not b:
+            a = a.next if a else headB
+            b = b.next if b else headA
+        return a''',
+    "demo": '''if __name__ == "__main__":
+    common = build_list([8, 4, 5])
+    a = attach(build_list([4, 1]), common)
+    b = attach(build_list([5, 6, 1]), common)
+    node = Solution().getIntersectionNode(a, b)
+    print(node.val if node else "null")   # 8''',
+    "demo_out": "8",
+    "acm": {
+        "stdin": "第 1 行:A 相交前独有部分\n第 2 行:B 相交前独有部分\n第 3 行:公共部分(相交后共享)",
+        "stdout": "相交节点的值;不相交输出 null",
+        "sample_in": "4 1\n5 6 1\n8 4 5",
+        "sample_out": "8",
+        "main": '''def main():
+    a_only = list(map(int, input().split()))
+    b_only = list(map(int, input().split()))
+    common = build_list(list(map(int, input().split())))
+    a = attach(build_list(a_only), common)
+    b = attach(build_list(b_only), common)
+    node = Solution().getIntersectionNode(a, b)
+    print(node.val if node else "null")
+
+
+if __name__ == "__main__":
+    main()''',
+    },
+}
+
 
 def _join(parts: list[str]) -> str:
     """用空行拼接非空片段,统一以单个换行收尾。"""

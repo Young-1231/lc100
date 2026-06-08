@@ -56,5 +56,16 @@
       "time": "**O(n)** —— 第一阶段相遇 ≤ n 步;第二阶段同步 ≤ a 步。",
       "space": "**O(1)**。"
     }
+  },
+  "modes": {
+    "core": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def detectCycle(self, head):\n        slow = fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n            if slow is fast:\n                p = head\n                while p is not slow:\n                    p = p.next\n                    slow = slow.next\n                return p\n        return None\n",
+    "interview": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_cycle(vals, pos):\n    dummy = cur = ListNode()\n    nodes = []\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n        nodes.append(cur)\n    if pos >= 0 and nodes:\n        cur.next = nodes[pos]\n    return dummy.next\n\nclass Solution:\n    def detectCycle(self, head):\n        slow = fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n            if slow is fast:\n                p = head\n                while p is not slow:\n                    p = p.next\n                    slow = slow.next\n                return p\n        return None\n\nif __name__ == \"__main__\":\n    head = build_cycle([3, 2, 0, -4], 1)\n    node = Solution().detectCycle(head)\n    print(node.val if node else -1)   # 2\n",
+    "acm": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_cycle(vals, pos):\n    dummy = cur = ListNode()\n    nodes = []\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n        nodes.append(cur)\n    if pos >= 0 and nodes:\n        cur.next = nodes[pos]\n    return dummy.next\n\nclass Solution:\n    def detectCycle(self, head):\n        slow = fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n            if slow is fast:\n                p = head\n                while p is not slow:\n                    p = p.next\n                    slow = slow.next\n                return p\n        return None\n\ndef main():\n    vals = list(map(int, input().split()))\n    pos = int(input())\n    node = Solution().detectCycle(build_cycle(vals, pos))\n    print(node.val if node else -1)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:链表值(空格分隔)\n第 2 行:pos(环连接到的下标,-1 表示无环)",
+      "stdout": "环入口节点的值;无环输出 -1",
+      "sample_in": "3 2 0 -4\n1",
+      "sample_out": "2"
+    }
   }
 }

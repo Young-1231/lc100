@@ -30,7 +30,7 @@
     ],
     "leetcode_url": "https://leetcode.cn/problems/add-two-numbers/",
     "has_expl": true,
-    "has_modes": false,
+    "has_modes": true,
     "search": "两数相加 链表模拟 链表 🔹 题面\n    每个节点存一位数字、低位在前,返回它们之和的链表。\n\n🔹 直觉\n    从低位到高位逐位相加,carry 进位。\n\n🔹 复杂度 o(max(m,n)) / o(1)(忽略输出) **逐位相加 + 进位**:像列竖式那样模拟,carry 跨位传递。 **链表低位在前**:`243` 存为 `2 → 4 → 3`,正好对应『从个位到高位』的加法顺序。 **循环条件**:`while l1 or l2 or carry`,三者都没了才停,处理两条链长度不一致 + 末尾还有进位的情况。 **单步**:`s = (l1.val if l1 else 0) + (l2.val if l2 else 0) + carry; carry, d = divmod(s, 10)`。 **dummy 哑头**:简化首节点边界,最后返回 dummy.next。 主解法"
   },
   {
@@ -152,7 +152,7 @@
     ],
     "leetcode_url": "https://leetcode.cn/problems/remove-nth-from-end/",
     "has_expl": true,
-    "has_modes": false,
+    "has_modes": true,
     "search": "删除链表的倒数第 n 个结点 双指针 哨兵 链表 🔹 题面\n    一次扫描删掉倒数第 n 个节点。\n\n🔹 直觉\n    哨兵 + 快慢指针:fast 先走 n+1 步,然后 fast/slow 同步,fast=none 时 slow.next 即待删。\n\n🔹 复杂度 o(l) / o(1)\n\n🔹 踩坑\n    必须用 dummy,否则删除头节点要分支处理。 **快慢指针 + 哨兵**:fast 先走 n+1 步,然后两指针同速;fast=none 时 slow.next 即待删。 **为何要哨兵?** 删除头节点也是合法情况;dummy 让所有删除都是 `slow.next = slow.next.next` 统一形式。 **fast 先走 n+1 步**:这样 fast 与 slow 之间永远隔 n 个节点;fast 跨过末尾时 slow 恰好指向待删的『前一个』。 **一次遍历**:`for _ in range(n+1): fast = fast.next` 不算遍历主体。 **边界**:n 等于链表长度时也对(slow 停在 dummy,删头节点)。 主解法"
   },
   {
@@ -186,7 +186,7 @@
     ],
     "leetcode_url": "https://leetcode.cn/problems/merge-two-lists/",
     "has_expl": true,
-    "has_modes": false,
+    "has_modes": true,
     "search": "合并两个有序链表 链表归并 链表 🔹 题面\n    合并两个升序链表为一个新升序链表。\n\n🔹 直觉\n    哨兵节点 dummy,谁小接谁;末尾接剩余。\n\n🔹 复杂度 o(m+n) / o(1)(若复用原节点) **哨兵 dummy + 双指针归并**:谁小接谁,末尾接剩余。 **dummy + tail**:dummy 简化首节点处理;tail 指向当前结果末尾。 **主循环**:`while l1 and l2`,比较 val,小的一侧:`tail.next = node; node = node.next; tail = tail.next`。 **收尾**:`tail.next = l1 or l2`,直接挂上还没用完的那条链。 **复用节点**:不需要新建 listnode,直接复用原节点指针,节省内存。 主解法"
   },
   {
@@ -221,7 +221,7 @@
     ],
     "leetcode_url": "https://leetcode.cn/problems/merge-k-lists/",
     "has_expl": true,
-    "has_modes": false,
+    "has_modes": true,
     "search": "合并 k 个升序链表 堆 分治 链表 🔹 题面\n    合并 k 个升序链表,返回总升序链表。n 是总节点数,k 是链表数。\n\n🔹 解法对比\n    | 方法           | 时间        | 空间    | 备注                             |\n    |----------------|-------------|---------|----------------------------------|\n    | 顺次两两合并   | o(nk)       | o(1)    | 朴素                             |\n    | 小顶堆 ★      | o(n log k)  | o(k)    | 每次取最小,分布式 / 大数据流也用 |\n    | 分治两两归并   | o(n log k)  | o(log k)| 类似归并排序,递归栈              |\n\n🔹 trick(python heapq)\n    listnode 没定义 < ;入堆元组 (val, idx, node),idx 唯一防 tie。 **小顶堆**取最小,o(n log k);或**分治两两归并**,t(n) = 2t(n/2) + o(n) = o(n log k)。 **朴素**:顺次合并 k 次,时间 o(nk)(每次 n 元素被反复扫)。 **小顶堆**:把 k 个链表头入堆,每次弹出最小并把其 next 推入。每个节点入/出堆各一次,堆操作 o(log k)。 **python heapq 陷阱**:listnode 不可比较,入堆元组 `(val, idx, node)`,idx 唯一防 tie。 **分治**:把 k 个链表分两半各自归并,再合并两个有序链表 o(n)。共 log k 层,每层总扫 n。 小顶堆 分治两两归并 顺次两两合并"
   },
   {
@@ -238,7 +238,7 @@
     ],
     "leetcode_url": "https://leetcode.cn/problems/swap-pairs/",
     "has_expl": true,
-    "has_modes": false,
+    "has_modes": true,
     "search": "两两交换链表中的节点 链表 链表 🔹 题面\n    两两交换相邻节点(不许只换值)。\n\n🔹 解法对比\n    | 方法     | 时间 | 空间    | 备注          |\n    |----------|------|---------|---------------|\n    | 迭代 ★  | o(n) | o(1)    | 哨兵 + prev   |\n    | 递归     | o(n) | o(n) 栈 | 优雅           | **哨兵 + prev**:每轮取相邻 a, b,改 3 个 next 完成局部交换。 **3 个 next 改写**:`prev.next = b; a.next = b.next; b.next = a`。 **前进 prev**:本轮交换后 a 已是『二人组的尾部』,下次的『二人组前驱』就是 a。 **循环条件**:`while prev.next and prev.next.next` —— 至少有 2 个待交换。 **递归版**:`f(a) = let b = a.next; b.next = a; a.next = f(b.next)`,优雅但 o(n) 栈。 迭代 递归"
   },
   {
@@ -255,7 +255,7 @@
     ],
     "leetcode_url": "https://leetcode.cn/problems/reverse-k-group/",
     "has_expl": true,
-    "has_modes": false,
+    "has_modes": true,
     "search": "k 个一组翻转链表 链表 链表 🔹 题面\n    每 k 个一组翻转节点;不足 k 不动。\n\n🔹 解法对比\n    | 方法    | 时间 | 空间   | 备注          |\n    |---------|------|--------|---------------|\n    | 迭代 ★ | o(n) | o(1)   | 工程实现      |\n    | 递归    | o(n) | o(n/k) | 实现简洁       | 哨兵 + 段前驱 group_prev。先看后面是否够 k 个,**够则反转 [group_prev.next, kth] 区间**,然后接回。 **为什么要哨兵?** 头节点可能也参与翻转,有 dummy 才统一处理。 **先探后翻**:从 group_prev 走 k 步,如果走不满直接收工返回;走满则得到 kth(段尾)。 **反转区间**:经典 prev/cur 三指针,但 prev 初始为 group_next(段尾的下一个)而不是 none,这样反转完成后 head 自然接到下段。 **接回**:旧的段头 `group_prev.next` 反转后变成新段尾,把它记下;`group_prev.next = kth`(新段头),`group_prev = 旧段头`(下次的前驱)。 迭代 递归"
   },
   {
@@ -998,7 +998,7 @@
     ],
     "leetcode_url": "https://leetcode.cn/problems/copy-random-list/",
     "has_expl": true,
-    "has_modes": false,
+    "has_modes": true,
     "search": "随机链表的复制 哈希 原地交织 链表 🔹 题面\n    每节点除 next 外多一个 random 指针,复制整张图。\n\n🔹 直觉(两种)\n    1. 哈希:旧节点 -> 新节点,先建副本节点,再串 next/random。  o(n)/o(n)\n    2. 原地交织:在每个原节点后插入复制节点 a→a'→b→b'→…,\n       让 a'.random = a.random.next;最后拆出。  o(n)/o(1)\n\n🔹 踩坑\n    random 可能指向自己或 none;构造好\"先映射,再连边\"。 **两遍扫**:第一遍 dict 映射 旧→新 节点,第二遍连 next/random 指针。 **关键问题**:random 可能指向链表中任何节点(可能还没创建),不能边扫边接。 **两遍法**:第一遍只创建副本节点,放进 dict;第二遍利用 dict 一对一映射 next 和 random。 **o(1) 空间法(原地交织)**:在每个原节点后插入复制 a→a'→b→b'→…;然后 a'.random = a.random.next;最后拆出。 **注意**:random 可能为 none,要 dict.get 兜底。 主解法"
   },
   {
@@ -1032,7 +1032,7 @@
     ],
     "leetcode_url": "https://leetcode.cn/problems/linked-list-cycle/",
     "has_expl": true,
-    "has_modes": false,
+    "has_modes": true,
     "search": "环形链表 floyd 龟兔 链表 🔹 题面\n    判断链表是否有环。\n\n🔹 解法对比\n    | 方法            | 时间 | 空间 | 备注                        |\n    |-----------------|------|------|-----------------------------|\n    | 哈希记录访问过  | o(n) | o(n) | 直观                        |\n    | floyd 龟兔 ★   | o(n) | o(1) | 经典,面试默写              | **floyd 龟兔**:slow 1 步,fast 2 步;有环必相遇。 **为何必相遇?** 进入环后,fast 与 slow 距离每轮缩 1(模环长);最多 l 轮内相遇。 **为何不会跨过?** 因为是『同方向相对速度差为 1』,不会跳过 slow。 **终止条件**:无环时 fast 或 fast.next 为 none,自然退出 while。 **哈希替代**:`if id(node) in seen: cycle` —— 直观但 o(n) 空间。 floyd 龟兔 哈希"
   },
   {
@@ -1049,7 +1049,7 @@
     ],
     "leetcode_url": "https://leetcode.cn/problems/linked-list-cycle-ii/",
     "has_expl": true,
-    "has_modes": false,
+    "has_modes": true,
     "search": "环形链表 ii floyd 数学 链表 🔹 题面\n    返回入环节点。\n\n🔹 解法对比\n    | 方法            | 时间 | 空间 | 备注                  |\n    |-----------------|------|------|-----------------------|\n    | 哈希记录访问过  | o(n) | o(n) | 一目了然              |\n    | floyd 数学 ★   | o(n) | o(1) | 经典,理解入环点公式  |\n\n🔹 floyd 推导\n    a = head→入环点距离, b = 入环点→相遇点, c = 相遇点→入环点。\n    fast 走 2 * slow:a + b + k(b+c) = 2(a + b) → a = c + (k-1)(b+c)。\n    所以让一个指针从 head、另一个从相遇点同步前进,必相遇于入环点。 floyd 龟兔相遇后,**一指针从 head、另一指针从相遇点同步走**,必相遇于入环点 —— 来自 a = c + (k-1)·l 的代数推导。 **第一次相遇**:slow 走 1 步、fast 走 2 步,有环必相遇。 **距离记号**:head→入环点 = a,入环点→相遇点 = b,相遇点→入环点 = c,环长 l = b+c。 **列等式**:fast 走 2(a+b),slow 走 a+b,差 = a+b 必为 l 的整数倍 → `a + b = k·l = k(b+c)` → `a = c + (k-1)l`。 **结论**:从 head 走 a 步 = 从相遇点走 c 步 +(k-1)整圈,两者必在入环点相遇。 floyd 哈希"
   },
   {
@@ -1066,7 +1066,7 @@
     ],
     "leetcode_url": "https://leetcode.cn/problems/lru-cache/",
     "has_expl": true,
-    "has_modes": false,
+    "has_modes": true,
     "search": "lru 缓存 哈希 + 双向链表 链表 🔹 题面\n    实现 lru:get/put 都 o(1)。\n\n🔹 直觉\n    哈希表 → 双向链表节点。命中或写入移到链表头(最近使用);超容量时\n    剔除尾部(最久未使用)。\n\n🔹 关键\n    - 哑头/哑尾节点,简化边界。\n    - move_to_head = remove + add_to_head。\n    - put 已存在 → 更新 value 并移到头。\n\n🔹 复杂度 o(1) / o(capacity) **哈希 + 双向链表**:dict 给 o(1) 定位节点,链表给 o(1) 移动到头/尾。命中或写入移头,超容量删尾。 **为什么不用 ordereddict?** 学考点。手撕双向链表才显示数据结构功底。 **节点结构**:`{key, val, prev, next}`,key 也存以便淘汰时反查 dict。 **两个哑节点**:head 和 tail,简化『首/尾插入』的边界条件,所有真节点都在 head 和 tail 之间。 **get(k)**:dict 命中后 _remove + _add 把节点搬到 head 之后(标记最近使用)。 **put(k, v)**:存在则更新值并移头;不存在,容量满时先 _remove tail.prev 并 del dict[那个 key],再 _add 新节点。 "
   },
   {
@@ -1083,7 +1083,7 @@
     ],
     "leetcode_url": "https://leetcode.cn/problems/sort-list/",
     "has_expl": true,
-    "has_modes": false,
+    "has_modes": true,
     "search": "排序链表 归并排序 链表 🔹 题面\n    o(n log n) 时间排序链表。\n\n🔹 解法对比\n    | 方法                | 时间       | 空间      | 备注                  |\n    |---------------------|------------|-----------|-----------------------|\n    | 自顶向下归并 ★     | o(n log n) | o(log n)  | 递归栈                |\n    | 自底向上归并        | o(n log n) | o(1)      | 严格 o(1) 非递归      | **自顶向下归并**:快慢指针找中点切两半,递归排序后归并。 **为何归并而非快排?** 链表无随机访问,quicksort 不如归并自然;且归并稳定。 **找中点要 prev**:fast 用 fast.next/fast.next.next 探;**prev** 在 slow 后面跟一步,用于切断左半。 **奇偶处理**:这种快慢方式偶数节点时 slow 停在右中点;先把 prev.next 设 none 切断,再分别递归 head 和 slow。 **归并 o(n)**:dummy + 两指针对比,谁小接谁;末尾一段直接挂上。 **自底向上变体**:循环倍增 size = 1, 2, 4, ...,严格 o(1) 空间(无递归栈)。 自顶向下归并 自底向上归并 主解法 主解法"
   },
   {
@@ -1151,7 +1151,7 @@
     ],
     "leetcode_url": "https://leetcode.cn/problems/intersection-two-lists/",
     "has_expl": true,
-    "has_modes": false,
+    "has_modes": true,
     "search": "相交链表 双指针 链表 🔹 题面\n    返回两个链表相交的起点;不相交返回 none。要求 o(1) 额外空间。\n\n🔹 直觉(浪漫双指针)\n    a 走 a 完了走 b,b 走 b 完了走 a。\n    若相交,二者相遇于交点;若不相交,同时走到 none。\n    总步数 = lena + lenb,相同。\n\n🔹 复杂度 o(m+n) / o(1) **双指针互换跑道**:a 走完 a 切到 b,b 走完 b 切到 a;若有交点必相遇。 **为何必相遇?** 两指针总路程相等(都 = lena + lenb),若相交则同时到交点;若不相交则同时到 none。 **直观证明**:a 在 a 上走 lena - c 后切到 b,再走 lenb - lenc = lena + lenb - 2·lenc 后到达交点... 等等更简单:总步数都是 lena + lenb - lenc(交点处)。 **一行精髓**:`a = a.next if a else headb`,a 到 none 时切到另一条。 **陷阱**:不相交时 a/b 同时变成 none 退出循环,返回 none 而不是死循环。 主解法"
   },
   {
@@ -1359,7 +1359,7 @@
     ],
     "leetcode_url": "https://leetcode.cn/problems/palindrome-list/",
     "has_expl": true,
-    "has_modes": false,
+    "has_modes": true,
     "search": "回文链表 快慢指针 + 反转 链表 🔹 题面\n    判断单链表是否回文。\n\n🔹 解法对比\n    | 方法                | 时间 | 空间 | 备注                       |\n    |---------------------|------|------|----------------------------|\n    | 复制到数组对撞      | o(n) | o(n) | 写法最直观                  |\n    | 快慢指针+反转后半 ★ | o(n) | o(1) | 经典,需小心还原(若题面要求)| **找中点 + 反转后半 + 双指针对比**:o(1) 空间。 **3 步**:1) 快慢指针找中点(偶数取右中);2) 反转后半链表;3) 一头一尾对比直至右指针为 none。 **为何对偶数没问题?** 反转后 left 长度 ≥ right,`while right` 退出时 left 可能多 1 个(中点),不影响判定。 **复制到数组法**:更直观但 o(n) 空间;面试通常要 o(1)。 **还原(题面要求时)**:对比完再反转一次后半,链表回到原状。 快慢指针 + 反转后半 复制到数组双指针"
   },
   {

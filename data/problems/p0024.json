@@ -52,5 +52,16 @@
       "time": "**O(n)**。",
       "space": "**O(1)** 迭代 / **O(n)** 递归栈。"
     }
+  },
+  "modes": {
+    "core": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def swapPairs(self, head):\n        dummy = ListNode(0, head)\n        prev = dummy\n        while prev.next and prev.next.next:\n            a, b = prev.next, prev.next.next\n            prev.next = b\n            a.next = b.next\n            b.next = a\n            prev = a\n        return dummy.next\n",
+    "interview": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(vals):\n    dummy = cur = ListNode()\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\n\ndef to_list(head):\n    out = []\n    while head:\n        out.append(head.val)\n        head = head.next\n    return out\n\nclass Solution:\n    def swapPairs(self, head):\n        dummy = ListNode(0, head)\n        prev = dummy\n        while prev.next and prev.next.next:\n            a, b = prev.next, prev.next.next\n            prev.next = b\n            a.next = b.next\n            b.next = a\n            prev = a\n        return dummy.next\n\nif __name__ == \"__main__\":\n    head = build_list([1, 2, 3, 4])\n    print(to_list(Solution().swapPairs(head)))   # [2, 1, 4, 3]\n",
+    "acm": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(vals):\n    dummy = cur = ListNode()\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\n\ndef to_list(head):\n    out = []\n    while head:\n        out.append(head.val)\n        head = head.next\n    return out\n\nclass Solution:\n    def swapPairs(self, head):\n        dummy = ListNode(0, head)\n        prev = dummy\n        while prev.next and prev.next.next:\n            a, b = prev.next, prev.next.next\n            prev.next = b\n            a.next = b.next\n            b.next = a\n            prev = a\n        return dummy.next\n\ndef main():\n    vals = list(map(int, input().split()))\n    print(*to_list(Solution().swapPairs(build_list(vals))))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:链表值(空格分隔)",
+      "stdout": "两两交换后的链表(空格分隔)",
+      "sample_in": "1 2 3 4",
+      "sample_out": "2 1 4 3"
+    }
   }
 }

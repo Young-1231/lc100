@@ -43,5 +43,16 @@
       "time": "**O(max(m, n))**。",
       "space": "**O(max(m, n))** —— 输出链表。"
     }
+  },
+  "modes": {
+    "core": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def addTwoNumbers(self, l1, l2):\n        dummy = tail = ListNode()\n        carry = 0\n        while l1 or l2 or carry:\n            a = l1.val if l1 else 0\n            b = l2.val if l2 else 0\n            carry, d = divmod(a + b + carry, 10)\n            tail.next = ListNode(d)\n            tail = tail.next\n            if l1:\n                l1 = l1.next\n            if l2:\n                l2 = l2.next\n        return dummy.next\n",
+    "interview": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(vals):\n    dummy = cur = ListNode()\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\n\ndef to_list(head):\n    out = []\n    while head:\n        out.append(head.val)\n        head = head.next\n    return out\n\nclass Solution:\n    def addTwoNumbers(self, l1, l2):\n        dummy = tail = ListNode()\n        carry = 0\n        while l1 or l2 or carry:\n            a = l1.val if l1 else 0\n            b = l2.val if l2 else 0\n            carry, d = divmod(a + b + carry, 10)\n            tail.next = ListNode(d)\n            tail = tail.next\n            if l1:\n                l1 = l1.next\n            if l2:\n                l2 = l2.next\n        return dummy.next\n\nif __name__ == \"__main__\":\n    l1 = build_list([2, 4, 3])\n    l2 = build_list([5, 6, 4])\n    print(to_list(Solution().addTwoNumbers(l1, l2)))   # [7, 0, 8]\n",
+    "acm": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(vals):\n    dummy = cur = ListNode()\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\n\ndef to_list(head):\n    out = []\n    while head:\n        out.append(head.val)\n        head = head.next\n    return out\n\nclass Solution:\n    def addTwoNumbers(self, l1, l2):\n        dummy = tail = ListNode()\n        carry = 0\n        while l1 or l2 or carry:\n            a = l1.val if l1 else 0\n            b = l2.val if l2 else 0\n            carry, d = divmod(a + b + carry, 10)\n            tail.next = ListNode(d)\n            tail = tail.next\n            if l1:\n                l1 = l1.next\n            if l2:\n                l2 = l2.next\n        return dummy.next\n\ndef main():\n    l1 = build_list(list(map(int, input().split())))\n    l2 = build_list(list(map(int, input().split())))\n    print(*to_list(Solution().addTwoNumbers(l1, l2)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:l1 各位(低位在前,空格分隔)\n第 2 行:l2 各位",
+      "stdout": "相加结果链表(低位在前,空格分隔)",
+      "sample_in": "2 4 3\n5 6 4",
+      "sample_out": "7 0 8"
+    }
   }
 }

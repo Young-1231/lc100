@@ -46,5 +46,16 @@
       "time": "**O(m + n)**。",
       "space": "**O(1)** 不计输出。"
     }
+  },
+  "modes": {
+    "core": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def mergeTwoLists(self, l1, l2):\n        dummy = tail = ListNode()\n        while l1 and l2:\n            if l1.val <= l2.val:\n                tail.next, l1 = l1, l1.next\n            else:\n                tail.next, l2 = l2, l2.next\n            tail = tail.next\n        tail.next = l1 or l2\n        return dummy.next\n",
+    "interview": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(vals):\n    dummy = cur = ListNode()\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\n\ndef to_list(head):\n    out = []\n    while head:\n        out.append(head.val)\n        head = head.next\n    return out\n\nclass Solution:\n    def mergeTwoLists(self, l1, l2):\n        dummy = tail = ListNode()\n        while l1 and l2:\n            if l1.val <= l2.val:\n                tail.next, l1 = l1, l1.next\n            else:\n                tail.next, l2 = l2, l2.next\n            tail = tail.next\n        tail.next = l1 or l2\n        return dummy.next\n\nif __name__ == \"__main__\":\n    l1 = build_list([1, 2, 4])\n    l2 = build_list([1, 3, 4])\n    print(to_list(Solution().mergeTwoLists(l1, l2)))   # [1, 1, 2, 3, 4, 4]\n",
+    "acm": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(vals):\n    dummy = cur = ListNode()\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\n\ndef to_list(head):\n    out = []\n    while head:\n        out.append(head.val)\n        head = head.next\n    return out\n\nclass Solution:\n    def mergeTwoLists(self, l1, l2):\n        dummy = tail = ListNode()\n        while l1 and l2:\n            if l1.val <= l2.val:\n                tail.next, l1 = l1, l1.next\n            else:\n                tail.next, l2 = l2, l2.next\n            tail = tail.next\n        tail.next = l1 or l2\n        return dummy.next\n\ndef main():\n    l1 = build_list(list(map(int, input().split())))\n    l2 = build_list(list(map(int, input().split())))\n    print(*to_list(Solution().mergeTwoLists(l1, l2)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:l1(空格分隔)\n第 2 行:l2",
+      "stdout": "合并后的有序链表(空格分隔)",
+      "sample_in": "1 2 4\n1 3 4",
+      "sample_out": "1 1 2 3 4 4"
+    }
   }
 }
