@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def combinationSum(self, candidates: list[int], target: int) -> list[list[int]]:\n    candidates.sort()\n    ans, path = [], []\n\n    def bt(start, remain):\n        if remain == 0:\n            ans.append(path[:])\n            return\n        for i in range(start, len(candidates)):\n            x = candidates[i]\n            if x > remain:\n                break\n            path.append(x)\n            bt(i, remain - x)\n            path.pop()\n\n    bt(0, target)\n    return ans"
+      "code": "class Solution:\n    def combinationSum(self, candidates: list[int], target: int) -> list[list[int]]:\n        candidates.sort()\n        ans, path = [], []\n\n        def bt(start, remain):\n            if remain == 0:\n                ans.append(path[:])\n                return\n            for i in range(start, len(candidates)):\n                x = candidates[i]\n                if x > remain:\n                    break\n                path.append(x)\n                bt(i, remain - x)\n                path.pop()\n\n        bt(0, target)\n        return ans\n"
     }
   ],
   "raw_source": "# LC 39. 组合总和 · Medium · 回溯\n\"\"\"\n🔹 题面\n    candidates 中可重复使用元素,凑出 target 的所有组合。\n\n🔹 直觉\n    起点剪枝:每层从 i 开始,允许重复(下一层仍从 i),避免出现 [2,3] 与 [3,2]。\n\"\"\"\n\n\nclass Solution:\n    def combinationSum(self, candidates: list[int], target: int) -> list[list[int]]:\n        candidates.sort()\n        ans, path = [], []\n\n        def bt(start, remain):\n            if remain == 0:\n                ans.append(path[:])\n                return\n            for i in range(start, len(candidates)):\n                x = candidates[i]\n                if x > remain:\n                    break\n                path.append(x)\n                bt(i, remain - x)\n                path.pop()\n\n        bt(0, target)\n        return ans\n\n\ndef _test() -> None:\n    s = Solution()\n    assert sorted(s.combinationSum([2, 3, 6, 7], 7)) == sorted([[2, 2, 3], [7]])\n    assert sorted(s.combinationSum([2, 3, 5], 8)) == sorted([[2, 2, 2, 2], [2, 3, 3], [3, 5]])\n    assert s.combinationSum([2], 1) == []\n    print(\"✅ p039 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -35,6 +35,40 @@
       "time": "**O(N^(target/min))** —— 状态空间随 target 与最小币值 ratio 增长。",
       "space": "**O(target/min)** —— 递归深度。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "combinationSum",
+    "annotated": "class Solution:\n    def combinationSum(self, candidates: list[int], target: int) -> list[list[int]]:\n        candidates.sort()            # 排序后可剪枝(超了就 break)\n        ans, path = [], []\n\n        def bt(start, remain):       # start:从哪个下标开始选;remain:还差多少到 target\n            if remain == 0:\n                ans.append(path[:])  # path[:] 拷贝一份,否则后续修改会影响已存结果\n                return\n            for i in range(start, len(candidates)):\n                x = candidates[i]\n                if x > remain:       # 排序后 x 超了,后面更大 -> 直接停\n                    break\n                path.append(x)\n                bt(i, remain - x)    # 传 i(不是 i+1):同一个数可重复选\n                path.pop()\n\n        bt(0, target)\n        return ans\n",
+    "gotchas": [
+      "可重复选同一个数 -> 递归传 `i`(不是 `i+1`)。",
+      "用 `start` 只往后选,避免 [2,3] 与 [3,2] 这种重复组合。",
+      "收集时务必 `path[:]` 拷贝。"
+    ]
+  },
+  "statement": {
+    "description": "给你一个 **无重复元素** 的整数数组 `candidates` 和一个目标整数 `target` ,找出 `candidates` 中可以使数字和为目标数 `target` 的所有 **不同组合** ,并以列表形式返回。你可以按 **任意顺序** 返回这些组合。\n\n`candidates` 中的 **同一个** 数字可以 **无限制重复被选取** 。如果至少一个数字的被选数量不同,则两种组合是不同的。\n\n对于给定的输入,保证和为 `target` 的不同组合数少于 `150` 个。",
+    "examples": [
+      {
+        "input": "candidates = [2,3,6,7], target = 7",
+        "output": "[[2,2,3],[7]]",
+        "explanation": "2 和 3 可以形成一组候选,2 + 2 + 3 = 7 。注意 2 可以使用多次。\n7 也是一个候选,7 = 7 。\n仅有这两种组合。"
+      },
+      {
+        "input": "candidates = [2,3,5], target = 8",
+        "output": "[[2,2,2,2],[2,3,3],[3,5]]"
+      },
+      {
+        "input": "candidates = [2], target = 1",
+        "output": "[]"
+      }
+    ],
+    "constraints": [
+      "1 <= candidates.length <= 30",
+      "2 <= candidates[i] <= 40",
+      "candidates 的所有元素 互不相同",
+      "1 <= target <= 40"
+    ]
   },
   "modes": {
     "core": "class Solution:\n    def combinationSum(self, candidates, target):\n        candidates.sort()\n        ans, path = [], []\n\n        def bt(start, remain):\n            if remain == 0:\n                ans.append(path[:])\n                return\n            for i in range(start, len(candidates)):\n                x = candidates[i]\n                if x > remain:\n                    break\n                path.append(x)\n                bt(i, remain - x)\n                path.pop()\n\n        bt(0, target)\n        return ans\n",

@@ -12,11 +12,11 @@ import random
 
 
 class Solution:
-    # 解法 1:排序 — O(n log n)
+    # 解法 1:排序 — O(n log n) / O(1)
     def findKthLargest_sort(self, nums: list[int], k: int) -> int:
         return sorted(nums)[-k]
 
-    # 解法 2:小顶堆 ★ — O(n log k)
+    # 解法 2:小顶堆 ★ — O(n log k) / O(k)
     def findKthLargest(self, nums: list[int], k: int) -> int:
         h: list[int] = []
         for x in nums:
@@ -25,7 +25,7 @@ class Solution:
                 heapq.heappop(h)
         return h[0]
 
-    # 解法 3:快速选择 — O(n) 平均
+    # 解法 3:快速选择 — O(n) 平均 / O(log n)
     def findKthLargest_quick(self, nums: list[int], k: int) -> int:
         nums = nums[:]
         target = len(nums) - k

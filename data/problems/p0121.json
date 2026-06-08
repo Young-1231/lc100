@@ -9,7 +9,7 @@
   "day": 6,
   "day_title": "栈 / 堆 / 贪心",
   "category": "贪心",
-  "leetcode_url": "https://leetcode.cn/problems/best-time-stock/",
+  "leetcode_url": "https://leetcode.cn/problems/best-time-to-buy-and-sell-stock/",
   "filename": "p121_best_time_stock.py",
   "doc": "🔹 直觉\n    扫一遍:维护历史最低价 lo,答案 = max(p[i] - lo)。",
   "solutions": [
@@ -19,7 +19,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def maxProfit(self, prices: list[int]) -> int:\n    lo, best = float(\"inf\"), 0\n    for p in prices:\n        lo = min(lo, p)\n        best = max(best, p - lo)\n    return best"
+      "code": "class Solution:\n    def maxProfit(self, prices: list[int]) -> int:\n        lo, best = float(\"inf\"), 0\n        for p in prices:\n            lo = min(lo, p)\n            best = max(best, p - lo)\n        return best\n"
     }
   ],
   "raw_source": "# LC 121. 买卖股票的最佳时机 · Easy · 贪心 / 一次遍历\n\"\"\"\n🔹 直觉\n    扫一遍:维护历史最低价 lo,答案 = max(p[i] - lo)。\n\"\"\"\n\n\nclass Solution:\n    def maxProfit(self, prices: list[int]) -> int:\n        lo, best = float(\"inf\"), 0\n        for p in prices:\n            lo = min(lo, p)\n            best = max(best, p - lo)\n        return best\n\n\ndef _test() -> None:\n    s = Solution()\n    assert s.maxProfit([7, 1, 5, 3, 6, 4]) == 5\n    assert s.maxProfit([7, 6, 4, 3, 1]) == 0\n    assert s.maxProfit([]) == 0\n    print(\"✅ p121 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -51,6 +51,34 @@
       "time": "**O(n)**。",
       "space": "**O(1)**。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "maxProfit",
+    "annotated": "class Solution:\n    def maxProfit(self, prices: list[int]) -> int:\n        lo, best = float(\"inf\"), 0     # lo:目前见过的最低买入价;best:最大利润\n        for p in prices:\n            lo = min(lo, p)            # 更新最低买入价\n            best = max(best, p - lo)   # 今天卖出能赚 = 当前价 - 历史最低价\n        return best\n",
+    "gotchas": [
+      "一次遍历同时维护「历史最低价」和「最大利润」。",
+      "必须先买后卖,所以 lo 一定来自当前价之前(含)。"
+    ]
+  },
+  "statement": {
+    "description": "给定一个数组 `prices` ,它的第 `i` 个元素 `prices[i]` 表示一支给定股票第 `i` 天的价格。\n\n你只能选择 **某一天** 买入这只股票,并选择在 **未来的某一个不同的日子** 卖出该股票。设计一个算法来计算你所能获取的最大利润。\n\n返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润,返回 `0` 。",
+    "examples": [
+      {
+        "input": "prices = [7,1,5,3,6,4]",
+        "output": "5",
+        "explanation": "在第 2 天(股票价格 = 1)的时候买入,在第 5 天(股票价格 = 6)的时候卖出,最大利润 = 6-1 = 5 。\n注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格;同时,你不能在买入前卖出股票。"
+      },
+      {
+        "input": "prices = [7,6,4,3,1]",
+        "output": "0",
+        "explanation": "在这种情况下, 没有交易完成, 所以最大利润为 0。"
+      }
+    ],
+    "constraints": [
+      "1 <= prices.length <= 10^5",
+      "0 <= prices[i] <= 10^4"
+    ]
   },
   "modes": {
     "core": "class Solution:\n    def maxProfit(self, prices):\n        lo, best = float(\"inf\"), 0\n        for p in prices:\n            lo = min(lo, p)\n            best = max(best, p - lo)\n        return best\n",

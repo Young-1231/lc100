@@ -7,11 +7,20 @@
   ],
   "day": 5,
   "day_title": "图论 / 回溯 / 二分",
-  "category": "图论",
+  "category": "字典树",
   "leetcode_url": "https://leetcode.cn/problems/implement-trie-prefix-tree/",
   "filename": "p208_trie.py",
   "doc": "🔹 直觉\n    每节点用 dict 保存子节点;is_end 标记完整单词。\n    insert/search/startsWith 均 O(L)。",
-  "solutions": [],
+  "solutions": [
+    {
+      "method": "Trie",
+      "title": "标准实现",
+      "time": "",
+      "space": "",
+      "starred": true,
+      "code": "class Trie:\n    def __init__(self):\n        self.ch: dict = {}\n        self.end = False\n\n    def insert(self, word: str) -> None:\n        cur = self\n        for c in word:\n            if c not in cur.ch:\n                cur.ch[c] = Trie()\n            cur = cur.ch[c]\n        cur.end = True\n\n    def _walk(self, prefix: str):\n        cur = self\n        for c in prefix:\n            if c not in cur.ch:\n                return None\n            cur = cur.ch[c]\n        return cur\n\n    def search(self, word: str) -> bool:\n        n = self._walk(word)\n        return n is not None and n.end\n\n    def startsWith(self, prefix: str) -> bool:\n        return self._walk(prefix) is not None\n"
+    }
+  ],
   "raw_source": "# LC 208. 实现 Trie(前缀树) · Medium · 字典树\n\"\"\"\n🔹 直觉\n    每节点用 dict 保存子节点;is_end 标记完整单词。\n    insert/search/startsWith 均 O(L)。\n\"\"\"\n\n\nclass Trie:\n    def __init__(self):\n        self.ch: dict = {}\n        self.end = False\n\n    def insert(self, word: str) -> None:\n        cur = self\n        for c in word:\n            if c not in cur.ch:\n                cur.ch[c] = Trie()\n            cur = cur.ch[c]\n        cur.end = True\n\n    def _walk(self, prefix: str):\n        cur = self\n        for c in prefix:\n            if c not in cur.ch:\n                return None\n            cur = cur.ch[c]\n        return cur\n\n    def search(self, word: str) -> bool:\n        n = self._walk(word)\n        return n is not None and n.end\n\n    def startsWith(self, prefix: str) -> bool:\n        return self._walk(prefix) is not None\n\n\ndef _test() -> None:\n    t = Trie()\n    t.insert(\"apple\")\n    assert t.search(\"apple\") is True\n    assert t.search(\"app\") is False\n    assert t.startsWith(\"app\") is True\n    t.insert(\"app\")\n    assert t.search(\"app\") is True\n    print(\"✅ p208 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
   "viz": null,
   "explanation": {
@@ -27,6 +36,30 @@
       "time": "**O(L)** 每次 insert/search,L 为字符串长度。",
       "space": "**O(N · |Σ|)** 最坏 —— N 总字符数。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "Trie",
+    "annotated": "class Trie:\n    def __init__(self):\n        self.ch: dict = {}           # 子结点:字符 -> 下一个 Trie 结点\n        self.end = False             # 标记是否有单词在此结尾\n\n    def insert(self, word: str) -> None:\n        cur = self\n        for c in word:\n            if c not in cur.ch:      # 没有这条边就新建\n                cur.ch[c] = Trie()\n            cur = cur.ch[c]          # 沿字符往下走\n        cur.end = True               # 单词结尾打标记\n\n    def _walk(self, prefix: str):    # 沿 prefix 走,返回终点结点(走不通则 None)\n        cur = self\n        for c in prefix:\n            if c not in cur.ch:\n                return None\n            cur = cur.ch[c]\n        return cur\n\n    def search(self, word: str) -> bool:\n        n = self._walk(word)\n        return n is not None and n.end   # 既要走得通,终点还得是某单词结尾\n\n    def startsWith(self, prefix: str) -> bool:\n        return self._walk(prefix) is not None   # 走得通即存在该前缀\n",
+    "gotchas": [
+      "每个结点用 dict 存子结点;`end` 用来区分「前缀」和「完整单词」。",
+      "search 要求 `end=True`,startsWith 只要走得通。"
+    ]
+  },
+  "statement": {
+    "description": "**Trie**(发音类似 \"try\")或者说 **前缀树** 是一种树形数据结构,用于高效地存储和检索字符串数据集中的键。这一数据结构有相当多的应用情景,例如自动补全和拼写检查。\n\n请你实现 Trie 类:\n\n- `Trie()` 初始化前缀树对象。\n- `void insert(String word)` 向前缀树中插入字符串 `word` 。\n- `boolean search(String word)` 如果字符串 `word` 在前缀树中,返回 `true`(即,在检索之前已经插入);否则,返回 `false` 。\n- `boolean startsWith(String prefix)` 如果之前已经插入的字符串 `word` 的前缀之一为 `prefix` ,返回 `true` ;否则,返回 `false` 。",
+    "examples": [
+      {
+        "input": "[\"Trie\",\"insert\",\"search\",\"search\",\"startsWith\",\"insert\",\"search\"]\n[[],[\"apple\"],[\"apple\"],[\"app\"],[\"app\"],[\"app\"],[\"app\"]]",
+        "output": "[null,null,true,false,true,null,true]",
+        "explanation": "Trie trie = new Trie();\ntrie.insert(\"apple\");\ntrie.search(\"apple\");   // 返回 True\ntrie.search(\"app\");     // 返回 False\ntrie.startsWith(\"app\"); // 返回 True\ntrie.insert(\"app\");\ntrie.search(\"app\");     // 返回 True"
+      }
+    ],
+    "constraints": [
+      "1 <= word.length, prefix.length <= 2000",
+      "word 和 prefix 仅由小写英文字母组成",
+      "insert、search 和 startsWith 调用次数总计不超过 3 * 10^4 次"
+    ]
   },
   "modes": {
     "core": "# 题目要求设计前缀树,直接实现 Trie\n\nclass Trie:\n    def __init__(self):\n        self.children = {}\n        self.end = False\n\n    def insert(self, word):\n        node = self\n        for c in word:\n            if c not in node.children:\n                node.children[c] = Trie()\n            node = node.children[c]\n        node.end = True\n\n    def _find(self, word):\n        node = self\n        for c in word:\n            if c not in node.children:\n                return None\n            node = node.children[c]\n        return node\n\n    def search(self, word):\n        node = self._find(word)\n        return node is not None and node.end\n\n    def startsWith(self, prefix):\n        return self._find(prefix) is not None\n",

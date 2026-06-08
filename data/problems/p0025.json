@@ -8,7 +8,7 @@
   "day": 3,
   "day_title": "链表",
   "category": "链表",
-  "leetcode_url": "https://leetcode.cn/problems/reverse-k-group/",
+  "leetcode_url": "https://leetcode.cn/problems/reverse-nodes-in-k-group/",
   "filename": "p025_reverse_k_group.py",
   "doc": "🔹 题面\n    每 K 个一组翻转节点;不足 K 不动。\n\n🔹 解法对比\n    | 方法    | 时间 | 空间   | 备注          |\n    |---------|------|--------|---------------|\n    | 迭代 ★ | O(n) | O(1)   | 工程实现      |\n    | 递归    | O(n) | O(n/k) | 实现简洁       |",
   "solutions": [
@@ -18,7 +18,7 @@
       "time": "O(n)",
       "space": "O(1)",
       "starred": true,
-      "code": "def reverseKGroup(self, head, k: int):\n    dummy = ListNode(0, head)\n    group_prev = dummy\n    while True:\n        kth = group_prev\n        for _ in range(k):\n            kth = kth.next\n            if not kth:\n                return dummy.next\n        group_next = kth.next\n        prev, cur = group_next, group_prev.next\n        while cur is not group_next:\n            nxt = cur.next\n            cur.next = prev\n            prev = cur\n            cur = nxt\n        tmp = group_prev.next\n        group_prev.next = kth\n        group_prev = tmp"
+      "code": "class Solution:\n    def reverseKGroup(self, head, k: int):\n        dummy = ListNode(0, head)\n        group_prev = dummy\n        while True:\n            kth = group_prev\n            for _ in range(k):\n                kth = kth.next\n                if not kth:\n                    return dummy.next\n            group_next = kth.next\n            prev, cur = group_next, group_prev.next\n            while cur is not group_next:\n                nxt = cur.next\n                cur.next = prev\n                prev = cur\n                cur = nxt\n            tmp = group_prev.next\n            group_prev.next = kth\n            group_prev = tmp\n"
     },
     {
       "method": "reverseKGroup_rec",
@@ -26,7 +26,7 @@
       "time": "O(n)",
       "space": "O(n/k)",
       "starred": false,
-      "code": "def reverseKGroup_rec(self, head, k: int):\n    # 先看是否够 k 个\n    cur = head\n    for _ in range(k):\n        if not cur:\n            return head\n        cur = cur.next\n    # 反转前 k 个\n    prev, cur = None, head\n    for _ in range(k):\n        nxt = cur.next\n        cur.next = prev\n        prev = cur\n        cur = nxt\n    head.next = self.reverseKGroup_rec(cur, k)\n    return prev"
+      "code": "class Solution:\n    def reverseKGroup(self, head, k: int):\n        # 先看是否够 k 个\n        cur = head\n        for _ in range(k):\n            if not cur:\n                return head\n            cur = cur.next\n        # 反转前 k 个\n        prev, cur = None, head\n        for _ in range(k):\n            nxt = cur.next\n            cur.next = prev\n            prev = cur\n            cur = nxt\n        head.next = self.reverseKGroup(cur, k)\n        return prev\n"
     }
   ],
   "raw_source": "# LC 25. K 个一组翻转链表 · Hard · 链表\n\"\"\"\n🔹 题面\n    每 K 个一组翻转节点;不足 K 不动。\n\n🔹 解法对比\n    | 方法    | 时间 | 空间   | 备注          |\n    |---------|------|--------|---------------|\n    | 迭代 ★ | O(n) | O(1)   | 工程实现      |\n    | 递归    | O(n) | O(n/k) | 实现简洁       |\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import ListNode, build_list, list_to_array\n\n\nclass Solution:\n    # 解法 1:迭代 ★ — O(n) / O(1)\n    def reverseKGroup(self, head, k: int):\n        dummy = ListNode(0, head)\n        group_prev = dummy\n        while True:\n            kth = group_prev\n            for _ in range(k):\n                kth = kth.next\n                if not kth:\n                    return dummy.next\n            group_next = kth.next\n            prev, cur = group_next, group_prev.next\n            while cur is not group_next:\n                nxt = cur.next\n                cur.next = prev\n                prev = cur\n                cur = nxt\n            tmp = group_prev.next\n            group_prev.next = kth\n            group_prev = tmp\n\n    # 解法 2:递归 — O(n) / O(n/k) 栈\n    def reverseKGroup_rec(self, head, k: int):\n        # 先看是否够 k 个\n        cur = head\n        for _ in range(k):\n            if not cur:\n                return head\n            cur = cur.next\n        # 反转前 k 个\n        prev, cur = None, head\n        for _ in range(k):\n            nxt = cur.next\n            cur.next = prev\n            prev = cur\n            cur = nxt\n        head.next = self.reverseKGroup_rec(cur, k)\n        return prev\n\n\ndef _test() -> None:\n    s = Solution()\n    cases = [\n        (([1, 2, 3, 4, 5], 2), [2, 1, 4, 3, 5]),\n        (([1, 2, 3, 4, 5], 3), [3, 2, 1, 4, 5]),\n        (([1, 2], 1), [1, 2]),\n    ]\n    for (arr, k), want in cases:\n        for fn in (s.reverseKGroup, s.reverseKGroup_rec):\n            assert list_to_array(fn(build_list(arr), k)) == want\n    print(\"✅ p025 通过 2 解法\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -53,6 +53,35 @@
       "time": "**O(n)** —— 每个节点至多被访问 2 次(探+翻)。",
       "space": "**O(1)** —— 迭代版本不需要递归栈。"
     }
+  },
+  "n_sols": 2,
+  "code_explain": {
+    "method": "reverseKGroup",
+    "annotated": "class Solution:\n    def reverseKGroup(self, head, k: int):\n        dummy = ListNode(0, head)\n        group_prev = dummy              # 每组的前驱\n        while True:\n            kth = group_prev            # 先找到本组第 k 个结点\n            for _ in range(k):\n                kth = kth.next\n                if not kth:             # 不足 k 个 -> 本组不翻转,直接结束\n                    return dummy.next\n            group_next = kth.next       # 下一组的头\n            # 翻转本组 [group_prev.next .. kth];prev 初始为 group_next,翻完自然接上下一组\n            prev, cur = group_next, group_prev.next\n            while cur is not group_next:\n                nxt = cur.next\n                cur.next = prev\n                prev = cur\n                cur = nxt\n            # 重接:原组头(现已变成组尾)成为下一轮的前驱\n            tmp = group_prev.next\n            group_prev.next = kth\n            group_prev = tmp\n",
+    "gotchas": [
+      "先数够 k 个,不足就整组保留不翻转(题目要求)。",
+      "`prev` 初始化为 `group_next`,翻转后本组尾自然接到下一组头。",
+      "用 `tmp` 记住原组头(翻转后变成组尾),作为下一组的前驱。"
+    ]
+  },
+  "statement": {
+    "description": "给你链表的头节点 `head` ,每 `k` 个节点一组进行翻转,请你返回修改后的链表。\n\n`k` 是一个正整数,它的值小于或等于链表的长度。如果节点总数不是 `k` 的整数倍,那么请将最后剩余的节点保持原有顺序。\n\n你不能只是单纯的改变节点内部的值,而是需要实际进行节点交换。",
+    "examples": [
+      {
+        "input": "head = [1,2,3,4,5], k = 2",
+        "output": "[2,1,4,3,5]"
+      },
+      {
+        "input": "head = [1,2,3,4,5], k = 3",
+        "output": "[3,2,1,4,5]"
+      }
+    ],
+    "constraints": [
+      "链表中的节点数目为 n",
+      "1 <= k <= n <= 5000",
+      "0 <= Node.val <= 1000"
+    ],
+    "follow_up": "你可以设计一个只用 O(1) 额外内存空间的算法解决此问题吗?"
   },
   "modes": {
     "core": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def reverseKGroup(self, head, k):\n        dummy = ListNode(0, head)\n        group_prev = dummy\n        while True:\n            kth = group_prev\n            for _ in range(k):\n                kth = kth.next\n                if not kth:\n                    return dummy.next\n            group_next = kth.next\n            prev, cur = group_next, group_prev.next\n            while cur is not group_next:\n                nxt = cur.next\n                cur.next = prev\n                prev = cur\n                cur = nxt\n            tmp = group_prev.next\n            group_prev.next = kth\n            group_prev = tmp\n",

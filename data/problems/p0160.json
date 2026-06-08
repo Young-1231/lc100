@@ -8,7 +8,7 @@
   "day": 3,
   "day_title": "链表",
   "category": "链表",
-  "leetcode_url": "https://leetcode.cn/problems/intersection-two-lists/",
+  "leetcode_url": "https://leetcode.cn/problems/intersection-of-two-linked-lists/",
   "filename": "p160_intersection_two_lists.py",
   "doc": "🔹 题面\n    返回两个链表相交的起点;不相交返回 None。要求 O(1) 额外空间。\n\n🔹 直觉(浪漫双指针)\n    a 走 A 完了走 B,b 走 B 完了走 A。\n    若相交,二者相遇于交点;若不相交,同时走到 None。\n    总步数 = lenA + lenB,相同。\n\n🔹 复杂度 O(m+n) / O(1)",
   "solutions": [
@@ -18,7 +18,7 @@
       "time": "",
       "space": "",
       "starred": false,
-      "code": "def getIntersectionNode(self, headA, headB):\n    a, b = headA, headB\n    while a is not b:\n        a = a.next if a else headB\n        b = b.next if b else headA\n    return a"
+      "code": "class Solution:\n    def getIntersectionNode(self, headA, headB):\n        a, b = headA, headB\n        while a is not b:\n            a = a.next if a else headB\n            b = b.next if b else headA\n        return a\n"
     }
   ],
   "raw_source": "# LC 160. 相交链表 · Easy · 双指针\n\"\"\"\n🔹 题面\n    返回两个链表相交的起点;不相交返回 None。要求 O(1) 额外空间。\n\n🔹 直觉(浪漫双指针)\n    a 走 A 完了走 B,b 走 B 完了走 A。\n    若相交,二者相遇于交点;若不相交,同时走到 None。\n    总步数 = lenA + lenB,相同。\n\n🔹 复杂度 O(m+n) / O(1)\n\"\"\"\nimport sys, os\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\nfrom _common.ds import ListNode, build_list\n\n\nclass Solution:\n    def getIntersectionNode(self, headA, headB):\n        a, b = headA, headB\n        while a is not b:\n            a = a.next if a else headB\n            b = b.next if b else headA\n        return a\n\n\ndef _test() -> None:\n    s = Solution()\n    common = build_list([8, 4, 5])\n    a = ListNode(4); a.next = ListNode(1); a.next.next = common\n    b = ListNode(5); b.next = ListNode(6); b.next.next = ListNode(1); b.next.next.next = common\n    assert s.getIntersectionNode(a, b) is common\n    assert s.getIntersectionNode(build_list([1, 2]), build_list([3, 4])) is None\n    print(\"✅ p160 通过\")\n\n\nif __name__ == \"__main__\":\n    _test()\n",
@@ -45,6 +45,42 @@
       "time": "**O(m + n)**。",
       "space": "**O(1)**。"
     }
+  },
+  "n_sols": 1,
+  "code_explain": {
+    "method": "getIntersectionNode",
+    "annotated": "class Solution:\n    def getIntersectionNode(self, headA, headB):\n        a, b = headA, headB\n        while a is not b:                # 两指针相等(同一结点或都为 None)时停\n            a = a.next if a else headB   # a 走完 A 就换到 B 头\n            b = b.next if b else headA   # b 走完 B 就换到 A 头\n        return a                         # 相交点;不相交则同时到 None,返回 None\n",
+    "gotchas": [
+      "两指针各走「A+B」的长度,到相交点时步数相等,必然相遇。",
+      "不相交时两者同时变 None(`None is None` 为真),返回 None。",
+      "换头用 `if a else headB`(a 为 None 时换),不是 `a.next`。"
+    ]
+  },
+  "statement": {
+    "description": "给你两个单链表的头节点 `headA` 和 `headB` ,请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点,返回 `null` 。\n\n题目数据 **保证** 整个链式结构中不存在环。\n\n**注意**,函数返回结果后,链表必须 **保持其原始结构** 。",
+    "examples": [
+      {
+        "input": "intersectVal = 8, listA = [4,1,8,4,5], listB = [5,6,1,8,4,5], skipA = 2, skipB = 3",
+        "output": "Intersected at '8'",
+        "explanation": "相交节点的值为 8 (注意,如果两个链表相交则不能为 0)。从各自的表头开始算起,链表 A 为 [4,1,8,4,5],链表 B 为 [5,6,1,8,4,5]。在 A 中,相交节点前有 2 个节点;在 B 中,相交节点前有 3 个节点。"
+      },
+      {
+        "input": "intersectVal = 2, listA = [1,9,1,2,4], listB = [3,2,4], skipA = 3, skipB = 1",
+        "output": "Intersected at '2'"
+      },
+      {
+        "input": "intersectVal = 0, listA = [2,6,4], listB = [1,5], skipA = 3, skipB = 2",
+        "output": "No intersection",
+        "explanation": "这两个链表不相交,因此返回 null 。"
+      }
+    ],
+    "constraints": [
+      "listA 中节点数目为 m",
+      "listB 中节点数目为 n",
+      "1 <= m, n <= 3 * 10^4",
+      "1 <= Node.val <= 10^5"
+    ],
+    "follow_up": "你能否设计一个时间复杂度 O(m + n) 、仅用 O(1) 内存的解决方案?"
   },
   "modes": {
     "core": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def getIntersectionNode(self, headA, headB):\n        a, b = headA, headB\n        while a is not b:\n            a = a.next if a else headB\n            b = b.next if b else headA\n        return a\n",

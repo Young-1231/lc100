@@ -44,7 +44,7 @@ class Solution:
                 l += 1
         return "" if best_len == float("inf") else s[best_l:best_l + best_len]
 
-    # 解法 2:滑窗 + Counter 直接对比 — O(n·|Σ|)
+    # 解法 2:滑窗 + Counter 直接对比 — O(n·|Σ|) / O(|Σ|)
     def minWindow_naive(self, s: str, t: str) -> str:
         if len(s) < len(t):
             return ""

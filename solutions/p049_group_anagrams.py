@@ -21,14 +21,14 @@ from collections import defaultdict
 
 
 class Solution:
-    # 解法 1:排序作 key — O(n·k log k)
+    # 解法 1:排序作 key — O(n·k log k) / O(n·k)
     def groupAnagrams_sort(self, strs: list[str]) -> list[list[str]]:
         bucket: dict[str, list[str]] = defaultdict(list)
         for s in strs:
             bucket["".join(sorted(s))].append(s)
         return list(bucket.values())
 
-    # 解法 2:计数元组作 key ★  — O(n·k)
+    # 解法 2:计数元组作 key ★  — O(n·k) / O(n·k)
     def groupAnagrams(self, strs: list[str]) -> list[list[str]]:
         bucket: dict[tuple, list[str]] = defaultdict(list)
         for s in strs:
