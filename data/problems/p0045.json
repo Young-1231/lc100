@@ -44,5 +44,16 @@
       "time": "**O(n)**。",
       "space": "**O(1)**。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def jump(self, nums):\n        steps = end = farthest = 0\n        for i in range(len(nums) - 1):\n            farthest = max(farthest, i + nums[i])\n            if i == end:\n                steps += 1\n                end = farthest\n        return steps\n",
+    "interview": "class Solution:\n    def jump(self, nums):\n        steps = end = farthest = 0\n        for i in range(len(nums) - 1):\n            farthest = max(farthest, i + nums[i])\n            if i == end:\n                steps += 1\n                end = farthest\n        return steps\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.jump([2, 3, 1, 1, 4]))   # 2\n    print(s.jump([2, 3, 0, 1, 4]))   # 2\n",
+    "acm": "class Solution:\n    def jump(self, nums):\n        steps = end = farthest = 0\n        for i in range(len(nums) - 1):\n            farthest = max(farthest, i + nums[i])\n            if i == end:\n                steps += 1\n                end = farthest\n        return steps\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().jump(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:跳跃数组(空格分隔)",
+      "stdout": "到达终点的最少跳数",
+      "sample_in": "2 3 1 1 4",
+      "sample_out": "2"
+    }
   }
 }

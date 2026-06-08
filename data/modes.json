@@ -33,6 +33,28 @@
       "sample_out": "3"
     }
   },
+  "4": {
+    "core": "class Solution:\n    def findMedianSortedArrays(self, a, b):\n        if len(a) > len(b):\n            a, b = b, a\n        m, n = len(a), len(b)\n        half = (m + n + 1) // 2\n        l, r = 0, m\n        INF = float(\"inf\")\n        while l <= r:\n            i = (l + r) // 2\n            j = half - i\n            aL = a[i - 1] if i > 0 else -INF\n            aR = a[i] if i < m else INF\n            bL = b[j - 1] if j > 0 else -INF\n            bR = b[j] if j < n else INF\n            if aL <= bR and bL <= aR:\n                if (m + n) & 1:\n                    return float(max(aL, bL))\n                return (max(aL, bL) + min(aR, bR)) / 2\n            if aL > bR:\n                r = i - 1\n            else:\n                l = i + 1\n        return 0.0\n",
+    "interview": "class Solution:\n    def findMedianSortedArrays(self, a, b):\n        if len(a) > len(b):\n            a, b = b, a\n        m, n = len(a), len(b)\n        half = (m + n + 1) // 2\n        l, r = 0, m\n        INF = float(\"inf\")\n        while l <= r:\n            i = (l + r) // 2\n            j = half - i\n            aL = a[i - 1] if i > 0 else -INF\n            aR = a[i] if i < m else INF\n            bL = b[j - 1] if j > 0 else -INF\n            bR = b[j] if j < n else INF\n            if aL <= bR and bL <= aR:\n                if (m + n) & 1:\n                    return float(max(aL, bL))\n                return (max(aL, bL) + min(aR, bR)) / 2\n            if aL > bR:\n                r = i - 1\n            else:\n                l = i + 1\n        return 0.0\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.findMedianSortedArrays([1, 3], [2]))      # 2.0\n    print(s.findMedianSortedArrays([1, 2], [3, 4]))   # 2.5\n",
+    "acm": "class Solution:\n    def findMedianSortedArrays(self, a, b):\n        if len(a) > len(b):\n            a, b = b, a\n        m, n = len(a), len(b)\n        half = (m + n + 1) // 2\n        l, r = 0, m\n        INF = float(\"inf\")\n        while l <= r:\n            i = (l + r) // 2\n            j = half - i\n            aL = a[i - 1] if i > 0 else -INF\n            aR = a[i] if i < m else INF\n            bL = b[j - 1] if j > 0 else -INF\n            bR = b[j] if j < n else INF\n            if aL <= bR and bL <= aR:\n                if (m + n) & 1:\n                    return float(max(aL, bL))\n                return (max(aL, bL) + min(aR, bR)) / 2\n            if aL > bR:\n                r = i - 1\n            else:\n                l = i + 1\n        return 0.0\n\ndef main():\n    a = list(map(int, input().split()))\n    b = list(map(int, input().split()))\n    print(Solution().findMedianSortedArrays(a, b))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:有序数组 a(空格分隔,可空行)\n第 2 行:有序数组 b",
+      "stdout": "两数组合并后的中位数",
+      "sample_in": "1 3\n2",
+      "sample_out": "2.0"
+    }
+  },
+  "5": {
+    "core": "class Solution:\n    def longestPalindrome(self, s):\n        if not s:\n            return \"\"\n\n        def expand(l, r):\n            while l >= 0 and r < len(s) and s[l] == s[r]:\n                l -= 1\n                r += 1\n            return l + 1, r - 1\n\n        bl, br = 0, 0\n        for i in range(len(s)):\n            for l0, r0 in (expand(i, i), expand(i, i + 1)):\n                if r0 - l0 > br - bl:\n                    bl, br = l0, r0\n        return s[bl:br + 1]\n",
+    "interview": "class Solution:\n    def longestPalindrome(self, s):\n        if not s:\n            return \"\"\n\n        def expand(l, r):\n            while l >= 0 and r < len(s) and s[l] == s[r]:\n                l -= 1\n                r += 1\n            return l + 1, r - 1\n\n        bl, br = 0, 0\n        for i in range(len(s)):\n            for l0, r0 in (expand(i, i), expand(i, i + 1)):\n                if r0 - l0 > br - bl:\n                    bl, br = l0, r0\n        return s[bl:br + 1]\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.longestPalindrome(\"babad\"))   # bab\n    print(s.longestPalindrome(\"cbbd\"))    # bb\n",
+    "acm": "class Solution:\n    def longestPalindrome(self, s):\n        if not s:\n            return \"\"\n\n        def expand(l, r):\n            while l >= 0 and r < len(s) and s[l] == s[r]:\n                l -= 1\n                r += 1\n            return l + 1, r - 1\n\n        bl, br = 0, 0\n        for i in range(len(s)):\n            for l0, r0 in (expand(i, i), expand(i, i + 1)):\n                if r0 - l0 > br - bl:\n                    bl, br = l0, r0\n        return s[bl:br + 1]\n\ndef main():\n    s = input()\n    print(Solution().longestPalindrome(s))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:字符串 s",
+      "stdout": "最长回文子串",
+      "sample_in": "babad",
+      "sample_out": "bab"
+    }
+  },
   "11": {
     "core": "class Solution:\n    def maxArea(self, h):\n        i, j, best = 0, len(h) - 1, 0\n        while i < j:\n            best = max(best, (j - i) * min(h[i], h[j]))\n            if h[i] < h[j]:\n                i += 1\n            else:\n                j -= 1\n        return best\n",
     "interview": "class Solution:\n    def maxArea(self, h):\n        i, j, best = 0, len(h) - 1, 0\n        while i < j:\n            best = max(best, (j - i) * min(h[i], h[j]))\n            if h[i] < h[j]:\n                i += 1\n            else:\n                j -= 1\n        return best\n\nif __name__ == \"__main__\":\n    print(Solution().maxArea([1, 8, 6, 2, 5, 4, 8, 3, 7]))   # 49\n",
@@ -55,6 +77,17 @@
       "sample_out": "-1 -1 2\n-1 0 1"
     }
   },
+  "17": {
+    "core": "class Solution:\n    def letterCombinations(self, digits):\n        if not digits:\n            return []\n        ans, path = [], []\n\n        def bt(i):\n            if i == len(digits):\n                ans.append(\"\".join(path))\n                return\n            for c in _KEY[digits[i]]:\n                path.append(c)\n                bt(i + 1)\n                path.pop()\n\n        bt(0)\n        return ans\n",
+    "interview": "_KEY = {\n    \"2\": \"abc\", \"3\": \"def\", \"4\": \"ghi\", \"5\": \"jkl\",\n    \"6\": \"mno\", \"7\": \"pqrs\", \"8\": \"tuv\", \"9\": \"wxyz\",\n}\n\nclass Solution:\n    def letterCombinations(self, digits):\n        if not digits:\n            return []\n        ans, path = [], []\n\n        def bt(i):\n            if i == len(digits):\n                ans.append(\"\".join(path))\n                return\n            for c in _KEY[digits[i]]:\n                path.append(c)\n                bt(i + 1)\n                path.pop()\n\n        bt(0)\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().letterCombinations(\"23\"))\n    # ['ad', 'ae', 'af', 'bd', 'be', 'bf', 'cd', 'ce', 'cf']\n",
+    "acm": "_KEY = {\n    \"2\": \"abc\", \"3\": \"def\", \"4\": \"ghi\", \"5\": \"jkl\",\n    \"6\": \"mno\", \"7\": \"pqrs\", \"8\": \"tuv\", \"9\": \"wxyz\",\n}\n\nclass Solution:\n    def letterCombinations(self, digits):\n        if not digits:\n            return []\n        ans, path = [], []\n\n        def bt(i):\n            if i == len(digits):\n                ans.append(\"\".join(path))\n                return\n            for c in _KEY[digits[i]]:\n                path.append(c)\n                bt(i + 1)\n                path.pop()\n\n        bt(0)\n        return ans\n\ndef main():\n    digits = input()\n    print(*Solution().letterCombinations(digits))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数字串 digits(2-9)",
+      "stdout": "全部字母组合(空格分隔)",
+      "sample_in": "23",
+      "sample_out": "ad ae af bd be bf cd ce cf"
+    }
+  },
   "19": {
     "core": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def removeNthFromEnd(self, head, n):\n        dummy = ListNode(0, head)\n        fast = slow = dummy\n        for _ in range(n + 1):\n            fast = fast.next\n        while fast:\n            fast = fast.next\n            slow = slow.next\n        slow.next = slow.next.next\n        return dummy.next\n",
     "interview": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(vals):\n    dummy = cur = ListNode()\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\n\ndef to_list(head):\n    out = []\n    while head:\n        out.append(head.val)\n        head = head.next\n    return out\n\nclass Solution:\n    def removeNthFromEnd(self, head, n):\n        dummy = ListNode(0, head)\n        fast = slow = dummy\n        for _ in range(n + 1):\n            fast = fast.next\n        while fast:\n            fast = fast.next\n            slow = slow.next\n        slow.next = slow.next.next\n        return dummy.next\n\nif __name__ == \"__main__\":\n    head = build_list([1, 2, 3, 4, 5])\n    print(to_list(Solution().removeNthFromEnd(head, 2)))   # [1, 2, 3, 5]\n",
@@ -66,6 +99,17 @@
       "sample_out": "1 2 3 5"
     }
   },
+  "20": {
+    "core": "class Solution:\n    def isValid(self, s):\n        m = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n        st = []\n        for c in s:\n            if c in m:\n                if not st or st.pop() != m[c]:\n                    return False\n            else:\n                st.append(c)\n        return not st\n",
+    "interview": "class Solution:\n    def isValid(self, s):\n        m = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n        st = []\n        for c in s:\n            if c in m:\n                if not st or st.pop() != m[c]:\n                    return False\n            else:\n                st.append(c)\n        return not st\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.isValid(\"()[]{}\"))   # True\n    print(s.isValid(\"(]\"))       # False\n",
+    "acm": "class Solution:\n    def isValid(self, s):\n        m = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n        st = []\n        for c in s:\n            if c in m:\n                if not st or st.pop() != m[c]:\n                    return False\n            else:\n                st.append(c)\n        return not st\n\ndef main():\n    s = input()\n    print(\"true\" if Solution().isValid(s) else \"false\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:括号串 s",
+      "stdout": "是否有效(true / false)",
+      "sample_in": "()[]{}",
+      "sample_out": "true"
+    }
+  },
   "21": {
     "core": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def mergeTwoLists(self, l1, l2):\n        dummy = tail = ListNode()\n        while l1 and l2:\n            if l1.val <= l2.val:\n                tail.next, l1 = l1, l1.next\n            else:\n                tail.next, l2 = l2, l2.next\n            tail = tail.next\n        tail.next = l1 or l2\n        return dummy.next\n",
     "interview": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(vals):\n    dummy = cur = ListNode()\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\n\ndef to_list(head):\n    out = []\n    while head:\n        out.append(head.val)\n        head = head.next\n    return out\n\nclass Solution:\n    def mergeTwoLists(self, l1, l2):\n        dummy = tail = ListNode()\n        while l1 and l2:\n            if l1.val <= l2.val:\n                tail.next, l1 = l1, l1.next\n            else:\n                tail.next, l2 = l2, l2.next\n            tail = tail.next\n        tail.next = l1 or l2\n        return dummy.next\n\nif __name__ == \"__main__\":\n    l1 = build_list([1, 2, 4])\n    l2 = build_list([1, 3, 4])\n    print(to_list(Solution().mergeTwoLists(l1, l2)))   # [1, 1, 2, 3, 4, 4]\n",
@@ -75,6 +119,17 @@
       "stdout": "合并后的有序链表(空格分隔)",
       "sample_in": "1 2 4\n1 3 4",
       "sample_out": "1 1 2 3 4 4"
+    }
+  },
+  "22": {
+    "core": "class Solution:\n    def generateParenthesis(self, n):\n        ans, path = [], []\n\n        def bt(left, right):\n            if not left and not right:\n                ans.append(\"\".join(path))\n                return\n            if left > 0:\n                path.append(\"(\")\n                bt(left - 1, right)\n                path.pop()\n            if right > left:\n                path.append(\")\")\n                bt(left, right - 1)\n                path.pop()\n\n        bt(n, n)\n        return ans\n",
+    "interview": "class Solution:\n    def generateParenthesis(self, n):\n        ans, path = [], []\n\n        def bt(left, right):\n            if not left and not right:\n                ans.append(\"\".join(path))\n                return\n            if left > 0:\n                path.append(\"(\")\n                bt(left - 1, right)\n                path.pop()\n            if right > left:\n                path.append(\")\")\n                bt(left, right - 1)\n                path.pop()\n\n        bt(n, n)\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().generateParenthesis(3))\n    # ['((()))', '(()())', '(())()', '()(())', '()()()']\n",
+    "acm": "class Solution:\n    def generateParenthesis(self, n):\n        ans, path = [], []\n\n        def bt(left, right):\n            if not left and not right:\n                ans.append(\"\".join(path))\n                return\n            if left > 0:\n                path.append(\"(\")\n                bt(left - 1, right)\n                path.pop()\n            if right > left:\n                path.append(\")\")\n                bt(left, right - 1)\n                path.pop()\n\n        bt(n, n)\n        return ans\n\ndef main():\n    n = int(input())\n    print(*Solution().generateParenthesis(n))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:括号对数 n",
+      "stdout": "全部合法括号串(空格分隔)",
+      "sample_in": "3",
+      "sample_out": "((())) (()()) (())() ()(()) ()()()"
     }
   },
   "23": {
@@ -110,6 +165,72 @@
       "sample_out": "2 1 4 3 5"
     }
   },
+  "31": {
+    "core": "class Solution:\n    def nextPermutation(self, nums):\n        n = len(nums)\n        i = n - 2\n        while i >= 0 and nums[i] >= nums[i + 1]:\n            i -= 1\n        if i >= 0:\n            j = n - 1\n            while nums[j] <= nums[i]:\n                j -= 1\n            nums[i], nums[j] = nums[j], nums[i]\n        l, r = i + 1, n - 1\n        while l < r:\n            nums[l], nums[r] = nums[r], nums[l]\n            l += 1\n            r -= 1\n",
+    "interview": "class Solution:\n    def nextPermutation(self, nums):\n        n = len(nums)\n        i = n - 2\n        while i >= 0 and nums[i] >= nums[i + 1]:\n            i -= 1\n        if i >= 0:\n            j = n - 1\n            while nums[j] <= nums[i]:\n                j -= 1\n            nums[i], nums[j] = nums[j], nums[i]\n        l, r = i + 1, n - 1\n        while l < r:\n            nums[l], nums[r] = nums[r], nums[l]\n            l += 1\n            r -= 1\n\nif __name__ == \"__main__\":\n    nums = [1, 2, 3]\n    Solution().nextPermutation(nums)\n    print(nums)   # [1, 3, 2]\n",
+    "acm": "class Solution:\n    def nextPermutation(self, nums):\n        n = len(nums)\n        i = n - 2\n        while i >= 0 and nums[i] >= nums[i + 1]:\n            i -= 1\n        if i >= 0:\n            j = n - 1\n            while nums[j] <= nums[i]:\n                j -= 1\n            nums[i], nums[j] = nums[j], nums[i]\n        l, r = i + 1, n - 1\n        while l < r:\n            nums[l], nums[r] = nums[r], nums[l]\n            l += 1\n            r -= 1\n\ndef main():\n    nums = list(map(int, input().split()))\n    Solution().nextPermutation(nums)\n    print(*nums)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "字典序下一个排列(空格分隔)",
+      "sample_in": "1 2 3",
+      "sample_out": "1 3 2"
+    }
+  },
+  "32": {
+    "core": "class Solution:\n    def longestValidParentheses(self, s):\n        st = [-1]\n        ans = 0\n        for i, c in enumerate(s):\n            if c == \"(\":\n                st.append(i)\n            else:\n                st.pop()\n                if not st:\n                    st.append(i)\n                else:\n                    ans = max(ans, i - st[-1])\n        return ans\n",
+    "interview": "class Solution:\n    def longestValidParentheses(self, s):\n        st = [-1]\n        ans = 0\n        for i, c in enumerate(s):\n            if c == \"(\":\n                st.append(i)\n            else:\n                st.pop()\n                if not st:\n                    st.append(i)\n                else:\n                    ans = max(ans, i - st[-1])\n        return ans\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.longestValidParentheses(\"(()\"))      # 2\n    print(s.longestValidParentheses(\")()())\"))   # 4\n",
+    "acm": "class Solution:\n    def longestValidParentheses(self, s):\n        st = [-1]\n        ans = 0\n        for i, c in enumerate(s):\n            if c == \"(\":\n                st.append(i)\n            else:\n                st.pop()\n                if not st:\n                    st.append(i)\n                else:\n                    ans = max(ans, i - st[-1])\n        return ans\n\ndef main():\n    s = input()\n    print(Solution().longestValidParentheses(s))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:括号串 s",
+      "stdout": "最长有效括号子串长度",
+      "sample_in": "(()",
+      "sample_out": "2"
+    }
+  },
+  "33": {
+    "core": "class Solution:\n    def search(self, nums, target):\n        l, r = 0, len(nums) - 1\n        while l <= r:\n            m = (l + r) // 2\n            if nums[m] == target:\n                return m\n            if nums[l] <= nums[m]:\n                if nums[l] <= target < nums[m]:\n                    r = m - 1\n                else:\n                    l = m + 1\n            else:\n                if nums[m] < target <= nums[r]:\n                    l = m + 1\n                else:\n                    r = m - 1\n        return -1\n",
+    "interview": "class Solution:\n    def search(self, nums, target):\n        l, r = 0, len(nums) - 1\n        while l <= r:\n            m = (l + r) // 2\n            if nums[m] == target:\n                return m\n            if nums[l] <= nums[m]:\n                if nums[l] <= target < nums[m]:\n                    r = m - 1\n                else:\n                    l = m + 1\n            else:\n                if nums[m] < target <= nums[r]:\n                    l = m + 1\n                else:\n                    r = m - 1\n        return -1\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.search([4, 5, 6, 7, 0, 1, 2], 0))   # 4\n    print(s.search([4, 5, 6, 7, 0, 1, 2], 3))   # -1\n",
+    "acm": "class Solution:\n    def search(self, nums, target):\n        l, r = 0, len(nums) - 1\n        while l <= r:\n            m = (l + r) // 2\n            if nums[m] == target:\n                return m\n            if nums[l] <= nums[m]:\n                if nums[l] <= target < nums[m]:\n                    r = m - 1\n                else:\n                    l = m + 1\n            else:\n                if nums[m] < target <= nums[r]:\n                    l = m + 1\n                else:\n                    r = m - 1\n        return -1\n\ndef main():\n    nums = list(map(int, input().split()))\n    target = int(input())\n    print(Solution().search(nums, target))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:旋转排序数组(空格分隔)\n第 2 行:target",
+      "stdout": "target 的下标;不存在输出 -1",
+      "sample_in": "4 5 6 7 0 1 2\n0",
+      "sample_out": "4"
+    }
+  },
+  "34": {
+    "core": "from bisect import bisect_left, bisect_right\n\n\nclass Solution:\n    def searchRange(self, nums, target):\n        l = bisect_left(nums, target)\n        if l == len(nums) or nums[l] != target:\n            return [-1, -1]\n        return [l, bisect_right(nums, target) - 1]\n",
+    "interview": "from bisect import bisect_left, bisect_right\n\n\nclass Solution:\n    def searchRange(self, nums, target):\n        l = bisect_left(nums, target)\n        if l == len(nums) or nums[l] != target:\n            return [-1, -1]\n        return [l, bisect_right(nums, target) - 1]\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.searchRange([5, 7, 7, 8, 8, 10], 8))   # [3, 4]\n    print(s.searchRange([5, 7, 7, 8, 8, 10], 6))   # [-1, -1]\n",
+    "acm": "from bisect import bisect_left, bisect_right\n\n\nclass Solution:\n    def searchRange(self, nums, target):\n        l = bisect_left(nums, target)\n        if l == len(nums) or nums[l] != target:\n            return [-1, -1]\n        return [l, bisect_right(nums, target) - 1]\n\ndef main():\n    nums = list(map(int, input().split()))\n    target = int(input())\n    print(*Solution().searchRange(nums, target))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:升序数组(空格分隔)\n第 2 行:target",
+      "stdout": "首末位置下标(空格分隔)",
+      "sample_in": "5 7 7 8 8 10\n8",
+      "sample_out": "3 4"
+    }
+  },
+  "35": {
+    "core": "class Solution:\n    def searchInsert(self, nums, target):\n        l, r = 0, len(nums)\n        while l < r:\n            m = (l + r) // 2\n            if nums[m] < target:\n                l = m + 1\n            else:\n                r = m\n        return l\n",
+    "interview": "class Solution:\n    def searchInsert(self, nums, target):\n        l, r = 0, len(nums)\n        while l < r:\n            m = (l + r) // 2\n            if nums[m] < target:\n                l = m + 1\n            else:\n                r = m\n        return l\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.searchInsert([1, 3, 5, 6], 5))   # 2\n    print(s.searchInsert([1, 3, 5, 6], 2))   # 1\n",
+    "acm": "class Solution:\n    def searchInsert(self, nums, target):\n        l, r = 0, len(nums)\n        while l < r:\n            m = (l + r) // 2\n            if nums[m] < target:\n                l = m + 1\n            else:\n                r = m\n        return l\n\ndef main():\n    nums = list(map(int, input().split()))\n    target = int(input())\n    print(Solution().searchInsert(nums, target))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:升序数组(空格分隔)\n第 2 行:target",
+      "stdout": "插入位置下标",
+      "sample_in": "1 3 5 6\n5",
+      "sample_out": "2"
+    }
+  },
+  "39": {
+    "core": "class Solution:\n    def combinationSum(self, candidates, target):\n        candidates.sort()\n        ans, path = [], []\n\n        def bt(start, remain):\n            if remain == 0:\n                ans.append(path[:])\n                return\n            for i in range(start, len(candidates)):\n                x = candidates[i]\n                if x > remain:\n                    break\n                path.append(x)\n                bt(i, remain - x)\n                path.pop()\n\n        bt(0, target)\n        return ans\n",
+    "interview": "class Solution:\n    def combinationSum(self, candidates, target):\n        candidates.sort()\n        ans, path = [], []\n\n        def bt(start, remain):\n            if remain == 0:\n                ans.append(path[:])\n                return\n            for i in range(start, len(candidates)):\n                x = candidates[i]\n                if x > remain:\n                    break\n                path.append(x)\n                bt(i, remain - x)\n                path.pop()\n\n        bt(0, target)\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().combinationSum([2, 3, 6, 7], 7))   # [[2, 2, 3], [7]]\n",
+    "acm": "class Solution:\n    def combinationSum(self, candidates, target):\n        candidates.sort()\n        ans, path = [], []\n\n        def bt(start, remain):\n            if remain == 0:\n                ans.append(path[:])\n                return\n            for i in range(start, len(candidates)):\n                x = candidates[i]\n                if x > remain:\n                    break\n                path.append(x)\n                bt(i, remain - x)\n                path.pop()\n\n        bt(0, target)\n        return ans\n\ndef main():\n    candidates = list(map(int, input().split()))\n    target = int(input())\n    for comb in Solution().combinationSum(candidates, target):\n        print(*comb)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:候选数(空格分隔)\n第 2 行:target",
+      "stdout": "全部组合,每个一行(空格分隔)",
+      "sample_in": "2 3 6 7\n7",
+      "sample_out": "2 2 3\n7"
+    }
+  },
   "41": {
     "core": "class Solution:\n    def firstMissingPositive(self, nums):\n        n = len(nums)\n        for i in range(n):\n            while 1 <= nums[i] <= n and nums[nums[i] - 1] != nums[i]:\n                j = nums[i] - 1\n                nums[i], nums[j] = nums[j], nums[i]\n        for i in range(n):\n            if nums[i] != i + 1:\n                return i + 1\n        return n + 1\n",
     "interview": "class Solution:\n    def firstMissingPositive(self, nums):\n        n = len(nums)\n        for i in range(n):\n            while 1 <= nums[i] <= n and nums[nums[i] - 1] != nums[i]:\n                j = nums[i] - 1\n                nums[i], nums[j] = nums[j], nums[i]\n        for i in range(n):\n            if nums[i] != i + 1:\n                return i + 1\n        return n + 1\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.firstMissingPositive([1, 2, 0]))          # 3\n    print(s.firstMissingPositive([3, 4, -1, 1]))      # 2\n    print(s.firstMissingPositive([7, 8, 9, 11, 12]))  # 1\n",
@@ -130,6 +251,28 @@
       "stdout": "可接雨水总量",
       "sample_in": "0 1 0 2 1 0 1 3 2 1 2 1",
       "sample_out": "6"
+    }
+  },
+  "45": {
+    "core": "class Solution:\n    def jump(self, nums):\n        steps = end = farthest = 0\n        for i in range(len(nums) - 1):\n            farthest = max(farthest, i + nums[i])\n            if i == end:\n                steps += 1\n                end = farthest\n        return steps\n",
+    "interview": "class Solution:\n    def jump(self, nums):\n        steps = end = farthest = 0\n        for i in range(len(nums) - 1):\n            farthest = max(farthest, i + nums[i])\n            if i == end:\n                steps += 1\n                end = farthest\n        return steps\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.jump([2, 3, 1, 1, 4]))   # 2\n    print(s.jump([2, 3, 0, 1, 4]))   # 2\n",
+    "acm": "class Solution:\n    def jump(self, nums):\n        steps = end = farthest = 0\n        for i in range(len(nums) - 1):\n            farthest = max(farthest, i + nums[i])\n            if i == end:\n                steps += 1\n                end = farthest\n        return steps\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().jump(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:跳跃数组(空格分隔)",
+      "stdout": "到达终点的最少跳数",
+      "sample_in": "2 3 1 1 4",
+      "sample_out": "2"
+    }
+  },
+  "46": {
+    "core": "class Solution:\n    def permute(self, nums):\n        n, ans = len(nums), []\n        path, used = [], [False] * n\n\n        def bt():\n            if len(path) == n:\n                ans.append(path[:])\n                return\n            for i in range(n):\n                if used[i]:\n                    continue\n                used[i] = True\n                path.append(nums[i])\n                bt()\n                path.pop()\n                used[i] = False\n\n        bt()\n        return ans\n",
+    "interview": "class Solution:\n    def permute(self, nums):\n        n, ans = len(nums), []\n        path, used = [], [False] * n\n\n        def bt():\n            if len(path) == n:\n                ans.append(path[:])\n                return\n            for i in range(n):\n                if used[i]:\n                    continue\n                used[i] = True\n                path.append(nums[i])\n                bt()\n                path.pop()\n                used[i] = False\n\n        bt()\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().permute([1, 2, 3]))\n    # [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]\n",
+    "acm": "class Solution:\n    def permute(self, nums):\n        n, ans = len(nums), []\n        path, used = [], [False] * n\n\n        def bt():\n            if len(path) == n:\n                ans.append(path[:])\n                return\n            for i in range(n):\n                if used[i]:\n                    continue\n                used[i] = True\n                path.append(nums[i])\n                bt()\n                path.pop()\n                used[i] = False\n\n        bt()\n        return ans\n\ndef main():\n    nums = list(map(int, input().split()))\n    for p in Solution().permute(nums):\n        print(*p)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "全部排列,每个一行(空格分隔)",
+      "sample_in": "1 2 3",
+      "sample_out": "1 2 3\n1 3 2\n2 1 3\n2 3 1\n3 1 2\n3 2 1"
     }
   },
   "48": {
@@ -154,6 +297,17 @@
       "sample_out": "eat tea ate\ntan nat\nbat"
     }
   },
+  "51": {
+    "core": "class Solution:\n    def solveNQueens(self, n):\n        cols, diag1, diag2 = set(), set(), set()\n        ans, board = [], [-1] * n\n\n        def render():\n            return [\n                \"\".join(\"Q\" if c == board[r] else \".\" for c in range(n))\n                for r in range(n)\n            ]\n\n        def bt(r):\n            if r == n:\n                ans.append(render())\n                return\n            for c in range(n):\n                if c in cols or (r - c) in diag1 or (r + c) in diag2:\n                    continue\n                board[r] = c\n                cols.add(c)\n                diag1.add(r - c)\n                diag2.add(r + c)\n                bt(r + 1)\n                cols.remove(c)\n                diag1.remove(r - c)\n                diag2.remove(r + c)\n\n        bt(0)\n        return ans\n",
+    "interview": "class Solution:\n    def solveNQueens(self, n):\n        cols, diag1, diag2 = set(), set(), set()\n        ans, board = [], [-1] * n\n\n        def render():\n            return [\n                \"\".join(\"Q\" if c == board[r] else \".\" for c in range(n))\n                for r in range(n)\n            ]\n\n        def bt(r):\n            if r == n:\n                ans.append(render())\n                return\n            for c in range(n):\n                if c in cols or (r - c) in diag1 or (r + c) in diag2:\n                    continue\n                board[r] = c\n                cols.add(c)\n                diag1.add(r - c)\n                diag2.add(r + c)\n                bt(r + 1)\n                cols.remove(c)\n                diag1.remove(r - c)\n                diag2.remove(r + c)\n\n        bt(0)\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().solveNQueens(4))\n    # [['.Q..', '...Q', 'Q...', '..Q.'], ['..Q.', 'Q...', '...Q', '.Q..']]\n",
+    "acm": "class Solution:\n    def solveNQueens(self, n):\n        cols, diag1, diag2 = set(), set(), set()\n        ans, board = [], [-1] * n\n\n        def render():\n            return [\n                \"\".join(\"Q\" if c == board[r] else \".\" for c in range(n))\n                for r in range(n)\n            ]\n\n        def bt(r):\n            if r == n:\n                ans.append(render())\n                return\n            for c in range(n):\n                if c in cols or (r - c) in diag1 or (r + c) in diag2:\n                    continue\n                board[r] = c\n                cols.add(c)\n                diag1.add(r - c)\n                diag2.add(r + c)\n                bt(r + 1)\n                cols.remove(c)\n                diag1.remove(r - c)\n                diag2.remove(r + c)\n\n        bt(0)\n        return ans\n\ndef main():\n    n = int(input())\n    sols = Solution().solveNQueens(n)\n    print(len(sols))\n    for i, board in enumerate(sols):\n        if i:\n            print()\n        for row in board:\n            print(row)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:棋盘大小 n",
+      "stdout": "第 1 行解的个数;随后每个解的 n 行棋盘,解与解之间空行分隔",
+      "sample_in": "4",
+      "sample_out": "2\n.Q..\n...Q\nQ...\n..Q.\n\n..Q.\nQ...\n...Q\n.Q.."
+    }
+  },
   "53": {
     "core": "class Solution:\n    def maxSubArray(self, nums):\n        cur = best = nums[0]\n        for x in nums[1:]:\n            cur = max(x, cur + x)\n            best = max(best, cur)\n        return best\n",
     "interview": "class Solution:\n    def maxSubArray(self, nums):\n        cur = best = nums[0]\n        for x in nums[1:]:\n            cur = max(x, cur + x)\n            best = max(best, cur)\n        return best\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.maxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4]))   # 6\n    print(s.maxSubArray([5, 4, -1, 7, 8]))                  # 23\n",
@@ -176,6 +330,17 @@
       "sample_out": "1 2 3 6 9 8 7 4 5"
     }
   },
+  "55": {
+    "core": "class Solution:\n    def canJump(self, nums):\n        reach = 0\n        for i, x in enumerate(nums):\n            if i > reach:\n                return False\n            reach = max(reach, i + x)\n        return True\n",
+    "interview": "class Solution:\n    def canJump(self, nums):\n        reach = 0\n        for i, x in enumerate(nums):\n            if i > reach:\n                return False\n            reach = max(reach, i + x)\n        return True\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.canJump([2, 3, 1, 1, 4]))   # True\n    print(s.canJump([3, 2, 1, 0, 4]))   # False\n",
+    "acm": "class Solution:\n    def canJump(self, nums):\n        reach = 0\n        for i, x in enumerate(nums):\n            if i > reach:\n                return False\n            reach = max(reach, i + x)\n        return True\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(\"true\" if Solution().canJump(nums) else \"false\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:跳跃数组(空格分隔)",
+      "stdout": "能否到达终点(true / false)",
+      "sample_in": "2 3 1 1 4",
+      "sample_out": "true"
+    }
+  },
   "56": {
     "core": "class Solution:\n    def merge(self, intervals):\n        intervals.sort(key=lambda x: x[0])\n        out = []\n        for s, e in intervals:\n            if out and s <= out[-1][1]:\n                out[-1][1] = max(out[-1][1], e)\n            else:\n                out.append([s, e])\n        return out\n",
     "interview": "class Solution:\n    def merge(self, intervals):\n        intervals.sort(key=lambda x: x[0])\n        out = []\n        for s, e in intervals:\n            if out and s <= out[-1][1]:\n                out[-1][1] = max(out[-1][1], e)\n            else:\n                out.append([s, e])\n        return out\n\nif __name__ == \"__main__\":\n    print(Solution().merge([[1, 3], [2, 6], [8, 10], [15, 18]]))\n    # [[1, 6], [8, 10], [15, 18]]\n",
@@ -185,6 +350,50 @@
       "stdout": "合并后的区间,每行一个",
       "sample_in": "4\n1 3\n2 6\n8 10\n15 18",
       "sample_out": "1 6\n8 10\n15 18"
+    }
+  },
+  "62": {
+    "core": "class Solution:\n    def uniquePaths(self, m, n):\n        f = [1] * n\n        for _ in range(1, m):\n            for j in range(1, n):\n                f[j] += f[j - 1]\n        return f[-1]\n",
+    "interview": "class Solution:\n    def uniquePaths(self, m, n):\n        f = [1] * n\n        for _ in range(1, m):\n            for j in range(1, n):\n                f[j] += f[j - 1]\n        return f[-1]\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.uniquePaths(3, 7))   # 28\n    print(s.uniquePaths(3, 2))   # 3\n",
+    "acm": "class Solution:\n    def uniquePaths(self, m, n):\n        f = [1] * n\n        for _ in range(1, m):\n            for j in range(1, n):\n                f[j] += f[j - 1]\n        return f[-1]\n\ndef main():\n    m, n = map(int, input().split())\n    print(Solution().uniquePaths(m, n))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:行数 m 列数 n(空格分隔)",
+      "stdout": "从左上到右下的不同路径数",
+      "sample_in": "3 7",
+      "sample_out": "28"
+    }
+  },
+  "64": {
+    "core": "class Solution:\n    def minPathSum(self, g):\n        m, n = len(g), len(g[0])\n        f = list(g[0])\n        for j in range(1, n):\n            f[j] += f[j - 1]\n        for i in range(1, m):\n            f[0] += g[i][0]\n            for j in range(1, n):\n                f[j] = g[i][j] + min(f[j], f[j - 1])\n        return f[-1]\n",
+    "interview": "class Solution:\n    def minPathSum(self, g):\n        m, n = len(g), len(g[0])\n        f = list(g[0])\n        for j in range(1, n):\n            f[j] += f[j - 1]\n        for i in range(1, m):\n            f[0] += g[i][0]\n            for j in range(1, n):\n                f[j] = g[i][j] + min(f[j], f[j - 1])\n        return f[-1]\n\nif __name__ == \"__main__\":\n    print(Solution().minPathSum([[1, 3, 1], [1, 5, 1], [4, 2, 1]]))   # 7\n",
+    "acm": "class Solution:\n    def minPathSum(self, g):\n        m, n = len(g), len(g[0])\n        f = list(g[0])\n        for j in range(1, n):\n            f[j] += f[j - 1]\n        for i in range(1, m):\n            f[0] += g[i][0]\n            for j in range(1, n):\n                f[j] = g[i][j] + min(f[j], f[j - 1])\n        return f[-1]\n\ndef main():\n    m, n = map(int, input().split())\n    g = [list(map(int, input().split())) for _ in range(m)]\n    print(Solution().minPathSum(g))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:行数 m 列数 n\n随后 m 行:每行 n 个数(空格分隔)",
+      "stdout": "左上到右下的最小路径和",
+      "sample_in": "3 3\n1 3 1\n1 5 1\n4 2 1",
+      "sample_out": "7"
+    }
+  },
+  "70": {
+    "core": "class Solution:\n    def climbStairs(self, n):\n        a, b = 1, 1\n        for _ in range(n):\n            a, b = b, a + b\n        return a\n",
+    "interview": "class Solution:\n    def climbStairs(self, n):\n        a, b = 1, 1\n        for _ in range(n):\n            a, b = b, a + b\n        return a\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.climbStairs(2))   # 2\n    print(s.climbStairs(3))   # 3\n",
+    "acm": "class Solution:\n    def climbStairs(self, n):\n        a, b = 1, 1\n        for _ in range(n):\n            a, b = b, a + b\n        return a\n\ndef main():\n    n = int(input())\n    print(Solution().climbStairs(n))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:台阶数 n",
+      "stdout": "爬到顶的方法数",
+      "sample_in": "3",
+      "sample_out": "3"
+    }
+  },
+  "72": {
+    "core": "class Solution:\n    def minDistance(self, a, b):\n        m, n = len(a), len(b)\n        f = [[0] * (n + 1) for _ in range(m + 1)]\n        for i in range(m + 1):\n            f[i][0] = i\n        for j in range(n + 1):\n            f[0][j] = j\n        for i in range(1, m + 1):\n            for j in range(1, n + 1):\n                if a[i - 1] == b[j - 1]:\n                    f[i][j] = f[i - 1][j - 1]\n                else:\n                    f[i][j] = 1 + min(f[i - 1][j - 1], f[i - 1][j], f[i][j - 1])\n        return f[m][n]\n",
+    "interview": "class Solution:\n    def minDistance(self, a, b):\n        m, n = len(a), len(b)\n        f = [[0] * (n + 1) for _ in range(m + 1)]\n        for i in range(m + 1):\n            f[i][0] = i\n        for j in range(n + 1):\n            f[0][j] = j\n        for i in range(1, m + 1):\n            for j in range(1, n + 1):\n                if a[i - 1] == b[j - 1]:\n                    f[i][j] = f[i - 1][j - 1]\n                else:\n                    f[i][j] = 1 + min(f[i - 1][j - 1], f[i - 1][j], f[i][j - 1])\n        return f[m][n]\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.minDistance(\"horse\", \"ros\"))            # 3\n    print(s.minDistance(\"intention\", \"execution\"))  # 5\n",
+    "acm": "class Solution:\n    def minDistance(self, a, b):\n        m, n = len(a), len(b)\n        f = [[0] * (n + 1) for _ in range(m + 1)]\n        for i in range(m + 1):\n            f[i][0] = i\n        for j in range(n + 1):\n            f[0][j] = j\n        for i in range(1, m + 1):\n            for j in range(1, n + 1):\n                if a[i - 1] == b[j - 1]:\n                    f[i][j] = f[i - 1][j - 1]\n                else:\n                    f[i][j] = 1 + min(f[i - 1][j - 1], f[i - 1][j], f[i][j - 1])\n        return f[m][n]\n\ndef main():\n    a = input()\n    b = input()\n    print(Solution().minDistance(a, b))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:字符串 a\n第 2 行:字符串 b",
+      "stdout": "把 a 变成 b 的最少编辑距离",
+      "sample_in": "horse\nros",
+      "sample_out": "3"
     }
   },
   "73": {
@@ -198,6 +407,28 @@
       "sample_out": "1 0 1\n0 0 0\n1 0 1"
     }
   },
+  "74": {
+    "core": "class Solution:\n    def searchMatrix(self, m, target):\n        if not m or not m[0]:\n            return False\n        rows, cols = len(m), len(m[0])\n        l, r = 0, rows * cols - 1\n        while l <= r:\n            mid = (l + r) // 2\n            v = m[mid // cols][mid % cols]\n            if v == target:\n                return True\n            if v < target:\n                l = mid + 1\n            else:\n                r = mid - 1\n        return False\n",
+    "interview": "class Solution:\n    def searchMatrix(self, m, target):\n        if not m or not m[0]:\n            return False\n        rows, cols = len(m), len(m[0])\n        l, r = 0, rows * cols - 1\n        while l <= r:\n            mid = (l + r) // 2\n            v = m[mid // cols][mid % cols]\n            if v == target:\n                return True\n            if v < target:\n                l = mid + 1\n            else:\n                r = mid - 1\n        return False\n\nif __name__ == \"__main__\":\n    m = [[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]]\n    print(Solution().searchMatrix(m, 3))    # True\n",
+    "acm": "class Solution:\n    def searchMatrix(self, m, target):\n        if not m or not m[0]:\n            return False\n        rows, cols = len(m), len(m[0])\n        l, r = 0, rows * cols - 1\n        while l <= r:\n            mid = (l + r) // 2\n            v = m[mid // cols][mid % cols]\n            if v == target:\n                return True\n            if v < target:\n                l = mid + 1\n            else:\n                r = mid - 1\n        return False\n\ndef main():\n    rows, cols = map(int, input().split())\n    mat = [list(map(int, input().split())) for _ in range(rows)]\n    target = int(input())\n    print(\"true\" if Solution().searchMatrix(mat, target) else \"false\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:行数 m 列数 n\n随后 m 行:每行 n 个数\n最后一行:target",
+      "stdout": "是否存在 target(true / false)",
+      "sample_in": "3 4\n1 3 5 7\n10 11 16 20\n23 30 34 60\n3",
+      "sample_out": "true"
+    }
+  },
+  "75": {
+    "core": "class Solution:\n    def sortColors(self, nums):\n        lo, mid, hi = 0, 0, len(nums) - 1\n        while mid <= hi:\n            x = nums[mid]\n            if x == 0:\n                nums[lo], nums[mid] = nums[mid], nums[lo]\n                lo += 1\n                mid += 1\n            elif x == 1:\n                mid += 1\n            else:\n                nums[mid], nums[hi] = nums[hi], nums[mid]\n                hi -= 1\n",
+    "interview": "class Solution:\n    def sortColors(self, nums):\n        lo, mid, hi = 0, 0, len(nums) - 1\n        while mid <= hi:\n            x = nums[mid]\n            if x == 0:\n                nums[lo], nums[mid] = nums[mid], nums[lo]\n                lo += 1\n                mid += 1\n            elif x == 1:\n                mid += 1\n            else:\n                nums[mid], nums[hi] = nums[hi], nums[mid]\n                hi -= 1\n\nif __name__ == \"__main__\":\n    nums = [2, 0, 2, 1, 1, 0]\n    Solution().sortColors(nums)\n    print(nums)   # [0, 0, 1, 1, 2, 2]\n",
+    "acm": "class Solution:\n    def sortColors(self, nums):\n        lo, mid, hi = 0, 0, len(nums) - 1\n        while mid <= hi:\n            x = nums[mid]\n            if x == 0:\n                nums[lo], nums[mid] = nums[mid], nums[lo]\n                lo += 1\n                mid += 1\n            elif x == 1:\n                mid += 1\n            else:\n                nums[mid], nums[hi] = nums[hi], nums[mid]\n                hi -= 1\n\ndef main():\n    nums = list(map(int, input().split()))\n    Solution().sortColors(nums)\n    print(*nums)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:颜色数组(0/1/2,空格分隔)",
+      "stdout": "原地排序后的数组(空格分隔)",
+      "sample_in": "2 0 2 1 1 0",
+      "sample_out": "0 0 1 1 2 2"
+    }
+  },
   "76": {
     "core": "from collections import Counter\n\n\nclass Solution:\n    def minWindow(self, s, t):\n        if len(s) < len(t):\n            return \"\"\n        need = Counter(t)\n        kinds = len(need)\n        have = {}\n        valid = 0\n        l = 0\n        best_l, best_len = 0, float(\"inf\")\n        for r, c in enumerate(s):\n            if c in need:\n                have[c] = have.get(c, 0) + 1\n                if have[c] == need[c]:\n                    valid += 1\n            while valid == kinds:\n                if r - l + 1 < best_len:\n                    best_l, best_len = l, r - l + 1\n                lc = s[l]\n                if lc in need:\n                    if have[lc] == need[lc]:\n                        valid -= 1\n                    have[lc] -= 1\n                l += 1\n        return \"\" if best_len == float(\"inf\") else s[best_l:best_l + best_len]\n",
     "interview": "from collections import Counter\n\n\nclass Solution:\n    def minWindow(self, s, t):\n        if len(s) < len(t):\n            return \"\"\n        need = Counter(t)\n        kinds = len(need)\n        have = {}\n        valid = 0\n        l = 0\n        best_l, best_len = 0, float(\"inf\")\n        for r, c in enumerate(s):\n            if c in need:\n                have[c] = have.get(c, 0) + 1\n                if have[c] == need[c]:\n                    valid += 1\n            while valid == kinds:\n                if r - l + 1 < best_len:\n                    best_l, best_len = l, r - l + 1\n                lc = s[l]\n                if lc in need:\n                    if have[lc] == need[lc]:\n                        valid -= 1\n                    have[lc] -= 1\n                l += 1\n        return \"\" if best_len == float(\"inf\") else s[best_l:best_l + best_len]\n\nif __name__ == \"__main__\":\n    print(Solution().minWindow(\"ADOBECODEBANC\", \"ABC\"))   # BANC\n",
@@ -207,6 +438,83 @@
       "stdout": "最小覆盖子串(无解输出空行)",
       "sample_in": "ADOBECODEBANC\nABC",
       "sample_out": "BANC"
+    }
+  },
+  "78": {
+    "core": "class Solution:\n    def subsets(self, nums):\n        out = [[]]\n        for x in nums:\n            out += [s + [x] for s in out]\n        return out\n",
+    "interview": "class Solution:\n    def subsets(self, nums):\n        out = [[]]\n        for x in nums:\n            out += [s + [x] for s in out]\n        return out\n\nif __name__ == \"__main__\":\n    print(Solution().subsets([1, 2, 3]))\n    # [[], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3]]\n",
+    "acm": "class Solution:\n    def subsets(self, nums):\n        out = [[]]\n        for x in nums:\n            out += [s + [x] for s in out]\n        return out\n\ndef main():\n    nums = list(map(int, input().split()))\n    for s in Solution().subsets(nums):\n        print(*s)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "全部子集,每个一行(空集为空行,空格分隔)",
+      "sample_in": "1 2 3",
+      "sample_out": "\n1\n2\n1 2\n3\n1 3\n2 3\n1 2 3"
+    }
+  },
+  "79": {
+    "core": "class Solution:\n    def exist(self, board, word):\n        m, n = len(board), len(board[0])\n\n        def dfs(i, j, k):\n            if k == len(word):\n                return True\n            if i < 0 or j < 0 or i >= m or j >= n or board[i][j] != word[k]:\n                return False\n            board[i][j] = \"#\"\n            ok = (dfs(i + 1, j, k + 1) or dfs(i - 1, j, k + 1)\n                  or dfs(i, j + 1, k + 1) or dfs(i, j - 1, k + 1))\n            board[i][j] = word[k]\n            return ok\n\n        return any(dfs(i, j, 0) for i in range(m) for j in range(n))\n",
+    "interview": "class Solution:\n    def exist(self, board, word):\n        m, n = len(board), len(board[0])\n\n        def dfs(i, j, k):\n            if k == len(word):\n                return True\n            if i < 0 or j < 0 or i >= m or j >= n or board[i][j] != word[k]:\n                return False\n            board[i][j] = \"#\"\n            ok = (dfs(i + 1, j, k + 1) or dfs(i - 1, j, k + 1)\n                  or dfs(i, j + 1, k + 1) or dfs(i, j - 1, k + 1))\n            board[i][j] = word[k]\n            return ok\n\n        return any(dfs(i, j, 0) for i in range(m) for j in range(n))\n\nif __name__ == \"__main__\":\n    board = [\n        [\"A\", \"B\", \"C\", \"E\"],\n        [\"S\", \"F\", \"C\", \"S\"],\n        [\"A\", \"D\", \"E\", \"E\"],\n    ]\n    print(Solution().exist(board, \"ABCCED\"))   # True\n",
+    "acm": "class Solution:\n    def exist(self, board, word):\n        m, n = len(board), len(board[0])\n\n        def dfs(i, j, k):\n            if k == len(word):\n                return True\n            if i < 0 or j < 0 or i >= m or j >= n or board[i][j] != word[k]:\n                return False\n            board[i][j] = \"#\"\n            ok = (dfs(i + 1, j, k + 1) or dfs(i - 1, j, k + 1)\n                  or dfs(i, j + 1, k + 1) or dfs(i, j - 1, k + 1))\n            board[i][j] = word[k]\n            return ok\n\n        return any(dfs(i, j, 0) for i in range(m) for j in range(n))\n\ndef main():\n    m, n = map(int, input().split())\n    board = [list(input()) for _ in range(m)]\n    word = input()\n    print(\"true\" if Solution().exist(board, word) else \"false\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:行数 m 列数 n\n随后 m 行:每行 n 个字符(连续无空格)\n最后一行:word",
+      "stdout": "是否存在该单词(true / false)",
+      "sample_in": "3 4\nABCE\nSFCS\nADEE\nABCCED",
+      "sample_out": "true"
+    }
+  },
+  "84": {
+    "core": "class Solution:\n    def largestRectangleArea(self, h):\n        h = [0] + h + [0]\n        st = []\n        ans = 0\n        for i, x in enumerate(h):\n            while st and h[st[-1]] > x:\n                top = st.pop()\n                w = i - st[-1] - 1\n                ans = max(ans, h[top] * w)\n            st.append(i)\n        return ans\n",
+    "interview": "class Solution:\n    def largestRectangleArea(self, h):\n        h = [0] + h + [0]\n        st = []\n        ans = 0\n        for i, x in enumerate(h):\n            while st and h[st[-1]] > x:\n                top = st.pop()\n                w = i - st[-1] - 1\n                ans = max(ans, h[top] * w)\n            st.append(i)\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().largestRectangleArea([2, 1, 5, 6, 2, 3]))   # 10\n",
+    "acm": "class Solution:\n    def largestRectangleArea(self, h):\n        h = [0] + h + [0]\n        st = []\n        ans = 0\n        for i, x in enumerate(h):\n            while st and h[st[-1]] > x:\n                top = st.pop()\n                w = i - st[-1] - 1\n                ans = max(ans, h[top] * w)\n            st.append(i)\n        return ans\n\ndef main():\n    h = list(map(int, input().split()))\n    print(Solution().largestRectangleArea(h))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:柱高数组(空格分隔)",
+      "stdout": "最大矩形面积",
+      "sample_in": "2 1 5 6 2 3",
+      "sample_out": "10"
+    }
+  },
+  "94": {
+    "core": "# 二叉树节点 TreeNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def inorderTraversal(self, root):\n        out, stack, cur = [], [], root\n        while cur or stack:\n            while cur:\n                stack.append(cur)\n                cur = cur.left\n            cur = stack.pop()\n            out.append(cur.val)\n            cur = cur.right\n        return out\n",
+    "interview": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def inorderTraversal(self, root):\n        out, stack, cur = [], [], root\n        while cur or stack:\n            while cur:\n                stack.append(cur)\n                cur = cur.left\n            cur = stack.pop()\n            out.append(cur.val)\n            cur = cur.right\n        return out\n\nif __name__ == \"__main__\":\n    print(Solution().inorderTraversal(build_tree([1, None, 2, 3])))   # [1, 3, 2]\n",
+    "acm": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def inorderTraversal(self, root):\n        out, stack, cur = [], [], root\n        while cur or stack:\n            while cur:\n                stack.append(cur)\n                cur = cur.left\n            cur = stack.pop()\n            out.append(cur.val)\n            cur = cur.right\n        return out\n\ndef main():\n    print(*Solution().inorderTraversal(parse_tree()))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:二叉树层序遍历,空节点用 null(空格分隔)",
+      "stdout": "中序遍历(空格分隔)",
+      "sample_in": "1 null 2 3",
+      "sample_out": "1 3 2"
+    }
+  },
+  "98": {
+    "core": "# 二叉树节点 TreeNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def isValidBST(self, root):\n        def ok(n, lo, hi):\n            if not n:\n                return True\n            if n.val <= lo or n.val >= hi:\n                return False\n            return ok(n.left, lo, n.val) and ok(n.right, n.val, hi)\n        return ok(root, float(\"-inf\"), float(\"inf\"))\n",
+    "interview": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def isValidBST(self, root):\n        def ok(n, lo, hi):\n            if not n:\n                return True\n            if n.val <= lo or n.val >= hi:\n                return False\n            return ok(n.left, lo, n.val) and ok(n.right, n.val, hi)\n        return ok(root, float(\"-inf\"), float(\"inf\"))\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.isValidBST(build_tree([2, 1, 3])))                     # True\n    print(s.isValidBST(build_tree([5, 1, 4, None, None, 3, 6])))   # False\n",
+    "acm": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def isValidBST(self, root):\n        def ok(n, lo, hi):\n            if not n:\n                return True\n            if n.val <= lo or n.val >= hi:\n                return False\n            return ok(n.left, lo, n.val) and ok(n.right, n.val, hi)\n        return ok(root, float(\"-inf\"), float(\"inf\"))\n\ndef main():\n    print(\"true\" if Solution().isValidBST(parse_tree()) else \"false\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:二叉树层序遍历,空节点用 null(空格分隔)",
+      "stdout": "是否为合法 BST(true / false)",
+      "sample_in": "2 1 3",
+      "sample_out": "true"
+    }
+  },
+  "101": {
+    "core": "# 二叉树节点 TreeNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def isSymmetric(self, root):\n        def same(a, b):\n            if not a and not b:\n                return True\n            if not a or not b or a.val != b.val:\n                return False\n            return same(a.left, b.right) and same(a.right, b.left)\n        return not root or same(root.left, root.right)\n",
+    "interview": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def isSymmetric(self, root):\n        def same(a, b):\n            if not a and not b:\n                return True\n            if not a or not b or a.val != b.val:\n                return False\n            return same(a.left, b.right) and same(a.right, b.left)\n        return not root or same(root.left, root.right)\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.isSymmetric(build_tree([1, 2, 2, 3, 4, 4, 3])))          # True\n    print(s.isSymmetric(build_tree([1, 2, 2, None, 3, None, 3])))    # False\n",
+    "acm": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def isSymmetric(self, root):\n        def same(a, b):\n            if not a and not b:\n                return True\n            if not a or not b or a.val != b.val:\n                return False\n            return same(a.left, b.right) and same(a.right, b.left)\n        return not root or same(root.left, root.right)\n\ndef main():\n    print(\"true\" if Solution().isSymmetric(parse_tree()) else \"false\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:二叉树层序遍历,空节点用 null(空格分隔)",
+      "stdout": "是否对称(true / false)",
+      "sample_in": "1 2 2 3 4 4 3",
+      "sample_out": "true"
+    }
+  },
+  "102": {
+    "core": "# 二叉树节点 TreeNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def levelOrder(self, root):\n        if not root:\n            return []\n        out, q = [], deque([root])\n        while q:\n            level = []\n            for _ in range(len(q)):\n                n = q.popleft()\n                level.append(n.val)\n                if n.left:\n                    q.append(n.left)\n                if n.right:\n                    q.append(n.right)\n            out.append(level)\n        return out\n",
+    "interview": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def levelOrder(self, root):\n        if not root:\n            return []\n        out, q = [], deque([root])\n        while q:\n            level = []\n            for _ in range(len(q)):\n                n = q.popleft()\n                level.append(n.val)\n                if n.left:\n                    q.append(n.left)\n                if n.right:\n                    q.append(n.right)\n            out.append(level)\n        return out\n\nif __name__ == \"__main__\":\n    print(Solution().levelOrder(build_tree([3, 9, 20, None, None, 15, 7])))\n    # [[3], [9, 20], [15, 7]]\n",
+    "acm": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def levelOrder(self, root):\n        if not root:\n            return []\n        out, q = [], deque([root])\n        while q:\n            level = []\n            for _ in range(len(q)):\n                n = q.popleft()\n                level.append(n.val)\n                if n.left:\n                    q.append(n.left)\n                if n.right:\n                    q.append(n.right)\n            out.append(level)\n        return out\n\ndef main():\n    for level in Solution().levelOrder(parse_tree()):\n        print(*level)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:二叉树层序遍历,空节点用 null(空格分隔)",
+      "stdout": "层序遍历,每层一行(空格分隔)",
+      "sample_in": "3 9 20 null null 15 7",
+      "sample_out": "3\n9 20\n15 7"
     }
   },
   "104": {
@@ -220,6 +528,72 @@
       "sample_out": "3"
     }
   },
+  "105": {
+    "core": "# 二叉树节点 TreeNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def buildTree(self, preorder, inorder):\n        idx = {v: i for i, v in enumerate(inorder)}\n\n        def build(pl, pr, il, ir):\n            if pl > pr:\n                return None\n            root_val = preorder[pl]\n            i = idx[root_val]\n            left_len = i - il\n            return TreeNode(\n                root_val,\n                build(pl + 1, pl + left_len, il, i - 1),\n                build(pl + left_len + 1, pr, i + 1, ir),\n            )\n\n        return build(0, len(preorder) - 1, 0, len(inorder) - 1)\n",
+    "interview": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def buildTree(self, preorder, inorder):\n        idx = {v: i for i, v in enumerate(inorder)}\n\n        def build(pl, pr, il, ir):\n            if pl > pr:\n                return None\n            root_val = preorder[pl]\n            i = idx[root_val]\n            left_len = i - il\n            return TreeNode(\n                root_val,\n                build(pl + 1, pl + left_len, il, i - 1),\n                build(pl + left_len + 1, pr, i + 1, ir),\n            )\n\n        return build(0, len(preorder) - 1, 0, len(inorder) - 1)\n\nif __name__ == \"__main__\":\n    root = Solution().buildTree([3, 9, 20, 15, 7], [9, 3, 15, 20, 7])\n    print(tree_to_level(root))   # [3, 9, 20, None, None, 15, 7]\n",
+    "acm": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def buildTree(self, preorder, inorder):\n        idx = {v: i for i, v in enumerate(inorder)}\n\n        def build(pl, pr, il, ir):\n            if pl > pr:\n                return None\n            root_val = preorder[pl]\n            i = idx[root_val]\n            left_len = i - il\n            return TreeNode(\n                root_val,\n                build(pl + 1, pl + left_len, il, i - 1),\n                build(pl + left_len + 1, pr, i + 1, ir),\n            )\n\n        return build(0, len(preorder) - 1, 0, len(inorder) - 1)\n\ndef main():\n    pre = list(map(int, input().split()))\n    ino = list(map(int, input().split()))\n    print(fmt_level(Solution().buildTree(pre, ino)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:前序遍历\n第 2 行:中序遍历(均空格分隔)",
+      "stdout": "构造的树层序遍历(null 表示空)",
+      "sample_in": "3 9 20 15 7\n9 3 15 20 7",
+      "sample_out": "3 9 20 null null 15 7"
+    }
+  },
+  "108": {
+    "core": "# 二叉树节点 TreeNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def sortedArrayToBST(self, nums):\n        def build(l, r):\n            if l > r:\n                return None\n            m = (l + r) // 2\n            return TreeNode(nums[m], build(l, m - 1), build(m + 1, r))\n        return build(0, len(nums) - 1)\n",
+    "interview": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def sortedArrayToBST(self, nums):\n        def build(l, r):\n            if l > r:\n                return None\n            m = (l + r) // 2\n            return TreeNode(nums[m], build(l, m - 1), build(m + 1, r))\n        return build(0, len(nums) - 1)\n\nif __name__ == \"__main__\":\n    root = Solution().sortedArrayToBST([-10, -3, 0, 5, 9])\n    print(tree_to_level(root))   # [0, -10, 5, None, -3, None, 9]\n",
+    "acm": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def sortedArrayToBST(self, nums):\n        def build(l, r):\n            if l > r:\n                return None\n            m = (l + r) // 2\n            return TreeNode(nums[m], build(l, m - 1), build(m + 1, r))\n        return build(0, len(nums) - 1)\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(fmt_level(Solution().sortedArrayToBST(nums)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:升序数组(空格分隔)",
+      "stdout": "构造的 BST 层序(null 表示空)",
+      "sample_in": "-10 -3 0 5 9",
+      "sample_out": "0 -10 5 null -3 null 9"
+    }
+  },
+  "114": {
+    "core": "# 二叉树节点 TreeNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def flatten(self, root):\n        self.prev = None\n\n        def dfs(n):\n            if not n:\n                return\n            dfs(n.right)\n            dfs(n.left)\n            n.right = self.prev\n            n.left = None\n            self.prev = n\n\n        dfs(root)\n",
+    "interview": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def flatten(self, root):\n        self.prev = None\n\n        def dfs(n):\n            if not n:\n                return\n            dfs(n.right)\n            dfs(n.left)\n            n.right = self.prev\n            n.left = None\n            self.prev = n\n\n        dfs(root)\n\nif __name__ == \"__main__\":\n    root = build_tree([1, 2, 5, 3, 4, None, 6])\n    Solution().flatten(root)\n    print(tree_to_level(root))   # [1, None, 2, None, 3, None, 4, None, 5, None, 6]\n",
+    "acm": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def flatten(self, root):\n        self.prev = None\n\n        def dfs(n):\n            if not n:\n                return\n            dfs(n.right)\n            dfs(n.left)\n            n.right = self.prev\n            n.left = None\n            self.prev = n\n\n        dfs(root)\n\ndef main():\n    root = parse_tree()\n    Solution().flatten(root)\n    print(fmt_level(root))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:二叉树层序遍历,空节点用 null(空格分隔)",
+      "stdout": "展开为右斜链表后的层序(null 表示空)",
+      "sample_in": "1 2 5 3 4 null 6",
+      "sample_out": "1 null 2 null 3 null 4 null 5 null 6"
+    }
+  },
+  "118": {
+    "core": "class Solution:\n    def generate(self, n):\n        out = []\n        for r in range(n):\n            row = [1] * (r + 1)\n            for c in range(1, r):\n                row[c] = out[r - 1][c - 1] + out[r - 1][c]\n            out.append(row)\n        return out\n",
+    "interview": "class Solution:\n    def generate(self, n):\n        out = []\n        for r in range(n):\n            row = [1] * (r + 1)\n            for c in range(1, r):\n                row[c] = out[r - 1][c - 1] + out[r - 1][c]\n            out.append(row)\n        return out\n\nif __name__ == \"__main__\":\n    print(Solution().generate(5))\n    # [[1], [1, 1], [1, 2, 1], [1, 3, 3, 1], [1, 4, 6, 4, 1]]\n",
+    "acm": "class Solution:\n    def generate(self, n):\n        out = []\n        for r in range(n):\n            row = [1] * (r + 1)\n            for c in range(1, r):\n                row[c] = out[r - 1][c - 1] + out[r - 1][c]\n            out.append(row)\n        return out\n\ndef main():\n    n = int(input())\n    for row in Solution().generate(n):\n        print(*row)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:行数 numRows",
+      "stdout": "杨辉三角,每行一行(空格分隔)",
+      "sample_in": "5",
+      "sample_out": "1\n1 1\n1 2 1\n1 3 3 1\n1 4 6 4 1"
+    }
+  },
+  "121": {
+    "core": "class Solution:\n    def maxProfit(self, prices):\n        lo, best = float(\"inf\"), 0\n        for p in prices:\n            lo = min(lo, p)\n            best = max(best, p - lo)\n        return best\n",
+    "interview": "class Solution:\n    def maxProfit(self, prices):\n        lo, best = float(\"inf\"), 0\n        for p in prices:\n            lo = min(lo, p)\n            best = max(best, p - lo)\n        return best\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.maxProfit([7, 1, 5, 3, 6, 4]))   # 5\n    print(s.maxProfit([7, 6, 4, 3, 1]))      # 0\n",
+    "acm": "class Solution:\n    def maxProfit(self, prices):\n        lo, best = float(\"inf\"), 0\n        for p in prices:\n            lo = min(lo, p)\n            best = max(best, p - lo)\n        return best\n\ndef main():\n    prices = list(map(int, input().split()))\n    print(Solution().maxProfit(prices))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:每日股价(空格分隔)",
+      "stdout": "最大利润",
+      "sample_in": "7 1 5 3 6 4",
+      "sample_out": "5"
+    }
+  },
+  "124": {
+    "core": "# 二叉树节点 TreeNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def maxPathSum(self, root):\n        self.best = float(\"-inf\")\n\n        def gain(n):\n            if not n:\n                return 0\n            l = max(0, gain(n.left))\n            r = max(0, gain(n.right))\n            self.best = max(self.best, n.val + l + r)\n            return n.val + max(l, r)\n\n        gain(root)\n        return self.best\n",
+    "interview": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def maxPathSum(self, root):\n        self.best = float(\"-inf\")\n\n        def gain(n):\n            if not n:\n                return 0\n            l = max(0, gain(n.left))\n            r = max(0, gain(n.right))\n            self.best = max(self.best, n.val + l + r)\n            return n.val + max(l, r)\n\n        gain(root)\n        return self.best\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.maxPathSum(build_tree([1, 2, 3])))                         # 6\n    print(s.maxPathSum(build_tree([-10, 9, 20, None, None, 15, 7])))   # 42\n",
+    "acm": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def maxPathSum(self, root):\n        self.best = float(\"-inf\")\n\n        def gain(n):\n            if not n:\n                return 0\n            l = max(0, gain(n.left))\n            r = max(0, gain(n.right))\n            self.best = max(self.best, n.val + l + r)\n            return n.val + max(l, r)\n\n        gain(root)\n        return self.best\n\ndef main():\n    print(Solution().maxPathSum(parse_tree()))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:二叉树层序遍历,空节点用 null(空格分隔)",
+      "stdout": "最大路径和",
+      "sample_in": "-10 9 20 null null 15 7",
+      "sample_out": "42"
+    }
+  },
   "128": {
     "core": "class Solution:\n    def longestConsecutive(self, nums):\n        S = set(nums)\n        best = 0\n        for x in S:\n            if x - 1 in S:\n                continue\n            y = x\n            while y + 1 in S:\n                y += 1\n            best = max(best, y - x + 1)\n        return best\n",
     "interview": "class Solution:\n    def longestConsecutive(self, nums):\n        S = set(nums)\n        best = 0\n        for x in S:\n            if x - 1 in S:\n                continue\n            y = x\n            while y + 1 in S:\n                y += 1\n            best = max(best, y - x + 1)\n        return best\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.longestConsecutive([100, 4, 200, 1, 3, 2]))          # 4\n    print(s.longestConsecutive([0, 3, 7, 2, 5, 8, 4, 6, 0, 1]))  # 9\n",
@@ -228,6 +602,28 @@
       "stdin": "一行:数组(空格分隔)",
       "stdout": "最长连续序列长度",
       "sample_in": "100 4 200 1 3 2",
+      "sample_out": "4"
+    }
+  },
+  "131": {
+    "core": "class Solution:\n    def partition(self, s):\n        ans, path = [], []\n        n = len(s)\n\n        def is_pal(l, r):\n            while l < r:\n                if s[l] != s[r]:\n                    return False\n                l += 1\n                r -= 1\n            return True\n\n        def bt(start):\n            if start == n:\n                ans.append(path[:])\n                return\n            for end in range(start, n):\n                if is_pal(start, end):\n                    path.append(s[start:end + 1])\n                    bt(end + 1)\n                    path.pop()\n\n        bt(0)\n        return ans\n",
+    "interview": "class Solution:\n    def partition(self, s):\n        ans, path = [], []\n        n = len(s)\n\n        def is_pal(l, r):\n            while l < r:\n                if s[l] != s[r]:\n                    return False\n                l += 1\n                r -= 1\n            return True\n\n        def bt(start):\n            if start == n:\n                ans.append(path[:])\n                return\n            for end in range(start, n):\n                if is_pal(start, end):\n                    path.append(s[start:end + 1])\n                    bt(end + 1)\n                    path.pop()\n\n        bt(0)\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().partition(\"aab\"))   # [['a', 'a', 'b'], ['aa', 'b']]\n",
+    "acm": "class Solution:\n    def partition(self, s):\n        ans, path = [], []\n        n = len(s)\n\n        def is_pal(l, r):\n            while l < r:\n                if s[l] != s[r]:\n                    return False\n                l += 1\n                r -= 1\n            return True\n\n        def bt(start):\n            if start == n:\n                ans.append(path[:])\n                return\n            for end in range(start, n):\n                if is_pal(start, end):\n                    path.append(s[start:end + 1])\n                    bt(end + 1)\n                    path.pop()\n\n        bt(0)\n        return ans\n\ndef main():\n    s = input()\n    for part in Solution().partition(s):\n        print(*part)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:字符串 s",
+      "stdout": "全部回文分割方案,每个一行(子串空格分隔)",
+      "sample_in": "aab",
+      "sample_out": "a a b\naa b"
+    }
+  },
+  "136": {
+    "core": "from functools import reduce\nfrom operator import xor\n\n\nclass Solution:\n    def singleNumber(self, nums):\n        return reduce(xor, nums)\n",
+    "interview": "from functools import reduce\nfrom operator import xor\n\n\nclass Solution:\n    def singleNumber(self, nums):\n        return reduce(xor, nums)\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.singleNumber([2, 2, 1]))         # 1\n    print(s.singleNumber([4, 1, 2, 1, 2]))   # 4\n",
+    "acm": "from functools import reduce\nfrom operator import xor\n\n\nclass Solution:\n    def singleNumber(self, nums):\n        return reduce(xor, nums)\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().singleNumber(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔,只有一个数出现一次)",
+      "stdout": "只出现一次的数",
+      "sample_in": "4 1 2 1 2",
       "sample_out": "4"
     }
   },
@@ -240,6 +636,17 @@
       "stdout": "复制后的链表,每行 `val random下标`",
       "sample_in": "5\n7 -1\n13 0\n11 4\n10 2\n1 0",
       "sample_out": "7 -1\n13 0\n11 4\n10 2\n1 0"
+    }
+  },
+  "139": {
+    "core": "class Solution:\n    def wordBreak(self, s, wordDict):\n        words = set(wordDict)\n        max_len = max((len(w) for w in words), default=0)\n        n = len(s)\n        f = [False] * (n + 1)\n        f[0] = True\n        for i in range(1, n + 1):\n            for j in range(max(0, i - max_len), i):\n                if f[j] and s[j:i] in words:\n                    f[i] = True\n                    break\n        return f[n]\n",
+    "interview": "class Solution:\n    def wordBreak(self, s, wordDict):\n        words = set(wordDict)\n        max_len = max((len(w) for w in words), default=0)\n        n = len(s)\n        f = [False] * (n + 1)\n        f[0] = True\n        for i in range(1, n + 1):\n            for j in range(max(0, i - max_len), i):\n                if f[j] and s[j:i] in words:\n                    f[i] = True\n                    break\n        return f[n]\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.wordBreak(\"leetcode\", [\"leet\", \"code\"]))                       # True\n    print(s.wordBreak(\"catsandog\", [\"cats\", \"dog\", \"sand\", \"and\", \"cat\"])) # False\n",
+    "acm": "class Solution:\n    def wordBreak(self, s, wordDict):\n        words = set(wordDict)\n        max_len = max((len(w) for w in words), default=0)\n        n = len(s)\n        f = [False] * (n + 1)\n        f[0] = True\n        for i in range(1, n + 1):\n            for j in range(max(0, i - max_len), i):\n                if f[j] and s[j:i] in words:\n                    f[i] = True\n                    break\n        return f[n]\n\ndef main():\n    s = input()\n    words = input().split()\n    print(\"true\" if Solution().wordBreak(s, words) else \"false\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:字符串 s\n第 2 行:词典单词(空格分隔)",
+      "stdout": "能否由词典拼出(true / false)",
+      "sample_in": "leetcode\nleet code",
+      "sample_out": "true"
     }
   },
   "141": {
@@ -286,6 +693,39 @@
       "sample_out": "1 2 3 4"
     }
   },
+  "152": {
+    "core": "class Solution:\n    def maxProduct(self, nums):\n        fmax = fmin = ans = nums[0]\n        for x in nums[1:]:\n            cands = (x, fmax * x, fmin * x)\n            fmax = max(cands)\n            fmin = min(cands)\n            ans = max(ans, fmax)\n        return ans\n",
+    "interview": "class Solution:\n    def maxProduct(self, nums):\n        fmax = fmin = ans = nums[0]\n        for x in nums[1:]:\n            cands = (x, fmax * x, fmin * x)\n            fmax = max(cands)\n            fmin = min(cands)\n            ans = max(ans, fmax)\n        return ans\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.maxProduct([2, 3, -2, 4]))   # 6\n    print(s.maxProduct([-2, 0, -1]))     # 0\n",
+    "acm": "class Solution:\n    def maxProduct(self, nums):\n        fmax = fmin = ans = nums[0]\n        for x in nums[1:]:\n            cands = (x, fmax * x, fmin * x)\n            fmax = max(cands)\n            fmin = min(cands)\n            ans = max(ans, fmax)\n        return ans\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().maxProduct(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "最大乘积子数组的积",
+      "sample_in": "2 3 -2 4",
+      "sample_out": "6"
+    }
+  },
+  "153": {
+    "core": "class Solution:\n    def findMin(self, nums):\n        l, r = 0, len(nums) - 1\n        while l < r:\n            m = (l + r) // 2\n            if nums[m] > nums[r]:\n                l = m + 1\n            else:\n                r = m\n        return nums[l]\n",
+    "interview": "class Solution:\n    def findMin(self, nums):\n        l, r = 0, len(nums) - 1\n        while l < r:\n            m = (l + r) // 2\n            if nums[m] > nums[r]:\n                l = m + 1\n            else:\n                r = m\n        return nums[l]\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.findMin([3, 4, 5, 1, 2]))         # 1\n    print(s.findMin([4, 5, 6, 7, 0, 1, 2]))   # 0\n",
+    "acm": "class Solution:\n    def findMin(self, nums):\n        l, r = 0, len(nums) - 1\n        while l < r:\n            m = (l + r) // 2\n            if nums[m] > nums[r]:\n                l = m + 1\n            else:\n                r = m\n        return nums[l]\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().findMin(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:旋转排序数组(空格分隔)",
+      "stdout": "最小值",
+      "sample_in": "3 4 5 1 2",
+      "sample_out": "1"
+    }
+  },
+  "155": {
+    "core": "# 题目要求设计 O(1) 取最小值的栈,直接实现 MinStack\n\nclass MinStack:\n    def __init__(self):\n        self.stack = []\n        self.mins = []\n\n    def push(self, val):\n        self.stack.append(val)\n        if not self.mins or val <= self.mins[-1]:\n            self.mins.append(val)\n        else:\n            self.mins.append(self.mins[-1])\n\n    def pop(self):\n        self.stack.pop()\n        self.mins.pop()\n\n    def top(self):\n        return self.stack[-1]\n\n    def getMin(self):\n        return self.mins[-1]\n",
+    "interview": "class MinStack:\n    def __init__(self):\n        self.stack = []\n        self.mins = []\n\n    def push(self, val):\n        self.stack.append(val)\n        if not self.mins or val <= self.mins[-1]:\n            self.mins.append(val)\n        else:\n            self.mins.append(self.mins[-1])\n\n    def pop(self):\n        self.stack.pop()\n        self.mins.pop()\n\n    def top(self):\n        return self.stack[-1]\n\n    def getMin(self):\n        return self.mins[-1]\n\nif __name__ == \"__main__\":\n    st = MinStack()\n    st.push(-2)\n    st.push(0)\n    st.push(-3)\n    print(st.getMin())   # -3\n    st.pop()\n    print(st.top())      # 0\n    print(st.getMin())   # -2\n",
+    "acm": "class MinStack:\n    def __init__(self):\n        self.stack = []\n        self.mins = []\n\n    def push(self, val):\n        self.stack.append(val)\n        if not self.mins or val <= self.mins[-1]:\n            self.mins.append(val)\n        else:\n            self.mins.append(self.mins[-1])\n\n    def pop(self):\n        self.stack.pop()\n        self.mins.pop()\n\n    def top(self):\n        return self.stack[-1]\n\n    def getMin(self):\n        return self.mins[-1]\n\ndef main():\n    q = int(input())\n    st = MinStack()\n    out = []\n    for _ in range(q):\n        op = input().split()\n        if op[0] == \"push\":\n            st.push(int(op[1]))\n        elif op[0] == \"pop\":\n            st.pop()\n        elif op[0] == \"top\":\n            out.append(str(st.top()))\n        else:\n            out.append(str(st.getMin()))\n    print(*out)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:操作数 q\n随后 q 行:`push v` / `pop` / `top` / `getMin`",
+      "stdout": "每个 top / getMin 的结果(空格分隔)",
+      "sample_in": "7\npush -2\npush 0\npush -3\ngetMin\npop\ntop\ngetMin",
+      "sample_out": "-3 0 -2"
+    }
+  },
   "160": {
     "core": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def getIntersectionNode(self, headA, headB):\n        a, b = headA, headB\n        while a is not b:\n            a = a.next if a else headB\n            b = b.next if b else headA\n        return a\n",
     "interview": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(vals):\n    dummy = cur = ListNode()\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\n\ndef to_list(head):\n    out = []\n    while head:\n        out.append(head.val)\n        head = head.next\n    return out\n\n\ndef attach(only, common):\n    if not only:\n        return common\n    t = only\n    while t.next:\n        t = t.next\n    t.next = common\n    return only\n\nclass Solution:\n    def getIntersectionNode(self, headA, headB):\n        a, b = headA, headB\n        while a is not b:\n            a = a.next if a else headB\n            b = b.next if b else headA\n        return a\n\nif __name__ == \"__main__\":\n    common = build_list([8, 4, 5])\n    a = attach(build_list([4, 1]), common)\n    b = attach(build_list([5, 6, 1]), common)\n    node = Solution().getIntersectionNode(a, b)\n    print(node.val if node else \"null\")   # 8\n",
@@ -295,6 +735,17 @@
       "stdout": "相交节点的值;不相交输出 null",
       "sample_in": "4 1\n5 6 1\n8 4 5",
       "sample_out": "8"
+    }
+  },
+  "169": {
+    "core": "class Solution:\n    def majorityElement(self, nums):\n        cand, cnt = 0, 0\n        for x in nums:\n            if cnt == 0:\n                cand = x\n            cnt += 1 if x == cand else -1\n        return cand\n",
+    "interview": "class Solution:\n    def majorityElement(self, nums):\n        cand, cnt = 0, 0\n        for x in nums:\n            if cnt == 0:\n                cand = x\n            cnt += 1 if x == cand else -1\n        return cand\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.majorityElement([3, 2, 3]))               # 3\n    print(s.majorityElement([2, 2, 1, 1, 1, 2, 2]))   # 2\n",
+    "acm": "class Solution:\n    def majorityElement(self, nums):\n        cand, cnt = 0, 0\n        for x in nums:\n            if cnt == 0:\n                cand = x\n            cnt += 1 if x == cand else -1\n        return cand\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().majorityElement(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "多数元素(出现次数 > n/2)",
+      "sample_in": "2 2 1 1 1 2 2",
+      "sample_out": "2"
     }
   },
   "189": {
@@ -308,6 +759,39 @@
       "sample_out": "5 6 7 1 2 3 4"
     }
   },
+  "198": {
+    "core": "class Solution:\n    def rob(self, nums):\n        a = b = 0\n        for x in nums:\n            a, b = b, max(b, a + x)\n        return b\n",
+    "interview": "class Solution:\n    def rob(self, nums):\n        a = b = 0\n        for x in nums:\n            a, b = b, max(b, a + x)\n        return b\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.rob([1, 2, 3, 1]))      # 4\n    print(s.rob([2, 7, 9, 3, 1]))   # 12\n",
+    "acm": "class Solution:\n    def rob(self, nums):\n        a = b = 0\n        for x in nums:\n            a, b = b, max(b, a + x)\n        return b\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().rob(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:每户金额(空格分隔)",
+      "stdout": "最大偷窃金额",
+      "sample_in": "2 7 9 3 1",
+      "sample_out": "12"
+    }
+  },
+  "199": {
+    "core": "# 二叉树节点 TreeNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def rightSideView(self, root):\n        if not root:\n            return []\n        out, q = [], deque([root])\n        while q:\n            sz = len(q)\n            for i in range(sz):\n                n = q.popleft()\n                if i == sz - 1:\n                    out.append(n.val)\n                if n.left:\n                    q.append(n.left)\n                if n.right:\n                    q.append(n.right)\n        return out\n",
+    "interview": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def rightSideView(self, root):\n        if not root:\n            return []\n        out, q = [], deque([root])\n        while q:\n            sz = len(q)\n            for i in range(sz):\n                n = q.popleft()\n                if i == sz - 1:\n                    out.append(n.val)\n                if n.left:\n                    q.append(n.left)\n                if n.right:\n                    q.append(n.right)\n        return out\n\nif __name__ == \"__main__\":\n    print(Solution().rightSideView(build_tree([1, 2, 3, None, 5, None, 4])))   # [1, 3, 4]\n",
+    "acm": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def rightSideView(self, root):\n        if not root:\n            return []\n        out, q = [], deque([root])\n        while q:\n            sz = len(q)\n            for i in range(sz):\n                n = q.popleft()\n                if i == sz - 1:\n                    out.append(n.val)\n                if n.left:\n                    q.append(n.left)\n                if n.right:\n                    q.append(n.right)\n        return out\n\ndef main():\n    print(*Solution().rightSideView(parse_tree()))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:二叉树层序遍历,空节点用 null(空格分隔)",
+      "stdout": "右视图(从顶到底,空格分隔)",
+      "sample_in": "1 2 3 null 5 null 4",
+      "sample_out": "1 3 4"
+    }
+  },
+  "200": {
+    "core": "class Solution:\n    def numIslands(self, grid):\n        if not grid:\n            return 0\n        m, n = len(grid), len(grid[0])\n\n        def dfs(i, j):\n            if i < 0 or j < 0 or i >= m or j >= n or grid[i][j] != \"1\":\n                return\n            grid[i][j] = \"0\"\n            dfs(i + 1, j)\n            dfs(i - 1, j)\n            dfs(i, j + 1)\n            dfs(i, j - 1)\n\n        cnt = 0\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] == \"1\":\n                    cnt += 1\n                    dfs(i, j)\n        return cnt\n",
+    "interview": "class Solution:\n    def numIslands(self, grid):\n        if not grid:\n            return 0\n        m, n = len(grid), len(grid[0])\n\n        def dfs(i, j):\n            if i < 0 or j < 0 or i >= m or j >= n or grid[i][j] != \"1\":\n                return\n            grid[i][j] = \"0\"\n            dfs(i + 1, j)\n            dfs(i - 1, j)\n            dfs(i, j + 1)\n            dfs(i, j - 1)\n\n        cnt = 0\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] == \"1\":\n                    cnt += 1\n                    dfs(i, j)\n        return cnt\n\nif __name__ == \"__main__\":\n    grid = [\n        [\"1\", \"1\", \"0\"],\n        [\"1\", \"0\", \"0\"],\n        [\"0\", \"0\", \"1\"],\n    ]\n    print(Solution().numIslands(grid))   # 2\n",
+    "acm": "class Solution:\n    def numIslands(self, grid):\n        if not grid:\n            return 0\n        m, n = len(grid), len(grid[0])\n\n        def dfs(i, j):\n            if i < 0 or j < 0 or i >= m or j >= n or grid[i][j] != \"1\":\n                return\n            grid[i][j] = \"0\"\n            dfs(i + 1, j)\n            dfs(i - 1, j)\n            dfs(i, j + 1)\n            dfs(i, j - 1)\n\n        cnt = 0\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] == \"1\":\n                    cnt += 1\n                    dfs(i, j)\n        return cnt\n\ndef main():\n    m, n = map(int, input().split())\n    grid = [list(input()) for _ in range(m)]\n    print(Solution().numIslands(grid))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:行数 m 列数 n\n随后 m 行:每行 n 个字符(0 / 1,连续无空格)",
+      "stdout": "岛屿数量",
+      "sample_in": "3 3\n110\n100\n001",
+      "sample_out": "2"
+    }
+  },
   "206": {
     "core": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def reverseList(self, head):\n        prev = None\n        while head:\n            head.next, prev, head = prev, head, head.next\n        return prev\n",
     "interview": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(vals):\n    dummy = cur = ListNode()\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\n\ndef to_list(head):\n    out = []\n    while head:\n        out.append(head.val)\n        head = head.next\n    return out\n\nclass Solution:\n    def reverseList(self, head):\n        prev = None\n        while head:\n            head.next, prev, head = prev, head, head.next\n        return prev\n\nif __name__ == \"__main__\":\n    head = build_list([1, 2, 3, 4, 5])\n    print(to_list(Solution().reverseList(head)))   # [5, 4, 3, 2, 1]\n",
@@ -319,6 +803,61 @@
       "sample_out": "5 4 3 2 1"
     }
   },
+  "207": {
+    "core": "from collections import defaultdict, deque\n\n\nclass Solution:\n    def canFinish(self, numCourses, prerequisites):\n        g = defaultdict(list)\n        indeg = [0] * numCourses\n        for a, b in prerequisites:\n            g[b].append(a)\n            indeg[a] += 1\n        q = deque(i for i, d in enumerate(indeg) if d == 0)\n        seen = 0\n        while q:\n            u = q.popleft()\n            seen += 1\n            for v in g[u]:\n                indeg[v] -= 1\n                if indeg[v] == 0:\n                    q.append(v)\n        return seen == numCourses\n",
+    "interview": "from collections import defaultdict, deque\n\n\nclass Solution:\n    def canFinish(self, numCourses, prerequisites):\n        g = defaultdict(list)\n        indeg = [0] * numCourses\n        for a, b in prerequisites:\n            g[b].append(a)\n            indeg[a] += 1\n        q = deque(i for i, d in enumerate(indeg) if d == 0)\n        seen = 0\n        while q:\n            u = q.popleft()\n            seen += 1\n            for v in g[u]:\n                indeg[v] -= 1\n                if indeg[v] == 0:\n                    q.append(v)\n        return seen == numCourses\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.canFinish(2, [[1, 0]]))           # True\n    print(s.canFinish(2, [[1, 0], [0, 1]]))   # False\n",
+    "acm": "from collections import defaultdict, deque\n\n\nclass Solution:\n    def canFinish(self, numCourses, prerequisites):\n        g = defaultdict(list)\n        indeg = [0] * numCourses\n        for a, b in prerequisites:\n            g[b].append(a)\n            indeg[a] += 1\n        q = deque(i for i, d in enumerate(indeg) if d == 0)\n        seen = 0\n        while q:\n            u = q.popleft()\n            seen += 1\n            for v in g[u]:\n                indeg[v] -= 1\n                if indeg[v] == 0:\n                    q.append(v)\n        return seen == numCourses\n\ndef main():\n    num = int(input())\n    e = int(input())\n    prer = [list(map(int, input().split())) for _ in range(e)]\n    print(\"true\" if Solution().canFinish(num, prer) else \"false\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:课程数 numCourses\n第 2 行:先修关系数 e\n随后 e 行:每行 `a b`(学 a 前需先学 b)",
+      "stdout": "能否修完所有课程(true / false)",
+      "sample_in": "2\n1\n1 0",
+      "sample_out": "true"
+    }
+  },
+  "208": {
+    "core": "# 题目要求设计前缀树,直接实现 Trie\n\nclass Trie:\n    def __init__(self):\n        self.children = {}\n        self.end = False\n\n    def insert(self, word):\n        node = self\n        for c in word:\n            if c not in node.children:\n                node.children[c] = Trie()\n            node = node.children[c]\n        node.end = True\n\n    def _find(self, word):\n        node = self\n        for c in word:\n            if c not in node.children:\n                return None\n            node = node.children[c]\n        return node\n\n    def search(self, word):\n        node = self._find(word)\n        return node is not None and node.end\n\n    def startsWith(self, prefix):\n        return self._find(prefix) is not None\n",
+    "interview": "class Trie:\n    def __init__(self):\n        self.children = {}\n        self.end = False\n\n    def insert(self, word):\n        node = self\n        for c in word:\n            if c not in node.children:\n                node.children[c] = Trie()\n            node = node.children[c]\n        node.end = True\n\n    def _find(self, word):\n        node = self\n        for c in word:\n            if c not in node.children:\n                return None\n            node = node.children[c]\n        return node\n\n    def search(self, word):\n        node = self._find(word)\n        return node is not None and node.end\n\n    def startsWith(self, prefix):\n        return self._find(prefix) is not None\n\nif __name__ == \"__main__\":\n    t = Trie()\n    t.insert(\"apple\")\n    print(t.search(\"apple\"))      # True\n    print(t.search(\"app\"))        # False\n    print(t.startsWith(\"app\"))    # True\n    t.insert(\"app\")\n    print(t.search(\"app\"))        # True\n",
+    "acm": "class Trie:\n    def __init__(self):\n        self.children = {}\n        self.end = False\n\n    def insert(self, word):\n        node = self\n        for c in word:\n            if c not in node.children:\n                node.children[c] = Trie()\n            node = node.children[c]\n        node.end = True\n\n    def _find(self, word):\n        node = self\n        for c in word:\n            if c not in node.children:\n                return None\n            node = node.children[c]\n        return node\n\n    def search(self, word):\n        node = self._find(word)\n        return node is not None and node.end\n\n    def startsWith(self, prefix):\n        return self._find(prefix) is not None\n\ndef main():\n    q = int(input())\n    t = Trie()\n    out = []\n    for _ in range(q):\n        op = input().split()\n        if op[0] == \"insert\":\n            t.insert(op[1])\n        elif op[0] == \"search\":\n            out.append(\"true\" if t.search(op[1]) else \"false\")\n        else:\n            out.append(\"true\" if t.startsWith(op[1]) else \"false\")\n    print(*out)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:操作数 q\n随后 q 行:`insert w` / `search w` / `startsWith p`",
+      "stdout": "每个 search / startsWith 的结果(true / false,空格分隔)",
+      "sample_in": "5\ninsert apple\nsearch apple\nsearch app\nstartsWith app\ninsert app",
+      "sample_out": "true false true"
+    }
+  },
+  "215": {
+    "core": "import heapq\n\n\nclass Solution:\n    def findKthLargest(self, nums, k):\n        h = []\n        for x in nums:\n            heapq.heappush(h, x)\n            if len(h) > k:\n                heapq.heappop(h)\n        return h[0]\n",
+    "interview": "import heapq\n\n\nclass Solution:\n    def findKthLargest(self, nums, k):\n        h = []\n        for x in nums:\n            heapq.heappush(h, x)\n            if len(h) > k:\n                heapq.heappop(h)\n        return h[0]\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.findKthLargest([3, 2, 1, 5, 6, 4], 2))               # 5\n    print(s.findKthLargest([3, 2, 3, 1, 2, 4, 5, 5, 6], 4))      # 4\n",
+    "acm": "import heapq\n\n\nclass Solution:\n    def findKthLargest(self, nums, k):\n        h = []\n        for x in nums:\n            heapq.heappush(h, x)\n            if len(h) > k:\n                heapq.heappop(h)\n        return h[0]\n\ndef main():\n    nums = list(map(int, input().split()))\n    k = int(input())\n    print(Solution().findKthLargest(nums, k))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:数组(空格分隔)\n第 2 行:k",
+      "stdout": "第 k 大的元素",
+      "sample_in": "3 2 1 5 6 4\n2",
+      "sample_out": "5"
+    }
+  },
+  "226": {
+    "core": "# 二叉树节点 TreeNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def invertTree(self, root):\n        if not root:\n            return None\n        root.left, root.right = self.invertTree(root.right), self.invertTree(root.left)\n        return root\n",
+    "interview": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def invertTree(self, root):\n        if not root:\n            return None\n        root.left, root.right = self.invertTree(root.right), self.invertTree(root.left)\n        return root\n\nif __name__ == \"__main__\":\n    root = Solution().invertTree(build_tree([4, 2, 7, 1, 3, 6, 9]))\n    print(tree_to_level(root))   # [4, 7, 2, 9, 6, 3, 1]\n",
+    "acm": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def invertTree(self, root):\n        if not root:\n            return None\n        root.left, root.right = self.invertTree(root.right), self.invertTree(root.left)\n        return root\n\ndef main():\n    print(fmt_level(Solution().invertTree(parse_tree())))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:二叉树层序遍历,空节点用 null(空格分隔)",
+      "stdout": "翻转后的树层序(null 表示空)",
+      "sample_in": "4 2 7 1 3 6 9",
+      "sample_out": "4 7 2 9 6 3 1"
+    }
+  },
+  "230": {
+    "core": "# 二叉树节点 TreeNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def kthSmallest(self, root, k):\n        stack, cur = [], root\n        while cur or stack:\n            while cur:\n                stack.append(cur)\n                cur = cur.left\n            cur = stack.pop()\n            k -= 1\n            if k == 0:\n                return cur.val\n            cur = cur.right\n        return -1\n",
+    "interview": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def kthSmallest(self, root, k):\n        stack, cur = [], root\n        while cur or stack:\n            while cur:\n                stack.append(cur)\n                cur = cur.left\n            cur = stack.pop()\n            k -= 1\n            if k == 0:\n                return cur.val\n            cur = cur.right\n        return -1\n\nif __name__ == \"__main__\":\n    root = build_tree([3, 1, 4, None, 2])\n    print(Solution().kthSmallest(root, 1))   # 1\n",
+    "acm": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def kthSmallest(self, root, k):\n        stack, cur = [], root\n        while cur or stack:\n            while cur:\n                stack.append(cur)\n                cur = cur.left\n            cur = stack.pop()\n            k -= 1\n            if k == 0:\n                return cur.val\n            cur = cur.right\n        return -1\n\ndef main():\n    root = parse_tree()\n    k = int(input())\n    print(Solution().kthSmallest(root, k))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:BST 层序(null 表示空)\n第 2 行:k",
+      "stdout": "第 k 小的元素",
+      "sample_in": "3 1 4 null 2\n1",
+      "sample_out": "1"
+    }
+  },
   "234": {
     "core": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def isPalindrome(self, head):\n        slow = fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n        right = _reverse(slow)\n        left = head\n        while right:\n            if left.val != right.val:\n                return False\n            left = left.next\n            right = right.next\n        return True\n",
     "interview": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(vals):\n    dummy = cur = ListNode()\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\n\ndef to_list(head):\n    out = []\n    while head:\n        out.append(head.val)\n        head = head.next\n    return out\n\n\ndef _reverse(head):\n    prev = None\n    while head:\n        head.next, prev, head = prev, head, head.next\n    return prev\n\nclass Solution:\n    def isPalindrome(self, head):\n        slow = fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n        right = _reverse(slow)\n        left = head\n        while right:\n            if left.val != right.val:\n                return False\n            left = left.next\n            right = right.next\n        return True\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.isPalindrome(build_list([1, 2, 2, 1])))   # True\n    print(s.isPalindrome(build_list([1, 2, 3])))      # False\n",
@@ -328,6 +867,17 @@
       "stdout": "是否回文(true / false)",
       "sample_in": "1 2 2 1",
       "sample_out": "true"
+    }
+  },
+  "236": {
+    "core": "# 二叉树节点 TreeNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def lowestCommonAncestor(self, root, p, q):\n        if not root or root is p or root is q:\n            return root\n        l = self.lowestCommonAncestor(root.left, p, q)\n        r = self.lowestCommonAncestor(root.right, p, q)\n        if l and r:\n            return root\n        return l or r\n",
+    "interview": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\n\ndef find_node(root, val):\n    if not root:\n        return None\n    if root.val == val:\n        return root\n    return find_node(root.left, val) or find_node(root.right, val)\n\nclass Solution:\n    def lowestCommonAncestor(self, root, p, q):\n        if not root or root is p or root is q:\n            return root\n        l = self.lowestCommonAncestor(root.left, p, q)\n        r = self.lowestCommonAncestor(root.right, p, q)\n        if l and r:\n            return root\n        return l or r\n\nif __name__ == \"__main__\":\n    root = build_tree([3, 5, 1, 6, 2, 0, 8, None, None, 7, 4])\n    p = find_node(root, 5)\n    q = find_node(root, 1)\n    print(Solution().lowestCommonAncestor(root, p, q).val)   # 3\n",
+    "acm": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\n\ndef find_node(root, val):\n    if not root:\n        return None\n    if root.val == val:\n        return root\n    return find_node(root.left, val) or find_node(root.right, val)\n\nclass Solution:\n    def lowestCommonAncestor(self, root, p, q):\n        if not root or root is p or root is q:\n            return root\n        l = self.lowestCommonAncestor(root.left, p, q)\n        r = self.lowestCommonAncestor(root.right, p, q)\n        if l and r:\n            return root\n        return l or r\n\ndef main():\n    root = parse_tree()\n    p = int(input())\n    q = int(input())\n    ans = Solution().lowestCommonAncestor(root, find_node(root, p), find_node(root, q))\n    print(ans.val)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:树层序(null 表示空)\n第 2 行:p 的值\n第 3 行:q 的值",
+      "stdout": "最近公共祖先的值",
+      "sample_in": "3 5 1 6 2 0 8 null null 7 4\n5\n1",
+      "sample_out": "3"
     }
   },
   "238": {
@@ -363,6 +913,17 @@
       "sample_out": "true"
     }
   },
+  "279": {
+    "core": "class Solution:\n    def numSquares(self, n):\n        f = [0] + [float(\"inf\")] * n\n        for i in range(1, n + 1):\n            k = 1\n            while k * k <= i:\n                f[i] = min(f[i], f[i - k * k] + 1)\n                k += 1\n        return f[n]\n",
+    "interview": "class Solution:\n    def numSquares(self, n):\n        f = [0] + [float(\"inf\")] * n\n        for i in range(1, n + 1):\n            k = 1\n            while k * k <= i:\n                f[i] = min(f[i], f[i - k * k] + 1)\n                k += 1\n        return f[n]\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.numSquares(12))   # 3\n    print(s.numSquares(13))   # 2\n",
+    "acm": "class Solution:\n    def numSquares(self, n):\n        f = [0] + [float(\"inf\")] * n\n        for i in range(1, n + 1):\n            k = 1\n            while k * k <= i:\n                f[i] = min(f[i], f[i - k * k] + 1)\n                k += 1\n        return f[n]\n\ndef main():\n    n = int(input())\n    print(Solution().numSquares(n))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:整数 n",
+      "stdout": "和为 n 的完全平方数最少个数",
+      "sample_in": "12",
+      "sample_out": "3"
+    }
+  },
   "283": {
     "core": "class Solution:\n    def moveZeroes(self, nums):\n        slow = 0\n        for fast in range(len(nums)):\n            if nums[fast]:\n                nums[slow], nums[fast] = nums[fast], nums[slow]\n                slow += 1\n",
     "interview": "class Solution:\n    def moveZeroes(self, nums):\n        slow = 0\n        for fast in range(len(nums)):\n            if nums[fast]:\n                nums[slow], nums[fast] = nums[fast], nums[slow]\n                slow += 1\n\nif __name__ == \"__main__\":\n    nums = [0, 1, 0, 3, 12]\n    Solution().moveZeroes(nums)\n    print(nums)   # [1, 3, 12, 0, 0]\n",
@@ -372,6 +933,94 @@
       "stdout": "原地移动零后的数组(空格分隔)",
       "sample_in": "0 1 0 3 12",
       "sample_out": "1 3 12 0 0"
+    }
+  },
+  "287": {
+    "core": "class Solution:\n    def findDuplicate(self, nums):\n        slow = fast = nums[0]\n        while True:\n            slow = nums[slow]\n            fast = nums[nums[fast]]\n            if slow == fast:\n                break\n        slow = nums[0]\n        while slow != fast:\n            slow = nums[slow]\n            fast = nums[fast]\n        return slow\n",
+    "interview": "class Solution:\n    def findDuplicate(self, nums):\n        slow = fast = nums[0]\n        while True:\n            slow = nums[slow]\n            fast = nums[nums[fast]]\n            if slow == fast:\n                break\n        slow = nums[0]\n        while slow != fast:\n            slow = nums[slow]\n            fast = nums[fast]\n        return slow\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.findDuplicate([1, 3, 4, 2, 2]))   # 2\n    print(s.findDuplicate([3, 1, 3, 4, 2]))   # 3\n",
+    "acm": "class Solution:\n    def findDuplicate(self, nums):\n        slow = fast = nums[0]\n        while True:\n            slow = nums[slow]\n            fast = nums[nums[fast]]\n            if slow == fast:\n                break\n        slow = nums[0]\n        while slow != fast:\n            slow = nums[slow]\n            fast = nums[fast]\n        return slow\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().findDuplicate(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔,n+1 个数取值 1..n)",
+      "stdout": "重复的数",
+      "sample_in": "1 3 4 2 2",
+      "sample_out": "2"
+    }
+  },
+  "295": {
+    "core": "# 题目要求设计数据流中位数结构,直接实现 MedianFinder(对顶双堆)\n\nimport heapq\n\n\nclass MedianFinder:\n    def __init__(self):\n        self.small = []   # 大根堆(存负数),保存较小一半\n        self.large = []   # 小根堆,保存较大一半\n\n    def addNum(self, num):\n        heapq.heappush(self.small, -num)\n        heapq.heappush(self.large, -heapq.heappop(self.small))\n        if len(self.large) > len(self.small):\n            heapq.heappush(self.small, -heapq.heappop(self.large))\n\n    def findMedian(self):\n        if len(self.small) > len(self.large):\n            return float(-self.small[0])\n        return (-self.small[0] + self.large[0]) / 2\n",
+    "interview": "import heapq\n\n\nclass MedianFinder:\n    def __init__(self):\n        self.small = []   # 大根堆(存负数),保存较小一半\n        self.large = []   # 小根堆,保存较大一半\n\n    def addNum(self, num):\n        heapq.heappush(self.small, -num)\n        heapq.heappush(self.large, -heapq.heappop(self.small))\n        if len(self.large) > len(self.small):\n            heapq.heappush(self.small, -heapq.heappop(self.large))\n\n    def findMedian(self):\n        if len(self.small) > len(self.large):\n            return float(-self.small[0])\n        return (-self.small[0] + self.large[0]) / 2\n\nif __name__ == \"__main__\":\n    mf = MedianFinder()\n    mf.addNum(1)\n    mf.addNum(2)\n    print(mf.findMedian())   # 1.5\n    mf.addNum(3)\n    print(mf.findMedian())   # 2.0\n",
+    "acm": "import heapq\n\n\nclass MedianFinder:\n    def __init__(self):\n        self.small = []   # 大根堆(存负数),保存较小一半\n        self.large = []   # 小根堆,保存较大一半\n\n    def addNum(self, num):\n        heapq.heappush(self.small, -num)\n        heapq.heappush(self.large, -heapq.heappop(self.small))\n        if len(self.large) > len(self.small):\n            heapq.heappush(self.small, -heapq.heappop(self.large))\n\n    def findMedian(self):\n        if len(self.small) > len(self.large):\n            return float(-self.small[0])\n        return (-self.small[0] + self.large[0]) / 2\n\ndef main():\n    q = int(input())\n    mf = MedianFinder()\n    out = []\n    for _ in range(q):\n        op = input().split()\n        if op[0] == \"addNum\":\n            mf.addNum(int(op[1]))\n        else:\n            out.append(str(mf.findMedian()))\n    print(*out)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:操作数 q\n随后 q 行:`addNum v` / `findMedian`",
+      "stdout": "每个 findMedian 的结果(空格分隔)",
+      "sample_in": "5\naddNum 1\naddNum 2\nfindMedian\naddNum 3\nfindMedian",
+      "sample_out": "1.5 2.0"
+    }
+  },
+  "300": {
+    "core": "from bisect import bisect_left\n\n\nclass Solution:\n    def lengthOfLIS(self, nums):\n        tails = []\n        for x in nums:\n            i = bisect_left(tails, x)\n            if i == len(tails):\n                tails.append(x)\n            else:\n                tails[i] = x\n        return len(tails)\n",
+    "interview": "from bisect import bisect_left\n\n\nclass Solution:\n    def lengthOfLIS(self, nums):\n        tails = []\n        for x in nums:\n            i = bisect_left(tails, x)\n            if i == len(tails):\n                tails.append(x)\n            else:\n                tails[i] = x\n        return len(tails)\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.lengthOfLIS([10, 9, 2, 5, 3, 7, 101, 18]))   # 4\n    print(s.lengthOfLIS([0, 1, 0, 3, 2, 3]))             # 4\n",
+    "acm": "from bisect import bisect_left\n\n\nclass Solution:\n    def lengthOfLIS(self, nums):\n        tails = []\n        for x in nums:\n            i = bisect_left(tails, x)\n            if i == len(tails):\n                tails.append(x)\n            else:\n                tails[i] = x\n        return len(tails)\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().lengthOfLIS(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "最长严格递增子序列长度",
+      "sample_in": "10 9 2 5 3 7 101 18",
+      "sample_out": "4"
+    }
+  },
+  "322": {
+    "core": "class Solution:\n    def coinChange(self, coins, amount):\n        INF = amount + 1\n        f = [0] + [INF] * amount\n        for x in range(1, amount + 1):\n            for c in coins:\n                if c <= x:\n                    f[x] = min(f[x], f[x - c] + 1)\n        return -1 if f[amount] == INF else f[amount]\n",
+    "interview": "class Solution:\n    def coinChange(self, coins, amount):\n        INF = amount + 1\n        f = [0] + [INF] * amount\n        for x in range(1, amount + 1):\n            for c in coins:\n                if c <= x:\n                    f[x] = min(f[x], f[x - c] + 1)\n        return -1 if f[amount] == INF else f[amount]\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.coinChange([1, 2, 5], 11))   # 3\n    print(s.coinChange([2], 3))          # -1\n",
+    "acm": "class Solution:\n    def coinChange(self, coins, amount):\n        INF = amount + 1\n        f = [0] + [INF] * amount\n        for x in range(1, amount + 1):\n            for c in coins:\n                if c <= x:\n                    f[x] = min(f[x], f[x - c] + 1)\n        return -1 if f[amount] == INF else f[amount]\n\ndef main():\n    coins = list(map(int, input().split()))\n    amount = int(input())\n    print(Solution().coinChange(coins, amount))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:硬币面额(空格分隔)\n第 2 行:总金额 amount",
+      "stdout": "凑出金额的最少硬币数;无解输出 -1",
+      "sample_in": "1 2 5\n11",
+      "sample_out": "3"
+    }
+  },
+  "347": {
+    "core": "import heapq\nfrom collections import Counter\n\n\nclass Solution:\n    def topKFrequent(self, nums, k):\n        cnt = Counter(nums)\n        return [x for x, _ in heapq.nlargest(k, cnt.items(), key=lambda kv: kv[1])]\n",
+    "interview": "import heapq\nfrom collections import Counter\n\n\nclass Solution:\n    def topKFrequent(self, nums, k):\n        cnt = Counter(nums)\n        return [x for x, _ in heapq.nlargest(k, cnt.items(), key=lambda kv: kv[1])]\n\nif __name__ == \"__main__\":\n    print(Solution().topKFrequent([1, 1, 1, 2, 2, 3], 2))   # [1, 2]\n",
+    "acm": "import heapq\nfrom collections import Counter\n\n\nclass Solution:\n    def topKFrequent(self, nums, k):\n        cnt = Counter(nums)\n        return [x for x, _ in heapq.nlargest(k, cnt.items(), key=lambda kv: kv[1])]\n\ndef main():\n    nums = list(map(int, input().split()))\n    k = int(input())\n    print(*Solution().topKFrequent(nums, k))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:数组(空格分隔)\n第 2 行:k",
+      "stdout": "前 k 个高频元素(按频率降序,空格分隔)",
+      "sample_in": "1 1 1 2 2 3\n2",
+      "sample_out": "1 2"
+    }
+  },
+  "394": {
+    "core": "class Solution:\n    def decodeString(self, s):\n        num_stack, str_stack = [], []\n        cur, k = \"\", 0\n        for c in s:\n            if c.isdigit():\n                k = k * 10 + int(c)\n            elif c == \"[\":\n                num_stack.append(k)\n                k = 0\n                str_stack.append(cur)\n                cur = \"\"\n            elif c == \"]\":\n                cur = str_stack.pop() + cur * num_stack.pop()\n            else:\n                cur += c\n        return cur\n",
+    "interview": "class Solution:\n    def decodeString(self, s):\n        num_stack, str_stack = [], []\n        cur, k = \"\", 0\n        for c in s:\n            if c.isdigit():\n                k = k * 10 + int(c)\n            elif c == \"[\":\n                num_stack.append(k)\n                k = 0\n                str_stack.append(cur)\n                cur = \"\"\n            elif c == \"]\":\n                cur = str_stack.pop() + cur * num_stack.pop()\n            else:\n                cur += c\n        return cur\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.decodeString(\"3[a]2[bc]\"))       # aaabcbc\n    print(s.decodeString(\"2[abc]3[cd]ef\"))   # abcabccdcdcdef\n",
+    "acm": "class Solution:\n    def decodeString(self, s):\n        num_stack, str_stack = [], []\n        cur, k = \"\", 0\n        for c in s:\n            if c.isdigit():\n                k = k * 10 + int(c)\n            elif c == \"[\":\n                num_stack.append(k)\n                k = 0\n                str_stack.append(cur)\n                cur = \"\"\n            elif c == \"]\":\n                cur = str_stack.pop() + cur * num_stack.pop()\n            else:\n                cur += c\n        return cur\n\ndef main():\n    s = input()\n    print(Solution().decodeString(s))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:编码字符串 s",
+      "stdout": "解码后的字符串",
+      "sample_in": "3[a]2[bc]",
+      "sample_out": "aaabcbc"
+    }
+  },
+  "416": {
+    "core": "class Solution:\n    def canPartition(self, nums):\n        s = sum(nums)\n        if s & 1:\n            return False\n        target = s // 2\n        f = [False] * (target + 1)\n        f[0] = True\n        for x in nums:\n            for v in range(target, x - 1, -1):\n                f[v] = f[v] or f[v - x]\n        return f[target]\n",
+    "interview": "class Solution:\n    def canPartition(self, nums):\n        s = sum(nums)\n        if s & 1:\n            return False\n        target = s // 2\n        f = [False] * (target + 1)\n        f[0] = True\n        for x in nums:\n            for v in range(target, x - 1, -1):\n                f[v] = f[v] or f[v - x]\n        return f[target]\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.canPartition([1, 5, 11, 5]))   # True\n    print(s.canPartition([1, 2, 3, 5]))    # False\n",
+    "acm": "class Solution:\n    def canPartition(self, nums):\n        s = sum(nums)\n        if s & 1:\n            return False\n        target = s // 2\n        f = [False] * (target + 1)\n        f[0] = True\n        for x in nums:\n            for v in range(target, x - 1, -1):\n                f[v] = f[v] or f[v - x]\n        return f[target]\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(\"true\" if Solution().canPartition(nums) else \"false\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "能否分成两个等和子集(true / false)",
+      "sample_in": "1 5 11 5",
+      "sample_out": "true"
+    }
+  },
+  "437": {
+    "core": "# 二叉树节点 TreeNode 由 LeetCode 平台内置,提交时只需 Solution\n\nfrom collections import defaultdict\n\n\nclass Solution:\n    def pathSum(self, root, targetSum):\n        cnt = defaultdict(int)\n        cnt[0] = 1\n        ans = 0\n\n        def dfs(n, cur):\n            nonlocal ans\n            if not n:\n                return\n            cur += n.val\n            ans += cnt[cur - targetSum]\n            cnt[cur] += 1\n            dfs(n.left, cur)\n            dfs(n.right, cur)\n            cnt[cur] -= 1\n\n        dfs(root, 0)\n        return ans\n",
+    "interview": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nfrom collections import defaultdict\n\n\nclass Solution:\n    def pathSum(self, root, targetSum):\n        cnt = defaultdict(int)\n        cnt[0] = 1\n        ans = 0\n\n        def dfs(n, cur):\n            nonlocal ans\n            if not n:\n                return\n            cur += n.val\n            ans += cnt[cur - targetSum]\n            cnt[cur] += 1\n            dfs(n.left, cur)\n            dfs(n.right, cur)\n            cnt[cur] -= 1\n\n        dfs(root, 0)\n        return ans\n\nif __name__ == \"__main__\":\n    root = build_tree([10, 5, -3, 3, 2, None, 11, 3, -2, None, 1])\n    print(Solution().pathSum(root, 8))   # 3\n",
+    "acm": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nfrom collections import defaultdict\n\n\nclass Solution:\n    def pathSum(self, root, targetSum):\n        cnt = defaultdict(int)\n        cnt[0] = 1\n        ans = 0\n\n        def dfs(n, cur):\n            nonlocal ans\n            if not n:\n                return\n            cur += n.val\n            ans += cnt[cur - targetSum]\n            cnt[cur] += 1\n            dfs(n.left, cur)\n            dfs(n.right, cur)\n            cnt[cur] -= 1\n\n        dfs(root, 0)\n        return ans\n\ndef main():\n    root = parse_tree()\n    target = int(input())\n    print(Solution().pathSum(root, target))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:树层序(null 表示空)\n第 2 行:targetSum",
+      "stdout": "和为 targetSum 的路径数",
+      "sample_in": "10 5 -3 3 2 null 11 3 -2 null 1\n8",
+      "sample_out": "3"
     }
   },
   "438": {
@@ -385,6 +1034,17 @@
       "sample_out": "0 6"
     }
   },
+  "543": {
+    "core": "# 二叉树节点 TreeNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def diameterOfBinaryTree(self, root):\n        self.best = 0\n\n        def depth(n):\n            if not n:\n                return 0\n            l = depth(n.left)\n            r = depth(n.right)\n            self.best = max(self.best, l + r)\n            return 1 + max(l, r)\n\n        depth(root)\n        return self.best\n",
+    "interview": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def diameterOfBinaryTree(self, root):\n        self.best = 0\n\n        def depth(n):\n            if not n:\n                return 0\n            l = depth(n.left)\n            r = depth(n.right)\n            self.best = max(self.best, l + r)\n            return 1 + max(l, r)\n\n        depth(root)\n        return self.best\n\nif __name__ == \"__main__\":\n    print(Solution().diameterOfBinaryTree(build_tree([1, 2, 3, 4, 5])))   # 3\n",
+    "acm": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\n\ndef tree_to_level(root):\n    out, q = [], deque([root])\n    while q:\n        node = q.popleft()\n        if node:\n            out.append(node.val)\n            q.append(node.left)\n            q.append(node.right)\n        else:\n            out.append(None)\n    while out and out[-1] is None:\n        out.pop()\n    return out\n\n\ndef parse_tree():\n    return build_tree([None if t == \"null\" else int(t) for t in input().split()])\n\n\ndef fmt_level(root):\n    return \" \".join(\"null\" if v is None else str(v) for v in tree_to_level(root))\n\nclass Solution:\n    def diameterOfBinaryTree(self, root):\n        self.best = 0\n\n        def depth(n):\n            if not n:\n                return 0\n            l = depth(n.left)\n            r = depth(n.right)\n            self.best = max(self.best, l + r)\n            return 1 + max(l, r)\n\n        depth(root)\n        return self.best\n\ndef main():\n    print(Solution().diameterOfBinaryTree(parse_tree()))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:二叉树层序遍历,空节点用 null(空格分隔)",
+      "stdout": "直径(最长路径的边数)",
+      "sample_in": "1 2 3 4 5",
+      "sample_out": "3"
+    }
+  },
   "560": {
     "core": "from collections import defaultdict\n\n\nclass Solution:\n    def subarraySum(self, nums, k):\n        cnt = defaultdict(int)\n        cnt[0] = 1\n        s = ans = 0\n        for x in nums:\n            s += x\n            ans += cnt[s - k]\n            cnt[s] += 1\n        return ans\n",
     "interview": "from collections import defaultdict\n\n\nclass Solution:\n    def subarraySum(self, nums, k):\n        cnt = defaultdict(int)\n        cnt[0] = 1\n        s = ans = 0\n        for x in nums:\n            s += x\n            ans += cnt[s - k]\n            cnt[s] += 1\n        return ans\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.subarraySum([1, 1, 1], 2))   # 2\n    print(s.subarraySum([1, 2, 3], 3))   # 2\n",
@@ -394,6 +1054,50 @@
       "stdout": "和为 k 的连续子数组个数",
       "sample_in": "1 1 1\n2",
       "sample_out": "2"
+    }
+  },
+  "739": {
+    "core": "class Solution:\n    def dailyTemperatures(self, t):\n        n = len(t)\n        ans = [0] * n\n        st = []\n        for i, x in enumerate(t):\n            while st and t[st[-1]] < x:\n                j = st.pop()\n                ans[j] = i - j\n            st.append(i)\n        return ans\n",
+    "interview": "class Solution:\n    def dailyTemperatures(self, t):\n        n = len(t)\n        ans = [0] * n\n        st = []\n        for i, x in enumerate(t):\n            while st and t[st[-1]] < x:\n                j = st.pop()\n                ans[j] = i - j\n            st.append(i)\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().dailyTemperatures([73, 74, 75, 71, 69, 72, 76, 73]))\n    # [1, 1, 4, 2, 1, 1, 0, 0]\n",
+    "acm": "class Solution:\n    def dailyTemperatures(self, t):\n        n = len(t)\n        ans = [0] * n\n        st = []\n        for i, x in enumerate(t):\n            while st and t[st[-1]] < x:\n                j = st.pop()\n                ans[j] = i - j\n            st.append(i)\n        return ans\n\ndef main():\n    t = list(map(int, input().split()))\n    print(*Solution().dailyTemperatures(t))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:每日温度(空格分隔)",
+      "stdout": "每天需等待的天数(空格分隔)",
+      "sample_in": "73 74 75 71 69 72 76 73",
+      "sample_out": "1 1 4 2 1 1 0 0"
+    }
+  },
+  "763": {
+    "core": "class Solution:\n    def partitionLabels(self, s):\n        last = {c: i for i, c in enumerate(s)}\n        ans, start, end = [], 0, 0\n        for i, c in enumerate(s):\n            end = max(end, last[c])\n            if i == end:\n                ans.append(end - start + 1)\n                start = i + 1\n        return ans\n",
+    "interview": "class Solution:\n    def partitionLabels(self, s):\n        last = {c: i for i, c in enumerate(s)}\n        ans, start, end = [], 0, 0\n        for i, c in enumerate(s):\n            end = max(end, last[c])\n            if i == end:\n                ans.append(end - start + 1)\n                start = i + 1\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().partitionLabels(\"ababcbacadefegdehijhklij\"))   # [9, 7, 8]\n",
+    "acm": "class Solution:\n    def partitionLabels(self, s):\n        last = {c: i for i, c in enumerate(s)}\n        ans, start, end = [], 0, 0\n        for i, c in enumerate(s):\n            end = max(end, last[c])\n            if i == end:\n                ans.append(end - start + 1)\n                start = i + 1\n        return ans\n\ndef main():\n    s = input()\n    print(*Solution().partitionLabels(s))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:字符串 s",
+      "stdout": "各片段长度(空格分隔)",
+      "sample_in": "ababcbacadefegdehijhklij",
+      "sample_out": "9 7 8"
+    }
+  },
+  "994": {
+    "core": "from collections import deque\n\n\nclass Solution:\n    def orangesRotting(self, g):\n        m, n = len(g), len(g[0])\n        q = deque()\n        fresh = 0\n        for i in range(m):\n            for j in range(n):\n                if g[i][j] == 2:\n                    q.append((i, j))\n                elif g[i][j] == 1:\n                    fresh += 1\n        if fresh == 0:\n            return 0\n        minutes = 0\n        while q and fresh:\n            for _ in range(len(q)):\n                x, y = q.popleft()\n                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):\n                    nx, ny = x + dx, y + dy\n                    if 0 <= nx < m and 0 <= ny < n and g[nx][ny] == 1:\n                        g[nx][ny] = 2\n                        fresh -= 1\n                        q.append((nx, ny))\n            minutes += 1\n        return minutes if fresh == 0 else -1\n",
+    "interview": "from collections import deque\n\n\nclass Solution:\n    def orangesRotting(self, g):\n        m, n = len(g), len(g[0])\n        q = deque()\n        fresh = 0\n        for i in range(m):\n            for j in range(n):\n                if g[i][j] == 2:\n                    q.append((i, j))\n                elif g[i][j] == 1:\n                    fresh += 1\n        if fresh == 0:\n            return 0\n        minutes = 0\n        while q and fresh:\n            for _ in range(len(q)):\n                x, y = q.popleft()\n                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):\n                    nx, ny = x + dx, y + dy\n                    if 0 <= nx < m and 0 <= ny < n and g[nx][ny] == 1:\n                        g[nx][ny] = 2\n                        fresh -= 1\n                        q.append((nx, ny))\n            minutes += 1\n        return minutes if fresh == 0 else -1\n\nif __name__ == \"__main__\":\n    print(Solution().orangesRotting([[2, 1, 1], [1, 1, 0], [0, 1, 1]]))   # 4\n",
+    "acm": "from collections import deque\n\n\nclass Solution:\n    def orangesRotting(self, g):\n        m, n = len(g), len(g[0])\n        q = deque()\n        fresh = 0\n        for i in range(m):\n            for j in range(n):\n                if g[i][j] == 2:\n                    q.append((i, j))\n                elif g[i][j] == 1:\n                    fresh += 1\n        if fresh == 0:\n            return 0\n        minutes = 0\n        while q and fresh:\n            for _ in range(len(q)):\n                x, y = q.popleft()\n                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):\n                    nx, ny = x + dx, y + dy\n                    if 0 <= nx < m and 0 <= ny < n and g[nx][ny] == 1:\n                        g[nx][ny] = 2\n                        fresh -= 1\n                        q.append((nx, ny))\n            minutes += 1\n        return minutes if fresh == 0 else -1\n\ndef main():\n    m, n = map(int, input().split())\n    g = [list(map(int, input().split())) for _ in range(m)]\n    print(Solution().orangesRotting(g))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:行数 m 列数 n\n随后 m 行:每行 n 个数(0空/1鲜/2腐,空格分隔)",
+      "stdout": "全部腐烂所需分钟数;无法全烂输出 -1",
+      "sample_in": "3 3\n2 1 1\n1 1 0\n0 1 1",
+      "sample_out": "4"
+    }
+  },
+  "1143": {
+    "core": "class Solution:\n    def longestCommonSubsequence(self, a, b):\n        m, n = len(a), len(b)\n        f = [[0] * (n + 1) for _ in range(m + 1)]\n        for i in range(1, m + 1):\n            for j in range(1, n + 1):\n                if a[i - 1] == b[j - 1]:\n                    f[i][j] = f[i - 1][j - 1] + 1\n                else:\n                    f[i][j] = max(f[i - 1][j], f[i][j - 1])\n        return f[m][n]\n",
+    "interview": "class Solution:\n    def longestCommonSubsequence(self, a, b):\n        m, n = len(a), len(b)\n        f = [[0] * (n + 1) for _ in range(m + 1)]\n        for i in range(1, m + 1):\n            for j in range(1, n + 1):\n                if a[i - 1] == b[j - 1]:\n                    f[i][j] = f[i - 1][j - 1] + 1\n                else:\n                    f[i][j] = max(f[i - 1][j], f[i][j - 1])\n        return f[m][n]\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.longestCommonSubsequence(\"abcde\", \"ace\"))   # 3\n    print(s.longestCommonSubsequence(\"abc\", \"def\"))      # 0\n",
+    "acm": "class Solution:\n    def longestCommonSubsequence(self, a, b):\n        m, n = len(a), len(b)\n        f = [[0] * (n + 1) for _ in range(m + 1)]\n        for i in range(1, m + 1):\n            for j in range(1, n + 1):\n                if a[i - 1] == b[j - 1]:\n                    f[i][j] = f[i - 1][j - 1] + 1\n                else:\n                    f[i][j] = max(f[i - 1][j], f[i][j - 1])\n        return f[m][n]\n\ndef main():\n    a = input()\n    b = input()\n    print(Solution().longestCommonSubsequence(a, b))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:字符串 a\n第 2 行:字符串 b",
+      "stdout": "最长公共子序列长度",
+      "sample_in": "abcde\nace",
+      "sample_out": "3"
     }
   }
 }

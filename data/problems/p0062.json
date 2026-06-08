@@ -36,5 +36,16 @@
       "time": "**O(mn)** DP / **O(min(m,n))** 数学。",
       "space": "**O(min(m,n))** 滚动 / **O(mn)** 二维。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def uniquePaths(self, m, n):\n        f = [1] * n\n        for _ in range(1, m):\n            for j in range(1, n):\n                f[j] += f[j - 1]\n        return f[-1]\n",
+    "interview": "class Solution:\n    def uniquePaths(self, m, n):\n        f = [1] * n\n        for _ in range(1, m):\n            for j in range(1, n):\n                f[j] += f[j - 1]\n        return f[-1]\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.uniquePaths(3, 7))   # 28\n    print(s.uniquePaths(3, 2))   # 3\n",
+    "acm": "class Solution:\n    def uniquePaths(self, m, n):\n        f = [1] * n\n        for _ in range(1, m):\n            for j in range(1, n):\n                f[j] += f[j - 1]\n        return f[-1]\n\ndef main():\n    m, n = map(int, input().split())\n    print(Solution().uniquePaths(m, n))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:行数 m 列数 n(空格分隔)",
+      "stdout": "从左上到右下的不同路径数",
+      "sample_in": "3 7",
+      "sample_out": "28"
+    }
   }
 }

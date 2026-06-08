@@ -43,5 +43,16 @@
       "time": "**O(n)** 滚动 / **O(log n)** 矩阵快幂。",
       "space": "**O(1)**。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def climbStairs(self, n):\n        a, b = 1, 1\n        for _ in range(n):\n            a, b = b, a + b\n        return a\n",
+    "interview": "class Solution:\n    def climbStairs(self, n):\n        a, b = 1, 1\n        for _ in range(n):\n            a, b = b, a + b\n        return a\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.climbStairs(2))   # 2\n    print(s.climbStairs(3))   # 3\n",
+    "acm": "class Solution:\n    def climbStairs(self, n):\n        a, b = 1, 1\n        for _ in range(n):\n            a, b = b, a + b\n        return a\n\ndef main():\n    n = int(input())\n    print(Solution().climbStairs(n))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:台阶数 n",
+      "stdout": "爬到顶的方法数",
+      "sample_in": "3",
+      "sample_out": "3"
+    }
   }
 }

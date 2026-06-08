@@ -26,5 +26,16 @@
       "time": "**O(1)** 全部接口。",
       "space": "**O(n)**。"
     }
+  },
+  "modes": {
+    "core": "# 题目要求设计 O(1) 取最小值的栈,直接实现 MinStack\n\nclass MinStack:\n    def __init__(self):\n        self.stack = []\n        self.mins = []\n\n    def push(self, val):\n        self.stack.append(val)\n        if not self.mins or val <= self.mins[-1]:\n            self.mins.append(val)\n        else:\n            self.mins.append(self.mins[-1])\n\n    def pop(self):\n        self.stack.pop()\n        self.mins.pop()\n\n    def top(self):\n        return self.stack[-1]\n\n    def getMin(self):\n        return self.mins[-1]\n",
+    "interview": "class MinStack:\n    def __init__(self):\n        self.stack = []\n        self.mins = []\n\n    def push(self, val):\n        self.stack.append(val)\n        if not self.mins or val <= self.mins[-1]:\n            self.mins.append(val)\n        else:\n            self.mins.append(self.mins[-1])\n\n    def pop(self):\n        self.stack.pop()\n        self.mins.pop()\n\n    def top(self):\n        return self.stack[-1]\n\n    def getMin(self):\n        return self.mins[-1]\n\nif __name__ == \"__main__\":\n    st = MinStack()\n    st.push(-2)\n    st.push(0)\n    st.push(-3)\n    print(st.getMin())   # -3\n    st.pop()\n    print(st.top())      # 0\n    print(st.getMin())   # -2\n",
+    "acm": "class MinStack:\n    def __init__(self):\n        self.stack = []\n        self.mins = []\n\n    def push(self, val):\n        self.stack.append(val)\n        if not self.mins or val <= self.mins[-1]:\n            self.mins.append(val)\n        else:\n            self.mins.append(self.mins[-1])\n\n    def pop(self):\n        self.stack.pop()\n        self.mins.pop()\n\n    def top(self):\n        return self.stack[-1]\n\n    def getMin(self):\n        return self.mins[-1]\n\ndef main():\n    q = int(input())\n    st = MinStack()\n    out = []\n    for _ in range(q):\n        op = input().split()\n        if op[0] == \"push\":\n            st.push(int(op[1]))\n        elif op[0] == \"pop\":\n            st.pop()\n        elif op[0] == \"top\":\n            out.append(str(st.top()))\n        else:\n            out.append(str(st.getMin()))\n    print(*out)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:操作数 q\n随后 q 行:`push v` / `pop` / `top` / `getMin`",
+      "stdout": "每个 top / getMin 的结果(空格分隔)",
+      "sample_in": "7\npush -2\npush 0\npush -3\ngetMin\npop\ntop\ngetMin",
+      "sample_out": "-3 0 -2"
+    }
   }
 }

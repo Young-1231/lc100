@@ -35,5 +35,16 @@
       "time": "**O(n)**。",
       "space": "**O(n)** —— 最坏全是左括号。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def isValid(self, s):\n        m = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n        st = []\n        for c in s:\n            if c in m:\n                if not st or st.pop() != m[c]:\n                    return False\n            else:\n                st.append(c)\n        return not st\n",
+    "interview": "class Solution:\n    def isValid(self, s):\n        m = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n        st = []\n        for c in s:\n            if c in m:\n                if not st or st.pop() != m[c]:\n                    return False\n            else:\n                st.append(c)\n        return not st\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.isValid(\"()[]{}\"))   # True\n    print(s.isValid(\"(]\"))       # False\n",
+    "acm": "class Solution:\n    def isValid(self, s):\n        m = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n        st = []\n        for c in s:\n            if c in m:\n                if not st or st.pop() != m[c]:\n                    return False\n            else:\n                st.append(c)\n        return not st\n\ndef main():\n    s = input()\n    print(\"true\" if Solution().isValid(s) else \"false\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:括号串 s",
+      "stdout": "是否有效(true / false)",
+      "sample_in": "()[]{}",
+      "sample_out": "true"
+    }
   }
 }

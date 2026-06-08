@@ -43,5 +43,16 @@
       "time": "**O(n)** —— 每个下标入/出栈各 1 次。",
       "space": "**O(n)** —— 栈最坏存全部下标(单调递增数组)。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def largestRectangleArea(self, h):\n        h = [0] + h + [0]\n        st = []\n        ans = 0\n        for i, x in enumerate(h):\n            while st and h[st[-1]] > x:\n                top = st.pop()\n                w = i - st[-1] - 1\n                ans = max(ans, h[top] * w)\n            st.append(i)\n        return ans\n",
+    "interview": "class Solution:\n    def largestRectangleArea(self, h):\n        h = [0] + h + [0]\n        st = []\n        ans = 0\n        for i, x in enumerate(h):\n            while st and h[st[-1]] > x:\n                top = st.pop()\n                w = i - st[-1] - 1\n                ans = max(ans, h[top] * w)\n            st.append(i)\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().largestRectangleArea([2, 1, 5, 6, 2, 3]))   # 10\n",
+    "acm": "class Solution:\n    def largestRectangleArea(self, h):\n        h = [0] + h + [0]\n        st = []\n        ans = 0\n        for i, x in enumerate(h):\n            while st and h[st[-1]] > x:\n                top = st.pop()\n                w = i - st[-1] - 1\n                ans = max(ans, h[top] * w)\n            st.append(i)\n        return ans\n\ndef main():\n    h = list(map(int, input().split()))\n    print(Solution().largestRectangleArea(h))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:柱高数组(空格分隔)",
+      "stdout": "最大矩形面积",
+      "sample_in": "2 1 5 6 2 3",
+      "sample_out": "10"
+    }
   }
 }

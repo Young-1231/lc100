@@ -36,5 +36,16 @@
       "time": "**O(n!)** —— 每行最多 n 个选择。",
       "space": "**O(n)** —— 递归深度 + 三个 set。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def solveNQueens(self, n):\n        cols, diag1, diag2 = set(), set(), set()\n        ans, board = [], [-1] * n\n\n        def render():\n            return [\n                \"\".join(\"Q\" if c == board[r] else \".\" for c in range(n))\n                for r in range(n)\n            ]\n\n        def bt(r):\n            if r == n:\n                ans.append(render())\n                return\n            for c in range(n):\n                if c in cols or (r - c) in diag1 or (r + c) in diag2:\n                    continue\n                board[r] = c\n                cols.add(c)\n                diag1.add(r - c)\n                diag2.add(r + c)\n                bt(r + 1)\n                cols.remove(c)\n                diag1.remove(r - c)\n                diag2.remove(r + c)\n\n        bt(0)\n        return ans\n",
+    "interview": "class Solution:\n    def solveNQueens(self, n):\n        cols, diag1, diag2 = set(), set(), set()\n        ans, board = [], [-1] * n\n\n        def render():\n            return [\n                \"\".join(\"Q\" if c == board[r] else \".\" for c in range(n))\n                for r in range(n)\n            ]\n\n        def bt(r):\n            if r == n:\n                ans.append(render())\n                return\n            for c in range(n):\n                if c in cols or (r - c) in diag1 or (r + c) in diag2:\n                    continue\n                board[r] = c\n                cols.add(c)\n                diag1.add(r - c)\n                diag2.add(r + c)\n                bt(r + 1)\n                cols.remove(c)\n                diag1.remove(r - c)\n                diag2.remove(r + c)\n\n        bt(0)\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().solveNQueens(4))\n    # [['.Q..', '...Q', 'Q...', '..Q.'], ['..Q.', 'Q...', '...Q', '.Q..']]\n",
+    "acm": "class Solution:\n    def solveNQueens(self, n):\n        cols, diag1, diag2 = set(), set(), set()\n        ans, board = [], [-1] * n\n\n        def render():\n            return [\n                \"\".join(\"Q\" if c == board[r] else \".\" for c in range(n))\n                for r in range(n)\n            ]\n\n        def bt(r):\n            if r == n:\n                ans.append(render())\n                return\n            for c in range(n):\n                if c in cols or (r - c) in diag1 or (r + c) in diag2:\n                    continue\n                board[r] = c\n                cols.add(c)\n                diag1.add(r - c)\n                diag2.add(r + c)\n                bt(r + 1)\n                cols.remove(c)\n                diag1.remove(r - c)\n                diag2.remove(r + c)\n\n        bt(0)\n        return ans\n\ndef main():\n    n = int(input())\n    sols = Solution().solveNQueens(n)\n    print(len(sols))\n    for i, board in enumerate(sols):\n        if i:\n            print()\n        for row in board:\n            print(row)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:棋盘大小 n",
+      "stdout": "第 1 行解的个数;随后每个解的 n 行棋盘,解与解之间空行分隔",
+      "sample_in": "4",
+      "sample_out": "2\n.Q..\n...Q\nQ...\n..Q.\n\n..Q.\nQ...\n...Q\n.Q.."
+    }
   }
 }

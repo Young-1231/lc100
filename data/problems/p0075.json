@@ -46,5 +46,16 @@
       "time": "**O(n)** —— 一次扫描。",
       "space": "**O(1)**。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def sortColors(self, nums):\n        lo, mid, hi = 0, 0, len(nums) - 1\n        while mid <= hi:\n            x = nums[mid]\n            if x == 0:\n                nums[lo], nums[mid] = nums[mid], nums[lo]\n                lo += 1\n                mid += 1\n            elif x == 1:\n                mid += 1\n            else:\n                nums[mid], nums[hi] = nums[hi], nums[mid]\n                hi -= 1\n",
+    "interview": "class Solution:\n    def sortColors(self, nums):\n        lo, mid, hi = 0, 0, len(nums) - 1\n        while mid <= hi:\n            x = nums[mid]\n            if x == 0:\n                nums[lo], nums[mid] = nums[mid], nums[lo]\n                lo += 1\n                mid += 1\n            elif x == 1:\n                mid += 1\n            else:\n                nums[mid], nums[hi] = nums[hi], nums[mid]\n                hi -= 1\n\nif __name__ == \"__main__\":\n    nums = [2, 0, 2, 1, 1, 0]\n    Solution().sortColors(nums)\n    print(nums)   # [0, 0, 1, 1, 2, 2]\n",
+    "acm": "class Solution:\n    def sortColors(self, nums):\n        lo, mid, hi = 0, 0, len(nums) - 1\n        while mid <= hi:\n            x = nums[mid]\n            if x == 0:\n                nums[lo], nums[mid] = nums[mid], nums[lo]\n                lo += 1\n                mid += 1\n            elif x == 1:\n                mid += 1\n            else:\n                nums[mid], nums[hi] = nums[hi], nums[mid]\n                hi -= 1\n\ndef main():\n    nums = list(map(int, input().split()))\n    Solution().sortColors(nums)\n    print(*nums)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:颜色数组(0/1/2,空格分隔)",
+      "stdout": "原地排序后的数组(空格分隔)",
+      "sample_in": "2 0 2 1 1 0",
+      "sample_out": "0 0 1 1 2 2"
+    }
   }
 }

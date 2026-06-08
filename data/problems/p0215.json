@@ -52,5 +52,16 @@
       "time": "排序 **O(n log n)** / 堆 **O(n log K)** / 快选 **O(n) 期望**, **O(n²) 最坏**。",
       "space": "**O(K)** / **O(log n)** 快选递归栈。"
     }
+  },
+  "modes": {
+    "core": "import heapq\n\n\nclass Solution:\n    def findKthLargest(self, nums, k):\n        h = []\n        for x in nums:\n            heapq.heappush(h, x)\n            if len(h) > k:\n                heapq.heappop(h)\n        return h[0]\n",
+    "interview": "import heapq\n\n\nclass Solution:\n    def findKthLargest(self, nums, k):\n        h = []\n        for x in nums:\n            heapq.heappush(h, x)\n            if len(h) > k:\n                heapq.heappop(h)\n        return h[0]\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.findKthLargest([3, 2, 1, 5, 6, 4], 2))               # 5\n    print(s.findKthLargest([3, 2, 3, 1, 2, 4, 5, 5, 6], 4))      # 4\n",
+    "acm": "import heapq\n\n\nclass Solution:\n    def findKthLargest(self, nums, k):\n        h = []\n        for x in nums:\n            heapq.heappush(h, x)\n            if len(h) > k:\n                heapq.heappop(h)\n        return h[0]\n\ndef main():\n    nums = list(map(int, input().split()))\n    k = int(input())\n    print(Solution().findKthLargest(nums, k))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:数组(空格分隔)\n第 2 行:k",
+      "stdout": "第 k 大的元素",
+      "sample_in": "3 2 1 5 6 4\n2",
+      "sample_out": "5"
+    }
   }
 }

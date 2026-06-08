@@ -43,5 +43,16 @@
       "time": "**O(n)**。",
       "space": "**O(1)**。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def maxProduct(self, nums):\n        fmax = fmin = ans = nums[0]\n        for x in nums[1:]:\n            cands = (x, fmax * x, fmin * x)\n            fmax = max(cands)\n            fmin = min(cands)\n            ans = max(ans, fmax)\n        return ans\n",
+    "interview": "class Solution:\n    def maxProduct(self, nums):\n        fmax = fmin = ans = nums[0]\n        for x in nums[1:]:\n            cands = (x, fmax * x, fmin * x)\n            fmax = max(cands)\n            fmin = min(cands)\n            ans = max(ans, fmax)\n        return ans\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.maxProduct([2, 3, -2, 4]))   # 6\n    print(s.maxProduct([-2, 0, -1]))     # 0\n",
+    "acm": "class Solution:\n    def maxProduct(self, nums):\n        fmax = fmin = ans = nums[0]\n        for x in nums[1:]:\n            cands = (x, fmax * x, fmin * x)\n            fmax = max(cands)\n            fmin = min(cands)\n            ans = max(ans, fmax)\n        return ans\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().maxProduct(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "最大乘积子数组的积",
+      "sample_in": "2 3 -2 4",
+      "sample_out": "6"
+    }
   }
 }

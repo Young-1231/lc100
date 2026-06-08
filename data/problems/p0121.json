@@ -51,5 +51,16 @@
       "time": "**O(n)**。",
       "space": "**O(1)**。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def maxProfit(self, prices):\n        lo, best = float(\"inf\"), 0\n        for p in prices:\n            lo = min(lo, p)\n            best = max(best, p - lo)\n        return best\n",
+    "interview": "class Solution:\n    def maxProfit(self, prices):\n        lo, best = float(\"inf\"), 0\n        for p in prices:\n            lo = min(lo, p)\n            best = max(best, p - lo)\n        return best\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.maxProfit([7, 1, 5, 3, 6, 4]))   # 5\n    print(s.maxProfit([7, 6, 4, 3, 1]))      # 0\n",
+    "acm": "class Solution:\n    def maxProfit(self, prices):\n        lo, best = float(\"inf\"), 0\n        for p in prices:\n            lo = min(lo, p)\n            best = max(best, p - lo)\n        return best\n\ndef main():\n    prices = list(map(int, input().split()))\n    print(Solution().maxProfit(prices))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:每日股价(空格分隔)",
+      "stdout": "最大利润",
+      "sample_in": "7 1 5 3 6 4",
+      "sample_out": "5"
+    }
   }
 }

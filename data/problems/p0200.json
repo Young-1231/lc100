@@ -53,5 +53,16 @@
       "time": "**O(mn)** —— 每个格子访问 O(1) 次。",
       "space": "**O(mn)** 最坏 DFS 栈深 / **O(min(m,n))** BFS 队列。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def numIslands(self, grid):\n        if not grid:\n            return 0\n        m, n = len(grid), len(grid[0])\n\n        def dfs(i, j):\n            if i < 0 or j < 0 or i >= m or j >= n or grid[i][j] != \"1\":\n                return\n            grid[i][j] = \"0\"\n            dfs(i + 1, j)\n            dfs(i - 1, j)\n            dfs(i, j + 1)\n            dfs(i, j - 1)\n\n        cnt = 0\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] == \"1\":\n                    cnt += 1\n                    dfs(i, j)\n        return cnt\n",
+    "interview": "class Solution:\n    def numIslands(self, grid):\n        if not grid:\n            return 0\n        m, n = len(grid), len(grid[0])\n\n        def dfs(i, j):\n            if i < 0 or j < 0 or i >= m or j >= n or grid[i][j] != \"1\":\n                return\n            grid[i][j] = \"0\"\n            dfs(i + 1, j)\n            dfs(i - 1, j)\n            dfs(i, j + 1)\n            dfs(i, j - 1)\n\n        cnt = 0\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] == \"1\":\n                    cnt += 1\n                    dfs(i, j)\n        return cnt\n\nif __name__ == \"__main__\":\n    grid = [\n        [\"1\", \"1\", \"0\"],\n        [\"1\", \"0\", \"0\"],\n        [\"0\", \"0\", \"1\"],\n    ]\n    print(Solution().numIslands(grid))   # 2\n",
+    "acm": "class Solution:\n    def numIslands(self, grid):\n        if not grid:\n            return 0\n        m, n = len(grid), len(grid[0])\n\n        def dfs(i, j):\n            if i < 0 or j < 0 or i >= m or j >= n or grid[i][j] != \"1\":\n                return\n            grid[i][j] = \"0\"\n            dfs(i + 1, j)\n            dfs(i - 1, j)\n            dfs(i, j + 1)\n            dfs(i, j - 1)\n\n        cnt = 0\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] == \"1\":\n                    cnt += 1\n                    dfs(i, j)\n        return cnt\n\ndef main():\n    m, n = map(int, input().split())\n    grid = [list(input()) for _ in range(m)]\n    print(Solution().numIslands(grid))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:行数 m 列数 n\n随后 m 行:每行 n 个字符(0 / 1,连续无空格)",
+      "stdout": "岛屿数量",
+      "sample_in": "3 3\n110\n100\n001",
+      "sample_out": "2"
+    }
   }
 }

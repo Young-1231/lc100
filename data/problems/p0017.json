@@ -35,5 +35,16 @@
       "time": "**O(4ⁿ · n)** —— 每位最多 4 字母,叶节点 join 字符串 O(n)。",
       "space": "**O(n)** 递归 + path。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def letterCombinations(self, digits):\n        if not digits:\n            return []\n        ans, path = [], []\n\n        def bt(i):\n            if i == len(digits):\n                ans.append(\"\".join(path))\n                return\n            for c in _KEY[digits[i]]:\n                path.append(c)\n                bt(i + 1)\n                path.pop()\n\n        bt(0)\n        return ans\n",
+    "interview": "_KEY = {\n    \"2\": \"abc\", \"3\": \"def\", \"4\": \"ghi\", \"5\": \"jkl\",\n    \"6\": \"mno\", \"7\": \"pqrs\", \"8\": \"tuv\", \"9\": \"wxyz\",\n}\n\nclass Solution:\n    def letterCombinations(self, digits):\n        if not digits:\n            return []\n        ans, path = [], []\n\n        def bt(i):\n            if i == len(digits):\n                ans.append(\"\".join(path))\n                return\n            for c in _KEY[digits[i]]:\n                path.append(c)\n                bt(i + 1)\n                path.pop()\n\n        bt(0)\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().letterCombinations(\"23\"))\n    # ['ad', 'ae', 'af', 'bd', 'be', 'bf', 'cd', 'ce', 'cf']\n",
+    "acm": "_KEY = {\n    \"2\": \"abc\", \"3\": \"def\", \"4\": \"ghi\", \"5\": \"jkl\",\n    \"6\": \"mno\", \"7\": \"pqrs\", \"8\": \"tuv\", \"9\": \"wxyz\",\n}\n\nclass Solution:\n    def letterCombinations(self, digits):\n        if not digits:\n            return []\n        ans, path = [], []\n\n        def bt(i):\n            if i == len(digits):\n                ans.append(\"\".join(path))\n                return\n            for c in _KEY[digits[i]]:\n                path.append(c)\n                bt(i + 1)\n                path.pop()\n\n        bt(0)\n        return ans\n\ndef main():\n    digits = input()\n    print(*Solution().letterCombinations(digits))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数字串 digits(2-9)",
+      "stdout": "全部字母组合(空格分隔)",
+      "sample_in": "23",
+      "sample_out": "ad ae af bd be bf cd ce cf"
+    }
   }
 }

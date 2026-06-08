@@ -44,5 +44,16 @@
       "time": "**O(n log k)** 堆 / **O(n)** 桶。",
       "space": "**O(n + k)**。"
     }
+  },
+  "modes": {
+    "core": "import heapq\nfrom collections import Counter\n\n\nclass Solution:\n    def topKFrequent(self, nums, k):\n        cnt = Counter(nums)\n        return [x for x, _ in heapq.nlargest(k, cnt.items(), key=lambda kv: kv[1])]\n",
+    "interview": "import heapq\nfrom collections import Counter\n\n\nclass Solution:\n    def topKFrequent(self, nums, k):\n        cnt = Counter(nums)\n        return [x for x, _ in heapq.nlargest(k, cnt.items(), key=lambda kv: kv[1])]\n\nif __name__ == \"__main__\":\n    print(Solution().topKFrequent([1, 1, 1, 2, 2, 3], 2))   # [1, 2]\n",
+    "acm": "import heapq\nfrom collections import Counter\n\n\nclass Solution:\n    def topKFrequent(self, nums, k):\n        cnt = Counter(nums)\n        return [x for x, _ in heapq.nlargest(k, cnt.items(), key=lambda kv: kv[1])]\n\ndef main():\n    nums = list(map(int, input().split()))\n    k = int(input())\n    print(*Solution().topKFrequent(nums, k))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:数组(空格分隔)\n第 2 行:k",
+      "stdout": "前 k 个高频元素(按频率降序,空格分隔)",
+      "sample_in": "1 1 1 2 2 3\n2",
+      "sample_out": "1 2"
+    }
   }
 }

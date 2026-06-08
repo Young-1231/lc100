@@ -36,5 +36,16 @@
       "time": "**O(C(2n,n)/(n+1) · n)** —— Catalan 个解,每个长度 2n。",
       "space": "**O(n)** —— path 与栈。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def generateParenthesis(self, n):\n        ans, path = [], []\n\n        def bt(left, right):\n            if not left and not right:\n                ans.append(\"\".join(path))\n                return\n            if left > 0:\n                path.append(\"(\")\n                bt(left - 1, right)\n                path.pop()\n            if right > left:\n                path.append(\")\")\n                bt(left, right - 1)\n                path.pop()\n\n        bt(n, n)\n        return ans\n",
+    "interview": "class Solution:\n    def generateParenthesis(self, n):\n        ans, path = [], []\n\n        def bt(left, right):\n            if not left and not right:\n                ans.append(\"\".join(path))\n                return\n            if left > 0:\n                path.append(\"(\")\n                bt(left - 1, right)\n                path.pop()\n            if right > left:\n                path.append(\")\")\n                bt(left, right - 1)\n                path.pop()\n\n        bt(n, n)\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().generateParenthesis(3))\n    # ['((()))', '(()())', '(())()', '()(())', '()()()']\n",
+    "acm": "class Solution:\n    def generateParenthesis(self, n):\n        ans, path = [], []\n\n        def bt(left, right):\n            if not left and not right:\n                ans.append(\"\".join(path))\n                return\n            if left > 0:\n                path.append(\"(\")\n                bt(left - 1, right)\n                path.pop()\n            if right > left:\n                path.append(\")\")\n                bt(left, right - 1)\n                path.pop()\n\n        bt(n, n)\n        return ans\n\ndef main():\n    n = int(input())\n    print(*Solution().generateParenthesis(n))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:括号对数 n",
+      "stdout": "全部合法括号串(空格分隔)",
+      "sample_in": "3",
+      "sample_out": "((())) (()()) (())() ()(()) ()()()"
+    }
   }
 }

@@ -53,5 +53,16 @@
       "time": "**O(n)**。",
       "space": "**O(1)**。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def majorityElement(self, nums):\n        cand, cnt = 0, 0\n        for x in nums:\n            if cnt == 0:\n                cand = x\n            cnt += 1 if x == cand else -1\n        return cand\n",
+    "interview": "class Solution:\n    def majorityElement(self, nums):\n        cand, cnt = 0, 0\n        for x in nums:\n            if cnt == 0:\n                cand = x\n            cnt += 1 if x == cand else -1\n        return cand\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.majorityElement([3, 2, 3]))               # 3\n    print(s.majorityElement([2, 2, 1, 1, 1, 2, 2]))   # 2\n",
+    "acm": "class Solution:\n    def majorityElement(self, nums):\n        cand, cnt = 0, 0\n        for x in nums:\n            if cnt == 0:\n                cand = x\n            cnt += 1 if x == cand else -1\n        return cand\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().majorityElement(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "多数元素(出现次数 > n/2)",
+      "sample_in": "2 2 1 1 1 2 2",
+      "sample_out": "2"
+    }
   }
 }

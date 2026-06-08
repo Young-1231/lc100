@@ -35,5 +35,16 @@
       "time": "**O(mn · 4^L)** —— 起点 mn,每步 4 方向,深度 L = len(word)。",
       "space": "**O(L)** —— 递归栈。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def exist(self, board, word):\n        m, n = len(board), len(board[0])\n\n        def dfs(i, j, k):\n            if k == len(word):\n                return True\n            if i < 0 or j < 0 or i >= m or j >= n or board[i][j] != word[k]:\n                return False\n            board[i][j] = \"#\"\n            ok = (dfs(i + 1, j, k + 1) or dfs(i - 1, j, k + 1)\n                  or dfs(i, j + 1, k + 1) or dfs(i, j - 1, k + 1))\n            board[i][j] = word[k]\n            return ok\n\n        return any(dfs(i, j, 0) for i in range(m) for j in range(n))\n",
+    "interview": "class Solution:\n    def exist(self, board, word):\n        m, n = len(board), len(board[0])\n\n        def dfs(i, j, k):\n            if k == len(word):\n                return True\n            if i < 0 or j < 0 or i >= m or j >= n or board[i][j] != word[k]:\n                return False\n            board[i][j] = \"#\"\n            ok = (dfs(i + 1, j, k + 1) or dfs(i - 1, j, k + 1)\n                  or dfs(i, j + 1, k + 1) or dfs(i, j - 1, k + 1))\n            board[i][j] = word[k]\n            return ok\n\n        return any(dfs(i, j, 0) for i in range(m) for j in range(n))\n\nif __name__ == \"__main__\":\n    board = [\n        [\"A\", \"B\", \"C\", \"E\"],\n        [\"S\", \"F\", \"C\", \"S\"],\n        [\"A\", \"D\", \"E\", \"E\"],\n    ]\n    print(Solution().exist(board, \"ABCCED\"))   # True\n",
+    "acm": "class Solution:\n    def exist(self, board, word):\n        m, n = len(board), len(board[0])\n\n        def dfs(i, j, k):\n            if k == len(word):\n                return True\n            if i < 0 or j < 0 or i >= m or j >= n or board[i][j] != word[k]:\n                return False\n            board[i][j] = \"#\"\n            ok = (dfs(i + 1, j, k + 1) or dfs(i - 1, j, k + 1)\n                  or dfs(i, j + 1, k + 1) or dfs(i, j - 1, k + 1))\n            board[i][j] = word[k]\n            return ok\n\n        return any(dfs(i, j, 0) for i in range(m) for j in range(n))\n\ndef main():\n    m, n = map(int, input().split())\n    board = [list(input()) for _ in range(m)]\n    word = input()\n    print(\"true\" if Solution().exist(board, word) else \"false\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:行数 m 列数 n\n随后 m 行:每行 n 个字符(连续无空格)\n最后一行:word",
+      "stdout": "是否存在该单词(true / false)",
+      "sample_in": "3 4\nABCE\nSFCS\nADEE\nABCCED",
+      "sample_out": "true"
+    }
   }
 }

@@ -43,5 +43,16 @@
       "time": "**O(V + E)** —— 每个节点入/出队一次,每条边访问一次。",
       "space": "**O(V + E)** —— 邻接表 + 队列/染色数组。"
     }
+  },
+  "modes": {
+    "core": "from collections import defaultdict, deque\n\n\nclass Solution:\n    def canFinish(self, numCourses, prerequisites):\n        g = defaultdict(list)\n        indeg = [0] * numCourses\n        for a, b in prerequisites:\n            g[b].append(a)\n            indeg[a] += 1\n        q = deque(i for i, d in enumerate(indeg) if d == 0)\n        seen = 0\n        while q:\n            u = q.popleft()\n            seen += 1\n            for v in g[u]:\n                indeg[v] -= 1\n                if indeg[v] == 0:\n                    q.append(v)\n        return seen == numCourses\n",
+    "interview": "from collections import defaultdict, deque\n\n\nclass Solution:\n    def canFinish(self, numCourses, prerequisites):\n        g = defaultdict(list)\n        indeg = [0] * numCourses\n        for a, b in prerequisites:\n            g[b].append(a)\n            indeg[a] += 1\n        q = deque(i for i, d in enumerate(indeg) if d == 0)\n        seen = 0\n        while q:\n            u = q.popleft()\n            seen += 1\n            for v in g[u]:\n                indeg[v] -= 1\n                if indeg[v] == 0:\n                    q.append(v)\n        return seen == numCourses\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.canFinish(2, [[1, 0]]))           # True\n    print(s.canFinish(2, [[1, 0], [0, 1]]))   # False\n",
+    "acm": "from collections import defaultdict, deque\n\n\nclass Solution:\n    def canFinish(self, numCourses, prerequisites):\n        g = defaultdict(list)\n        indeg = [0] * numCourses\n        for a, b in prerequisites:\n            g[b].append(a)\n            indeg[a] += 1\n        q = deque(i for i, d in enumerate(indeg) if d == 0)\n        seen = 0\n        while q:\n            u = q.popleft()\n            seen += 1\n            for v in g[u]:\n                indeg[v] -= 1\n                if indeg[v] == 0:\n                    q.append(v)\n        return seen == numCourses\n\ndef main():\n    num = int(input())\n    e = int(input())\n    prer = [list(map(int, input().split())) for _ in range(e)]\n    print(\"true\" if Solution().canFinish(num, prer) else \"false\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:课程数 numCourses\n第 2 行:先修关系数 e\n随后 e 行:每行 `a b`(学 a 前需先学 b)",
+      "stdout": "能否修完所有课程(true / false)",
+      "sample_in": "2\n1\n1 0",
+      "sample_out": "true"
+    }
   }
 }

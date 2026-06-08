@@ -35,5 +35,16 @@
       "time": "**O(n)**。",
       "space": "**O(n)**。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def dailyTemperatures(self, t):\n        n = len(t)\n        ans = [0] * n\n        st = []\n        for i, x in enumerate(t):\n            while st and t[st[-1]] < x:\n                j = st.pop()\n                ans[j] = i - j\n            st.append(i)\n        return ans\n",
+    "interview": "class Solution:\n    def dailyTemperatures(self, t):\n        n = len(t)\n        ans = [0] * n\n        st = []\n        for i, x in enumerate(t):\n            while st and t[st[-1]] < x:\n                j = st.pop()\n                ans[j] = i - j\n            st.append(i)\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().dailyTemperatures([73, 74, 75, 71, 69, 72, 76, 73]))\n    # [1, 1, 4, 2, 1, 1, 0, 0]\n",
+    "acm": "class Solution:\n    def dailyTemperatures(self, t):\n        n = len(t)\n        ans = [0] * n\n        st = []\n        for i, x in enumerate(t):\n            while st and t[st[-1]] < x:\n                j = st.pop()\n                ans[j] = i - j\n            st.append(i)\n        return ans\n\ndef main():\n    t = list(map(int, input().split()))\n    print(*Solution().dailyTemperatures(t))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:每日温度(空格分隔)",
+      "stdout": "每天需等待的天数(空格分隔)",
+      "sample_in": "73 74 75 71 69 72 76 73",
+      "sample_out": "1 1 4 2 1 1 0 0"
+    }
   }
 }

@@ -53,5 +53,16 @@
       "time": "**O(n · 2ⁿ)** —— 2ⁿ 个子集,每个长度平均 n/2,构造各 O(n)。",
       "space": "**O(n · 2ⁿ)** 输出 / **O(n)** 不计输出。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def subsets(self, nums):\n        out = [[]]\n        for x in nums:\n            out += [s + [x] for s in out]\n        return out\n",
+    "interview": "class Solution:\n    def subsets(self, nums):\n        out = [[]]\n        for x in nums:\n            out += [s + [x] for s in out]\n        return out\n\nif __name__ == \"__main__\":\n    print(Solution().subsets([1, 2, 3]))\n    # [[], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3]]\n",
+    "acm": "class Solution:\n    def subsets(self, nums):\n        out = [[]]\n        for x in nums:\n            out += [s + [x] for s in out]\n        return out\n\ndef main():\n    nums = list(map(int, input().split()))\n    for s in Solution().subsets(nums):\n        print(*s)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "全部子集,每个一行(空集为空行,空格分隔)",
+      "sample_in": "1 2 3",
+      "sample_out": "\n1\n2\n1 2\n3\n1 3\n2 3\n1 2 3"
+    }
   }
 }

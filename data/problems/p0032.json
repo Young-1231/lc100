@@ -52,5 +52,16 @@
       "time": "**O(n)**。",
       "space": "**O(n)**。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def longestValidParentheses(self, s):\n        st = [-1]\n        ans = 0\n        for i, c in enumerate(s):\n            if c == \"(\":\n                st.append(i)\n            else:\n                st.pop()\n                if not st:\n                    st.append(i)\n                else:\n                    ans = max(ans, i - st[-1])\n        return ans\n",
+    "interview": "class Solution:\n    def longestValidParentheses(self, s):\n        st = [-1]\n        ans = 0\n        for i, c in enumerate(s):\n            if c == \"(\":\n                st.append(i)\n            else:\n                st.pop()\n                if not st:\n                    st.append(i)\n                else:\n                    ans = max(ans, i - st[-1])\n        return ans\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.longestValidParentheses(\"(()\"))      # 2\n    print(s.longestValidParentheses(\")()())\"))   # 4\n",
+    "acm": "class Solution:\n    def longestValidParentheses(self, s):\n        st = [-1]\n        ans = 0\n        for i, c in enumerate(s):\n            if c == \"(\":\n                st.append(i)\n            else:\n                st.pop()\n                if not st:\n                    st.append(i)\n                else:\n                    ans = max(ans, i - st[-1])\n        return ans\n\ndef main():\n    s = input()\n    print(Solution().longestValidParentheses(s))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:括号串 s",
+      "stdout": "最长有效括号子串长度",
+      "sample_in": "(()",
+      "sample_out": "2"
+    }
   }
 }

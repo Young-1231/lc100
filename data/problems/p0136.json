@@ -48,5 +48,16 @@
       "time": "**O(n)**。",
       "space": "**O(1)**。"
     }
+  },
+  "modes": {
+    "core": "from functools import reduce\nfrom operator import xor\n\n\nclass Solution:\n    def singleNumber(self, nums):\n        return reduce(xor, nums)\n",
+    "interview": "from functools import reduce\nfrom operator import xor\n\n\nclass Solution:\n    def singleNumber(self, nums):\n        return reduce(xor, nums)\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.singleNumber([2, 2, 1]))         # 1\n    print(s.singleNumber([4, 1, 2, 1, 2]))   # 4\n",
+    "acm": "from functools import reduce\nfrom operator import xor\n\n\nclass Solution:\n    def singleNumber(self, nums):\n        return reduce(xor, nums)\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().singleNumber(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔,只有一个数出现一次)",
+      "stdout": "只出现一次的数",
+      "sample_in": "4 1 2 1 2",
+      "sample_out": "4"
+    }
   }
 }

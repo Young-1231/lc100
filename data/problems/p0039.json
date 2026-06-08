@@ -35,5 +35,16 @@
       "time": "**O(N^(target/min))** —— 状态空间随 target 与最小币值 ratio 增长。",
       "space": "**O(target/min)** —— 递归深度。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def combinationSum(self, candidates, target):\n        candidates.sort()\n        ans, path = [], []\n\n        def bt(start, remain):\n            if remain == 0:\n                ans.append(path[:])\n                return\n            for i in range(start, len(candidates)):\n                x = candidates[i]\n                if x > remain:\n                    break\n                path.append(x)\n                bt(i, remain - x)\n                path.pop()\n\n        bt(0, target)\n        return ans\n",
+    "interview": "class Solution:\n    def combinationSum(self, candidates, target):\n        candidates.sort()\n        ans, path = [], []\n\n        def bt(start, remain):\n            if remain == 0:\n                ans.append(path[:])\n                return\n            for i in range(start, len(candidates)):\n                x = candidates[i]\n                if x > remain:\n                    break\n                path.append(x)\n                bt(i, remain - x)\n                path.pop()\n\n        bt(0, target)\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().combinationSum([2, 3, 6, 7], 7))   # [[2, 2, 3], [7]]\n",
+    "acm": "class Solution:\n    def combinationSum(self, candidates, target):\n        candidates.sort()\n        ans, path = [], []\n\n        def bt(start, remain):\n            if remain == 0:\n                ans.append(path[:])\n                return\n            for i in range(start, len(candidates)):\n                x = candidates[i]\n                if x > remain:\n                    break\n                path.append(x)\n                bt(i, remain - x)\n                path.pop()\n\n        bt(0, target)\n        return ans\n\ndef main():\n    candidates = list(map(int, input().split()))\n    target = int(input())\n    for comb in Solution().combinationSum(candidates, target):\n        print(*comb)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:候选数(空格分隔)\n第 2 行:target",
+      "stdout": "全部组合,每个一行(空格分隔)",
+      "sample_in": "2 3 6 7\n7",
+      "sample_out": "2 2 3\n7"
+    }
   }
 }

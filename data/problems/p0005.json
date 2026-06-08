@@ -53,5 +53,16 @@
       "time": "**O(n²)** 中心扩展 / **O(n)** Manacher。",
       "space": "**O(1)** / **O(n)**。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def longestPalindrome(self, s):\n        if not s:\n            return \"\"\n\n        def expand(l, r):\n            while l >= 0 and r < len(s) and s[l] == s[r]:\n                l -= 1\n                r += 1\n            return l + 1, r - 1\n\n        bl, br = 0, 0\n        for i in range(len(s)):\n            for l0, r0 in (expand(i, i), expand(i, i + 1)):\n                if r0 - l0 > br - bl:\n                    bl, br = l0, r0\n        return s[bl:br + 1]\n",
+    "interview": "class Solution:\n    def longestPalindrome(self, s):\n        if not s:\n            return \"\"\n\n        def expand(l, r):\n            while l >= 0 and r < len(s) and s[l] == s[r]:\n                l -= 1\n                r += 1\n            return l + 1, r - 1\n\n        bl, br = 0, 0\n        for i in range(len(s)):\n            for l0, r0 in (expand(i, i), expand(i, i + 1)):\n                if r0 - l0 > br - bl:\n                    bl, br = l0, r0\n        return s[bl:br + 1]\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.longestPalindrome(\"babad\"))   # bab\n    print(s.longestPalindrome(\"cbbd\"))    # bb\n",
+    "acm": "class Solution:\n    def longestPalindrome(self, s):\n        if not s:\n            return \"\"\n\n        def expand(l, r):\n            while l >= 0 and r < len(s) and s[l] == s[r]:\n                l -= 1\n                r += 1\n            return l + 1, r - 1\n\n        bl, br = 0, 0\n        for i in range(len(s)):\n            for l0, r0 in (expand(i, i), expand(i, i + 1)):\n                if r0 - l0 > br - bl:\n                    bl, br = l0, r0\n        return s[bl:br + 1]\n\ndef main():\n    s = input()\n    print(Solution().longestPalindrome(s))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:字符串 s",
+      "stdout": "最长回文子串",
+      "sample_in": "babad",
+      "sample_out": "bab"
+    }
   }
 }

@@ -44,5 +44,16 @@
       "time": "**O(n log n)** —— 每元素一次 bisect。",
       "space": "**O(n)** —— tails 最坏全部递增。"
     }
+  },
+  "modes": {
+    "core": "from bisect import bisect_left\n\n\nclass Solution:\n    def lengthOfLIS(self, nums):\n        tails = []\n        for x in nums:\n            i = bisect_left(tails, x)\n            if i == len(tails):\n                tails.append(x)\n            else:\n                tails[i] = x\n        return len(tails)\n",
+    "interview": "from bisect import bisect_left\n\n\nclass Solution:\n    def lengthOfLIS(self, nums):\n        tails = []\n        for x in nums:\n            i = bisect_left(tails, x)\n            if i == len(tails):\n                tails.append(x)\n            else:\n                tails[i] = x\n        return len(tails)\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.lengthOfLIS([10, 9, 2, 5, 3, 7, 101, 18]))   # 4\n    print(s.lengthOfLIS([0, 1, 0, 3, 2, 3]))             # 4\n",
+    "acm": "from bisect import bisect_left\n\n\nclass Solution:\n    def lengthOfLIS(self, nums):\n        tails = []\n        for x in nums:\n            i = bisect_left(tails, x)\n            if i == len(tails):\n                tails.append(x)\n            else:\n                tails[i] = x\n        return len(tails)\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().lengthOfLIS(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "最长严格递增子序列长度",
+      "sample_in": "10 9 2 5 3 7 101 18",
+      "sample_out": "4"
+    }
   }
 }

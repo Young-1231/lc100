@@ -35,5 +35,16 @@
       "time": "**O(n + 输出长度)**。",
       "space": "**O(n)** —— 两栈与构造串。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def decodeString(self, s):\n        num_stack, str_stack = [], []\n        cur, k = \"\", 0\n        for c in s:\n            if c.isdigit():\n                k = k * 10 + int(c)\n            elif c == \"[\":\n                num_stack.append(k)\n                k = 0\n                str_stack.append(cur)\n                cur = \"\"\n            elif c == \"]\":\n                cur = str_stack.pop() + cur * num_stack.pop()\n            else:\n                cur += c\n        return cur\n",
+    "interview": "class Solution:\n    def decodeString(self, s):\n        num_stack, str_stack = [], []\n        cur, k = \"\", 0\n        for c in s:\n            if c.isdigit():\n                k = k * 10 + int(c)\n            elif c == \"[\":\n                num_stack.append(k)\n                k = 0\n                str_stack.append(cur)\n                cur = \"\"\n            elif c == \"]\":\n                cur = str_stack.pop() + cur * num_stack.pop()\n            else:\n                cur += c\n        return cur\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.decodeString(\"3[a]2[bc]\"))       # aaabcbc\n    print(s.decodeString(\"2[abc]3[cd]ef\"))   # abcabccdcdcdef\n",
+    "acm": "class Solution:\n    def decodeString(self, s):\n        num_stack, str_stack = [], []\n        cur, k = \"\", 0\n        for c in s:\n            if c.isdigit():\n                k = k * 10 + int(c)\n            elif c == \"[\":\n                num_stack.append(k)\n                k = 0\n                str_stack.append(cur)\n                cur = \"\"\n            elif c == \"]\":\n                cur = str_stack.pop() + cur * num_stack.pop()\n            else:\n                cur += c\n        return cur\n\ndef main():\n    s = input()\n    print(Solution().decodeString(s))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:编码字符串 s",
+      "stdout": "解码后的字符串",
+      "sample_in": "3[a]2[bc]",
+      "sample_out": "aaabcbc"
+    }
   }
 }

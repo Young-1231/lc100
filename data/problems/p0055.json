@@ -43,5 +43,16 @@
       "time": "**O(n)**。",
       "space": "**O(1)**。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def canJump(self, nums):\n        reach = 0\n        for i, x in enumerate(nums):\n            if i > reach:\n                return False\n            reach = max(reach, i + x)\n        return True\n",
+    "interview": "class Solution:\n    def canJump(self, nums):\n        reach = 0\n        for i, x in enumerate(nums):\n            if i > reach:\n                return False\n            reach = max(reach, i + x)\n        return True\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.canJump([2, 3, 1, 1, 4]))   # True\n    print(s.canJump([3, 2, 1, 0, 4]))   # False\n",
+    "acm": "class Solution:\n    def canJump(self, nums):\n        reach = 0\n        for i, x in enumerate(nums):\n            if i > reach:\n                return False\n            reach = max(reach, i + x)\n        return True\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(\"true\" if Solution().canJump(nums) else \"false\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:跳跃数组(空格分隔)",
+      "stdout": "能否到达终点(true / false)",
+      "sample_in": "2 3 1 1 4",
+      "sample_out": "true"
+    }
   }
 }

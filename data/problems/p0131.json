@@ -35,5 +35,16 @@
       "time": "**O(n · 2ⁿ)** —— 最坏方案数 × 每个长度。",
       "space": "**O(n²)** DP / **O(n)** 递归。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def partition(self, s):\n        ans, path = [], []\n        n = len(s)\n\n        def is_pal(l, r):\n            while l < r:\n                if s[l] != s[r]:\n                    return False\n                l += 1\n                r -= 1\n            return True\n\n        def bt(start):\n            if start == n:\n                ans.append(path[:])\n                return\n            for end in range(start, n):\n                if is_pal(start, end):\n                    path.append(s[start:end + 1])\n                    bt(end + 1)\n                    path.pop()\n\n        bt(0)\n        return ans\n",
+    "interview": "class Solution:\n    def partition(self, s):\n        ans, path = [], []\n        n = len(s)\n\n        def is_pal(l, r):\n            while l < r:\n                if s[l] != s[r]:\n                    return False\n                l += 1\n                r -= 1\n            return True\n\n        def bt(start):\n            if start == n:\n                ans.append(path[:])\n                return\n            for end in range(start, n):\n                if is_pal(start, end):\n                    path.append(s[start:end + 1])\n                    bt(end + 1)\n                    path.pop()\n\n        bt(0)\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().partition(\"aab\"))   # [['a', 'a', 'b'], ['aa', 'b']]\n",
+    "acm": "class Solution:\n    def partition(self, s):\n        ans, path = [], []\n        n = len(s)\n\n        def is_pal(l, r):\n            while l < r:\n                if s[l] != s[r]:\n                    return False\n                l += 1\n                r -= 1\n            return True\n\n        def bt(start):\n            if start == n:\n                ans.append(path[:])\n                return\n            for end in range(start, n):\n                if is_pal(start, end):\n                    path.append(s[start:end + 1])\n                    bt(end + 1)\n                    path.pop()\n\n        bt(0)\n        return ans\n\ndef main():\n    s = input()\n    for part in Solution().partition(s):\n        print(*part)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:字符串 s",
+      "stdout": "全部回文分割方案,每个一行(子串空格分隔)",
+      "sample_in": "aab",
+      "sample_out": "a a b\naa b"
+    }
   }
 }

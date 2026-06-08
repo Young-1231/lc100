@@ -27,5 +27,16 @@
       "time": "**O(L)** 每次 insert/search,L 为字符串长度。",
       "space": "**O(N · |Σ|)** 最坏 —— N 总字符数。"
     }
+  },
+  "modes": {
+    "core": "# 题目要求设计前缀树,直接实现 Trie\n\nclass Trie:\n    def __init__(self):\n        self.children = {}\n        self.end = False\n\n    def insert(self, word):\n        node = self\n        for c in word:\n            if c not in node.children:\n                node.children[c] = Trie()\n            node = node.children[c]\n        node.end = True\n\n    def _find(self, word):\n        node = self\n        for c in word:\n            if c not in node.children:\n                return None\n            node = node.children[c]\n        return node\n\n    def search(self, word):\n        node = self._find(word)\n        return node is not None and node.end\n\n    def startsWith(self, prefix):\n        return self._find(prefix) is not None\n",
+    "interview": "class Trie:\n    def __init__(self):\n        self.children = {}\n        self.end = False\n\n    def insert(self, word):\n        node = self\n        for c in word:\n            if c not in node.children:\n                node.children[c] = Trie()\n            node = node.children[c]\n        node.end = True\n\n    def _find(self, word):\n        node = self\n        for c in word:\n            if c not in node.children:\n                return None\n            node = node.children[c]\n        return node\n\n    def search(self, word):\n        node = self._find(word)\n        return node is not None and node.end\n\n    def startsWith(self, prefix):\n        return self._find(prefix) is not None\n\nif __name__ == \"__main__\":\n    t = Trie()\n    t.insert(\"apple\")\n    print(t.search(\"apple\"))      # True\n    print(t.search(\"app\"))        # False\n    print(t.startsWith(\"app\"))    # True\n    t.insert(\"app\")\n    print(t.search(\"app\"))        # True\n",
+    "acm": "class Trie:\n    def __init__(self):\n        self.children = {}\n        self.end = False\n\n    def insert(self, word):\n        node = self\n        for c in word:\n            if c not in node.children:\n                node.children[c] = Trie()\n            node = node.children[c]\n        node.end = True\n\n    def _find(self, word):\n        node = self\n        for c in word:\n            if c not in node.children:\n                return None\n            node = node.children[c]\n        return node\n\n    def search(self, word):\n        node = self._find(word)\n        return node is not None and node.end\n\n    def startsWith(self, prefix):\n        return self._find(prefix) is not None\n\ndef main():\n    q = int(input())\n    t = Trie()\n    out = []\n    for _ in range(q):\n        op = input().split()\n        if op[0] == \"insert\":\n            t.insert(op[1])\n        elif op[0] == \"search\":\n            out.append(\"true\" if t.search(op[1]) else \"false\")\n        else:\n            out.append(\"true\" if t.startsWith(op[1]) else \"false\")\n    print(*out)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:操作数 q\n随后 q 行:`insert w` / `search w` / `startsWith p`",
+      "stdout": "每个 search / startsWith 的结果(true / false,空格分隔)",
+      "sample_in": "5\ninsert apple\nsearch apple\nsearch app\nstartsWith app\ninsert app",
+      "sample_out": "true false true"
+    }
   }
 }

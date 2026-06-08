@@ -35,5 +35,16 @@
       "time": "**O(log n)**。",
       "space": "**O(1)**。"
     }
+  },
+  "modes": {
+    "core": "from bisect import bisect_left, bisect_right\n\n\nclass Solution:\n    def searchRange(self, nums, target):\n        l = bisect_left(nums, target)\n        if l == len(nums) or nums[l] != target:\n            return [-1, -1]\n        return [l, bisect_right(nums, target) - 1]\n",
+    "interview": "from bisect import bisect_left, bisect_right\n\n\nclass Solution:\n    def searchRange(self, nums, target):\n        l = bisect_left(nums, target)\n        if l == len(nums) or nums[l] != target:\n            return [-1, -1]\n        return [l, bisect_right(nums, target) - 1]\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.searchRange([5, 7, 7, 8, 8, 10], 8))   # [3, 4]\n    print(s.searchRange([5, 7, 7, 8, 8, 10], 6))   # [-1, -1]\n",
+    "acm": "from bisect import bisect_left, bisect_right\n\n\nclass Solution:\n    def searchRange(self, nums, target):\n        l = bisect_left(nums, target)\n        if l == len(nums) or nums[l] != target:\n            return [-1, -1]\n        return [l, bisect_right(nums, target) - 1]\n\ndef main():\n    nums = list(map(int, input().split()))\n    target = int(input())\n    print(*Solution().searchRange(nums, target))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:升序数组(空格分隔)\n第 2 行:target",
+      "stdout": "首末位置下标(空格分隔)",
+      "sample_in": "5 7 7 8 8 10\n8",
+      "sample_out": "3 4"
+    }
   }
 }

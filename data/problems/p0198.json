@@ -43,5 +43,16 @@
       "time": "**O(n)**。",
       "space": "**O(1)**。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def rob(self, nums):\n        a = b = 0\n        for x in nums:\n            a, b = b, max(b, a + x)\n        return b\n",
+    "interview": "class Solution:\n    def rob(self, nums):\n        a = b = 0\n        for x in nums:\n            a, b = b, max(b, a + x)\n        return b\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.rob([1, 2, 3, 1]))      # 4\n    print(s.rob([2, 7, 9, 3, 1]))   # 12\n",
+    "acm": "class Solution:\n    def rob(self, nums):\n        a = b = 0\n        for x in nums:\n            a, b = b, max(b, a + x)\n        return b\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().rob(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:每户金额(空格分隔)",
+      "stdout": "最大偷窃金额",
+      "sample_in": "2 7 9 3 1",
+      "sample_out": "12"
+    }
   }
 }

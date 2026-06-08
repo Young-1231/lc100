@@ -36,5 +36,16 @@
       "time": "**O(log n)**。",
       "space": "**O(1)**。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def findMin(self, nums):\n        l, r = 0, len(nums) - 1\n        while l < r:\n            m = (l + r) // 2\n            if nums[m] > nums[r]:\n                l = m + 1\n            else:\n                r = m\n        return nums[l]\n",
+    "interview": "class Solution:\n    def findMin(self, nums):\n        l, r = 0, len(nums) - 1\n        while l < r:\n            m = (l + r) // 2\n            if nums[m] > nums[r]:\n                l = m + 1\n            else:\n                r = m\n        return nums[l]\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.findMin([3, 4, 5, 1, 2]))         # 1\n    print(s.findMin([4, 5, 6, 7, 0, 1, 2]))   # 0\n",
+    "acm": "class Solution:\n    def findMin(self, nums):\n        l, r = 0, len(nums) - 1\n        while l < r:\n            m = (l + r) // 2\n            if nums[m] > nums[r]:\n                l = m + 1\n            else:\n                r = m\n        return nums[l]\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().findMin(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:旋转排序数组(空格分隔)",
+      "stdout": "最小值",
+      "sample_in": "3 4 5 1 2",
+      "sample_out": "1"
+    }
   }
 }

@@ -36,5 +36,16 @@
       "time": "**O(log n)**。",
       "space": "**O(1)**。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def search(self, nums, target):\n        l, r = 0, len(nums) - 1\n        while l <= r:\n            m = (l + r) // 2\n            if nums[m] == target:\n                return m\n            if nums[l] <= nums[m]:\n                if nums[l] <= target < nums[m]:\n                    r = m - 1\n                else:\n                    l = m + 1\n            else:\n                if nums[m] < target <= nums[r]:\n                    l = m + 1\n                else:\n                    r = m - 1\n        return -1\n",
+    "interview": "class Solution:\n    def search(self, nums, target):\n        l, r = 0, len(nums) - 1\n        while l <= r:\n            m = (l + r) // 2\n            if nums[m] == target:\n                return m\n            if nums[l] <= nums[m]:\n                if nums[l] <= target < nums[m]:\n                    r = m - 1\n                else:\n                    l = m + 1\n            else:\n                if nums[m] < target <= nums[r]:\n                    l = m + 1\n                else:\n                    r = m - 1\n        return -1\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.search([4, 5, 6, 7, 0, 1, 2], 0))   # 4\n    print(s.search([4, 5, 6, 7, 0, 1, 2], 3))   # -1\n",
+    "acm": "class Solution:\n    def search(self, nums, target):\n        l, r = 0, len(nums) - 1\n        while l <= r:\n            m = (l + r) // 2\n            if nums[m] == target:\n                return m\n            if nums[l] <= nums[m]:\n                if nums[l] <= target < nums[m]:\n                    r = m - 1\n                else:\n                    l = m + 1\n            else:\n                if nums[m] < target <= nums[r]:\n                    l = m + 1\n                else:\n                    r = m - 1\n        return -1\n\ndef main():\n    nums = list(map(int, input().split()))\n    target = int(input())\n    print(Solution().search(nums, target))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:旋转排序数组(空格分隔)\n第 2 行:target",
+      "stdout": "target 的下标;不存在输出 -1",
+      "sample_in": "4 5 6 7 0 1 2\n0",
+      "sample_out": "4"
+    }
   }
 }
