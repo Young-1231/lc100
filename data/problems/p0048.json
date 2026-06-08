@@ -35,5 +35,16 @@
       "time": "**O(n²)** —— 每对元素被 swap 1 次。",
       "space": "**O(1)** —— 原地。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def rotate(self, m):\n        n = len(m)\n        for i in range(n):\n            for j in range(i + 1, n):\n                m[i][j], m[j][i] = m[j][i], m[i][j]\n        for row in m:\n            row.reverse()\n",
+    "interview": "class Solution:\n    def rotate(self, m):\n        n = len(m)\n        for i in range(n):\n            for j in range(i + 1, n):\n                m[i][j], m[j][i] = m[j][i], m[i][j]\n        for row in m:\n            row.reverse()\n\nif __name__ == \"__main__\":\n    m = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\n    Solution().rotate(m)\n    print(m)   # [[7, 4, 1], [8, 5, 2], [9, 6, 3]]\n",
+    "acm": "class Solution:\n    def rotate(self, m):\n        n = len(m)\n        for i in range(n):\n            for j in range(i + 1, n):\n                m[i][j], m[j][i] = m[j][i], m[i][j]\n        for row in m:\n            row.reverse()\n\ndef main():\n    n = int(input())\n    m = [list(map(int, input().split())) for _ in range(n)]\n    Solution().rotate(m)\n    for row in m:\n        print(*row)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:方阵阶数 n\n随后 n 行:每行 n 个数(空格分隔)",
+      "stdout": "顺时针旋转 90° 后的矩阵,每行一行",
+      "sample_in": "3\n1 2 3\n4 5 6\n7 8 9",
+      "sample_out": "7 4 1\n8 5 2\n9 6 3"
+    }
   }
 }

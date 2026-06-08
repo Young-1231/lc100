@@ -63,5 +63,16 @@
       "time": "**O(n)** —— 三次反转各 O(n)。",
       "space": "**O(1)** —— 原地。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def rotate(self, nums, k):\n        n = len(nums)\n        k %= n\n        nums.reverse()\n        nums[:k] = reversed(nums[:k])\n        nums[k:] = reversed(nums[k:])\n",
+    "interview": "class Solution:\n    def rotate(self, nums, k):\n        n = len(nums)\n        k %= n\n        nums.reverse()\n        nums[:k] = reversed(nums[:k])\n        nums[k:] = reversed(nums[k:])\n\nif __name__ == \"__main__\":\n    nums = [1, 2, 3, 4, 5, 6, 7]\n    Solution().rotate(nums, 3)\n    print(nums)   # [5, 6, 7, 1, 2, 3, 4]\n",
+    "acm": "class Solution:\n    def rotate(self, nums, k):\n        n = len(nums)\n        k %= n\n        nums.reverse()\n        nums[:k] = reversed(nums[:k])\n        nums[k:] = reversed(nums[k:])\n\ndef main():\n    nums = list(map(int, input().split()))\n    k = int(input())\n    Solution().rotate(nums, k)\n    print(*nums)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:数组(空格分隔)\n第 2 行:k",
+      "stdout": "右移 k 位后的数组(空格分隔)",
+      "sample_in": "1 2 3 4 5 6 7\n3",
+      "sample_out": "5 6 7 1 2 3 4"
+    }
   }
 }

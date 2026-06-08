@@ -40,7 +40,7 @@ export function renderList(data, opts = {}) {
     parts.push(`<rect x="${x}" y="${y}" width="${nw}" height="${nh}" rx="6"
       fill="${isHi ? COL.hiBg : COL.node}" stroke="${isHi ? COL.hi : COL.nodeBd}" stroke-width="1.4"/>`);
     parts.push(`<text x="${x + nw / 2}" y="${y + nh / 2 + 5}" text-anchor="middle"
-      font-family="JetBrains Mono, monospace" font-size="14" fill="${isHi ? COL.hi : COL.nodeText}" font-weight="500">${v}</text>`);
+      font-family="JetBrains Mono, monospace" font-size="14" fill="${isHi ? COL.hi : COL.nodeText}" font-weight="500">${escapeXml(v)}</text>`);
     if (i < data.length - 1) {
       const x1 = x + nw + 2;
       const x2 = x + nw + gap - 2;
@@ -126,7 +126,7 @@ export function renderTree(data, opts = {}) {
     const { x, y } = pos(n.slot, n.depth);
     const isHi = highlight.includes(n.val);
     parts.push(`<circle cx="${x}" cy="${y}" r="${nodeR}" fill="${isHi ? COL.hiBg : COL.node}" stroke="${isHi ? COL.hi : COL.nodeBd}" stroke-width="1.4"/>`);
-    parts.push(`<text x="${x}" y="${y + 4}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="${isHi ? COL.hi : COL.nodeText}" font-weight="500">${n.val}</text>`);
+    parts.push(`<text x="${x}" y="${y + 4}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="${isHi ? COL.hi : COL.nodeText}" font-weight="500">${escapeXml(n.val)}</text>`);
   });
   return svgWrap(W, H, parts.join(""), label);
 }
@@ -154,7 +154,7 @@ export function renderArray(data, opts = {}) {
     const stroke = isHi || inWin ? COL.hi : COL.nodeBd;
     const text = isHi ? "white" : (inWin ? COL.hi : COL.nodeText);
     parts.push(`<rect x="${x}" y="${y0}" width="${cw}" height="${ch}" fill="${fill}" stroke="${stroke}" stroke-width="1.2"/>`);
-    parts.push(`<text x="${x + cw / 2}" y="${y0 + ch / 2 + 4}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="${text}" font-weight="500">${v}</text>`);
+    parts.push(`<text x="${x + cw / 2}" y="${y0 + ch / 2 + 4}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="${text}" font-weight="500">${escapeXml(v)}</text>`);
     if (indices) {
       parts.push(`<text x="${x + cw / 2}" y="${y0 + ch + 14}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="${COL.null_}">${i}</text>`);
     }

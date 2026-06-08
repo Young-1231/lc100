@@ -229,7 +229,12 @@ export async function renderAll() {
     renderProblemList(document.getElementById("prob-list"), v, snippetMap);
   }
 
-  document.getElementById("search").oninput = e => { state.q = e.target.value; apply(); };
+  let searchTimer;
+  document.getElementById("search").oninput = e => {
+    state.q = e.target.value;
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(apply, 120);
+  };
   document.getElementById("filter-diff").addEventListener("click", e => {
     if (!e.target.dataset.diff) return;
     state.diff = e.target.dataset.diff;
@@ -302,6 +307,10 @@ export async function renderProblem(id) {
   const done = progress.isDone(id);
   const sols = data.solutions || [];
   const hasMulti = sols.length >= 2;
+  const starIdx = pickStarIdx(sols);
+  const hasModes = !!data.modes;
+  const srcParam = new URLSearchParams(location.search).get("src") || "core";
+  const srcMode = hasModes && ["core", "interview", "acm"].includes(srcParam) ? srcParam : "core";
 
   app.innerHTML = `
     <div class="container">
@@ -373,14 +382,14 @@ export async function renderProblem(id) {
             <h2>多解法对比 <span class="badge">${sols.length} 种</span></h2>
             <div class="sol-tabs" id="sol-tabs">
               ${sols.map((s, i) => `
-                <button class="sol-tab ${i === pickStarIdx(sols) ? "active" : ""}" data-i="${i}">
+                <button class="sol-tab ${i === starIdx ? "active" : ""}" data-i="${i}">
                   ${s.starred ? '<span class="star">★</span>' : ""}<span>${escapeHtml(s.title)}</span>
                 </button>
               `).join("")}
             </div>
             <div id="sol-panels">
               ${sols.map((s, i) => `
-                <div class="sol-content ${i === pickStarIdx(sols) ? "active" : ""}" data-i="${i}">
+                <div class="sol-content ${i === starIdx ? "active" : ""}" data-i="${i}">
                   <div class="sol-meta">
                     ${s.time  ? `<span class="chip"><strong>时间</strong>${escapeHtml(s.time)}</span>` : ""}
                     ${s.space ? `<span class="chip"><strong>空间</strong>${escapeHtml(s.space)}</span>` : ""}
@@ -401,8 +410,34 @@ export async function renderProblem(id) {
               ${codeBlock(sols[0].code, "python")}` : `<p class="md">题目可能为类设计题(如 LRU/MinStack 等),完整源码见下方。</p>`}
           </section>`}
           <section class="detail-section" id="sec-source">
-            <h2>完整源码 <span class="badge">${escapeHtml(data.filename)}</span></h2>
-            ${codeBlock(data.raw_source, "python", true)}
+            <h2>${hasModes ? "三版代码" : "完整源码"} <span class="badge">${escapeHtml(data.filename)}</span>
+              ${hasModes ? `<span class="seg-toggle" id="src-toggle" role="tablist">
+                <button class="seg-btn ${srcMode === "core" ? "active" : ""}" data-mode="core">核心代码模式</button>
+                <button class="seg-btn ${srcMode === "interview" ? "active" : ""}" data-mode="interview">面试版</button>
+                <button class="seg-btn ${srcMode === "acm" ? "active" : ""}" data-mode="acm">机试版 ACM</button>
+              </span>` : ""}
+            </h2>
+            ${hasModes ? `
+            <div class="src-pane ${srcMode === "core" ? "" : "hidden"}" id="src-core">
+              <p class="acm-note">提交 LeetCode 用:只有 <code>class Solution</code> 核心方法,平台喂参数、收返回值。</p>
+              ${codeBlock(data.modes.core, "python", true)}
+            </div>
+            <div class="src-pane ${srcMode === "interview" ? "" : "hidden"}" id="src-interview">
+              <p class="acm-note">面试手撕:核心方法 + 内联示例调用,写完直接 <code>python</code> 跑给面试官看。</p>
+              ${codeBlock(data.modes.interview, "python", true)}
+            </div>
+            <div class="src-pane ${srcMode === "acm" ? "" : "hidden"}" id="src-acm">
+              <p class="acm-note">机试 / 在线测评(华为机考、赛码笔试):自己读 <code>stdin</code> / 写 <code>stdout</code>。</p>
+              <div class="acm-io">
+                <div class="acm-io-card"><div class="cx-label">标准输入</div><pre>${escapeHtml(data.modes.acm_io.stdin)}</pre></div>
+                <div class="acm-io-card"><div class="cx-label">标准输出</div><pre>${escapeHtml(data.modes.acm_io.stdout)}</pre></div>
+              </div>
+              ${codeBlock(data.modes.acm, "python", true)}
+              <div class="acm-io">
+                <div class="acm-io-card"><div class="cx-label">样例输入</div><pre>${escapeHtml(data.modes.acm_io.sample_in)}</pre></div>
+                <div class="acm-io-card"><div class="cx-label">样例输出</div><pre>${escapeHtml(data.modes.acm_io.sample_out)}</pre></div>
+              </div>
+            </div>` : codeBlock(data.raw_source, "python", true)}
           </section>
           <section class="detail-section" id="sec-personal">
             <h2>📝 我的笔记 & 难度自评</h2>
@@ -486,6 +521,21 @@ export async function renderProblem(id) {
         b.classList.toggle("active", b === e.target));
       document.getElementById("expl-short").classList.toggle("hidden", mode !== "short");
       document.getElementById("expl-long").classList.toggle("hidden", mode !== "long");
+    });
+  }
+
+  // 三版代码:核心代码 / 面试版 / 机试版(ACM)切换
+  const srcToggle = document.getElementById("src-toggle");
+  if (srcToggle) {
+    const panes = { core: "src-core", interview: "src-interview", acm: "src-acm" };
+    srcToggle.addEventListener("click", e => {
+      const mode = e.target.dataset.mode;
+      if (!mode) return;
+      srcToggle.querySelectorAll(".seg-btn").forEach(b =>
+        b.classList.toggle("active", b === e.target));
+      for (const [m, id] of Object.entries(panes)) {
+        document.getElementById(id).classList.toggle("hidden", m !== mode);
+      }
     });
   }
 

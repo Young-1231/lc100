@@ -35,5 +35,16 @@
       "time": "**O(n · |Σ|)** 朴素;**O(n + m)** 用 valid 优化。",
       "space": "**O(|Σ|)** —— 计数器。"
     }
+  },
+  "modes": {
+    "core": "from collections import Counter\n\n\nclass Solution:\n    def findAnagrams(self, s, p):\n        m, n = len(p), len(s)\n        if n < m:\n            return []\n        need = Counter(p)\n        win = Counter(s[:m])\n        ans = [0] if win == need else []\n        for r in range(m, n):\n            win[s[r]] += 1\n            win[s[r - m]] -= 1\n            if win[s[r - m]] == 0:\n                del win[s[r - m]]\n            if win == need:\n                ans.append(r - m + 1)\n        return ans\n",
+    "interview": "from collections import Counter\n\n\nclass Solution:\n    def findAnagrams(self, s, p):\n        m, n = len(p), len(s)\n        if n < m:\n            return []\n        need = Counter(p)\n        win = Counter(s[:m])\n        ans = [0] if win == need else []\n        for r in range(m, n):\n            win[s[r]] += 1\n            win[s[r - m]] -= 1\n            if win[s[r - m]] == 0:\n                del win[s[r - m]]\n            if win == need:\n                ans.append(r - m + 1)\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().findAnagrams(\"cbaebabacd\", \"abc\"))   # [0, 6]\n",
+    "acm": "from collections import Counter\n\n\nclass Solution:\n    def findAnagrams(self, s, p):\n        m, n = len(p), len(s)\n        if n < m:\n            return []\n        need = Counter(p)\n        win = Counter(s[:m])\n        ans = [0] if win == need else []\n        for r in range(m, n):\n            win[s[r]] += 1\n            win[s[r - m]] -= 1\n            if win[s[r - m]] == 0:\n                del win[s[r - m]]\n            if win == need:\n                ans.append(r - m + 1)\n        return ans\n\ndef main():\n    s = input()\n    p = input()\n    print(*Solution().findAnagrams(s, p))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:字符串 s\n第 2 行:模式串 p",
+      "stdout": "所有异位词起始下标(空格分隔)",
+      "sample_in": "cbaebabacd\nabc",
+      "sample_out": "0 6"
+    }
   }
 }

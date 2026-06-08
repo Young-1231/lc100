@@ -1,9 +1,14 @@
 // Tiny hash router.
 
 const handlers = [];
+let notFoundFn = null;
 
 export function on(re, fn) {
   handlers.push({ re, fn });
+}
+
+export function setNotFound(fn) {
+  notFoundFn = fn;
 }
 
 export function go(path) {
@@ -25,13 +30,8 @@ function dispatch() {
       return;
     }
   }
-  // 404
-  for (const { re, fn } of handlers) {
-    if (re.toString() === "/^#\\/404$/") {
-      fn();
-      return;
-    }
-  }
+  // 没有路由命中 → 兜底 404
+  if (notFoundFn) notFoundFn();
 }
 
 export function start() {

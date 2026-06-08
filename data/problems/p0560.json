@@ -44,5 +44,16 @@
       "time": "**O(n)** —— 一次遍历,每次 dict 查询/更新 O(1)。",
       "space": "**O(n)** —— 最坏所有前缀和不同。"
     }
+  },
+  "modes": {
+    "core": "from collections import defaultdict\n\n\nclass Solution:\n    def subarraySum(self, nums, k):\n        cnt = defaultdict(int)\n        cnt[0] = 1\n        s = ans = 0\n        for x in nums:\n            s += x\n            ans += cnt[s - k]\n            cnt[s] += 1\n        return ans\n",
+    "interview": "from collections import defaultdict\n\n\nclass Solution:\n    def subarraySum(self, nums, k):\n        cnt = defaultdict(int)\n        cnt[0] = 1\n        s = ans = 0\n        for x in nums:\n            s += x\n            ans += cnt[s - k]\n            cnt[s] += 1\n        return ans\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.subarraySum([1, 1, 1], 2))   # 2\n    print(s.subarraySum([1, 2, 3], 3))   # 2\n",
+    "acm": "from collections import defaultdict\n\n\nclass Solution:\n    def subarraySum(self, nums, k):\n        cnt = defaultdict(int)\n        cnt[0] = 1\n        s = ans = 0\n        for x in nums:\n            s += x\n            ans += cnt[s - k]\n            cnt[s] += 1\n        return ans\n\ndef main():\n    nums = list(map(int, input().split()))\n    k = int(input())\n    print(Solution().subarraySum(nums, k))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:数组(空格分隔)\n第 2 行:k",
+      "stdout": "和为 k 的连续子数组个数",
+      "sample_in": "1 1 1\n2",
+      "sample_out": "2"
+    }
   }
 }

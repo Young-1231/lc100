@@ -35,5 +35,16 @@
       "time": "**O(mn)** —— 每个格子打印 1 次。",
       "space": "**O(1)** —— 4 个边界变量。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def spiralOrder(self, m):\n        if not m:\n            return []\n        top, bottom, left, right = 0, len(m) - 1, 0, len(m[0]) - 1\n        out = []\n        while top <= bottom and left <= right:\n            for c in range(left, right + 1):\n                out.append(m[top][c])\n            top += 1\n            for r in range(top, bottom + 1):\n                out.append(m[r][right])\n            right -= 1\n            if top <= bottom:\n                for c in range(right, left - 1, -1):\n                    out.append(m[bottom][c])\n                bottom -= 1\n            if left <= right:\n                for r in range(bottom, top - 1, -1):\n                    out.append(m[r][left])\n                left += 1\n        return out\n",
+    "interview": "class Solution:\n    def spiralOrder(self, m):\n        if not m:\n            return []\n        top, bottom, left, right = 0, len(m) - 1, 0, len(m[0]) - 1\n        out = []\n        while top <= bottom and left <= right:\n            for c in range(left, right + 1):\n                out.append(m[top][c])\n            top += 1\n            for r in range(top, bottom + 1):\n                out.append(m[r][right])\n            right -= 1\n            if top <= bottom:\n                for c in range(right, left - 1, -1):\n                    out.append(m[bottom][c])\n                bottom -= 1\n            if left <= right:\n                for r in range(bottom, top - 1, -1):\n                    out.append(m[r][left])\n                left += 1\n        return out\n\nif __name__ == \"__main__\":\n    print(Solution().spiralOrder([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))\n    # [1, 2, 3, 6, 9, 8, 7, 4, 5]\n",
+    "acm": "class Solution:\n    def spiralOrder(self, m):\n        if not m:\n            return []\n        top, bottom, left, right = 0, len(m) - 1, 0, len(m[0]) - 1\n        out = []\n        while top <= bottom and left <= right:\n            for c in range(left, right + 1):\n                out.append(m[top][c])\n            top += 1\n            for r in range(top, bottom + 1):\n                out.append(m[r][right])\n            right -= 1\n            if top <= bottom:\n                for c in range(right, left - 1, -1):\n                    out.append(m[bottom][c])\n                bottom -= 1\n            if left <= right:\n                for r in range(bottom, top - 1, -1):\n                    out.append(m[r][left])\n                left += 1\n        return out\n\ndef main():\n    rows, cols = map(int, input().split())\n    m = [list(map(int, input().split())) for _ in range(rows)]\n    print(*Solution().spiralOrder(m))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:行数 m 列数 n\n随后 m 行:每行 n 个数(空格分隔)",
+      "stdout": "螺旋顺序(空格分隔)",
+      "sample_in": "3 3\n1 2 3\n4 5 6\n7 8 9",
+      "sample_out": "1 2 3 6 9 8 7 4 5"
+    }
   }
 }

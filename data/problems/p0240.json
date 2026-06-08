@@ -35,5 +35,16 @@
       "time": "**O(m + n)** —— Z 字路径。",
       "space": "**O(1)**。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def searchMatrix(self, m, target):\n        if not m or not m[0]:\n            return False\n        i, j = 0, len(m[0]) - 1\n        while i < len(m) and j >= 0:\n            if m[i][j] == target:\n                return True\n            if m[i][j] > target:\n                j -= 1\n            else:\n                i += 1\n        return False\n",
+    "interview": "class Solution:\n    def searchMatrix(self, m, target):\n        if not m or not m[0]:\n            return False\n        i, j = 0, len(m[0]) - 1\n        while i < len(m) and j >= 0:\n            if m[i][j] == target:\n                return True\n            if m[i][j] > target:\n                j -= 1\n            else:\n                i += 1\n        return False\n\nif __name__ == \"__main__\":\n    m = [[1, 4, 7, 11], [2, 5, 8, 12], [3, 6, 9, 16]]\n    print(Solution().searchMatrix(m, 5))    # True\n",
+    "acm": "class Solution:\n    def searchMatrix(self, m, target):\n        if not m or not m[0]:\n            return False\n        i, j = 0, len(m[0]) - 1\n        while i < len(m) and j >= 0:\n            if m[i][j] == target:\n                return True\n            if m[i][j] > target:\n                j -= 1\n            else:\n                i += 1\n        return False\n\ndef main():\n    rows, cols = map(int, input().split())\n    m = [list(map(int, input().split())) for _ in range(rows)]\n    target = int(input())\n    print(\"true\" if Solution().searchMatrix(m, target) else \"false\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:行数 m 列数 n\n随后 m 行:每行 n 个数\n最后一行:target",
+      "stdout": "是否存在 target(true / false)",
+      "sample_in": "3 4\n1 4 7 11\n2 5 8 12\n3 6 9 16\n5",
+      "sample_out": "true"
+    }
   }
 }

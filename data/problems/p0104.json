@@ -56,5 +56,16 @@
       "time": "**O(n)**。",
       "space": "**O(h)** 递归 / **O(w)** BFS。"
     }
+  },
+  "modes": {
+    "core": "# 二叉树节点 TreeNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def maxDepth(self, root):\n        if not root:\n            return 0\n        return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))\n",
+    "interview": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\nclass Solution:\n    def maxDepth(self, root):\n        if not root:\n            return 0\n        return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))\n\nif __name__ == \"__main__\":\n    root = build_tree([3, 9, 20, None, None, 15, 7])\n    print(Solution().maxDepth(root))   # 3\n",
+    "acm": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\nclass Solution:\n    def maxDepth(self, root):\n        if not root:\n            return 0\n        return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))\n\ndef main():\n    vals = [None if t == \"null\" else int(t) for t in input().split()]\n    print(Solution().maxDepth(build_tree(vals)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:二叉树层序遍历,空节点用 null(空格分隔)",
+      "stdout": "二叉树最大深度",
+      "sample_in": "3 9 20 null null 15 7",
+      "sample_out": "3"
+    }
   }
 }

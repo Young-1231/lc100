@@ -1,5 +1,5 @@
 // Entry point.
-import { on, start, go } from "./router.js";
+import { on, start, go, setNotFound } from "./router.js";
 import {
   renderHome, renderDay, renderAll, renderProblem,
   renderProgress, renderPattern, renderAbout,
@@ -47,7 +47,7 @@ function updateActiveNav() {
   });
 }
 window.addEventListener("hashchange", updateActiveNav);
-setTimeout(updateActiveNav, 50);
+updateActiveNav();
 
 // ===== Routes =====
 on(/^#\/$/,                 renderHome);
@@ -57,18 +57,16 @@ on(/^#\/p\/(\d+)$/,         renderProblem);
 on(/^#\/progress$/,         renderProgress);
 on(/^#\/pattern\/(.+)$/,    renderPattern);
 on(/^#\/about$/,            renderAbout);
-on(/^#\/404$/,              () => {
+
+function render404() {
   document.getElementById("app").innerHTML = `
     <div class="container empty">
       <h2>404</h2>
       <p>页面不存在。<a href="#/">返回首页</a></p>
     </div>`;
-});
-
-// Default fallback
-window.addEventListener("hashchange", () => {
-  setTimeout(updateActiveNav, 0);
-});
+}
+on(/^#\/404$/,              render404);
+setNotFound(render404);
 
 start();
 

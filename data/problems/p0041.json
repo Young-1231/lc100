@@ -52,5 +52,16 @@
       "time": "**O(n)** —— 每次 swap 至少把一个值放到正确位置,总 swap ≤ n;两遍线性扫。",
       "space": "**O(1)** —— 完全原地。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def firstMissingPositive(self, nums):\n        n = len(nums)\n        for i in range(n):\n            while 1 <= nums[i] <= n and nums[nums[i] - 1] != nums[i]:\n                j = nums[i] - 1\n                nums[i], nums[j] = nums[j], nums[i]\n        for i in range(n):\n            if nums[i] != i + 1:\n                return i + 1\n        return n + 1\n",
+    "interview": "class Solution:\n    def firstMissingPositive(self, nums):\n        n = len(nums)\n        for i in range(n):\n            while 1 <= nums[i] <= n and nums[nums[i] - 1] != nums[i]:\n                j = nums[i] - 1\n                nums[i], nums[j] = nums[j], nums[i]\n        for i in range(n):\n            if nums[i] != i + 1:\n                return i + 1\n        return n + 1\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.firstMissingPositive([1, 2, 0]))          # 3\n    print(s.firstMissingPositive([3, 4, -1, 1]))      # 2\n    print(s.firstMissingPositive([7, 8, 9, 11, 12]))  # 1\n",
+    "acm": "class Solution:\n    def firstMissingPositive(self, nums):\n        n = len(nums)\n        for i in range(n):\n            while 1 <= nums[i] <= n and nums[nums[i] - 1] != nums[i]:\n                j = nums[i] - 1\n                nums[i], nums[j] = nums[j], nums[i]\n        for i in range(n):\n            if nums[i] != i + 1:\n                return i + 1\n        return n + 1\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().firstMissingPositive(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "缺失的第一个正数",
+      "sample_in": "3 4 -1 1",
+      "sample_out": "2"
+    }
   }
 }

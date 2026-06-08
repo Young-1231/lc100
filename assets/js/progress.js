@@ -3,10 +3,15 @@
 const KEY = "lc100.progress.v2";
 const LEGACY_KEY = "lc100.progress.v1";    // 旧版仅 done 状态
 
+// 内存缓存:避免每次读写都 JSON.parse 整个进度对象。
+// 列表页一次渲染会对 100 题各查 done/rating,缓存后从 O(题数) 次 parse 降到 1 次。
+let _cache = null;
+
 function load() {
+  if (_cache) return _cache;
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) return (_cache = JSON.parse(raw));
     // v1 -> v2 迁移
     const old = localStorage.getItem(LEGACY_KEY);
     if (old) {
@@ -16,17 +21,23 @@ function load() {
         upgraded[k] = { done: v, rating: 0, note: "" };
       }
       localStorage.setItem(KEY, JSON.stringify(upgraded));
-      return upgraded;
+      return (_cache = upgraded);
     }
-    return {};
+    return (_cache = {});
   } catch {
-    return {};
+    return (_cache = {});
   }
 }
 
 function save(state) {
+  _cache = state;
   localStorage.setItem(KEY, JSON.stringify(state));
 }
+
+// 其他标签页修改进度时让本页缓存失效,保持跨标签一致。
+window.addEventListener("storage", e => {
+  if (e.key === KEY || e.key === LEGACY_KEY) _cache = null;
+});
 
 function entry(s, id) {
   if (!s[id]) s[id] = { done: 0, rating: 0, note: "" };
@@ -95,6 +106,7 @@ export const progress = {
   },
 
   reset() {
+    _cache = null;
     localStorage.removeItem(KEY);
     localStorage.removeItem(LEGACY_KEY);
   },

@@ -75,5 +75,16 @@
       "time": "**O(n)** —— 单次遍历 n 次,每次 dict get/set 摊销 O(1)(Python 用随机化 hash,实际把哈希冲突视为常数)。",
       "space": "**O(n)** —— 最坏情况(无解)整个数组都被存入 dict;若有解则 dict 大小 ≤ n-1。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def twoSum(self, nums, target):\n        seen = {}\n        for i, x in enumerate(nums):\n            if target - x in seen:\n                return [seen[target - x], i]\n            seen[x] = i\n        return []\n",
+    "interview": "class Solution:\n    def twoSum(self, nums, target):\n        seen = {}\n        for i, x in enumerate(nums):\n            if target - x in seen:\n                return [seen[target - x], i]\n            seen[x] = i\n        return []\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.twoSum([2, 7, 11, 15], 9))   # [0, 1]\n    print(s.twoSum([3, 2, 4], 6))        # [1, 2]\n",
+    "acm": "class Solution:\n    def twoSum(self, nums, target):\n        seen = {}\n        for i, x in enumerate(nums):\n            if target - x in seen:\n                return [seen[target - x], i]\n            seen[x] = i\n        return []\n\ndef main():\n    nums = list(map(int, input().split()))\n    target = int(input())\n    print(*Solution().twoSum(nums, target))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:数组(空格分隔)\n第 2 行:target",
+      "stdout": "命中的两个下标(空格分隔)",
+      "sample_in": "2 7 11 15\n9",
+      "sample_out": "0 1"
+    }
   }
 }

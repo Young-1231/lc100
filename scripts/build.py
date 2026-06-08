@@ -347,6 +347,12 @@ def main() -> None:
     if expl_path.exists():
         explanations = json.loads(expl_path.read_text(encoding="utf-8"))
 
+    # 读取三版代码(core 核心 / interview 面试 / acm 机试);由 scripts/build_modes.py 生成
+    modes_path = dst / "data" / "modes.json"
+    modes_data: dict[str, dict] = {}
+    if modes_path.exists():
+        modes_data = json.loads(modes_path.read_text(encoding="utf-8"))
+
     all_problems: list[dict[str, Any]] = []
     days: dict[int, dict[str, Any]] = {}
 
@@ -362,6 +368,10 @@ def main() -> None:
             expl = explanations.get(str(data["id"]))
             if expl and not str(expl.get("short", "")).startswith("_"):
                 data["explanation"] = expl
+            # 合并三版代码
+            modes = modes_data.get(str(data["id"]))
+            if isinstance(modes, dict):
+                data["modes"] = modes
             (problems_dir / f"p{data['id']:04d}.json").write_text(
                 json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
             )
@@ -389,6 +399,7 @@ def main() -> None:
                 "tags": data["tags"],
                 "leetcode_url": data["leetcode_url"],
                 "has_expl": "explanation" in data,
+                "has_modes": "modes" in data,
                 "search": search_blob.lower(),
             })
             day_problems.append(data["id"])
@@ -409,6 +420,16 @@ def main() -> None:
         json.dumps(days, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
+
+    # 拷贝共享数据结构模块(链表/树/Trie/并查集),
+    # 否则下载的 .py 单独运行会 ModuleNotFoundError: No module named '_common'
+    common_src = src / "_common"
+    if common_src.exists():
+        shutil.copytree(
+            common_src, sols_dir / "_common",
+            dirs_exist_ok=True,
+            ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+        )
 
     # 拷贝可视化模式文档
     viz_src = src / "_visualizations"

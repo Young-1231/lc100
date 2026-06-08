@@ -1,0 +1,256 @@
+{
+  "_doc": "每题三版代码:core 核心代码模式 / interview 面试版 / acm 机试版(ACM)。详见 docs/CODE-MODES.md。",
+  "1": {
+    "core": "class Solution:\n    def twoSum(self, nums, target):\n        seen = {}\n        for i, x in enumerate(nums):\n            if target - x in seen:\n                return [seen[target - x], i]\n            seen[x] = i\n        return []\n",
+    "interview": "class Solution:\n    def twoSum(self, nums, target):\n        seen = {}\n        for i, x in enumerate(nums):\n            if target - x in seen:\n                return [seen[target - x], i]\n            seen[x] = i\n        return []\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.twoSum([2, 7, 11, 15], 9))   # [0, 1]\n    print(s.twoSum([3, 2, 4], 6))        # [1, 2]\n",
+    "acm": "class Solution:\n    def twoSum(self, nums, target):\n        seen = {}\n        for i, x in enumerate(nums):\n            if target - x in seen:\n                return [seen[target - x], i]\n            seen[x] = i\n        return []\n\ndef main():\n    nums = list(map(int, input().split()))\n    target = int(input())\n    print(*Solution().twoSum(nums, target))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:数组(空格分隔)\n第 2 行:target",
+      "stdout": "命中的两个下标(空格分隔)",
+      "sample_in": "2 7 11 15\n9",
+      "sample_out": "0 1"
+    }
+  },
+  "3": {
+    "core": "class Solution:\n    def lengthOfLongestSubstring(self, s):\n        last = {}\n        left = ans = 0\n        for i, c in enumerate(s):\n            if c in last and last[c] >= left:\n                left = last[c] + 1\n            last[c] = i\n            ans = max(ans, i - left + 1)\n        return ans\n",
+    "interview": "class Solution:\n    def lengthOfLongestSubstring(self, s):\n        last = {}\n        left = ans = 0\n        for i, c in enumerate(s):\n            if c in last and last[c] >= left:\n                left = last[c] + 1\n            last[c] = i\n            ans = max(ans, i - left + 1)\n        return ans\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.lengthOfLongestSubstring(\"abcabcbb\"))   # 3\n    print(s.lengthOfLongestSubstring(\"bbbbb\"))       # 1\n    print(s.lengthOfLongestSubstring(\"pwwkew\"))      # 3\n",
+    "acm": "class Solution:\n    def lengthOfLongestSubstring(self, s):\n        last = {}\n        left = ans = 0\n        for i, c in enumerate(s):\n            if c in last and last[c] >= left:\n                left = last[c] + 1\n            last[c] = i\n            ans = max(ans, i - left + 1)\n        return ans\n\ndef main():\n    s = input()\n    print(Solution().lengthOfLongestSubstring(s))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行字符串 s",
+      "stdout": "最长无重复子串的长度",
+      "sample_in": "abcabcbb",
+      "sample_out": "3"
+    }
+  },
+  "11": {
+    "core": "class Solution:\n    def maxArea(self, h):\n        i, j, best = 0, len(h) - 1, 0\n        while i < j:\n            best = max(best, (j - i) * min(h[i], h[j]))\n            if h[i] < h[j]:\n                i += 1\n            else:\n                j -= 1\n        return best\n",
+    "interview": "class Solution:\n    def maxArea(self, h):\n        i, j, best = 0, len(h) - 1, 0\n        while i < j:\n            best = max(best, (j - i) * min(h[i], h[j]))\n            if h[i] < h[j]:\n                i += 1\n            else:\n                j -= 1\n        return best\n\nif __name__ == \"__main__\":\n    print(Solution().maxArea([1, 8, 6, 2, 5, 4, 8, 3, 7]))   # 49\n",
+    "acm": "class Solution:\n    def maxArea(self, h):\n        i, j, best = 0, len(h) - 1, 0\n        while i < j:\n            best = max(best, (j - i) * min(h[i], h[j]))\n            if h[i] < h[j]:\n                i += 1\n            else:\n                j -= 1\n        return best\n\ndef main():\n    h = list(map(int, input().split()))\n    print(Solution().maxArea(h))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:高度数组(空格分隔)",
+      "stdout": "最大盛水量",
+      "sample_in": "1 8 6 2 5 4 8 3 7",
+      "sample_out": "49"
+    }
+  },
+  "15": {
+    "core": "class Solution:\n    def threeSum(self, nums):\n        nums.sort()\n        n, ans = len(nums), []\n        for i in range(n - 2):\n            if nums[i] > 0:\n                break\n            if i and nums[i] == nums[i - 1]:\n                continue\n            l, r, target = i + 1, n - 1, -nums[i]\n            while l < r:\n                s = nums[l] + nums[r]\n                if s == target:\n                    ans.append([nums[i], nums[l], nums[r]])\n                    l += 1\n                    r -= 1\n                    while l < r and nums[l] == nums[l - 1]:\n                        l += 1\n                    while l < r and nums[r] == nums[r + 1]:\n                        r -= 1\n                elif s < target:\n                    l += 1\n                else:\n                    r -= 1\n        return ans\n",
+    "interview": "class Solution:\n    def threeSum(self, nums):\n        nums.sort()\n        n, ans = len(nums), []\n        for i in range(n - 2):\n            if nums[i] > 0:\n                break\n            if i and nums[i] == nums[i - 1]:\n                continue\n            l, r, target = i + 1, n - 1, -nums[i]\n            while l < r:\n                s = nums[l] + nums[r]\n                if s == target:\n                    ans.append([nums[i], nums[l], nums[r]])\n                    l += 1\n                    r -= 1\n                    while l < r and nums[l] == nums[l - 1]:\n                        l += 1\n                    while l < r and nums[r] == nums[r + 1]:\n                        r -= 1\n                elif s < target:\n                    l += 1\n                else:\n                    r -= 1\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().threeSum([-1, 0, 1, 2, -1, -4]))\n    # [[-1, -1, 2], [-1, 0, 1]]\n",
+    "acm": "class Solution:\n    def threeSum(self, nums):\n        nums.sort()\n        n, ans = len(nums), []\n        for i in range(n - 2):\n            if nums[i] > 0:\n                break\n            if i and nums[i] == nums[i - 1]:\n                continue\n            l, r, target = i + 1, n - 1, -nums[i]\n            while l < r:\n                s = nums[l] + nums[r]\n                if s == target:\n                    ans.append([nums[i], nums[l], nums[r]])\n                    l += 1\n                    r -= 1\n                    while l < r and nums[l] == nums[l - 1]:\n                        l += 1\n                    while l < r and nums[r] == nums[r + 1]:\n                        r -= 1\n                elif s < target:\n                    l += 1\n                else:\n                    r -= 1\n        return ans\n\ndef main():\n    nums = list(map(int, input().split()))\n    for triple in Solution().threeSum(nums):\n        print(*triple)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "每个三元组一行(空格分隔)",
+      "sample_in": "-1 0 1 2 -1 -4",
+      "sample_out": "-1 -1 2\n-1 0 1"
+    }
+  },
+  "41": {
+    "core": "class Solution:\n    def firstMissingPositive(self, nums):\n        n = len(nums)\n        for i in range(n):\n            while 1 <= nums[i] <= n and nums[nums[i] - 1] != nums[i]:\n                j = nums[i] - 1\n                nums[i], nums[j] = nums[j], nums[i]\n        for i in range(n):\n            if nums[i] != i + 1:\n                return i + 1\n        return n + 1\n",
+    "interview": "class Solution:\n    def firstMissingPositive(self, nums):\n        n = len(nums)\n        for i in range(n):\n            while 1 <= nums[i] <= n and nums[nums[i] - 1] != nums[i]:\n                j = nums[i] - 1\n                nums[i], nums[j] = nums[j], nums[i]\n        for i in range(n):\n            if nums[i] != i + 1:\n                return i + 1\n        return n + 1\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.firstMissingPositive([1, 2, 0]))          # 3\n    print(s.firstMissingPositive([3, 4, -1, 1]))      # 2\n    print(s.firstMissingPositive([7, 8, 9, 11, 12]))  # 1\n",
+    "acm": "class Solution:\n    def firstMissingPositive(self, nums):\n        n = len(nums)\n        for i in range(n):\n            while 1 <= nums[i] <= n and nums[nums[i] - 1] != nums[i]:\n                j = nums[i] - 1\n                nums[i], nums[j] = nums[j], nums[i]\n        for i in range(n):\n            if nums[i] != i + 1:\n                return i + 1\n        return n + 1\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().firstMissingPositive(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "缺失的第一个正数",
+      "sample_in": "3 4 -1 1",
+      "sample_out": "2"
+    }
+  },
+  "42": {
+    "core": "class Solution:\n    def trap(self, h):\n        l, r = 0, len(h) - 1\n        lmax = rmax = ans = 0\n        while l < r:\n            if h[l] < h[r]:\n                lmax = max(lmax, h[l])\n                ans += lmax - h[l]\n                l += 1\n            else:\n                rmax = max(rmax, h[r])\n                ans += rmax - h[r]\n                r -= 1\n        return ans\n",
+    "interview": "class Solution:\n    def trap(self, h):\n        l, r = 0, len(h) - 1\n        lmax = rmax = ans = 0\n        while l < r:\n            if h[l] < h[r]:\n                lmax = max(lmax, h[l])\n                ans += lmax - h[l]\n                l += 1\n            else:\n                rmax = max(rmax, h[r])\n                ans += rmax - h[r]\n                r -= 1\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().trap([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]))   # 6\n",
+    "acm": "class Solution:\n    def trap(self, h):\n        l, r = 0, len(h) - 1\n        lmax = rmax = ans = 0\n        while l < r:\n            if h[l] < h[r]:\n                lmax = max(lmax, h[l])\n                ans += lmax - h[l]\n                l += 1\n            else:\n                rmax = max(rmax, h[r])\n                ans += rmax - h[r]\n                r -= 1\n        return ans\n\ndef main():\n    h = list(map(int, input().split()))\n    print(Solution().trap(h))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:高度数组(空格分隔)",
+      "stdout": "可接雨水总量",
+      "sample_in": "0 1 0 2 1 0 1 3 2 1 2 1",
+      "sample_out": "6"
+    }
+  },
+  "48": {
+    "core": "class Solution:\n    def rotate(self, m):\n        n = len(m)\n        for i in range(n):\n            for j in range(i + 1, n):\n                m[i][j], m[j][i] = m[j][i], m[i][j]\n        for row in m:\n            row.reverse()\n",
+    "interview": "class Solution:\n    def rotate(self, m):\n        n = len(m)\n        for i in range(n):\n            for j in range(i + 1, n):\n                m[i][j], m[j][i] = m[j][i], m[i][j]\n        for row in m:\n            row.reverse()\n\nif __name__ == \"__main__\":\n    m = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\n    Solution().rotate(m)\n    print(m)   # [[7, 4, 1], [8, 5, 2], [9, 6, 3]]\n",
+    "acm": "class Solution:\n    def rotate(self, m):\n        n = len(m)\n        for i in range(n):\n            for j in range(i + 1, n):\n                m[i][j], m[j][i] = m[j][i], m[i][j]\n        for row in m:\n            row.reverse()\n\ndef main():\n    n = int(input())\n    m = [list(map(int, input().split())) for _ in range(n)]\n    Solution().rotate(m)\n    for row in m:\n        print(*row)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:方阵阶数 n\n随后 n 行:每行 n 个数(空格分隔)",
+      "stdout": "顺时针旋转 90° 后的矩阵,每行一行",
+      "sample_in": "3\n1 2 3\n4 5 6\n7 8 9",
+      "sample_out": "7 4 1\n8 5 2\n9 6 3"
+    }
+  },
+  "49": {
+    "core": "from collections import defaultdict\n\n\nclass Solution:\n    def groupAnagrams(self, strs):\n        bucket = defaultdict(list)\n        for s in strs:\n            cnt = [0] * 26\n            for c in s:\n                cnt[ord(c) - 97] += 1\n            bucket[tuple(cnt)].append(s)\n        return list(bucket.values())\n",
+    "interview": "from collections import defaultdict\n\n\nclass Solution:\n    def groupAnagrams(self, strs):\n        bucket = defaultdict(list)\n        for s in strs:\n            cnt = [0] * 26\n            for c in s:\n                cnt[ord(c) - 97] += 1\n            bucket[tuple(cnt)].append(s)\n        return list(bucket.values())\n\nif __name__ == \"__main__\":\n    print(Solution().groupAnagrams([\"eat\", \"tea\", \"tan\", \"ate\", \"nat\", \"bat\"]))\n    # [['eat', 'tea', 'ate'], ['tan', 'nat'], ['bat']]\n",
+    "acm": "from collections import defaultdict\n\n\nclass Solution:\n    def groupAnagrams(self, strs):\n        bucket = defaultdict(list)\n        for s in strs:\n            cnt = [0] * 26\n            for c in s:\n                cnt[ord(c) - 97] += 1\n            bucket[tuple(cnt)].append(s)\n        return list(bucket.values())\n\ndef main():\n    strs = input().split()\n    for group in Solution().groupAnagrams(strs):\n        print(*group)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:若干字符串(空格分隔)",
+      "stdout": "每组异位词一行(组内空格分隔)",
+      "sample_in": "eat tea tan ate nat bat",
+      "sample_out": "eat tea ate\ntan nat\nbat"
+    }
+  },
+  "53": {
+    "core": "class Solution:\n    def maxSubArray(self, nums):\n        cur = best = nums[0]\n        for x in nums[1:]:\n            cur = max(x, cur + x)\n            best = max(best, cur)\n        return best\n",
+    "interview": "class Solution:\n    def maxSubArray(self, nums):\n        cur = best = nums[0]\n        for x in nums[1:]:\n            cur = max(x, cur + x)\n            best = max(best, cur)\n        return best\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.maxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4]))   # 6\n    print(s.maxSubArray([5, 4, -1, 7, 8]))                  # 23\n",
+    "acm": "class Solution:\n    def maxSubArray(self, nums):\n        cur = best = nums[0]\n        for x in nums[1:]:\n            cur = max(x, cur + x)\n            best = max(best, cur)\n        return best\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().maxSubArray(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "最大子数组和",
+      "sample_in": "-2 1 -3 4 -1 2 1 -5 4",
+      "sample_out": "6"
+    }
+  },
+  "54": {
+    "core": "class Solution:\n    def spiralOrder(self, m):\n        if not m:\n            return []\n        top, bottom, left, right = 0, len(m) - 1, 0, len(m[0]) - 1\n        out = []\n        while top <= bottom and left <= right:\n            for c in range(left, right + 1):\n                out.append(m[top][c])\n            top += 1\n            for r in range(top, bottom + 1):\n                out.append(m[r][right])\n            right -= 1\n            if top <= bottom:\n                for c in range(right, left - 1, -1):\n                    out.append(m[bottom][c])\n                bottom -= 1\n            if left <= right:\n                for r in range(bottom, top - 1, -1):\n                    out.append(m[r][left])\n                left += 1\n        return out\n",
+    "interview": "class Solution:\n    def spiralOrder(self, m):\n        if not m:\n            return []\n        top, bottom, left, right = 0, len(m) - 1, 0, len(m[0]) - 1\n        out = []\n        while top <= bottom and left <= right:\n            for c in range(left, right + 1):\n                out.append(m[top][c])\n            top += 1\n            for r in range(top, bottom + 1):\n                out.append(m[r][right])\n            right -= 1\n            if top <= bottom:\n                for c in range(right, left - 1, -1):\n                    out.append(m[bottom][c])\n                bottom -= 1\n            if left <= right:\n                for r in range(bottom, top - 1, -1):\n                    out.append(m[r][left])\n                left += 1\n        return out\n\nif __name__ == \"__main__\":\n    print(Solution().spiralOrder([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))\n    # [1, 2, 3, 6, 9, 8, 7, 4, 5]\n",
+    "acm": "class Solution:\n    def spiralOrder(self, m):\n        if not m:\n            return []\n        top, bottom, left, right = 0, len(m) - 1, 0, len(m[0]) - 1\n        out = []\n        while top <= bottom and left <= right:\n            for c in range(left, right + 1):\n                out.append(m[top][c])\n            top += 1\n            for r in range(top, bottom + 1):\n                out.append(m[r][right])\n            right -= 1\n            if top <= bottom:\n                for c in range(right, left - 1, -1):\n                    out.append(m[bottom][c])\n                bottom -= 1\n            if left <= right:\n                for r in range(bottom, top - 1, -1):\n                    out.append(m[r][left])\n                left += 1\n        return out\n\ndef main():\n    rows, cols = map(int, input().split())\n    m = [list(map(int, input().split())) for _ in range(rows)]\n    print(*Solution().spiralOrder(m))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:行数 m 列数 n\n随后 m 行:每行 n 个数(空格分隔)",
+      "stdout": "螺旋顺序(空格分隔)",
+      "sample_in": "3 3\n1 2 3\n4 5 6\n7 8 9",
+      "sample_out": "1 2 3 6 9 8 7 4 5"
+    }
+  },
+  "56": {
+    "core": "class Solution:\n    def merge(self, intervals):\n        intervals.sort(key=lambda x: x[0])\n        out = []\n        for s, e in intervals:\n            if out and s <= out[-1][1]:\n                out[-1][1] = max(out[-1][1], e)\n            else:\n                out.append([s, e])\n        return out\n",
+    "interview": "class Solution:\n    def merge(self, intervals):\n        intervals.sort(key=lambda x: x[0])\n        out = []\n        for s, e in intervals:\n            if out and s <= out[-1][1]:\n                out[-1][1] = max(out[-1][1], e)\n            else:\n                out.append([s, e])\n        return out\n\nif __name__ == \"__main__\":\n    print(Solution().merge([[1, 3], [2, 6], [8, 10], [15, 18]]))\n    # [[1, 6], [8, 10], [15, 18]]\n",
+    "acm": "class Solution:\n    def merge(self, intervals):\n        intervals.sort(key=lambda x: x[0])\n        out = []\n        for s, e in intervals:\n            if out and s <= out[-1][1]:\n                out[-1][1] = max(out[-1][1], e)\n            else:\n                out.append([s, e])\n        return out\n\ndef main():\n    n = int(input())\n    intervals = [list(map(int, input().split())) for _ in range(n)]\n    for s, e in Solution().merge(intervals):\n        print(s, e)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:区间数 n\n随后 n 行:每行一个区间(两个数,空格分隔)",
+      "stdout": "合并后的区间,每行一个",
+      "sample_in": "4\n1 3\n2 6\n8 10\n15 18",
+      "sample_out": "1 6\n8 10\n15 18"
+    }
+  },
+  "73": {
+    "core": "class Solution:\n    def setZeroes(self, m):\n        rows, cols = len(m), len(m[0])\n        first_row_zero = any(m[0][c] == 0 for c in range(cols))\n        first_col_zero = any(m[r][0] == 0 for r in range(rows))\n        for r in range(1, rows):\n            for c in range(1, cols):\n                if m[r][c] == 0:\n                    m[r][0] = m[0][c] = 0\n        for r in range(1, rows):\n            for c in range(1, cols):\n                if m[r][0] == 0 or m[0][c] == 0:\n                    m[r][c] = 0\n        if first_row_zero:\n            for c in range(cols):\n                m[0][c] = 0\n        if first_col_zero:\n            for r in range(rows):\n                m[r][0] = 0\n",
+    "interview": "class Solution:\n    def setZeroes(self, m):\n        rows, cols = len(m), len(m[0])\n        first_row_zero = any(m[0][c] == 0 for c in range(cols))\n        first_col_zero = any(m[r][0] == 0 for r in range(rows))\n        for r in range(1, rows):\n            for c in range(1, cols):\n                if m[r][c] == 0:\n                    m[r][0] = m[0][c] = 0\n        for r in range(1, rows):\n            for c in range(1, cols):\n                if m[r][0] == 0 or m[0][c] == 0:\n                    m[r][c] = 0\n        if first_row_zero:\n            for c in range(cols):\n                m[0][c] = 0\n        if first_col_zero:\n            for r in range(rows):\n                m[r][0] = 0\n\nif __name__ == \"__main__\":\n    m = [[1, 1, 1], [1, 0, 1], [1, 1, 1]]\n    Solution().setZeroes(m)\n    print(m)   # [[1, 0, 1], [0, 0, 0], [1, 0, 1]]\n",
+    "acm": "class Solution:\n    def setZeroes(self, m):\n        rows, cols = len(m), len(m[0])\n        first_row_zero = any(m[0][c] == 0 for c in range(cols))\n        first_col_zero = any(m[r][0] == 0 for r in range(rows))\n        for r in range(1, rows):\n            for c in range(1, cols):\n                if m[r][c] == 0:\n                    m[r][0] = m[0][c] = 0\n        for r in range(1, rows):\n            for c in range(1, cols):\n                if m[r][0] == 0 or m[0][c] == 0:\n                    m[r][c] = 0\n        if first_row_zero:\n            for c in range(cols):\n                m[0][c] = 0\n        if first_col_zero:\n            for r in range(rows):\n                m[r][0] = 0\n\ndef main():\n    rows, cols = map(int, input().split())\n    m = [list(map(int, input().split())) for _ in range(rows)]\n    Solution().setZeroes(m)\n    for row in m:\n        print(*row)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:行数 m 列数 n\n随后 m 行:每行 n 个数(空格分隔)",
+      "stdout": "置零后的矩阵,每行一行",
+      "sample_in": "3 3\n1 1 1\n1 0 1\n1 1 1",
+      "sample_out": "1 0 1\n0 0 0\n1 0 1"
+    }
+  },
+  "76": {
+    "core": "from collections import Counter\n\n\nclass Solution:\n    def minWindow(self, s, t):\n        if len(s) < len(t):\n            return \"\"\n        need = Counter(t)\n        kinds = len(need)\n        have = {}\n        valid = 0\n        l = 0\n        best_l, best_len = 0, float(\"inf\")\n        for r, c in enumerate(s):\n            if c in need:\n                have[c] = have.get(c, 0) + 1\n                if have[c] == need[c]:\n                    valid += 1\n            while valid == kinds:\n                if r - l + 1 < best_len:\n                    best_l, best_len = l, r - l + 1\n                lc = s[l]\n                if lc in need:\n                    if have[lc] == need[lc]:\n                        valid -= 1\n                    have[lc] -= 1\n                l += 1\n        return \"\" if best_len == float(\"inf\") else s[best_l:best_l + best_len]\n",
+    "interview": "from collections import Counter\n\n\nclass Solution:\n    def minWindow(self, s, t):\n        if len(s) < len(t):\n            return \"\"\n        need = Counter(t)\n        kinds = len(need)\n        have = {}\n        valid = 0\n        l = 0\n        best_l, best_len = 0, float(\"inf\")\n        for r, c in enumerate(s):\n            if c in need:\n                have[c] = have.get(c, 0) + 1\n                if have[c] == need[c]:\n                    valid += 1\n            while valid == kinds:\n                if r - l + 1 < best_len:\n                    best_l, best_len = l, r - l + 1\n                lc = s[l]\n                if lc in need:\n                    if have[lc] == need[lc]:\n                        valid -= 1\n                    have[lc] -= 1\n                l += 1\n        return \"\" if best_len == float(\"inf\") else s[best_l:best_l + best_len]\n\nif __name__ == \"__main__\":\n    print(Solution().minWindow(\"ADOBECODEBANC\", \"ABC\"))   # BANC\n",
+    "acm": "from collections import Counter\n\n\nclass Solution:\n    def minWindow(self, s, t):\n        if len(s) < len(t):\n            return \"\"\n        need = Counter(t)\n        kinds = len(need)\n        have = {}\n        valid = 0\n        l = 0\n        best_l, best_len = 0, float(\"inf\")\n        for r, c in enumerate(s):\n            if c in need:\n                have[c] = have.get(c, 0) + 1\n                if have[c] == need[c]:\n                    valid += 1\n            while valid == kinds:\n                if r - l + 1 < best_len:\n                    best_l, best_len = l, r - l + 1\n                lc = s[l]\n                if lc in need:\n                    if have[lc] == need[lc]:\n                        valid -= 1\n                    have[lc] -= 1\n                l += 1\n        return \"\" if best_len == float(\"inf\") else s[best_l:best_l + best_len]\n\ndef main():\n    s = input()\n    t = input()\n    print(Solution().minWindow(s, t))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:字符串 s\n第 2 行:字符串 t",
+      "stdout": "最小覆盖子串(无解输出空行)",
+      "sample_in": "ADOBECODEBANC\nABC",
+      "sample_out": "BANC"
+    }
+  },
+  "104": {
+    "core": "# 二叉树节点 TreeNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def maxDepth(self, root):\n        if not root:\n            return 0\n        return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))\n",
+    "interview": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\nclass Solution:\n    def maxDepth(self, root):\n        if not root:\n            return 0\n        return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))\n\nif __name__ == \"__main__\":\n    root = build_tree([3, 9, 20, None, None, 15, 7])\n    print(Solution().maxDepth(root))   # 3\n",
+    "acm": "from collections import deque\n\n\nclass TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\n\ndef build_tree(vals):\n    if not vals or vals[0] is None:\n        return None\n    root = TreeNode(vals[0])\n    q = deque([root])\n    i = 1\n    while q and i < len(vals):\n        node = q.popleft()\n        if i < len(vals) and vals[i] is not None:\n            node.left = TreeNode(vals[i])\n            q.append(node.left)\n        i += 1\n        if i < len(vals) and vals[i] is not None:\n            node.right = TreeNode(vals[i])\n            q.append(node.right)\n        i += 1\n    return root\n\nclass Solution:\n    def maxDepth(self, root):\n        if not root:\n            return 0\n        return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))\n\ndef main():\n    vals = [None if t == \"null\" else int(t) for t in input().split()]\n    print(Solution().maxDepth(build_tree(vals)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:二叉树层序遍历,空节点用 null(空格分隔)",
+      "stdout": "二叉树最大深度",
+      "sample_in": "3 9 20 null null 15 7",
+      "sample_out": "3"
+    }
+  },
+  "128": {
+    "core": "class Solution:\n    def longestConsecutive(self, nums):\n        S = set(nums)\n        best = 0\n        for x in S:\n            if x - 1 in S:\n                continue\n            y = x\n            while y + 1 in S:\n                y += 1\n            best = max(best, y - x + 1)\n        return best\n",
+    "interview": "class Solution:\n    def longestConsecutive(self, nums):\n        S = set(nums)\n        best = 0\n        for x in S:\n            if x - 1 in S:\n                continue\n            y = x\n            while y + 1 in S:\n                y += 1\n            best = max(best, y - x + 1)\n        return best\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.longestConsecutive([100, 4, 200, 1, 3, 2]))          # 4\n    print(s.longestConsecutive([0, 3, 7, 2, 5, 8, 4, 6, 0, 1]))  # 9\n",
+    "acm": "class Solution:\n    def longestConsecutive(self, nums):\n        S = set(nums)\n        best = 0\n        for x in S:\n            if x - 1 in S:\n                continue\n            y = x\n            while y + 1 in S:\n                y += 1\n            best = max(best, y - x + 1)\n        return best\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().longestConsecutive(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "最长连续序列长度",
+      "sample_in": "100 4 200 1 3 2",
+      "sample_out": "4"
+    }
+  },
+  "189": {
+    "core": "class Solution:\n    def rotate(self, nums, k):\n        n = len(nums)\n        k %= n\n        nums.reverse()\n        nums[:k] = reversed(nums[:k])\n        nums[k:] = reversed(nums[k:])\n",
+    "interview": "class Solution:\n    def rotate(self, nums, k):\n        n = len(nums)\n        k %= n\n        nums.reverse()\n        nums[:k] = reversed(nums[:k])\n        nums[k:] = reversed(nums[k:])\n\nif __name__ == \"__main__\":\n    nums = [1, 2, 3, 4, 5, 6, 7]\n    Solution().rotate(nums, 3)\n    print(nums)   # [5, 6, 7, 1, 2, 3, 4]\n",
+    "acm": "class Solution:\n    def rotate(self, nums, k):\n        n = len(nums)\n        k %= n\n        nums.reverse()\n        nums[:k] = reversed(nums[:k])\n        nums[k:] = reversed(nums[k:])\n\ndef main():\n    nums = list(map(int, input().split()))\n    k = int(input())\n    Solution().rotate(nums, k)\n    print(*nums)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:数组(空格分隔)\n第 2 行:k",
+      "stdout": "右移 k 位后的数组(空格分隔)",
+      "sample_in": "1 2 3 4 5 6 7\n3",
+      "sample_out": "5 6 7 1 2 3 4"
+    }
+  },
+  "206": {
+    "core": "# 链表节点 ListNode 由 LeetCode 平台内置,提交时只需 Solution\n\nclass Solution:\n    def reverseList(self, head):\n        prev = None\n        while head:\n            head.next, prev, head = prev, head, head.next\n        return prev\n",
+    "interview": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(vals):\n    dummy = cur = ListNode()\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\n\ndef to_list(head):\n    out = []\n    while head:\n        out.append(head.val)\n        head = head.next\n    return out\n\nclass Solution:\n    def reverseList(self, head):\n        prev = None\n        while head:\n            head.next, prev, head = prev, head, head.next\n        return prev\n\nif __name__ == \"__main__\":\n    head = build_list([1, 2, 3, 4, 5])\n    print(to_list(Solution().reverseList(head)))   # [5, 4, 3, 2, 1]\n",
+    "acm": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(vals):\n    dummy = cur = ListNode()\n    for v in vals:\n        cur.next = ListNode(v)\n        cur = cur.next\n    return dummy.next\n\n\ndef to_list(head):\n    out = []\n    while head:\n        out.append(head.val)\n        head = head.next\n    return out\n\nclass Solution:\n    def reverseList(self, head):\n        prev = None\n        while head:\n            head.next, prev, head = prev, head, head.next\n        return prev\n\ndef main():\n    vals = list(map(int, input().split()))\n    print(*to_list(Solution().reverseList(build_list(vals))))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:链表节点值(空格分隔);空链表为空行",
+      "stdout": "反转后的链表(空格分隔)",
+      "sample_in": "1 2 3 4 5",
+      "sample_out": "5 4 3 2 1"
+    }
+  },
+  "238": {
+    "core": "class Solution:\n    def productExceptSelf(self, nums):\n        n = len(nums)\n        ans = [1] * n\n        for i in range(1, n):\n            ans[i] = ans[i - 1] * nums[i - 1]\n        right = 1\n        for i in range(n - 1, -1, -1):\n            ans[i] *= right\n            right *= nums[i]\n        return ans\n",
+    "interview": "class Solution:\n    def productExceptSelf(self, nums):\n        n = len(nums)\n        ans = [1] * n\n        for i in range(1, n):\n            ans[i] = ans[i - 1] * nums[i - 1]\n        right = 1\n        for i in range(n - 1, -1, -1):\n            ans[i] *= right\n            right *= nums[i]\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().productExceptSelf([1, 2, 3, 4]))   # [24, 12, 8, 6]\n",
+    "acm": "class Solution:\n    def productExceptSelf(self, nums):\n        n = len(nums)\n        ans = [1] * n\n        for i in range(1, n):\n            ans[i] = ans[i - 1] * nums[i - 1]\n        right = 1\n        for i in range(n - 1, -1, -1):\n            ans[i] *= right\n            right *= nums[i]\n        return ans\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(*Solution().productExceptSelf(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "除自身外的乘积数组(空格分隔)",
+      "sample_in": "1 2 3 4",
+      "sample_out": "24 12 8 6"
+    }
+  },
+  "239": {
+    "core": "from collections import deque\n\n\nclass Solution:\n    def maxSlidingWindow(self, nums, k):\n        dq = deque()\n        ans = []\n        for i, x in enumerate(nums):\n            while dq and nums[dq[-1]] <= x:\n                dq.pop()\n            dq.append(i)\n            if dq[0] <= i - k:\n                dq.popleft()\n            if i >= k - 1:\n                ans.append(nums[dq[0]])\n        return ans\n",
+    "interview": "from collections import deque\n\n\nclass Solution:\n    def maxSlidingWindow(self, nums, k):\n        dq = deque()\n        ans = []\n        for i, x in enumerate(nums):\n            while dq and nums[dq[-1]] <= x:\n                dq.pop()\n            dq.append(i)\n            if dq[0] <= i - k:\n                dq.popleft()\n            if i >= k - 1:\n                ans.append(nums[dq[0]])\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().maxSlidingWindow([1, 3, -1, -3, 5, 3, 6, 7], 3))\n    # [3, 3, 5, 5, 6, 7]\n",
+    "acm": "from collections import deque\n\n\nclass Solution:\n    def maxSlidingWindow(self, nums, k):\n        dq = deque()\n        ans = []\n        for i, x in enumerate(nums):\n            while dq and nums[dq[-1]] <= x:\n                dq.pop()\n            dq.append(i)\n            if dq[0] <= i - k:\n                dq.popleft()\n            if i >= k - 1:\n                ans.append(nums[dq[0]])\n        return ans\n\ndef main():\n    nums = list(map(int, input().split()))\n    k = int(input())\n    print(*Solution().maxSlidingWindow(nums, k))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:数组(空格分隔)\n第 2 行:k",
+      "stdout": "每个窗口最大值(空格分隔)",
+      "sample_in": "1 3 -1 -3 5 3 6 7\n3",
+      "sample_out": "3 3 5 5 6 7"
+    }
+  },
+  "240": {
+    "core": "class Solution:\n    def searchMatrix(self, m, target):\n        if not m or not m[0]:\n            return False\n        i, j = 0, len(m[0]) - 1\n        while i < len(m) and j >= 0:\n            if m[i][j] == target:\n                return True\n            if m[i][j] > target:\n                j -= 1\n            else:\n                i += 1\n        return False\n",
+    "interview": "class Solution:\n    def searchMatrix(self, m, target):\n        if not m or not m[0]:\n            return False\n        i, j = 0, len(m[0]) - 1\n        while i < len(m) and j >= 0:\n            if m[i][j] == target:\n                return True\n            if m[i][j] > target:\n                j -= 1\n            else:\n                i += 1\n        return False\n\nif __name__ == \"__main__\":\n    m = [[1, 4, 7, 11], [2, 5, 8, 12], [3, 6, 9, 16]]\n    print(Solution().searchMatrix(m, 5))    # True\n",
+    "acm": "class Solution:\n    def searchMatrix(self, m, target):\n        if not m or not m[0]:\n            return False\n        i, j = 0, len(m[0]) - 1\n        while i < len(m) and j >= 0:\n            if m[i][j] == target:\n                return True\n            if m[i][j] > target:\n                j -= 1\n            else:\n                i += 1\n        return False\n\ndef main():\n    rows, cols = map(int, input().split())\n    m = [list(map(int, input().split())) for _ in range(rows)]\n    target = int(input())\n    print(\"true\" if Solution().searchMatrix(m, target) else \"false\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:行数 m 列数 n\n随后 m 行:每行 n 个数\n最后一行:target",
+      "stdout": "是否存在 target(true / false)",
+      "sample_in": "3 4\n1 4 7 11\n2 5 8 12\n3 6 9 16\n5",
+      "sample_out": "true"
+    }
+  },
+  "283": {
+    "core": "class Solution:\n    def moveZeroes(self, nums):\n        slow = 0\n        for fast in range(len(nums)):\n            if nums[fast]:\n                nums[slow], nums[fast] = nums[fast], nums[slow]\n                slow += 1\n",
+    "interview": "class Solution:\n    def moveZeroes(self, nums):\n        slow = 0\n        for fast in range(len(nums)):\n            if nums[fast]:\n                nums[slow], nums[fast] = nums[fast], nums[slow]\n                slow += 1\n\nif __name__ == \"__main__\":\n    nums = [0, 1, 0, 3, 12]\n    Solution().moveZeroes(nums)\n    print(nums)   # [1, 3, 12, 0, 0]\n",
+    "acm": "class Solution:\n    def moveZeroes(self, nums):\n        slow = 0\n        for fast in range(len(nums)):\n            if nums[fast]:\n                nums[slow], nums[fast] = nums[fast], nums[slow]\n                slow += 1\n\ndef main():\n    nums = list(map(int, input().split()))\n    Solution().moveZeroes(nums)\n    print(*nums)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "原地移动零后的数组(空格分隔)",
+      "sample_in": "0 1 0 3 12",
+      "sample_out": "1 3 12 0 0"
+    }
+  },
+  "438": {
+    "core": "from collections import Counter\n\n\nclass Solution:\n    def findAnagrams(self, s, p):\n        m, n = len(p), len(s)\n        if n < m:\n            return []\n        need = Counter(p)\n        win = Counter(s[:m])\n        ans = [0] if win == need else []\n        for r in range(m, n):\n            win[s[r]] += 1\n            win[s[r - m]] -= 1\n            if win[s[r - m]] == 0:\n                del win[s[r - m]]\n            if win == need:\n                ans.append(r - m + 1)\n        return ans\n",
+    "interview": "from collections import Counter\n\n\nclass Solution:\n    def findAnagrams(self, s, p):\n        m, n = len(p), len(s)\n        if n < m:\n            return []\n        need = Counter(p)\n        win = Counter(s[:m])\n        ans = [0] if win == need else []\n        for r in range(m, n):\n            win[s[r]] += 1\n            win[s[r - m]] -= 1\n            if win[s[r - m]] == 0:\n                del win[s[r - m]]\n            if win == need:\n                ans.append(r - m + 1)\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().findAnagrams(\"cbaebabacd\", \"abc\"))   # [0, 6]\n",
+    "acm": "from collections import Counter\n\n\nclass Solution:\n    def findAnagrams(self, s, p):\n        m, n = len(p), len(s)\n        if n < m:\n            return []\n        need = Counter(p)\n        win = Counter(s[:m])\n        ans = [0] if win == need else []\n        for r in range(m, n):\n            win[s[r]] += 1\n            win[s[r - m]] -= 1\n            if win[s[r - m]] == 0:\n                del win[s[r - m]]\n            if win == need:\n                ans.append(r - m + 1)\n        return ans\n\ndef main():\n    s = input()\n    p = input()\n    print(*Solution().findAnagrams(s, p))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:字符串 s\n第 2 行:模式串 p",
+      "stdout": "所有异位词起始下标(空格分隔)",
+      "sample_in": "cbaebabacd\nabc",
+      "sample_out": "0 6"
+    }
+  },
+  "560": {
+    "core": "from collections import defaultdict\n\n\nclass Solution:\n    def subarraySum(self, nums, k):\n        cnt = defaultdict(int)\n        cnt[0] = 1\n        s = ans = 0\n        for x in nums:\n            s += x\n            ans += cnt[s - k]\n            cnt[s] += 1\n        return ans\n",
+    "interview": "from collections import defaultdict\n\n\nclass Solution:\n    def subarraySum(self, nums, k):\n        cnt = defaultdict(int)\n        cnt[0] = 1\n        s = ans = 0\n        for x in nums:\n            s += x\n            ans += cnt[s - k]\n            cnt[s] += 1\n        return ans\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.subarraySum([1, 1, 1], 2))   # 2\n    print(s.subarraySum([1, 2, 3], 3))   # 2\n",
+    "acm": "from collections import defaultdict\n\n\nclass Solution:\n    def subarraySum(self, nums, k):\n        cnt = defaultdict(int)\n        cnt[0] = 1\n        s = ans = 0\n        for x in nums:\n            s += x\n            ans += cnt[s - k]\n            cnt[s] += 1\n        return ans\n\ndef main():\n    nums = list(map(int, input().split()))\n    k = int(input())\n    print(Solution().subarraySum(nums, k))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:数组(空格分隔)\n第 2 行:k",
+      "stdout": "和为 k 的连续子数组个数",
+      "sample_in": "1 1 1\n2",
+      "sample_out": "2"
+    }
+  }
+}

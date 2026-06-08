@@ -79,5 +79,16 @@
       "time": "**O(n)** —— 双指针总移动 n 次;单调栈每元素入/出栈各 1 次。",
       "space": "**O(1)** 双指针 / **O(n)** 单调栈。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def trap(self, h):\n        l, r = 0, len(h) - 1\n        lmax = rmax = ans = 0\n        while l < r:\n            if h[l] < h[r]:\n                lmax = max(lmax, h[l])\n                ans += lmax - h[l]\n                l += 1\n            else:\n                rmax = max(rmax, h[r])\n                ans += rmax - h[r]\n                r -= 1\n        return ans\n",
+    "interview": "class Solution:\n    def trap(self, h):\n        l, r = 0, len(h) - 1\n        lmax = rmax = ans = 0\n        while l < r:\n            if h[l] < h[r]:\n                lmax = max(lmax, h[l])\n                ans += lmax - h[l]\n                l += 1\n            else:\n                rmax = max(rmax, h[r])\n                ans += rmax - h[r]\n                r -= 1\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().trap([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]))   # 6\n",
+    "acm": "class Solution:\n    def trap(self, h):\n        l, r = 0, len(h) - 1\n        lmax = rmax = ans = 0\n        while l < r:\n            if h[l] < h[r]:\n                lmax = max(lmax, h[l])\n                ans += lmax - h[l]\n                l += 1\n            else:\n                rmax = max(rmax, h[r])\n                ans += rmax - h[r]\n                r -= 1\n        return ans\n\ndef main():\n    h = list(map(int, input().split()))\n    print(Solution().trap(h))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:高度数组(空格分隔)",
+      "stdout": "可接雨水总量",
+      "sample_in": "0 1 0 2 1 0 1 3 2 1 2 1",
+      "sample_out": "6"
+    }
   }
 }

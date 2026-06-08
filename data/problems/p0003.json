@@ -122,5 +122,16 @@
       "time": "**O(n)** —— r 单调右移 n 次;l 每次只前进、累计也最多 n。每个字符进出窗口各 1 次。",
       "space": "**O(min(n, |Σ|))** —— last 字典最多存 |Σ| 个字符种类;短字符串则受 n 限制。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def lengthOfLongestSubstring(self, s):\n        last = {}\n        left = ans = 0\n        for i, c in enumerate(s):\n            if c in last and last[c] >= left:\n                left = last[c] + 1\n            last[c] = i\n            ans = max(ans, i - left + 1)\n        return ans\n",
+    "interview": "class Solution:\n    def lengthOfLongestSubstring(self, s):\n        last = {}\n        left = ans = 0\n        for i, c in enumerate(s):\n            if c in last and last[c] >= left:\n                left = last[c] + 1\n            last[c] = i\n            ans = max(ans, i - left + 1)\n        return ans\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.lengthOfLongestSubstring(\"abcabcbb\"))   # 3\n    print(s.lengthOfLongestSubstring(\"bbbbb\"))       # 1\n    print(s.lengthOfLongestSubstring(\"pwwkew\"))      # 3\n",
+    "acm": "class Solution:\n    def lengthOfLongestSubstring(self, s):\n        last = {}\n        left = ans = 0\n        for i, c in enumerate(s):\n            if c in last and last[c] >= left:\n                left = last[c] + 1\n            last[c] = i\n            ans = max(ans, i - left + 1)\n        return ans\n\ndef main():\n    s = input()\n    print(Solution().lengthOfLongestSubstring(s))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行字符串 s",
+      "stdout": "最长无重复子串的长度",
+      "sample_in": "abcabcbb",
+      "sample_out": "3"
+    }
   }
 }

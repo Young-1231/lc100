@@ -52,5 +52,16 @@
       "time": "**O(n²)** —— 排序 O(n log n),外层 n 次,每次内层双指针 O(n),总体 O(n²) 主导。",
       "space": "**O(1)** 额外(不计输出和排序栈)。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def threeSum(self, nums):\n        nums.sort()\n        n, ans = len(nums), []\n        for i in range(n - 2):\n            if nums[i] > 0:\n                break\n            if i and nums[i] == nums[i - 1]:\n                continue\n            l, r, target = i + 1, n - 1, -nums[i]\n            while l < r:\n                s = nums[l] + nums[r]\n                if s == target:\n                    ans.append([nums[i], nums[l], nums[r]])\n                    l += 1\n                    r -= 1\n                    while l < r and nums[l] == nums[l - 1]:\n                        l += 1\n                    while l < r and nums[r] == nums[r + 1]:\n                        r -= 1\n                elif s < target:\n                    l += 1\n                else:\n                    r -= 1\n        return ans\n",
+    "interview": "class Solution:\n    def threeSum(self, nums):\n        nums.sort()\n        n, ans = len(nums), []\n        for i in range(n - 2):\n            if nums[i] > 0:\n                break\n            if i and nums[i] == nums[i - 1]:\n                continue\n            l, r, target = i + 1, n - 1, -nums[i]\n            while l < r:\n                s = nums[l] + nums[r]\n                if s == target:\n                    ans.append([nums[i], nums[l], nums[r]])\n                    l += 1\n                    r -= 1\n                    while l < r and nums[l] == nums[l - 1]:\n                        l += 1\n                    while l < r and nums[r] == nums[r + 1]:\n                        r -= 1\n                elif s < target:\n                    l += 1\n                else:\n                    r -= 1\n        return ans\n\nif __name__ == \"__main__\":\n    print(Solution().threeSum([-1, 0, 1, 2, -1, -4]))\n    # [[-1, -1, 2], [-1, 0, 1]]\n",
+    "acm": "class Solution:\n    def threeSum(self, nums):\n        nums.sort()\n        n, ans = len(nums), []\n        for i in range(n - 2):\n            if nums[i] > 0:\n                break\n            if i and nums[i] == nums[i - 1]:\n                continue\n            l, r, target = i + 1, n - 1, -nums[i]\n            while l < r:\n                s = nums[l] + nums[r]\n                if s == target:\n                    ans.append([nums[i], nums[l], nums[r]])\n                    l += 1\n                    r -= 1\n                    while l < r and nums[l] == nums[l - 1]:\n                        l += 1\n                    while l < r and nums[r] == nums[r + 1]:\n                        r -= 1\n                elif s < target:\n                    l += 1\n                else:\n                    r -= 1\n        return ans\n\ndef main():\n    nums = list(map(int, input().split()))\n    for triple in Solution().threeSum(nums):\n        print(*triple)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "每个三元组一行(空格分隔)",
+      "sample_in": "-1 0 1 2 -1 -4",
+      "sample_out": "-1 -1 2\n-1 0 1"
+    }
   }
 }

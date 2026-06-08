@@ -43,5 +43,16 @@
       "time": "**O(n · k)** —— n 个字符串,每个长度 k,计数法每串扫一遍 O(k)。排序法多个 log k 因子。",
       "space": "**O(n · k)** —— 存储所有字符串引用 + 哈希 key。"
     }
+  },
+  "modes": {
+    "core": "from collections import defaultdict\n\n\nclass Solution:\n    def groupAnagrams(self, strs):\n        bucket = defaultdict(list)\n        for s in strs:\n            cnt = [0] * 26\n            for c in s:\n                cnt[ord(c) - 97] += 1\n            bucket[tuple(cnt)].append(s)\n        return list(bucket.values())\n",
+    "interview": "from collections import defaultdict\n\n\nclass Solution:\n    def groupAnagrams(self, strs):\n        bucket = defaultdict(list)\n        for s in strs:\n            cnt = [0] * 26\n            for c in s:\n                cnt[ord(c) - 97] += 1\n            bucket[tuple(cnt)].append(s)\n        return list(bucket.values())\n\nif __name__ == \"__main__\":\n    print(Solution().groupAnagrams([\"eat\", \"tea\", \"tan\", \"ate\", \"nat\", \"bat\"]))\n    # [['eat', 'tea', 'ate'], ['tan', 'nat'], ['bat']]\n",
+    "acm": "from collections import defaultdict\n\n\nclass Solution:\n    def groupAnagrams(self, strs):\n        bucket = defaultdict(list)\n        for s in strs:\n            cnt = [0] * 26\n            for c in s:\n                cnt[ord(c) - 97] += 1\n            bucket[tuple(cnt)].append(s)\n        return list(bucket.values())\n\ndef main():\n    strs = input().split()\n    for group in Solution().groupAnagrams(strs):\n        print(*group)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:若干字符串(空格分隔)",
+      "stdout": "每组异位词一行(组内空格分隔)",
+      "sample_in": "eat tea tan ate nat bat",
+      "sample_out": "eat tea ate\ntan nat\nbat"
+    }
   }
 }

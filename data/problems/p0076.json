@@ -43,5 +43,16 @@
       "time": "**O(|s| + |t|)** —— l 和 r 都最多移动 |s| 次;每次 dict 操作 O(1)。",
       "space": "**O(|Σ|)** —— need/have 字典各最多 |Σ| 个 key。"
     }
+  },
+  "modes": {
+    "core": "from collections import Counter\n\n\nclass Solution:\n    def minWindow(self, s, t):\n        if len(s) < len(t):\n            return \"\"\n        need = Counter(t)\n        kinds = len(need)\n        have = {}\n        valid = 0\n        l = 0\n        best_l, best_len = 0, float(\"inf\")\n        for r, c in enumerate(s):\n            if c in need:\n                have[c] = have.get(c, 0) + 1\n                if have[c] == need[c]:\n                    valid += 1\n            while valid == kinds:\n                if r - l + 1 < best_len:\n                    best_l, best_len = l, r - l + 1\n                lc = s[l]\n                if lc in need:\n                    if have[lc] == need[lc]:\n                        valid -= 1\n                    have[lc] -= 1\n                l += 1\n        return \"\" if best_len == float(\"inf\") else s[best_l:best_l + best_len]\n",
+    "interview": "from collections import Counter\n\n\nclass Solution:\n    def minWindow(self, s, t):\n        if len(s) < len(t):\n            return \"\"\n        need = Counter(t)\n        kinds = len(need)\n        have = {}\n        valid = 0\n        l = 0\n        best_l, best_len = 0, float(\"inf\")\n        for r, c in enumerate(s):\n            if c in need:\n                have[c] = have.get(c, 0) + 1\n                if have[c] == need[c]:\n                    valid += 1\n            while valid == kinds:\n                if r - l + 1 < best_len:\n                    best_l, best_len = l, r - l + 1\n                lc = s[l]\n                if lc in need:\n                    if have[lc] == need[lc]:\n                        valid -= 1\n                    have[lc] -= 1\n                l += 1\n        return \"\" if best_len == float(\"inf\") else s[best_l:best_l + best_len]\n\nif __name__ == \"__main__\":\n    print(Solution().minWindow(\"ADOBECODEBANC\", \"ABC\"))   # BANC\n",
+    "acm": "from collections import Counter\n\n\nclass Solution:\n    def minWindow(self, s, t):\n        if len(s) < len(t):\n            return \"\"\n        need = Counter(t)\n        kinds = len(need)\n        have = {}\n        valid = 0\n        l = 0\n        best_l, best_len = 0, float(\"inf\")\n        for r, c in enumerate(s):\n            if c in need:\n                have[c] = have.get(c, 0) + 1\n                if have[c] == need[c]:\n                    valid += 1\n            while valid == kinds:\n                if r - l + 1 < best_len:\n                    best_l, best_len = l, r - l + 1\n                lc = s[l]\n                if lc in need:\n                    if have[lc] == need[lc]:\n                        valid -= 1\n                    have[lc] -= 1\n                l += 1\n        return \"\" if best_len == float(\"inf\") else s[best_l:best_l + best_len]\n\ndef main():\n    s = input()\n    t = input()\n    print(Solution().minWindow(s, t))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "第 1 行:字符串 s\n第 2 行:字符串 t",
+      "stdout": "最小覆盖子串(无解输出空行)",
+      "sample_in": "ADOBECODEBANC\nABC",
+      "sample_out": "BANC"
+    }
   }
 }

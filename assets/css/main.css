@@ -920,6 +920,38 @@ pre.code {
 .cx-card p { margin: 0; line-height: 1.7; font-size: 14px; }
 .cx-card strong { color: var(--accent); font-weight: 600; }
 
+/* ===== ACM mode (stdin/stdout) ===== */
+.src-pane.hidden { display: none; }
+.acm-note {
+  font-size: 13px;
+  color: var(--text-soft);
+  margin: 0 0 14px;
+  line-height: 1.7;
+}
+.acm-io {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 12px 0;
+}
+@media (max-width: 720px) {
+  .acm-io { grid-template-columns: 1fr; }
+}
+.acm-io-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: var(--bg-elev);
+}
+.acm-io-card pre {
+  margin: 6px 0 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 /* ===== highlight.js overrides (works with default github-dark theme) ===== */
 .hljs { background: transparent !important; padding: 0 !important; }
 

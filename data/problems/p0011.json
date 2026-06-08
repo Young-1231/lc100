@@ -71,5 +71,16 @@
       "time": "**O(n)** —— l 和 r 总共移动 n 次。",
       "space": "**O(1)** —— 只用了几个变量。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def maxArea(self, h):\n        i, j, best = 0, len(h) - 1, 0\n        while i < j:\n            best = max(best, (j - i) * min(h[i], h[j]))\n            if h[i] < h[j]:\n                i += 1\n            else:\n                j -= 1\n        return best\n",
+    "interview": "class Solution:\n    def maxArea(self, h):\n        i, j, best = 0, len(h) - 1, 0\n        while i < j:\n            best = max(best, (j - i) * min(h[i], h[j]))\n            if h[i] < h[j]:\n                i += 1\n            else:\n                j -= 1\n        return best\n\nif __name__ == \"__main__\":\n    print(Solution().maxArea([1, 8, 6, 2, 5, 4, 8, 3, 7]))   # 49\n",
+    "acm": "class Solution:\n    def maxArea(self, h):\n        i, j, best = 0, len(h) - 1, 0\n        while i < j:\n            best = max(best, (j - i) * min(h[i], h[j]))\n            if h[i] < h[j]:\n                i += 1\n            else:\n                j -= 1\n        return best\n\ndef main():\n    h = list(map(int, input().split()))\n    print(Solution().maxArea(h))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:高度数组(空格分隔)",
+      "stdout": "最大盛水量",
+      "sample_in": "1 8 6 2 5 4 8 3 7",
+      "sample_out": "49"
+    }
   }
 }

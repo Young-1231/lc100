@@ -35,5 +35,16 @@
       "time": "**O(n)** —— 见上方均摊分析。",
       "space": "**O(n)** —— set 存所有元素。"
     }
+  },
+  "modes": {
+    "core": "class Solution:\n    def longestConsecutive(self, nums):\n        S = set(nums)\n        best = 0\n        for x in S:\n            if x - 1 in S:\n                continue\n            y = x\n            while y + 1 in S:\n                y += 1\n            best = max(best, y - x + 1)\n        return best\n",
+    "interview": "class Solution:\n    def longestConsecutive(self, nums):\n        S = set(nums)\n        best = 0\n        for x in S:\n            if x - 1 in S:\n                continue\n            y = x\n            while y + 1 in S:\n                y += 1\n            best = max(best, y - x + 1)\n        return best\n\nif __name__ == \"__main__\":\n    s = Solution()\n    print(s.longestConsecutive([100, 4, 200, 1, 3, 2]))          # 4\n    print(s.longestConsecutive([0, 3, 7, 2, 5, 8, 4, 6, 0, 1]))  # 9\n",
+    "acm": "class Solution:\n    def longestConsecutive(self, nums):\n        S = set(nums)\n        best = 0\n        for x in S:\n            if x - 1 in S:\n                continue\n            y = x\n            while y + 1 in S:\n                y += 1\n            best = max(best, y - x + 1)\n        return best\n\ndef main():\n    nums = list(map(int, input().split()))\n    print(Solution().longestConsecutive(nums))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+    "acm_io": {
+      "stdin": "一行:数组(空格分隔)",
+      "stdout": "最长连续序列长度",
+      "sample_in": "100 4 200 1 3 2",
+      "sample_out": "4"
+    }
   }
 }
