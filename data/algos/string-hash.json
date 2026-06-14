@@ -1,0 +1,80 @@
+{
+  "id": "string-hash",
+  "title": "字符串哈希 Rabin-Karp",
+  "category": "字符串",
+  "family": "string",
+  "tags": [
+    "字符串匹配",
+    "滚动哈希",
+    "哈希"
+  ],
+  "summary": "给模式串和文本每个窗口算**多项式哈希指纹**,滚动 `O(1)` 更新,指纹相同再逐字符确认,期望 `O(n+m)` 找首个匹配。",
+  "idea": "🔹 一句话\n把字符串看成一个大整数的『指纹』:用同一套规则给模式串 pat 和文本里每个长 m 的窗口各算一个哈希值。指纹不同必然不等,指纹相同再逐字符确认。配合滚动哈希,窗口右移时 O(1) 更新指纹,整体期望 O(n+m)。\n\n🔹 多项式哈希(为什么这样设计)\n把长度 m 的串 s 看成一个 BASE 进制数:\n`hash(s) = (s[0]·BASE^(m-1) + s[1]·BASE^(m-2) + … + s[m-1]) mod MOD`\n- `BASE` 取一个比字符集大的数(如 131 / 13331),让每位有不同权重,顺序信息被保留:`\"ab\"` 与 `\"ba\"` 指纹不同;\n- `MOD` 取大质数(如 `2^61-1`),把无限长的串压进固定范围,顺便压低碰撞概率。\n\n🔹 滚动 O(1) 更新(复杂度从哪来)\n窗口从 `[i, i+m)` 右移到 `[i+1, i+m+1)`:去掉最高位 `text[i]`、整体左移一位、补进新尾 `text[i+m]`。\n```\n窗口右移一步(m=3,BASE=10 简化演示,字符用其数字):\n  text =  3 1 4 1 5\n  窗口[0,3) = 314\n  右移 → 去掉最高位 3·10^2,左移补尾 1:\n    new = (314 − 3·100)·10 + 1 = 141 = 窗口[1,4) ✓\n通式: new = (old − text[i]·BASE^(m-1))·BASE + text[i+m]   (mod MOD)\n```\n预处理 `high = BASE^(m-1)` 后,每次更新只做常数次乘加 → O(1)。于是:预处理 O(m),滑动 n−m+1 个窗口各 O(1),命中校验摊还 O(m),期望总复杂度 **O(n+m)**;最坏(持续碰撞或被构造卡)退化到 O(nm)。\n\n🔹 碰撞与防御\n哈希把无限空间映射到有限空间,必然存在『指纹相等但串不等』的碰撞。两道防线:\n1. **命中校验**:`hash 相等` 只是必要条件,真命中时再用 `text[i:i+m]==pat` 逐字符确认——单哈希必须这么做,否则可被构造数据 hack 出错误下标。\n2. **双哈希**:用两组 `(MOD, BASE)` 同时比对,碰撞概率约 `1/(MOD1·MOD2)`,小到可忽略,常用于省去逐字符校验,或做海量子串去重/集合判重。\n\n另外别把 C++ 的『自然溢出』(unsigned `2^64`)当唯一哈希:Thue–Morse 之类输入能精准把它卡到碰撞;用大质数模或双哈希更稳。\n\n🔹 三种写法取舍\n- **单哈希 + 校验**:最稳的工程首选,命中才回退逐字符,既快又零误判。\n- **双哈希**:不便逐字符校验时用(如只需哈希相等性判断、海量子串去重),概率上免疫碰撞。\n- **前缀哈希**:O(n) 预处理出前缀哈希与 BASE 幂,之后任意子串哈希 O(1)——对『同一文本、多次/多模式查询』最划算。",
+  "complexity": {
+    "best": "O(n+m)",
+    "avg": "O(n+m)",
+    "worst": "O(nm)",
+    "space": "O(1)",
+    "stable": null,
+    "in_place": null,
+    "note": "单/双哈希为滚动窗口,额外空间 `O(1)`;前缀哈希需预存前缀与幂数组,`O(n)`。期望 `O(n+m)`,最坏 `O(nm)` 出现在持续碰撞或每窗口都触发逐字符校验时。`stable`/`in_place` 对匹配算法无意义,取 null。"
+  },
+  "entry": "find",
+  "test_code": "import random\nrandom.seed(20240614)\n\n# —— 边界 ——\nassert find(\"\", \"\") == 0\nassert find(\"abc\", \"\") == 0\nassert find(\"\", \"a\") == -1\nassert find(\"a\", \"a\") == 0\nassert find(\"a\", \"b\") == -1\nassert find(\"abc\", \"abcd\") == -1            # 模式比文本长\nassert find(\"aaaaa\", \"aaa\") == 0            # 重叠匹配取最左\nassert find(\"abcabd\", \"abd\") == 3\nassert find(\"mississippi\", \"issip\") == \"mississippi\".find(\"issip\")\nassert find(\"hello world\", \"world\") == 6    # 命中末尾\n\n# —— 随机对拍 str.find:小字符集制造大量碰撞机会 ——\nfor _ in range(1000):\n    text = \"\".join(random.choice(\"ab\") for _ in range(random.randint(0, 24)))\n    pat = \"\".join(random.choice(\"ab\") for _ in range(random.randint(0, 5)))\n    assert find(text, pat) == text.find(pat), (text, pat)\n\n# —— 大字符集 + 从文本切真实子串,确保命中分支被覆盖 ——\nfor _ in range(500):\n    n = random.randint(1, 40)\n    text = \"\".join(random.choice(\"abcdefg\") for _ in range(n))\n    i = random.randint(0, n - 1)\n    j = random.randint(i + 1, n)\n    pat = text[i:j]\n    assert find(text, pat) == text.find(pat), (text, pat)",
+  "variants": [
+    {
+      "title": "单哈希 + 命中校验",
+      "time": "期望 O(n+m) / 最坏 O(nm)",
+      "space": "O(1)",
+      "starred": true,
+      "note": "大质数模 + 滚动哈希,**命中后逐字符确认**杜绝碰撞误判,工程首选。",
+      "code": "def find(text, pat):\n    \"\"\"Rabin-Karp 单哈希:多项式滚动哈希 + 命中后逐字符校验。期望 O(n+m),零误判。\"\"\"\n    n, m = len(text), len(pat)\n    if m == 0:\n        return 0                 # 与 str.find 对齐:空模式返回 0\n    if m > n:\n        return -1\n    MOD = (1 << 61) - 1          # 大梅森质数,极低碰撞\n    BASE = 131                   # 比字符集大,保证进位不混淆\n    high = pow(BASE, m - 1, MOD)  # 滚动时去掉最高位用\n    hp = hw = 0\n    for k in range(m):\n        hp = (hp * BASE + ord(pat[k])) % MOD\n        hw = (hw * BASE + ord(text[k])) % MOD\n    for i in range(n - m + 1):\n        if hw == hp and text[i:i + m] == pat:   # 哈希相等再逐字符确认,杜绝误判\n            return i\n        if i < n - m:                           # 滚动:去掉 text[i],补入 text[i+m]\n            hw = ((hw - ord(text[i]) * high) * BASE + ord(text[i + m])) % MOD\n    return -1"
+    },
+    {
+      "title": "双哈希(防碰撞)",
+      "time": "期望 O(n+m)",
+      "space": "O(1)",
+      "starred": false,
+      "note": "两组 `(MOD, BASE)` 同时比对,碰撞概率约 `1/(MOD1·MOD2)`,可省去逐字符校验。",
+      "code": "def find(text, pat):\n    \"\"\"Rabin-Karp 双哈希:两组 (MOD, BASE) 同时比对,碰撞概率约 1/(MOD1*MOD2),可省去逐字符校验。\"\"\"\n    n, m = len(text), len(pat)\n    if m == 0:\n        return 0\n    if m > n:\n        return -1\n    MOD1, BASE1 = (1 << 31) - 1, 131\n    MOD2, BASE2 = 998244353, 13331\n    h1 = pow(BASE1, m - 1, MOD1)\n    h2 = pow(BASE2, m - 1, MOD2)\n    p1 = p2 = w1 = w2 = 0\n    for k in range(m):\n        cp, cw = ord(pat[k]), ord(text[k])\n        p1 = (p1 * BASE1 + cp) % MOD1\n        p2 = (p2 * BASE2 + cp) % MOD2\n        w1 = (w1 * BASE1 + cw) % MOD1\n        w2 = (w2 * BASE2 + cw) % MOD2\n    for i in range(n - m + 1):\n        if w1 == p1 and w2 == p2:               # 双指纹同时命中即认定匹配,无需逐字符\n            return i\n        if i < n - m:\n            out, inc = ord(text[i]), ord(text[i + m])\n            w1 = ((w1 - out * h1) * BASE1 + inc) % MOD1\n            w2 = ((w2 - out * h2) * BASE2 + inc) % MOD2\n    return -1"
+    },
+    {
+      "title": "前缀哈希(子串 O(1) 查询)",
+      "time": "预处理 O(n) + 滑动 O(n)",
+      "space": "O(n)",
+      "starred": false,
+      "note": "预处理前缀哈希与 BASE 幂,任意子串哈希 `O(1)`;同一文本多次/多模式查询最划算。",
+      "code": "def find(text, pat):\n    \"\"\"前缀哈希:O(n) 预处理前缀哈希与 BASE 幂,任意子串哈希 O(1) 取出;命中后逐字符校验。\n    适合『同一文本、多次/多模式查询』的场景。\"\"\"\n    n, m = len(text), len(pat)\n    if m == 0:\n        return 0\n    if m > n:\n        return -1\n    MOD = (1 << 61) - 1\n    BASE = 131\n    power = [1] * (n + 1)                 # power[k] = BASE^k % MOD\n    for k in range(1, n + 1):\n        power[k] = power[k - 1] * BASE % MOD\n    h = [0] * (n + 1)                     # h[i] = hash(text[:i])\n    for i in range(1, n + 1):\n        h[i] = (h[i - 1] * BASE + ord(text[i - 1])) % MOD\n    hp = 0\n    for ch in pat:\n        hp = (hp * BASE + ord(ch)) % MOD\n    def sub(l, r):                        # 子串 text[l:r) 的哈希,O(1)\n        return (h[r] - h[l] * power[r - l]) % MOD\n    for i in range(n - m + 1):\n        if sub(i, i + m) == hp and text[i:i + m] == pat:\n            return i\n    return -1"
+    }
+  ],
+  "compare_table": "| 写法 | 误判防御 | 额外空间 | 适用场景 |\n| --- | --- | --- | --- |\n| 单哈希 + 校验 | 命中逐字符确认,零误判 | O(1) | 通用首选 |\n| 双哈希 | 概率免疫(~1/MOD²) | O(1) | 免校验 / 海量子串判重 |\n| 前缀哈希 | 命中逐字符确认 | O(n) | 同一文本多次查询 |",
+  "gotchas": [
+    "空模式要与 `str.find` 对齐:`\"abc\".find(\"\")` 返回 `0`,实现里先判 `m==0` 提前返回,否则 `pow(BASE, m-1, MOD)` 或循环会出错。",
+    "**单哈希一定要命中后逐字符校验**,否则会被构造数据(anti-hash)制造碰撞,返回错误下标。",
+    "`BASE` 要大于字符集且与 `MOD` 互质;`BASE` 取太小(甚至 1)或把字符直接相加,会让 `\"ab\"` 与 `\"ba\"` 撞车。",
+    "滚动更新别忘了减去最高位 `text[i]·BASE^(m-1)`;Python 负数取模天然非负,但 C/C++/Java 要手动 `((x % MOD) + MOD) % MOD`。",
+    "别把 C++『自然溢出 unsigned 64』当唯一哈希:Thue–Morse 串能稳定把它卡到碰撞;比赛/工程用大质数模或双哈希。"
+  ],
+  "applications": [
+    {
+      "label": "LC 28 · 找出字符串中第一个匹配项的下标",
+      "url": "https://leetcode.cn/problems/find-the-index-of-the-first-occurrence-in-a-string/"
+    },
+    {
+      "label": "LC 187 · 重复的 DNA 序列",
+      "url": "https://leetcode.cn/problems/repeated-dna-sequences/"
+    },
+    {
+      "label": "LC 1392 · 最长快乐前缀",
+      "url": "https://leetcode.cn/problems/longest-happy-prefix/"
+    },
+    {
+      "label": "LC 1044 · 最长重复子串(二分答案 + 哈希)",
+      "url": "https://leetcode.cn/problems/longest-duplicate-substring/"
+    }
+  ],
+  "related": [
+    "kmp",
+    "z-function"
+  ]
+}

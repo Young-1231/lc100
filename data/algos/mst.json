@@ -1,0 +1,75 @@
+{
+  "id": "mst",
+  "title": "最小生成树 Kruskal / Prim",
+  "category": "最小生成树",
+  "family": "graph",
+  "tags": [
+    "图论",
+    "贪心",
+    "并查集",
+    "堆优化"
+  ],
+  "summary": "在带权无向图里选 `n-1` 条边连通所有点、总权重最小;**Kruskal**(排序+并查集)与 **Prim**(堆扩展)都靠**切割性质**贪心,图不连通返回 -1。",
+  "idea": "🔹 一句话\n最小生成树(MST):在带权无向**连通**图里,选 `n-1` 条边把所有点连起来、且总权重最小的子图(它一定是一棵树)。Kruskal 与 Prim 都是**贪心**算法,而它们之所以正确,根子上靠的是同一条**切割性质(cut property)**。\n\n🔹 切割性质:贪心为什么是对的\n把节点任意分成两个非空集合 `S` 与 `V\\S`,这叫一个『切割(cut)』。在所有**横跨**切割的边(一端在 `S`、另一端在 `V\\S`)里,**权值最小的那条边一定能出现在某棵 MST 中**——称它为『安全边』。直觉证明:任何生成树都必须至少有一条边跨过这个切割来连通两侧;若它用的是更大的跨边,把那条换成这条最小跨边,连通性不变、而总权重不增。Kruskal 和 Prim 的全部花样,无非是用不同方式反复地找出并加入安全边。\n\n🔹 Kruskal:边的视角\n把所有边按权值**升序排序**,从小到大依次尝试加入;用**并查集**判断当前边两端是否已经连通——已连通则加入会成环,跳过;否则合并两端、把权重计入答案。选满 `n-1` 条边即完成。每次取的都是『连接两个不同连通块的最小边』,这正是某个切割的最小跨边,所以安全。瓶颈在排序 `O(E log E)`,并查集合并近似 `O(α)`(α 为反阿克曼,可视作常数),总复杂度 `O(E log E)=O(E log V)`。\n\n🔹 Prim:点的视角\n从任意起点出发,维护一个『已并入树的点集 `S`』。每一步在**所有跨越 `S` 的边**里取权值最小的,把它通向的新点并入 `S`,直到所有点都进来。用**小根堆**保存候选跨边:每并入一个点就把它的出边压堆;弹出时若另一端已在 `S` 内就丢弃(惰性删除)。每步取出的就是当前切割 `(S, V\\S)` 的最小跨边,故安全。堆优化后复杂度 `O(E log V)`。\n\n🔹 两法怎么选 / 适用场景\n| 维度 | Kruskal | Prim(堆) |\n| --- | --- | --- |\n| 视角 | 边(全局排序) | 点(局部扩展) |\n| 核心结构 | 并查集 | 优先队列 + 邻接表 |\n| 复杂度 | O(E log E) | O(E log V) |\n| 擅长 | **稀疏图**(E 小)、边已给成列表 | **稠密图**、从某点动态生长 |\n| 判不连通 | 选不满 n-1 条边 | 堆空时仍有点没访问 |\n稀疏图(`E≈V`)边少、排序便宜,Kruskal 写起来最直接;稠密图(`E≈V²`)用 Prim+堆更划算(极稠密时甚至用邻接矩阵的朴素 Prim `O(V²)` 反而更快)。两者都能用『是否选够 n-1 条边 / 是否访问完所有点』判断图不连通——本实现约定**不连通时返回 -1**。\n\n🔹 过程图示(Kruskal,4 个点)\n```\n点 {0,1,2,3}   边(已按权升序):\n  (2,3,4) (0,3,5) (0,2,6) (0,1,10) (1,3,15)\n取 (2,3,4)   并查集 {2,3}             ✓  累计 4\n取 (0,3,5)   并查集 {0,2,3}           ✓  累计 9\n取 (0,2,6)   0,2 已同块 → 成环,跳过   ✗\n取 (0,1,10)  并查集 {0,1,2,3}         ✓  累计 19  ← 已选满 n-1=3 条边\nMST 总权重 = 19\n```",
+  "complexity": {
+    "best": "O(E log V)",
+    "avg": "O(E log V)",
+    "worst": "O(E log V)",
+    "space": "O(V + E)",
+    "stable": null,
+    "in_place": null,
+    "note": "V = 节点数 n,E = 边数。Kruskal 主开销是排序 `O(E log E)`,由 `E ≤ V²` 得 `log E ≤ 2 log V`,故记 `O(E log V)`;并查集合并近似 `O(α)`。Prim 堆优化为 `O(E log V)`。空间 `O(V+E)` 存图 / 并查集 / 堆。图**不连通**(选不满 `n-1` 条边)时约定返回 **-1**。`stable` / `in_place` 是排序概念,对图算法不适用,记 null。"
+  },
+  "entry": "mst_weight",
+  "test_code": "import random\nfrom itertools import combinations\nrandom.seed(20240614)\n\n\ndef _find(parent, x):\n    while parent[x] != x:\n        parent[x] = parent[parent[x]]\n        x = parent[x]\n    return x\n\n\ndef mst_ref(n, edges):\n    \"\"\"暴力参照:枚举所有 n-1 条边的组合,取既无环又连通全图的最小权重。\n    n-1 条无环边必为生成树(连通),故只需判无环。仅用于小图对拍。\"\"\"\n    if n <= 1:\n        return 0\n    if len(edges) < n - 1:\n        return -1\n    best = None\n    for combo in combinations(range(len(edges)), n - 1):\n        parent = list(range(n))\n        total = 0\n        ok = True\n        for idx in combo:\n            u, v, w = edges[idx]\n            ru, rv = _find(parent, u), _find(parent, v)\n            if ru == rv:                 # 自环或成环\n                ok = False\n                break\n            parent[ru] = rv\n            total += w\n        if ok and (best is None or total < best):\n            best = total\n    return best if best is not None else -1\n\n\n# —— 固定图:断言已知 MST 权重 ——\nassert mst_weight(1, []) == 0                      # 单点,无需选边\nassert mst_weight(2, [(0, 1, 7)]) == 7\nassert mst_weight(4, [(0, 1, 10), (0, 2, 6), (0, 3, 5), (1, 3, 15), (2, 3, 4)]) == 19\nassert mst_weight(3, [(0, 1, 5), (0, 1, 1), (1, 2, 2), (0, 2, 4)]) == 3   # 平行边只取最小\nassert mst_weight(9, [(0, 1, 4), (0, 7, 8), (1, 7, 11), (1, 2, 8), (7, 8, 7),\n                      (7, 6, 1), (8, 2, 2), (8, 6, 6), (2, 3, 7), (2, 5, 4),\n                      (6, 5, 2), (3, 5, 14), (3, 4, 9), (5, 4, 10)]) == 37  # CLRS 经典图\n\n# —— 不连通:返回 -1 ——\nassert mst_weight(2, []) == -1\nassert mst_weight(4, [(0, 1, 1), (2, 3, 2)]) == -1\nassert mst_weight(5, [(0, 1, 1), (1, 2, 1), (3, 4, 1)]) == -1\n\n# —— 与暴力枚举对拍(小图;随机含平行边、自环、不连通情形)——\nfor _ in range(1500):\n    n = random.randint(1, 6)\n    m = random.randint(0, 10)\n    edges = []\n    for _ in range(m):\n        u = random.randint(0, n - 1)\n        v = random.randint(0, n - 1)\n        w = random.randint(1, 15)\n        edges.append((u, v, w))\n    assert mst_weight(n, edges) == mst_ref(n, edges), (n, edges)\n",
+  "variants": [
+    {
+      "title": "Kruskal(排序 + 并查集)",
+      "time": "O(E log E)",
+      "space": "O(V + E)",
+      "starred": true,
+      "note": "边视角:边升序后逐条用并查集判环加入,选满 `n-1` 条即完成。输入恰是边列表时最直接,面试 / 工程首选。",
+      "code": "def mst_weight(n, edges):\n    \"\"\"Kruskal:按边权升序贪心,用并查集判环;选满 n-1 条边即得 MST。\n    edges=[(u,v,w)] 为无向带权图;图不连通(选不满 n-1 条边)时返回 -1。\"\"\"\n    parent = list(range(n))\n    rank = [0] * n\n\n    def find(x):\n        while parent[x] != x:\n            parent[x] = parent[parent[x]]   # 路径压缩\n            x = parent[x]\n        return x\n\n    def union(a, b):\n        ra, rb = find(a), find(b)\n        if ra == rb:\n            return False                     # 已在同一集合,加入会成环\n        if rank[ra] < rank[rb]:              # 按秩合并,控制树高\n            ra, rb = rb, ra\n        parent[rb] = ra\n        if rank[ra] == rank[rb]:\n            rank[ra] += 1\n        return True\n\n    total = 0\n    used = 0\n    for u, v, w in sorted(edges, key=lambda e: e[2]):\n        if union(u, v):\n            total += w\n            used += 1\n            if used == n - 1:               # 已连成树,提前收工\n                break\n    return total if used == n - 1 else -1\n"
+    },
+    {
+      "title": "Prim(堆优化)",
+      "time": "O(E log V)",
+      "space": "O(V + E)",
+      "starred": false,
+      "note": "点视角:从任意起点用小根堆反复取最小跨边扩展,惰性删除处理过期项;稠密图更划算。",
+      "code": "import heapq\n\n\ndef mst_weight(n, edges):\n    \"\"\"Prim(堆优化):从任意起点出发,反复取『跨越已选点集的最小边』扩展。\n    edges=[(u,v,w)] 为无向带权图;图不连通(堆空仍有点没访问)时返回 -1。\"\"\"\n    if n <= 1:\n        return 0\n    g = [[] for _ in range(n)]\n    for u, v, w in edges:\n        g[u].append((w, v))                 # 无向图,双向建边\n        g[v].append((w, u))\n    visited = [False] * n\n    heap = [(0, 0)]                          # (接入代价, 节点);起点 0 接入代价 0\n    total = 0\n    count = 0\n    while heap and count < n:\n        w, u = heapq.heappop(heap)\n        if visited[u]:\n            continue                         # 惰性删除:出堆才判重,跳过过期候选\n        visited[u] = True\n        total += w\n        count += 1\n        for nw, v in g[u]:\n            if not visited[v]:\n                heapq.heappush(heap, (nw, v))\n    return total if count == n else -1\n"
+    }
+  ],
+  "compare_table": "| 写法 | 视角 | 核心结构 | 复杂度 | 适用 |\n| --- | --- | --- | --- | --- |\n| Kruskal | 边·全局排序 | 并查集 | O(E log E) | 稀疏图、边成列表(首选) |\n| Prim(堆) | 点·局部扩展 | 优先队列 + 邻接表 | O(E log V) | 稠密图、从一点生长 |",
+  "gotchas": [
+    "图**不连通**时没有生成树:Kruskal 选不满 `n-1` 条边、Prim 堆空时仍有点没访问——都要识别并按约定返回 **-1**,别返回半截权重。",
+    "Kruskal 必须用并查集判环;漏判会让边成环、边数超过 `n-1` 且权重偏大。并查集要带**路径压缩**或**按秩合并**,否则可能退化成链。",
+    "Prim 的堆要用**惰性删除**:弹出后再检查另一端是否已访问、跳过过期候选;不要试图在入堆时去重,既复杂又易错。",
+    "Prim 起点**任选都正确**(MST 与起点无关),但 `total` / `count` 的初值要对应『起点接入代价为 0』。",
+    "平行边与自环:自环必成环、永不入 MST;平行边只会取权值最小那条。两种实现都应天然处理,别提前去重而误删了该留的边。",
+    "边权可正可负都不影响 MST 正确性(切割性质对负权同样成立)——这点与最短路对负权敏感不同。"
+  ],
+  "applications": [
+    {
+      "label": "LC 1584 · 连接所有点的最小费用",
+      "url": "https://leetcode.cn/problems/min-cost-to-connect-all-points/"
+    },
+    {
+      "label": "LC 1135 · 最低成本联通所有城市",
+      "url": "https://leetcode.cn/problems/connecting-cities-with-minimum-cost/"
+    },
+    {
+      "label": "LC 1489 · 找到最小生成树中的关键边和伪关键边",
+      "url": "https://leetcode.cn/problems/find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree/"
+    },
+    {
+      "label": "LC 1168 · 水资源分配优化",
+      "url": "https://leetcode.cn/problems/optimize-water-distribution-in-a-village/"
+    }
+  ],
+  "related": [
+    "union-find",
+    "dijkstra",
+    "graph-traversal"
+  ]
+}

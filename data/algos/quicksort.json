@@ -1,0 +1,89 @@
+{
+  "id": "quicksort",
+  "title": "快速排序 Quick Sort",
+  "category": "排序",
+  "family": "sorting",
+  "tags": [
+    "分治",
+    "原地",
+    "不稳定"
+  ],
+  "summary": "选 pivot 做**分区**,小的甩左、大的甩右,再递归两侧;平均最快的通用排序。",
+  "idea": "🔹 一句话\n选一个基准 pivot,把比它小的甩到左边、大的甩到右边(这一步叫『分区 partition』),pivot 就落到最终位置;再对左右两段递归。典型的分治(Divide & Conquer)。\n\n🔹 为什么平均 O(n log n)\n每次分区是一遍线性扫描 O(n);如果 pivot 大致把数组对半分,递归树高 O(log n),总共 O(n log n)。坏就坏在 pivot 选得差:每次只分出一个元素 → 递归树退化成链,高度 O(n),总 O(n²)。所以 pivot 的选取是快排的灵魂。\n\n🔹 三种分区方案\n- Lomuto:最好记。单指针 i 维护『小于 pivot 的右边界』,pivot 取末位。代码短,但相等元素全划到一侧,重复多时易退化。\n- Hoare:左右双指针相向扫描,平均交换次数更少、常数更小,是经典实现;但边界最易写错(返回的 j 不是 pivot 落点)。\n- 三路(荷兰国旗):分成 <、=、> 三段,把所有等于 pivot 的元素一次归位。面对大量重复元素时几乎线性,强烈推荐当通用实现。\n\n🔹 防退化的两板斧\n1. 随机化 pivot(或三数取中):让最坏情况几乎不可能被构造出来。\n2. 尾递归优化:总是先递归元素较少的一半,另一半用循环处理,递归栈深度从最坏 O(n) 降到 O(log n),避免爆栈。\n\n🔹 分区过程图示(Lomuto,pivot=4)\n```\n初始  [3, 7, 1, 4]   pivot=4(末位)\n j=0  3<4 → 换 a[0],a[0]; i=1   [3, 7, 1, 4]\n j=1  7<4? 否,跳过                [3, 7, 1, 4]\n j=2  1<4 → 换 a[1],a[2]; i=2   [3, 1, 7, 4]\n 收尾 换 a[2],a[3](pivot 归位)  [3, 1, 4, 7]\n 左段 [3,1] 递归 / 右段 [7] 递归\n```",
+  "complexity": {
+    "best": "O(n log n)",
+    "avg": "O(n log n)",
+    "worst": "O(n²)",
+    "space": "O(log n)",
+    "stable": false,
+    "in_place": true,
+    "note": "空间为递归栈深度:平均/优化后 `O(log n)`,最坏(退化)`O(n)`。分区本身原地;此处为统一自测让 `sort` 返回新列表,实际可改为对入参原地排序。"
+  },
+  "entry": "sort",
+  "test_code": "import random\nrandom.seed(20240607)\nassert sort([]) == []\nassert sort([1]) == [1]\nassert sort([2, 1]) == [1, 2]\nassert sort([5, 5, 5, 5]) == [5, 5, 5, 5]\nassert sort([3, -1, 0, -1, 9, 2, 2]) == sorted([3, -1, 0, -1, 9, 2, 2])\nfor _ in range(400):\n    n = random.randint(0, 60)\n    arr = [random.randint(-30, 30) for _ in range(n)]\n    assert sort(list(arr)) == sorted(arr), arr",
+  "variants": [
+    {
+      "title": "Lomuto 单轴分区",
+      "time": "平均 O(n log n) / 最坏 O(n²)",
+      "space": "O(log n)",
+      "starred": true,
+      "note": "最易记的入门写法:pivot 取末位,单指针维护小于区边界。",
+      "code": "def sort(a):\n    \"\"\"Lomuto 单轴分区,递归。以末位为 pivot,i 指向小于区右边界。\"\"\"\n    a = list(a)\n    def quick(lo, hi):\n        if lo >= hi:\n            return\n        pivot = a[hi]\n        i = lo\n        for j in range(lo, hi):\n            if a[j] < pivot:\n                a[i], a[j] = a[j], a[i]\n                i += 1\n        a[i], a[hi] = a[hi], a[i]   # pivot 归位,i 即最终落点\n        quick(lo, i - 1)\n        quick(i + 1, hi)\n    quick(0, len(a) - 1)\n    return a"
+    },
+    {
+      "title": "Hoare 双指针分区",
+      "time": "平均 O(n log n)",
+      "space": "O(log n)",
+      "starred": false,
+      "note": "经典高效写法,交换更少;但递归边界用 j、最易写错。",
+      "code": "def sort(a):\n    \"\"\"Hoare 双指针分区,递归。取中间元素为 pivot,左右相向扫描。\"\"\"\n    a = list(a)\n    def quick(lo, hi):\n        if lo >= hi:\n            return\n        pivot = a[(lo + hi) // 2]\n        i, j = lo - 1, hi + 1\n        while True:\n            i += 1\n            while a[i] < pivot:\n                i += 1\n            j -= 1\n            while a[j] > pivot:\n                j -= 1\n            if i >= j:\n                break\n            a[i], a[j] = a[j], a[i]\n        quick(lo, j)            # 注意:Hoare 返回的 j 不一定是 pivot 落点\n        quick(j + 1, hi)\n    quick(0, len(a) - 1)\n    return a"
+    },
+    {
+      "title": "三路快排(荷兰国旗)",
+      "time": "平均 O(n log n),含大量重复时趋近 O(n)",
+      "space": "O(log n)",
+      "starred": false,
+      "note": "分 < / = / > 三段,重复元素一次归位,通用首选。",
+      "code": "def sort(a):\n    \"\"\"三路快排(荷兰国旗):把数组分成 <pivot / =pivot / >pivot 三段,\n    大量重复元素时把相等元素一次性归位,避免退化。\"\"\"\n    a = list(a)\n    def quick(lo, hi):\n        if lo >= hi:\n            return\n        pivot = a[lo]\n        lt, i, gt = lo, lo + 1, hi   # [lo,lt) <pivot, [lt,i) =pivot, (gt,hi] >pivot\n        while i <= gt:\n            if a[i] < pivot:\n                a[lt], a[i] = a[i], a[lt]\n                lt += 1\n                i += 1\n            elif a[i] > pivot:\n                a[i], a[gt] = a[gt], a[i]\n                gt -= 1\n            else:\n                i += 1\n        quick(lo, lt - 1)\n        quick(gt + 1, hi)\n    quick(0, len(a) - 1)\n    return a"
+    },
+    {
+      "title": "随机化 + 尾递归优化",
+      "time": "期望 O(n log n)",
+      "space": "O(log n) 栈",
+      "starred": false,
+      "note": "随机 pivot 防有序输入退化;大半边转循环防爆栈,工程级实现。",
+      "code": "import random\n\ndef sort(a):\n    \"\"\"随机化 pivot + 尾递归优化:随机选 pivot 防止有序输入退化,\n    较大一侧用 while 循环替代递归,把递归栈深度压到 O(log n)。\"\"\"\n    a = list(a)\n    def quick(lo, hi):\n        while lo < hi:\n            p = random.randint(lo, hi)\n            a[p], a[hi] = a[hi], a[p]     # 随机 pivot 换到末位,复用 Lomuto\n            pivot = a[hi]\n            i = lo\n            for j in range(lo, hi):\n                if a[j] < pivot:\n                    a[i], a[j] = a[j], a[i]\n                    i += 1\n            a[i], a[hi] = a[hi], a[i]\n            if i - lo < hi - i:           # 先递归小半边,大半边转成循环\n                quick(lo, i - 1)\n                lo = i + 1\n            else:\n                quick(i + 1, hi)\n                hi = i - 1\n    quick(0, len(a) - 1)\n    return a"
+    }
+  ],
+  "compare_table": "| 写法 | pivot | 重复元素 | 常数 | 易写错点 |\n| --- | --- | --- | --- | --- |\n| Lomuto | 末位 | 易退化 | 中 | 低(推荐入门) |\n| Hoare | 中位 | 较好 | 小 | 高(边界 j) |\n| 三路 | 首位 | 最好 | 中 | 中 |\n| 随机化+尾递归 | 随机 | 看分区法 | 中 | 中(工程首选) |",
+  "gotchas": [
+    "递归基准用 `lo >= hi` 返回(覆盖空区间与单元素),不要写成 `lo == hi`。",
+    "**朴素取首/末位做 pivot,遇到已排序或大量重复会退化到 O(n²)** —— 用随机化或三路化解。",
+    "Lomuto 与 Hoare 的递归边界不同:Lomuto 用 `quick(lo, i-1)` / `quick(i+1, hi)`(i 是 pivot 落点);Hoare 用 `quick(lo, j)` / `quick(j+1, hi)`,**不能跳过 j**。",
+    "Hoare 写法若 pivot 取末位再配双向扫描,容易死循环;取中间元素更稳。",
+    "递归深度最坏 O(n) 可能爆栈,工程实现要『先递归小半边 + 尾递归化大半边』把栈降到 O(log n)。"
+  ],
+  "applications": [
+    {
+      "label": "LC 215 · 数组中的第 K 个最大元素(快速选择)",
+      "url": "https://leetcode.cn/problems/kth-largest-element-in-an-array/"
+    },
+    {
+      "label": "LC 912 · 排序数组",
+      "url": "https://leetcode.cn/problems/sort-an-array/"
+    },
+    {
+      "label": "LC 75 · 颜色分类(三路分区思想)",
+      "url": "https://leetcode.cn/problems/sort-colors/"
+    },
+    {
+      "label": "LC 148 · 排序链表",
+      "url": "https://leetcode.cn/problems/sort-list/"
+    }
+  ],
+  "related": [
+    "mergesort",
+    "heapsort",
+    "two-pointer-window"
+  ]
+}

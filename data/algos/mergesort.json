@@ -1,0 +1,81 @@
+{
+  "id": "mergesort",
+  "title": "归并排序 Merge Sort",
+  "category": "排序",
+  "family": "sorting",
+  "tags": [
+    "分治",
+    "稳定",
+    "非原地"
+  ],
+  "summary": "**分治**:对半切开各自排好,再把两个有序子段**合并**;最坏也稳定 `O(n log n)`,代价是 O(n) 额外空间。",
+  "idea": "🔹 一句话\n把数组从中间一分为二,各自排好序,再把两个有序子段『合并 merge』成一个有序段。典型的分治(Divide & Conquer):一直分到不能再分(长度 ≤ 1 天然有序),回溯时层层合并。\n\n🔹 合并(merge)为什么是线性的\n两个『各自已经有序』的子段,各放一个指针,每次取两个指针处较小的那个放进结果、指针后移;比较一次就输出一个元素,合并 n 个元素只需 O(n)。注意它依赖『左右子段已各自有序』,所以合并只能发生在递归的回溯阶段。\n\n🔹 复杂度从哪来\n递归把区间对半分,递归树高 O(log n);每一层把所有子段合并起来恰好扫一遍全体元素,是 O(n);相乘得 O(n log n)。关键点:**输入是否有序都不改变分裂结构**,所以最好、平均、最坏全是 O(n log n) —— 这是它相对快排最大的底气(快排最坏会退化到 O(n²))。代价是合并需要一块 O(n) 的辅助空间。\n\n🔹 稳定性的来源\n合并时相等元素『左段优先』:用 `<=` 而不是 `<`,即 `left[i] <= right[j]` 就先取 `left[i]`。这样原本靠前的元素始终被排在前面,相等元素的相对顺序不变 —— 归并是少数**天生稳定**的 O(n log n) 排序。把 `<=` 改成 `<` 就会破坏稳定性。\n\n🔹 自顶向下 vs 自底向上\n两种实现得到完全一样的结果,差别在控制流:\n\n| 维度 | 自顶向下 | 自底向上 |\n| --- | --- | --- |\n| 形式 | 递归(先分后并) | 迭代(宽度倍增) |\n| 额外栈 | O(log n) | O(1) |\n| 适合 | 数组、最直观 | 链表 / 怕爆栈 |\n\n自底向上按宽度 1, 2, 4, 8… 倍增:每一轮把相邻的两个宽度为 `w` 的有序块合并成宽度 `2w` 的块,免去递归。\n\n🔹 合并过程图示\n```\nleft  = [1, 4, 7]    right = [2, 3, 8]\n取 min(1,2)=1  → [1]\n取 min(4,2)=2  → [1, 2]\n取 min(4,3)=3  → [1, 2, 3]\n取 min(4,8)=4  → [1, 2, 3, 4]\n取 min(7,8)=7  → [1, 2, 3, 4, 7]\nright 还剩 8   → [1, 2, 3, 4, 7, 8]   (一侧空了就把另一侧整段接上)\n```\n\n🔹 副产品:统计逆序对\n合并时如果 `right[j] < left[i]`,说明 `left` 中从 `i` 起『剩下的每一个』都比 `right[j]` 大,它们各与 `right[j]` 构成一个逆序对,于是一次性累加 `len(left) - i`。这样在 O(n log n) 内就能统计逆序对总数,而暴力两两比较是 O(n²)。",
+  "complexity": {
+    "best": "O(n log n)",
+    "avg": "O(n log n)",
+    "worst": "O(n log n)",
+    "space": "O(n)",
+    "stable": true,
+    "in_place": false,
+    "note": "合并需要 O(n) 辅助数组,故非原地;自顶向下另有 O(log n) 递归栈。最好/平均/最坏同为 `O(n log n)`,不受输入分布影响。链表归并可做到 O(1) 额外空间。"
+  },
+  "entry": "sort",
+  "test_code": "import random\nrandom.seed(20240614)\n\n# 基础与边界:空 / 单元素 / 重复 / 负数\nassert sort([]) == []\nassert sort([1]) == [1]\nassert sort([2, 1]) == [1, 2]\nassert sort([5, 5, 5, 5]) == [5, 5, 5, 5]\nassert sort([3, -1, 0, -1, 9, 2, 2]) == sorted([3, -1, 0, -1, 9, 2, 2])\n\n# 随机对拍标准库 sorted\nfor _ in range(400):\n    n = random.randint(0, 60)\n    arr = [random.randint(-30, 30) for _ in range(n)]\n    assert sort(list(arr)) == sorted(arr), arr\n\n# 稳定性:键相等时必须保持原相对顺序\nclass _Item:\n    __slots__ = ('key', 'tag')\n    def __init__(self, key, tag):\n        self.key = key\n        self.tag = tag\n    def __lt__(self, other):\n        return self.key < other.key\n    def __le__(self, other):\n        return self.key <= other.key\n\nitems = [_Item(random.randint(0, 4), i) for i in range(80)]\nout = sort(list(items))\nassert [it.key for it in out] == sorted(it.key for it in items)\nfor k in range(len(out) - 1):\n    if out[k].key == out[k + 1].key:\n        assert out[k].tag < out[k + 1].tag  # 同键 tag 递增 → 稳定",
+  "variants": [
+    {
+      "title": "自顶向下递归",
+      "time": "O(n log n)(最好=平均=最坏)",
+      "space": "O(n) 缓冲 + O(log n) 栈",
+      "starred": true,
+      "note": "最直观写法:递归对半分,回溯时 `merge` 两个有序子段;`<=` 保证稳定。",
+      "code": "def merge(left, right):\n    \"\"\"合并两个有序列表;相等元素左段优先(<=)以保持稳定。\"\"\"\n    res = []\n    i = j = 0\n    while i < len(left) and j < len(right):\n        if left[i] <= right[j]:\n            res.append(left[i]); i += 1\n        else:\n            res.append(right[j]); j += 1\n    res.extend(left[i:])\n    res.extend(right[j:])\n    return res\n\ndef sort(a):\n    \"\"\"自顶向下递归:从中点切两半,分别排序后合并。返回新列表。\"\"\"\n    a = list(a)\n    if len(a) <= 1:\n        return a\n    mid = len(a) // 2\n    left = sort(a[:mid])\n    right = sort(a[mid:])\n    return merge(left, right)"
+    },
+    {
+      "title": "自底向上迭代",
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "starred": false,
+      "note": "宽度 1,2,4… 倍增逐层合并,免递归、无爆栈风险;末段用 `min` 截断。链表场景的首选思路。",
+      "code": "def _merge(a, lo, mid, hi, buf):\n    \"\"\"把有序的 a[lo:mid] 与 a[mid:hi] 合并写入 buf,再拷回 a。\"\"\"\n    i, j, k = lo, mid, lo\n    while i < mid and j < hi:\n        if a[i] <= a[j]:          # <= 保持稳定\n            buf[k] = a[i]; i += 1\n        else:\n            buf[k] = a[j]; j += 1\n        k += 1\n    while i < mid:\n        buf[k] = a[i]; i += 1; k += 1\n    while j < hi:\n        buf[k] = a[j]; j += 1; k += 1\n    a[lo:hi] = buf[lo:hi]\n\ndef sort(a):\n    \"\"\"自底向上迭代:宽度 1,2,4,8… 倍增,逐轮合并相邻有序块,免递归。\"\"\"\n    a = list(a)\n    n = len(a)\n    buf = list(a)                 # 复用同一块 O(n) 缓冲区\n    width = 1\n    while width < n:\n        for lo in range(0, n, 2 * width):\n            mid = min(lo + width, n)        # 末段可能不足,统一 min 截断\n            hi = min(lo + 2 * width, n)\n            if mid < hi:\n                _merge(a, lo, mid, hi, buf)\n        width *= 2\n    return a"
+    },
+    {
+      "title": "归并求逆序对",
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "starred": false,
+      "note": "归并的经典副产品:merge 时取右段元素则累加左段剩余个数。契约不同(`count_inversions(a)->int`),用写法级 test_code 对拍 O(n²) 暴力。",
+      "code": "def count_inversions(a):\n    \"\"\"归并的同时统计逆序对:i<j 且 a[i]>a[j] 的对数。返回 int。\"\"\"\n    def sort_count(arr):\n        n = len(arr)\n        if n <= 1:\n            return arr, 0\n        mid = n // 2\n        left, cl = sort_count(arr[:mid])\n        right, cr = sort_count(arr[mid:])\n        merged = []\n        i = j = 0\n        inv = cl + cr             # 先累加左右子段各自的逆序对\n        while i < len(left) and j < len(right):\n            if left[i] <= right[j]:\n                merged.append(left[i]); i += 1\n            else:\n                merged.append(right[j]); j += 1\n                inv += len(left) - i   # left 中剩余的都比 right[j] 大\n        merged.extend(left[i:])\n        merged.extend(right[j:])\n        return merged, inv\n    _, total = sort_count(list(a))\n    return total",
+      "test_code": "import random\nrandom.seed(20240615)\n\ndef brute(a):\n    c = 0\n    for i in range(len(a)):\n        for j in range(i + 1, len(a)):\n            if a[i] > a[j]:\n                c += 1\n    return c\n\nassert count_inversions([]) == 0\nassert count_inversions([1]) == 0\nassert count_inversions([1, 2, 3]) == 0\nassert count_inversions([3, 2, 1]) == 3\nassert count_inversions([7, 5, 6, 4]) == 5\nassert count_inversions([2, 2, 2]) == 0   # 相等不算逆序对\n\nfor _ in range(300):\n    n = random.randint(0, 40)\n    arr = [random.randint(-10, 10) for _ in range(n)]\n    assert count_inversions(list(arr)) == brute(arr), arr"
+    }
+  ],
+  "compare_table": "| 写法 | 形式 | 额外栈 | 稳定 | 适用 |\n| --- | --- | --- | --- | --- |\n| 自顶向下 | 递归 | O(log n) | 是 | 数组,最直观(首选) |\n| 自底向上 | 迭代 | O(1) | 是 | 链表 / 防爆栈 |\n| 求逆序对 | 递归 | O(log n) | — | 统计 i<j 且 a[i]>a[j] 的对数 |",
+  "gotchas": [
+    "合并时必须用 `<=`(左段优先),写成 `<` 会破坏**稳定性** —— 相等元素的相对顺序被打乱。",
+    "自底向上倍增时,最后一段长度可能不足,`mid` 和 `hi` 都要用 `min(..., n)` 截断,否则越界或漏排。",
+    "归并需要 O(n) 辅助空间;若每层都新建临时数组会产生大量垃圾,工程上应**复用同一块 buf**。",
+    "求逆序对时累加的是 `len(left) - i`(左段剩余全部),不是 1;还要记得把左右子段各自的逆序对一并累加。",
+    "归并最坏也是 O(n log n) 且稳定,但常数与空间都大于快排:数组内排序默认快排,**需要稳定 / 外部排序 / 链表排序时才选归并**。"
+  ],
+  "applications": [
+    {
+      "label": "LC 912 · 排序数组",
+      "url": "https://leetcode.cn/problems/sort-an-array/"
+    },
+    {
+      "label": "LC 148 · 排序链表",
+      "url": "https://leetcode.cn/problems/sort-list/"
+    },
+    {
+      "label": "LC 88 · 合并两个有序数组",
+      "url": "https://leetcode.cn/problems/merge-sorted-array/"
+    },
+    {
+      "label": "剑指 Offer 51 · 数组中的逆序对",
+      "url": "https://leetcode.cn/problems/shu-zu-zhong-de-ni-xu-dui-lcof/"
+    }
+  ],
+  "related": [
+    "quicksort",
+    "counting-sort"
+  ]
+}

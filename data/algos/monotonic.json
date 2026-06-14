@@ -1,0 +1,92 @@
+{
+  "id": "monotonic",
+  "title": "单调栈 & 单调队列",
+  "category": "单调栈队列",
+  "family": "paradigm",
+  "tags": [
+    "单调栈",
+    "单调队列",
+    "双端队列",
+    "均摊 O(n)"
+  ],
+  "summary": "用一个**单调容器**维护『尚未确定答案的候选』,入栈/入队前弹掉被新元素**击败或失效**的旧元素;每个元素只进出一次,整体 **O(n)**。",
+  "idea": "🔹 一句话\n单调栈 / 单调队列都在一个『单调容器』里维护一批**尚未确定答案的候选**:新元素进来前,先把容器里**会被它击败 / 失效**的旧元素清掉。每个元素只进出容器一次,所以整段处理是**线性**的。\n\n🔹 单调栈:维护『还没找到答案的下标』\n求『下一个更大元素』时从左到右扫描,栈里压着**还没找到更大元素的下标**(对应的值从栈底到栈顶非递增(允许相邻等值))。遇到新值 `x`:只要栈顶元素比 `x` 小,它的『下一个更大元素』就是 `x` —— 弹出并记录答案;直到栈顶 `>= x` 或栈空,再把当前下标压入。\n关键点:**栈里存下标不存值**,弹出时才能用下标算距离 / 宽度。\n\n🔹 为什么是 O(n)(均摊)\n每个下标最多入栈一次、出栈一次,内层 `while` 的弹出总次数被入栈次数封顶。所以尽管嵌了循环,整体仍是均摊 `O(n)` —— 这正是单调栈 / 队列碾压朴素 `O(n²)` 双重循环的根源。\n\n🔹 柱状图最大矩形:单调栈的经典应用\n以每根柱子为『高』,向左右扩展到第一根更矮的柱子,就是它能撑出的最宽矩形。维护一个**高度递增**的栈:遇到更矮的柱子时弹栈,弹出的柱子高 `h`、宽 `右边界 - 左边界 - 1`(左边界 = 弹出后的新栈顶下标)。两端各加一个高度 `0` 的**哨兵**,保证所有柱子最终都被弹出结算,且左哨兵让 `stack[-1]` 永远存在,无需特判空栈。\n\n🔹 单调队列:窗口最值\n滑动窗口最大值要支持『队尾进、队头可能出窗口』,普通栈不够,改用 `collections.deque`:\n- 入队前从**队尾**弹出所有 `<=` 新值的下标(被新值压制,永无翻身之日);\n- **队头**若下标 `<= i - k` 已滑出窗口则弹掉;\n- 队头始终是当前窗口最大值的下标。\n用大根堆也能做,但堆要 `O(n log n)` 且需『懒删除』过期元素;单调队列 `O(n)` 更优,见对比写法。\n\n🔹 过程图示(下一个更大元素,a=[2,1,2,4,3])\n```\ni  x  操作                            栈(下标→值)        res\n0  2  压栈                            [0→2]               [_, _, _, _, _]\n1  1  1<2 不弹,压栈                  [0→2, 1→1]          [_, _, _, _, _]\n2  2  弹1(1<2)→res[1]=2;压栈       [0→2, 2→2]          [_, 2, _, _, _]\n3  4  弹2、弹0(都<4)→res=4;压栈   [3→4]               [4, 2, 4, _, _]\n4  3  3<4 不弹,压栈                  [3→4, 4→3]          [4, 2, 4,-1,-1]\n结束 栈中残留者右侧无更大元素 → 保持 -1\n```\n",
+  "complexity": {
+    "best": "O(n)",
+    "avg": "O(n)",
+    "worst": "O(n)",
+    "space": "O(n)",
+    "stable": null,
+    "in_place": false,
+    "note": "单调栈 / 单调队列每个元素至多入、出一次,均摊 `O(1)`,总体线性;空间为栈/队列与输出数组 `O(n)`。对比用的**堆版**滑动窗口为 `O(n log n)`。属范式而非排序,稳定性不适用、需额外容器故非原地。"
+  },
+  "entry": "next_greater",
+  "test_code": "import random\nrandom.seed(739)\nassert next_greater([]) == []\nassert next_greater([1]) == [-1]\nassert next_greater([2, 1, 2, 4, 3]) == [4, 2, 4, -1, -1]\nassert next_greater([5, 4, 3, 2, 1]) == [-1, -1, -1, -1, -1]\ndef _bf(a):\n    n = len(a); r = [-1] * n\n    for i in range(n):\n        for j in range(i + 1, n):\n            if a[j] > a[i]:\n                r[i] = a[j]; break\n    return r\nfor _ in range(500):\n    n = random.randint(0, 40)\n    arr = [random.randint(-5, 5) for _ in range(n)]\n    assert next_greater(list(arr)) == _bf(arr), arr\n",
+  "variants": [
+    {
+      "title": "单调栈 · 下一个更大元素",
+      "time": "O(n)",
+      "space": "O(n)",
+      "starred": true,
+      "note": "单调栈最基础的模板:栈存『还没找到答案的下标』,入栈前弹出被新值击败的元素。LC 739 / 496 同款。",
+      "code": "def next_greater(a):\n    \"\"\"单调栈:返回每个位置右侧第一个『严格更大』的元素,无则 -1。\n    栈里存『还没找到更大元素的下标』,对应的值从栈底到栈顶递减;\n    遇到 a[i] 时,把栈顶所有比 a[i] 小的下标弹出——它们的答案就是 a[i]。\"\"\"\n    n = len(a)\n    res = [-1] * n\n    stack = []                       # 存下标,a[stack] 自底向顶递减\n    for i, x in enumerate(a):\n        while stack and a[stack[-1]] < x:\n            res[stack.pop()] = x     # 栈顶找到了它的下一个更大元素\n        stack.append(i)\n    return res\n"
+    },
+    {
+      "title": "单调栈 · 柱状图最大矩形",
+      "time": "O(n)",
+      "space": "O(n)",
+      "starred": false,
+      "note": "单调栈进阶应用(LC 84):高度不减(非递减)栈 + 两端哨兵,弹栈时算以该柱为高的最宽矩形。",
+      "code": "def largest_rectangle(heights):\n    \"\"\"柱状图中最大矩形(单调栈)。两端各加高度 0 的哨兵,\n    维护高度单调递增的栈(存下标);遇到比栈顶矮的柱子时弹栈,\n    以弹出柱为高、(当前位置 - 新栈顶 - 1)为宽计算矩形面积。\"\"\"\n    hs = [0] + list(heights) + [0]   # 左右哨兵:逼出残留柱子 + 兜底 stack[-1]\n    stack = []                       # 下标,hs[stack] 单调不减\n    best = 0\n    for i, h in enumerate(hs):\n        while stack and hs[stack[-1]] > h:\n            top = stack.pop()\n            width = i - stack[-1] - 1    # 左边界=新栈顶,右边界=i,均不含\n            best = max(best, hs[top] * width)\n        stack.append(i)\n    return best\n",
+      "test_code": "import random\nrandom.seed(84)\nassert largest_rectangle([]) == 0\nassert largest_rectangle([5]) == 5\nassert largest_rectangle([2, 4]) == 4\nassert largest_rectangle([2, 1, 5, 6, 2, 3]) == 10\ndef _bf(h):\n    n = len(h); best = 0\n    for i in range(n):\n        mn = 10 ** 9\n        for j in range(i, n):\n            mn = min(mn, h[j])\n            best = max(best, mn * (j - i + 1))\n    return best\nfor _ in range(400):\n    n = random.randint(0, 30)\n    arr = [random.randint(0, 8) for _ in range(n)]\n    assert largest_rectangle(list(arr)) == _bf(arr), arr\n"
+    },
+    {
+      "title": "单调队列 · 滑动窗口最大值",
+      "time": "O(n)",
+      "space": "O(k)",
+      "starred": false,
+      "note": "deque 维护窗口内最值候选:队尾弹小、队头弹出窗;队头即窗口最大值(LC 239)。",
+      "code": "from collections import deque\n\ndef max_sliding_window(a, k):\n    \"\"\"单调队列(双端队列)求每个长度为 k 的窗口最大值。\n    队列存下标,a[队列] 从队头到队尾单调递减:\n    入队前从队尾弹出所有 <= 当前值的下标(它们再无机会成为最大值),\n    队头下标若滑出窗口则从队头弹出。队头始终是窗口最大值的下标。\"\"\"\n    if k <= 0 or not a:\n        return []\n    dq = deque()                     # 存下标,a[dq] 单调递减\n    res = []\n    for i, x in enumerate(a):\n        while dq and a[dq[-1]] <= x:\n            dq.pop()                 # 队尾较小者被新值压制,出队\n        dq.append(i)\n        if dq[0] <= i - k:           # 队头已滑出窗口\n            dq.popleft()\n        if i >= k - 1:               # 窗口成形后开始记录\n            res.append(a[dq[0]])\n    return res\n",
+      "test_code": "import random\nrandom.seed(239)\nassert max_sliding_window([], 0) == []\nassert max_sliding_window([1], 1) == [1]\nassert max_sliding_window([9, 8, 7], 3) == [9]\nassert max_sliding_window([1, 3, -1, -3, 5, 3, 6, 7], 3) == [3, 3, 5, 5, 6, 7]\ndef _bf(a, k):\n    if k <= 0 or not a:\n        return []\n    return [max(a[i:i + k]) for i in range(len(a) - k + 1)]\nfor _ in range(500):\n    n = random.randint(1, 40)\n    arr = [random.randint(-9, 9) for _ in range(n)]\n    k = random.randint(1, n)\n    assert max_sliding_window(list(arr), k) == _bf(arr, k), (arr, k)\n"
+    },
+    {
+      "title": "大根堆 · 滑动窗口最大值(对比)",
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "starred": false,
+      "note": "对照组:堆 + 懒删除也能求窗口最大值,但慢一个 log。借此体会单调队列为何更优。",
+      "code": "import heapq\n\ndef max_sliding_window(a, k):\n    \"\"\"对比写法:大根堆 + 懒删除。堆里存 (-值, 下标);\n    取堆顶时若其下标已滑出窗口就弹掉(无法删堆中间元素,只能懒删)。\n    每个元素进出堆一次,复杂度 O(n log n),不及单调队列的 O(n),\n    但思路直观,且改一改就能求『窗口第 k 大』等变体。\"\"\"\n    if k <= 0 or not a:\n        return []\n    heap = []\n    res = []\n    for i, x in enumerate(a):\n        heapq.heappush(heap, (-x, i))\n        if i >= k - 1:\n            while heap[0][1] <= i - k:   # 堆顶已不在窗口内,懒删除\n                heapq.heappop(heap)\n            res.append(-heap[0][0])\n    return res\n",
+      "test_code": "import random\nrandom.seed(239)\nassert max_sliding_window([], 0) == []\nassert max_sliding_window([1], 1) == [1]\nassert max_sliding_window([9, 8, 7], 3) == [9]\nassert max_sliding_window([1, 3, -1, -3, 5, 3, 6, 7], 3) == [3, 3, 5, 5, 6, 7]\ndef _bf(a, k):\n    if k <= 0 or not a:\n        return []\n    return [max(a[i:i + k]) for i in range(len(a) - k + 1)]\nfor _ in range(500):\n    n = random.randint(1, 40)\n    arr = [random.randint(-9, 9) for _ in range(n)]\n    k = random.randint(1, n)\n    assert max_sliding_window(list(arr), k) == _bf(arr, k), (arr, k)\n"
+    }
+  ],
+  "compare_table": "| 技法 | 容器 | 维护对象 | 单调方向 | 弹出时机 | 复杂度 |\n| --- | --- | --- | --- | --- | --- |\n| 单调栈(下一个更大) | list | 未找到答案的下标 | 自底向顶非递增 | 入栈前破坏单调性 | O(n) |\n| 单调栈(最大矩形) | list | 未确定右边界的柱下标 | 自底向顶递增 | 遇更矮柱时 | O(n) |\n| 单调队列(窗口最大) | deque | 窗口内最值候选下标 | 队头到队尾递减 | 队尾破坏单调 + 队头出窗 | O(n) |\n| 大根堆(对比) | heap | 全部 (值,下标) | 堆序 | 堆顶出窗口(懒删除) | O(n log n) |",
+  "gotchas": [
+    "单调栈/队列里存的是**下标不是值** —— 弹出时才能用下标算宽度、距离或判断是否出窗口;需要值时再 `a[idx]` 取。",
+    "**严格 vs 非严格**:求『严格更大』用 `< x` 弹出(相等不弹);要『大于等于』就改 `<= x`。柱状图用 `>` 弹栈即可,等高柱不会重复结算。",
+    "柱状图务必在两端加高度 `0` 的**哨兵**:右哨兵逼出所有残留柱子,左哨兵保证弹栈后 `stack[-1]` 必存在,宽度恒为 `i - stack[-1] - 1`。",
+    "单调队列每步要做**两件事**:队尾弹出破坏单调性的、队头弹出滑出窗口的(`dq[0] <= i - k`);别只做一半,也别把判断写反。",
+    "堆版滑动窗口只能**懒删除**:无法直接删堆中间的过期元素,只有当它浮到堆顶且已出窗口时才弹掉。"
+  ],
+  "applications": [
+    {
+      "label": "LC 739 · 每日温度",
+      "url": "https://leetcode.cn/problems/daily-temperatures/"
+    },
+    {
+      "label": "LC 84 · 柱状图中最大的矩形",
+      "url": "https://leetcode.cn/problems/largest-rectangle-in-histogram/"
+    },
+    {
+      "label": "LC 239 · 滑动窗口最大值",
+      "url": "https://leetcode.cn/problems/sliding-window-maximum/"
+    },
+    {
+      "label": "LC 496 · 下一个更大元素 I",
+      "url": "https://leetcode.cn/problems/next-greater-element-i/"
+    }
+  ],
+  "related": [
+    "two-pointer-window",
+    "heapsort"
+  ]
+}

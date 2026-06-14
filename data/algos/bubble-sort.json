@@ -1,0 +1,76 @@
+{
+  "id": "bubble-sort",
+  "title": "冒泡排序 Bubble Sort",
+  "category": "排序",
+  "family": "sorting",
+  "tags": [
+    "原地",
+    "稳定",
+    "教学经典"
+  ],
+  "summary": "反复比较相邻元素并交换,最大值逐趟『浮』到末端;**稳定**、原地,但平均/最坏都是 **O(n²)**,主要价值在教学与理解排序本质。",
+  "idea": "🔹 一句话\n反复遍历数组,每次比较相邻两个元素,逆序就交换。一趟下来,当前最大的元素像气泡一样『浮』到最右端;重复 n-1 趟,整体有序。最直观、最适合入门教学的排序。\n\n🔹 为什么是 O(n²)\n第 `i` 趟需要比较 `n-1-i` 次,总比较次数 `(n-1)+(n-2)+...+1 = n(n-1)/2`,即 O(n²)。最坏(完全逆序)要做同数量级的交换;平均也是 O(n²)。它慢在『每次只把一个元素归位,且只能和相邻元素交换』—— 逆序对必须一个一个地消。\n\n🔹 三种写法的取舍\n- 标准冒泡:固定跑 n-1 趟,无论输入如何都是 O(n²),纯教学基线。\n- swapped 提前退出:记录一趟内是否发生过交换;若某趟『一次都没换』说明已经有序,立即结束。对『已基本有序』的输入极快,已排序输入只需一趟扫描 → 最好 O(n)。这是冒泡唯一值得实战记住的优化。\n- 鸡尾酒(双向冒泡):一趟向右把最大值送到右端,紧接一趟向左把最小值送到左端。它缓解了标准冒泡的『乌龟问题』—— 小值若在数组尾部,标准冒泡每趟只能把它左移一格、收敛极慢;双向扫描让小值也能快速归位。但这只是常数级改进,最坏仍 O(n²)。\n\n🔹 为什么提前退出能到 O(n)\n『整趟无交换』 ⟺ 所有相邻对都非逆序 ⟺ 数组已完全有序。所以一旦某趟 `swapped` 仍为 `False` 就能安全收工。对已排序输入,第一趟扫描做 n-1 次比较、零交换,随即退出,总代价 O(n)。标准写法没有这个判断,即使输入有序也照样 O(n²)。\n\n🔹 稳定性\n交换条件用严格大于(`a[j] > a[j+1]` 才换),相等元素永不交换,因此相对顺序被保留 —— 冒泡是稳定排序。若把 `>` 改成 `>=`,既多做无用交换,又会破坏稳定性。\n\n🔹 一趟过程图示(向右,括号为正在比较的相邻对)\n```\n[5, 1, 4, 2, 8]\n(5 1) → 换        [1, 5, 4, 2, 8]\n   (5 4) → 换     [1, 4, 5, 2, 8]\n      (5 2) → 换  [1, 4, 2, 5, 8]\n         (5 8) 不换 [1, 4, 2, 5, 8]\n第 1 趟结束:最大值 8 已落到末位,下一趟范围缩小到前 4 个\n```",
+  "complexity": {
+    "best": "O(n)",
+    "avg": "O(n²)",
+    "worst": "O(n²)",
+    "space": "O(1)",
+    "stable": true,
+    "in_place": true,
+    "note": "最好 `O(n)` 仅属于『带 swapped 标志』写法且输入已有序时;标准写法对任意输入恒为 `O(n²)`。原地相邻交换,辅助空间 `O(1)`;此处为统一自测让 `sort` 返回新列表,实际可对入参原地排序。"
+  },
+  "entry": "sort",
+  "test_code": "import random\nrandom.seed(20240614)\nassert sort([]) == []\nassert sort([1]) == [1]\nassert sort([2, 1]) == [1, 2]\nassert sort([5, 5, 5, 5]) == [5, 5, 5, 5]\nassert sort([1, 2, 3, 4, 5]) == [1, 2, 3, 4, 5]\nassert sort([3, -1, 0, -1, 9, 2, 2]) == sorted([3, -1, 0, -1, 9, 2, 2])\nfor _ in range(400):\n    n = random.randint(0, 60)\n    arr = [random.randint(-30, 30) for _ in range(n)]\n    assert sort(list(arr)) == sorted(arr), arr\n\n# 稳定性:_Rec 只按 key 比较,相等 key 应保持原相对顺序(tag 单增)\nclass _Rec:\n    __slots__ = ('k', 'tag')\n    def __init__(self, k, tag):\n        self.k = k\n        self.tag = tag\n    def __lt__(self, o):\n        return self.k < o.k\n    def __gt__(self, o):\n        return self.k > o.k\nfor _ in range(120):\n    n = random.randint(0, 40)\n    data = [_Rec(random.randint(0, 5), t) for t in range(n)]\n    out = sort(list(data))\n    assert [r.k for r in out] == sorted(r.k for r in data)\n    assert out == sorted(data, key=lambda r: r.k)  # 同对象引用比较 → 验证稳定",
+  "variants": [
+    {
+      "title": "标准冒泡",
+      "time": "最好·平均·最坏均 O(n²)",
+      "space": "O(1)",
+      "starred": false,
+      "note": "固定 n-1 趟,无论输入恒为 O(n²);最朴素的基线写法,内层范围随趟数收缩。",
+      "code": "def sort(a):\n    \"\"\"标准冒泡:每趟把当前未排定区间的最大元素『浮』到右端,共 n-1 趟。\n    内层上界 n-1-i 随趟数收缩,因为末尾 i 个元素已就位。\"\"\"\n    a = list(a)\n    n = len(a)\n    for i in range(n - 1):\n        for j in range(n - 1 - i):\n            if a[j] > a[j + 1]:\n                a[j], a[j + 1] = a[j + 1], a[j]\n    return a"
+    },
+    {
+      "title": "swapped 标志提前退出",
+      "time": "最好 O(n) / 平均·最坏 O(n²)",
+      "space": "O(1)",
+      "starred": true,
+      "note": "一趟内无交换即已有序,立即退出;已排序输入只需一趟 → **最好 O(n)**,冒泡唯一值得记的优化。",
+      "code": "def sort(a):\n    \"\"\"带 swapped 标志:每趟开始置 False,发生交换则置 True;\n    若整趟没有任何交换,说明数组已有序,立即 break。\n    对已排序/近乎有序输入只需一趟扫描,最好 O(n)。\"\"\"\n    a = list(a)\n    n = len(a)\n    for i in range(n - 1):\n        swapped = False\n        for j in range(n - 1 - i):\n            if a[j] > a[j + 1]:\n                a[j], a[j + 1] = a[j + 1], a[j]\n                swapped = True\n        if not swapped:\n            break\n    return a"
+    },
+    {
+      "title": "鸡尾酒(双向冒泡)",
+      "time": "最好 O(n) / 平均·最坏 O(n²)",
+      "space": "O(1)",
+      "starred": false,
+      "note": "向右送最大、向左送最小,缓解『小值在尾部』收敛慢的乌龟问题;仍带提前退出,但最坏仍 O(n²)。",
+      "code": "def sort(a):\n    \"\"\"鸡尾酒(双向冒泡):一趟向右把最大值送到右端,再一趟向左把最小值送到左端,\n    左右边界相向收缩。缓解标准冒泡对『小值位于尾部』收敛慢的问题;同样带提前退出。\"\"\"\n    a = list(a)\n    lo, hi = 0, len(a) - 1\n    while lo < hi:\n        swapped = False\n        for j in range(lo, hi):           # 向右:最大值冒到 hi\n            if a[j] > a[j + 1]:\n                a[j], a[j + 1] = a[j + 1], a[j]\n                swapped = True\n        hi -= 1\n        for j in range(hi, lo, -1):       # 向左:最小值沉到 lo\n            if a[j - 1] > a[j]:\n                a[j - 1], a[j] = a[j], a[j - 1]\n                swapped = True\n        lo += 1\n        if not swapped:\n            break\n    return a"
+    }
+  ],
+  "compare_table": "| 写法 | 最好 | 提前退出 | 缓解乌龟 | 备注 |\n| --- | --- | --- | --- | --- |\n| 标准冒泡 | O(n²) | 否 | 否 | 纯教学基线 |\n| swapped 标志 | O(n) | 是 | 否 | 实战首选 |\n| 鸡尾酒双向 | O(n) | 是 | 是 | 常数级优化 |",
+  "gotchas": [
+    "内层循环上界要随趟数收缩为 `range(n-1-i)`:末尾 i 个元素已就位,继续比较纯属浪费。",
+    "交换判定用**严格** `>`(`a[j] > a[j+1]` 才换),不要写成 `>=` —— 否则相等元素被交换,既做无用功又**破坏稳定性**。",
+    "`swapped` 标志必须在**每趟开始处**重置;只有『整趟一次都没交换』才能 `break`。",
+    "**标准冒泡没有提前退出,即使输入已有序也是 O(n²)**;最好 O(n) 是『带标志』写法专属。",
+    "鸡尾酒只是常数级优化,最坏仍 O(n²),别指望它把复杂度降一个量级。"
+  ],
+  "applications": [
+    {
+      "label": "LC 912 · 排序数组",
+      "url": "https://leetcode.cn/problems/sort-an-array/"
+    },
+    {
+      "label": "LC 283 · 移动零(稳定的相邻交换思想)",
+      "url": "https://leetcode.cn/problems/move-zeroes/"
+    },
+    {
+      "label": "LC 1051 · 高度检查器(对比排序前后)",
+      "url": "https://leetcode.cn/problems/height-checker/"
+    }
+  ],
+  "related": [
+    "selection-sort",
+    "insertion-sort"
+  ]
+}

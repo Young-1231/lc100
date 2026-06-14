@@ -1,0 +1,79 @@
+{
+  "id": "topo-sort",
+  "title": "拓扑排序 Topological Sort",
+  "category": "拓扑排序",
+  "family": "graph",
+  "tags": [
+    "有向无环图",
+    "BFS",
+    "DFS",
+    "判环"
+  ],
+  "summary": "把 **DAG** 的节点排成一条线,使每条边 `u→v` 都满足 u 在 v 前;**有环则无解返回 `[]`**。两条主路:Kahn 入度 BFS 与 DFS 后序逆序。",
+  "idea": "🔹 什么是拓扑排序\n给一张**有向无环图(DAG)**,把所有节点排成一条线,使每条边 `u→v` 都满足 u 排在 v 前面。这条线就是『拓扑序』。它回答「谁依赖谁、先做哪个」——选课的先修关系、任务依赖编排、编译时头文件顺序,本质都是拓扑排序。**有环则不存在拓扑序**(互相依赖,谁都没法第一个做),此时约定返回 `[]`。\n\n🔹 Kahn 入度 BFS:从『没有依赖的点』开始剥\n统计每个点的**入度**(指向它的边数)。入度为 0 的点没有任何前置依赖,可以最先输出;把它删掉,它指向的点入度各减 1,新产生的 0 入度点再入队……像剥洋葱一样一层层剥。\n- **为什么对**:每次输出的点,其所有前驱都已先被输出(否则它入度不会归零),自然满足 `u 在 v 前`。\n- **怎么判环**:如果最终输出的点数 `< n`,说明剩下的点卡在某个环里(它们的入度永远减不到 0),返回 `[]`。\n\n🔹 DFS 后序逆序:递归到底再回收\n对每个未访问点做 DFS,**在一个点的所有后继都处理完(回溯)时**才把它加入列表。这样得到的是『完成时间』顺序(后序);把它**反转**就是拓扑序——越晚完成的点越靠近源头,越该排在前面。\n- **三色标记判环**:白(未访问)→ 灰(在当前递归栈上)→ 黑(子树已全部完成)。DFS 中若遇到**灰色**邻居,说明碰到一条指回递归栈的『回边』,即存在环。只用二状态 `visited` 无法区分『正在栈上』与『已完成』,会漏判环。\n\n🔹 复杂度 O(V+E) 从哪来\n两种写法都是:每个**节点**恰好入队/入栈一次(O(V)),每条**边**在松弛入度或遍历邻接表时恰好看一次(O(E)),合计 **O(V+E)**。邻接表 + 入度/颜色数组的空间是 O(V+E)。这里 V 即节点数 `n`,E 即边数。\n\n🔹 两种写法怎么选 + 字典序最小\n- **Kahn(BFS)**:无递归、判环直观(看输出计数)、还能顺便算出每个点的『最早可执行层级』,是工程与面试首选。\n- **DFS**:代码短,契合需要后序/逆后序的场景(如 Kosaraju 求强连通分量);但要当心递归深度(长链可能爆栈)和三色判环。\n- 若要求**字典序最小**的拓扑序(LeetCode 常见加强版),把 Kahn 的队列换成**小根堆**:每次从所有 0 入度点里取编号最小的即可。\n\n🔹 Kahn 过程追踪(钻石图)\n```\nDAG:   0 ──▶ 1 ──▶ 3\n       └──▶ 2 ──────▲\n边: 0→1, 0→2, 1→3, 2→3\n入度: [0, 1, 1, 2]\n\n队列            输出          说明\n[0]            []            初始:只有 0 的入度为 0\n弹0 → 1,2 减1   [0]           indeg=[_,0,0,2] → 1,2 入队\n[1, 2]         [0]\n弹1 → 3 减1     [0,1]         indeg[3]=1,未入队\n[2]            [0,1]\n弹2 → 3 减1     [0,1,2]       indeg[3]=0 → 3 入队\n[3]            [0,1,2]\n弹3            [0,1,2,3]      输出 4 个 = n,无环 ✓\n```",
+  "complexity": {
+    "best": "O(V+E)",
+    "avg": "O(V+E)",
+    "worst": "O(V+E)",
+    "space": "O(V+E)",
+    "stable": null,
+    "in_place": false,
+    "note": "V=节点数 `n`,E=边数。建邻接表 + 扫每条边各一次,故 `O(V+E)`;空间含邻接表、入度/颜色数组与队列/栈,均 `O(V+E)`。『稳定性』对拓扑排序无意义(结果是节点排列而非键值重排)故记 `null`;要返回新列表、用了额外结构,故 `in_place=false`。约定:有环统一返回 `[]`(空图 n=0 也返回 `[]`,但它本就是合法的空拓扑序)。"
+  },
+  "entry": "topo",
+  "test_code": "import random\nrandom.seed(20240614)\n\n\ndef is_valid_topo(n, edges, order):\n    if order is None:\n        return False\n    if sorted(order) != list(range(n)):    # 必须是 0..n-1 的一个排列\n        return False\n    pos = {x: i for i, x in enumerate(order)}\n    return all(pos[u] < pos[v] for u, v in edges)   # 每条边 u 在 v 前\n\n\n# 边界与特例\nassert topo(0, []) == []\nassert topo(1, []) == [0]\nassert topo(1, [(0, 0)]) == []                      # 自环 = 长度 1 的环\nassert topo(2, [(0, 1), (1, 0)]) == []              # 二元环\nassert is_valid_topo(2, [(0, 1)], topo(2, [(0, 1)]))\nassert is_valid_topo(2, [(0, 1), (0, 1)], topo(2, [(0, 1), (0, 1)]))   # 重复边\nex = [(0, 1), (0, 2), (1, 3), (2, 3)]\nassert is_valid_topo(4, ex, topo(4, ex))            # 钻石图\n\n# 随机 DAG:用随机排列只连『前→后』,保证无环\nfor _ in range(400):\n    n = random.randint(0, 14)\n    perm = list(range(n))\n    random.shuffle(perm)\n    rank = {node: i for i, node in enumerate(perm)}\n    edges = []\n    for u in range(n):\n        for v in range(n):\n            if rank[u] < rank[v] and random.random() < 0.3:\n                edges.append((u, v))\n    order = topo(n, edges)\n    assert is_valid_topo(n, edges, order), (n, edges, order)\n\n# 随机带环图:强制嵌入一个有向环,必无拓扑序\nfor _ in range(300):\n    n = random.randint(2, 14)\n    edges = []\n    for u in range(n):\n        for v in range(n):\n            if u != v and random.random() < 0.15:\n                edges.append((u, v))\n    k = random.randint(2, n)\n    cyc = random.sample(range(n), k)\n    for i in range(k):\n        edges.append((cyc[i], cyc[(i + 1) % k]))    # cyc[0]→cyc[1]→...→cyc[0]\n    assert topo(n, edges) == [], (n, edges)\n",
+  "variants": [
+    {
+      "title": "Kahn 入度 BFS",
+      "time": "O(V+E)",
+      "space": "O(V+E)",
+      "starred": true,
+      "note": "面试/工程首选:无递归、判环直观(输出数 < n 即有环),还能顺带分层。",
+      "code": "from collections import deque\n\n\ndef topo(n, edges):\n    \"\"\"Kahn 入度 BFS:反复输出入度为 0 的点。有环则返回 []。\n    n 个节点编号 0..n-1;edges=[(u,v)] 表示 u 必须排在 v 之前。\"\"\"\n    g = [[] for _ in range(n)]\n    indeg = [0] * n\n    for u, v in edges:\n        g[u].append(v)\n        indeg[v] += 1\n    q = deque(i for i in range(n) if indeg[i] == 0)\n    order = []\n    while q:\n        u = q.popleft()\n        order.append(u)\n        for w in g[u]:\n            indeg[w] -= 1          # 删点 u 等价于把它的出边都松弛掉\n            if indeg[w] == 0:\n                q.append(w)\n    return order if len(order) == n else []   # 输出不足 n 个 → 有环\n"
+    },
+    {
+      "title": "DFS 后序逆序(三色判环)",
+      "time": "O(V+E)",
+      "space": "O(V+E)",
+      "starred": false,
+      "note": "回溯时收集后序,反转即拓扑序;三色标记里遇灰色邻居=回边=有环。",
+      "code": "def topo(n, edges):\n    \"\"\"DFS 后序逆序 + 三色标记判环。有环则返回 []。\n    color: 0 白(未访问) / 1 灰(在递归栈上) / 2 黑(已完成)。\"\"\"\n    g = [[] for _ in range(n)]\n    for u, v in edges:\n        g[u].append(v)\n    color = [0] * n\n    order = []\n    has_cycle = False\n\n    def dfs(u):\n        nonlocal has_cycle\n        color[u] = 1                       # 进栈,染灰\n        for w in g[u]:\n            if color[w] == 1:              # 指回栈内 → 回边 → 有环\n                has_cycle = True\n                return\n            if color[w] == 0:\n                dfs(w)\n                if has_cycle:\n                    return\n        color[u] = 2                       # 子树处理完,染黑\n        order.append(u)                    # 收集后序\n\n    for i in range(n):\n        if color[i] == 0:\n            dfs(i)\n            if has_cycle:\n                return []\n    order.reverse()                        # 后序反转即拓扑序\n    return order\n"
+    },
+    {
+      "title": "Kahn + 小根堆(字典序最小)",
+      "time": "O((V+E) log V)",
+      "space": "O(V+E)",
+      "starred": false,
+      "note": "队列换小根堆,每次取编号最小的 0 入度点,得字典序最小拓扑序。",
+      "code": "import heapq\n\n\ndef topo(n, edges):\n    \"\"\"Kahn + 小根堆:在所有 0 入度点中总取编号最小者,\n    得到『字典序最小』的拓扑序。有环则返回 []。\"\"\"\n    g = [[] for _ in range(n)]\n    indeg = [0] * n\n    for u, v in edges:\n        g[u].append(v)\n        indeg[v] += 1\n    heap = [i for i in range(n) if indeg[i] == 0]\n    heapq.heapify(heap)\n    order = []\n    while heap:\n        u = heapq.heappop(heap)            # 候选里取最小编号\n        order.append(u)\n        for w in g[u]:\n            indeg[w] -= 1\n            if indeg[w] == 0:\n                heapq.heappush(heap, w)\n    return order if len(order) == n else []\n",
+      "test_code": "import random\nfrom itertools import permutations\nrandom.seed(20240614)\n\n\ndef is_valid_topo(n, edges, order):\n    if order is None:\n        return False\n    if sorted(order) != list(range(n)):\n        return False\n    pos = {x: i for i, x in enumerate(order)}\n    return all(pos[u] < pos[v] for u, v in edges)\n\n\ndef brute_lex(n, edges):\n    # permutations 按字典序产出,首个合法拓扑序即字典序最小\n    for p in permutations(range(n)):\n        if is_valid_topo(n, edges, list(p)):\n            return list(p)\n    return None\n\n\n# 边界与特例\nassert topo(0, []) == []\nassert topo(1, []) == [0]\nassert topo(1, [(0, 0)]) == []\nassert topo(2, [(0, 1), (1, 0)]) == []\nassert topo(2, [(1, 0)]) == [1, 0]                  # 约束优先于字典序\nassert topo(3, [(2, 0)]) == [1, 2, 0]               # 自由点 1 先于受约束的 2\n\n# 随机小 DAG:与暴力枚举的字典序最小拓扑序对拍\nfor _ in range(150):\n    n = random.randint(0, 6)\n    perm = list(range(n))\n    random.shuffle(perm)\n    rank = {node: i for i, node in enumerate(perm)}\n    edges = []\n    for u in range(n):\n        for v in range(n):\n            if rank[u] < rank[v] and random.random() < 0.3:\n                edges.append((u, v))\n    order = topo(n, edges)\n    assert is_valid_topo(n, edges, order), (n, edges, order)\n    assert order == brute_lex(n, edges), (n, edges, order)\n\n# 随机带环图必返回 []\nfor _ in range(120):\n    n = random.randint(2, 7)\n    edges = []\n    for u in range(n):\n        for v in range(n):\n            if u != v and random.random() < 0.18:\n                edges.append((u, v))\n    k = random.randint(2, n)\n    cyc = random.sample(range(n), k)\n    for i in range(k):\n        edges.append((cyc[i], cyc[(i + 1) % k]))\n    assert topo(n, edges) == [], (n, edges)\n"
+    }
+  ],
+  "compare_table": "| 写法 | 思路 | 判环方式 | 递归 | 额外能力 |\n| --- | --- | --- | --- | --- |\n| Kahn 入度 BFS | 反复删 0 入度点 | 输出数 < n | 否 | 可算分层/最早开始时间 |\n| DFS 后序逆序 | 回溯收集后序再反转 | 三色遇灰色回边 | 是 | 顺带得逆后序(SCC 可用) |\n| Kahn + 小根堆 | 0 入度点取最小编号 | 输出数 < n | 否 | 字典序最小拓扑序 |",
+  "gotchas": [
+    "**判环别漏**:Kahn 看『输出数 `< n`』,DFS 看『是否遇到灰色回边』;漏判环会吐出一段不完整的序列。",
+    "DFS 必须**三色**:只用 `visited` 两态无法区分『正在递归栈上(灰)』与『已彻底完成(黑)』,会把正常的横/前向边误判成环或漏判真环。",
+    "DFS 收集的是**后序**,必须 `reverse()` 才是拓扑序;直接用后序得到的是反序。",
+    "**拓扑序通常不唯一**:测试不要写死某个具体序,要按『每条边 u 在 v 前 + 含全部节点』来校验。",
+    "入度法要先把所有边的 `indeg` 累加完再做初始入队,别边建图边入队。",
+    "`(u,u)` 自环是长度 1 的环,必无拓扑序;重复边会让 `indeg` 多加,但松弛时也会被对应次数地减回,结果仍正确。",
+    "递归 DFS 在长链(深度大)上可能触发 Python 递归上限,数据规模大时改用 Kahn 或显式栈迭代。"
+  ],
+  "applications": [
+    {
+      "label": "LC 207 · 课程表",
+      "url": "https://leetcode.cn/problems/course-schedule/"
+    },
+    {
+      "label": "LC 210 · 课程表 II",
+      "url": "https://leetcode.cn/problems/course-schedule-ii/"
+    },
+    {
+      "label": "LC 269 · 火星词典",
+      "url": "https://leetcode.cn/problems/alien-dictionary/"
+    }
+  ],
+  "related": [
+    "graph-traversal"
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "id": "manacher",
+  "title": "Manacher 最长回文",
+  "category": "字符串",
+  "family": "string",
+  "tags": [
+    "字符串",
+    "回文",
+    "线性扫描"
+  ],
+  "summary": "插 `#` 把奇偶回文统一成奇数,再靠**最右回文边界**与**镜像臂长**复用,**O(n)** 求最长回文子串长度。",
+  "idea": "🔹 一句话\n求**最长回文子串的长度**。朴素中心扩展是 O(n²);Manacher 用两招把它压到 **O(n)**:① 插分隔符把奇偶回文统一成一种;② 用已经算好的『镜像臂长』直接跳过重复扩展。\n\n🔹 第一步:插 `#` 统一奇偶\n回文分两类:奇数长(中心是某个字符,如 `aba`)和偶数长(中心在两字符之间,如 `abba`)。两套逻辑很烦。技巧:在每个字符之间以及首尾插入分隔符 `#`,`abba → #a#b#b#a#`。这样不管原回文奇偶,在新串里中心都落在一个**具体位置**,只剩奇数回文一种情况。再在最前最后加哨兵 `^`、`$`(它们互不相等、也不等于任何输入字符),向外扩展时自然会被哨兵挡住,不必额外判越界。\n神奇性质:变换串里以 `i` 为中心的回文**臂长** `p[i]`,恰好等于它在原串里对应回文的**长度**——所以最后 `max(p)` 就是答案。\n\n🔹 核心:对称复用 `p[2*c-i]`\n维护当前『最右回文』的中心 `c` 和右边界 `r`(它覆盖到的最右下标)。处理新位置 `i` 且 `i < r` 时,`i` 关于 `c` 的镜像点是 `2*c - i`。因为 `[2c-r .. r]` 整段是回文,`i` 周围的结构和镜像点周围**对称**,于是可以先白嫖:\n`p[i] = min(r - i, p[2*c - i])`\n- 镜像回文完全落在 `r` 内 → 直接抄,`p[i] = p[2c-i]`,一步省掉重复扩展;\n- 镜像回文顶到/超出 `r` → 越界部分对称性失效,只能保证到 `r`(`r - i`),之后还得继续扩。\n拿到初值后再从 `p[i]` 向外 `while` 扩展,扩成功就更新 `(c, r)`。\n\n🔹 为什么是 O(n)\n关键在右边界 `r`:它**只增不减**。内层 `while` 每成功扩一次,`r` 至少右移一位;而 `r` 一生只能从 0 走到 `n`。所以所有 `while` 扩展次数之和是 O(n),配合外层 O(n) 遍历,总复杂度线性。这正是『对称复用』的价值——本会重复的扩展被镜像信息直接跳过。\n\n🔹 过程追踪(s = `abba`)\n```\n原串              a       b       b       a\n变换  ^   #   a   #   b   #   b   #   a   #   $\n下标  0   1   2   3   4   5   6   7   8   9  10\np[]   0   0   1   0   1   4   1   0   1   0   0\n                          ↑ 中心=下标5('#'),臂长 p=4 = 原串 \"abba\" 的长度\n复用例:算 i=8 时 i<r(=9),镜像点 2*c-i=2 的 p[2]=1 直接抄来当初值,省去从头扩展。\n答案 = max(p) = 4\n```\n\n🔹 三种写法怎么选\n- **Manacher**:O(n) 最优,但要理解变换串与 `min` 复用,代码最易写错;面试问『线性求最长回文』时的标准答案,工程首选。\n- **中心扩展**:O(n²)、空间 O(1),直观好写,`n` 不大时完全够用,常作对拍基线。\n- **区间 DP**:O(n²) 时间、O(n²) 空间,本身不如中心扩展划算;但当你**还需要知道任意子串是否回文**(如『分割回文串』类问题)时,这张 `dp` 表能直接复用。",
+  "complexity": {
+    "best": "O(n)",
+    "avg": "O(n)",
+    "worst": "O(n)",
+    "space": "O(n)",
+    "stable": null,
+    "in_place": null,
+    "note": "Manacher 把奇偶回文统一进变换串后一遍线性扫描;每个位置的臂长靠镜像复用,真正的暴力扩展受『右边界 `r` 只增不减』约束,均摊 O(n)。空间 O(n) 来自变换串 `t` 与臂长数组 `p`。对照写法中心扩展为 O(n²) 时间 / O(1) 空间,区间 DP 为 O(n²) 时间 / O(n²) 空间。`stable`/`in_place` 是排序概念,对『求回文长度』不适用,记 null。"
+  },
+  "entry": "longest_pal_len",
+  "test_code": "import random\nrandom.seed(20240614)\n\ndef _brute(s):\n    \"\"\"暴力基线:枚举所有子串判回文,取最长长度。\"\"\"\n    n = len(s)\n    best = 0\n    for i in range(n):\n        for j in range(i, n):\n            sub = s[i:j + 1]\n            if sub == sub[::-1]:\n                best = max(best, j - i + 1)\n    return best\n\n# 边界与定点用例\nassert longest_pal_len(\"\") == 0\nassert longest_pal_len(\"a\") == 1\nassert longest_pal_len(\"ab\") == 1\nassert longest_pal_len(\"aaaa\") == 4        # 全同字符\nassert longest_pal_len(\"aba\") == 3         # 奇数回文\nassert longest_pal_len(\"abba\") == 4        # 偶数回文\nassert longest_pal_len(\"babad\") == 3\nassert longest_pal_len(\"cbbd\") == 2\nassert longest_pal_len(\"forgeeksskeegfor\") == 10   # geeksskeeg\n\n# 与暴力对拍:小字母表更易撞出长回文\nfor _ in range(400):\n    n = random.randint(0, 16)\n    s = \"\".join(random.choice(\"ab\") for _ in range(n))\n    assert longest_pal_len(s) == _brute(s), s\nfor _ in range(400):\n    n = random.randint(0, 30)\n    s = \"\".join(random.choice(\"abcde\") for _ in range(n))\n    assert longest_pal_len(s) == _brute(s), s",
+  "variants": [
+    {
+      "title": "Manacher O(n)",
+      "time": "O(n)",
+      "space": "O(n)",
+      "starred": true,
+      "note": "插 `#` 统一奇偶 + 维护最右回文边界 (c,r) + 镜像臂长复用,线性求解,面试/工程首选。",
+      "code": "def longest_pal_len(s):\n    \"\"\"Manacher O(n):插入 # 统一奇偶回文,维护最右回文边界 (c, r),\n    用镜像臂长 p[2*c-i] 复用已知信息,避免重复扩展。返回最长回文子串长度。\"\"\"\n    if not s:\n        return 0\n    t = \"^#\" + \"#\".join(s) + \"#$\"   # 首尾哨兵 ^ $ 防越界,# 把奇偶回文统一成奇数\n    n = len(t)\n    p = [0] * n                     # p[i]:以 i 为中心的回文臂长(恰等于原串回文长度)\n    c = r = 0                       # c 当前最右回文的中心,r 其右边界(覆盖到的最右下标,闭区间)\n    for i in range(1, n - 1):\n        if i < r:\n            p[i] = min(r - i, p[2 * c - i])   # 对称复用:镜像点 2*c-i\n        while t[i + p[i] + 1] == t[i - p[i] - 1]:\n            p[i] += 1                          # 哨兵保证比较不越界\n        if i + p[i] > r:\n            c, r = i, i + p[i]                 # 右边界只增不减 → 均摊 O(n)\n    return max(p)"
+    },
+    {
+      "title": "中心扩展 O(n²)(对照基线)",
+      "time": "O(n²)",
+      "space": "O(1)",
+      "starred": false,
+      "note": "枚举奇/偶两类中心向两侧扩,直观好写,`n` 不大时够用,也用于对拍。",
+      "code": "def longest_pal_len(s):\n    \"\"\"中心扩展 O(n²):枚举每个回文中心(单字符中心 + 相邻字符间隙)向两侧扩展。\n    作为 Manacher 的对照基线,空间 O(1)。\"\"\"\n    if not s:\n        return 0\n    n = len(s)\n    def expand(l, r):\n        while l >= 0 and r < n and s[l] == s[r]:\n            l -= 1\n            r += 1\n        return r - l - 1            # 跳出时左右各多走一步,长度需 -1\n    best = 0\n    for i in range(n):\n        best = max(best, expand(i, i), expand(i, i + 1))   # 奇数中心 + 偶数中心\n    return best"
+    },
+    {
+      "title": "区间 DP O(n²)",
+      "time": "O(n²)",
+      "space": "O(n²)",
+      "starred": false,
+      "note": "`dp[i][j]` 记 `s[i..j]` 是否回文;当还需要『任意子串是否回文』时这张表可复用。",
+      "code": "def longest_pal_len(s):\n    \"\"\"区间 DP O(n²):dp[i][j] 表示 s[i..j] 是否回文,\n    dp[i][j] = (s[i]==s[j]) and (j-i<2 or dp[i+1][j-1]),按区间长度从小到大递推。\"\"\"\n    n = len(s)\n    if n == 0:\n        return 0\n    dp = [[False] * n for _ in range(n)]\n    for i in range(n):\n        dp[i][i] = True            # 单字符天然回文\n    best = 1\n    for length in range(2, n + 1):\n        for i in range(n - length + 1):\n            j = i + length - 1\n            if s[i] == s[j] and (length == 2 or dp[i + 1][j - 1]):\n                dp[i][j] = True\n                if length > best:\n                    best = length\n    return best"
+    }
+  ],
+  "compare_table": "| 写法 | 时间 | 空间 | 核心思路 | 适用 |\n| --- | --- | --- | --- | --- |\n| Manacher | O(n) | O(n) | 变换串 + 镜像臂长复用 | 线性求最长/逐中心回文长度 |\n| 中心扩展 | O(n²) | O(1) | 枚举中心向两侧扩 | 直观、易写,`n` 不大 |\n| 区间 DP | O(n²) | O(n²) | `dp[i][j]` 是否回文 | 需复用『所有子串是否回文』时 |",
+  "gotchas": [
+    "**偶数回文**(如 `abba`)没有单个字符中心,必须插 `#` 统一奇偶;首尾哨兵 `^`/`$` 要和 `#` 及所有输入字符都不同,否则扩展会越界或扩过头。",
+    "`p[i] = min(r - i, p[2*c - i])` 的 `min` 不能省:只有镜像回文完全落在右边界 `r` 内才能整段照抄;一旦顶到/超出 `r`,越界部分对称性失效,只能保证到 `r` 后继续向外扩,否则长度会偏大。",
+    "变换串里 `p[i]` 恰等于原串对应回文的长度,这依赖『分隔符个数比字符多一个』的构造;换分隔方案要重新推导。若要还原子串而不仅是长度,原串起点为 `(i - p[i]) // 2`。",
+    "中心扩展基线必须枚举两类中心:`expand(i, i)` 处理奇数回文、`expand(i, i+1)` 处理偶数回文,漏一类会算错;扩展跳出后长度是 `r - l - 1`(多走了一步要减回来)。",
+    "空串要返回 0:Manacher 写法已特判 `if not s`;不特判时变换串只含哨兵与 `#`,`max(p)` 也应为 0,但显式特判更清晰。"
+  ],
+  "applications": [
+    {
+      "label": "LC 5 · 最长回文子串",
+      "url": "https://leetcode.cn/problems/longest-palindromic-substring/"
+    },
+    {
+      "label": "LC 647 · 回文子串",
+      "url": "https://leetcode.cn/problems/palindromic-substrings/"
+    },
+    {
+      "label": "LC 214 · 最短回文串",
+      "url": "https://leetcode.cn/problems/shortest-palindrome/"
+    }
+  ],
+  "related": [
+    "z-function",
+    "string-hash",
+    "kmp"
+  ]
+}

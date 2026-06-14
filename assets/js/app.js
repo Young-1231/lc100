@@ -3,6 +3,7 @@ import { on, start, go, setNotFound } from "./router.js";
 import {
   renderHome, renderDay, renderAll, renderProblem,
   renderProgress, renderPattern, renderAbout, renderGuide,
+  renderAlgos, renderAlgo,
 } from "./views.js";
 
 // ===== Theme =====
@@ -31,6 +32,7 @@ const NAV = [
   { path: "#/",          label: "首页"     },
   { path: "#/list",      label: "全部题目" },
   { path: "#/day/1",     label: "7 天计划" },
+  { path: "#/algos",     label: "算法基础" },
   { path: "#/guide",     label: "练习指南" },
   { path: "#/progress",  label: "进度"     },
   { path: "#/about",     label: "关于"     },
@@ -56,6 +58,8 @@ on(/^#\/list$/,             renderAll);
 on(/^#\/day\/(\d+)$/,       renderDay);
 on(/^#\/p\/(\d+)$/,         renderProblem);
 on(/^#\/progress$/,         renderProgress);
+on(/^#\/algos$/,            renderAlgos);
+on(/^#\/algo\/(.+)$/,       renderAlgo);
 on(/^#\/pattern\/(.+)$/,    renderPattern);
 on(/^#\/guide$/,            renderGuide);
 on(/^#\/about$/,            renderAbout);

@@ -1,0 +1,82 @@
+{
+  "id": "counting-sort",
+  "title": "计数排序 Counting Sort",
+  "category": "排序",
+  "family": "sorting",
+  "tags": [
+    "非比较",
+    "线性时间",
+    "稳定"
+  ],
+  "summary": "**非比较**排序:统计每个值出现的次数,再按值从小到大摆出来;值域 `k` 不大时达到 **O(n+k)** 线性,前缀和写法还能做到**稳定**。",
+  "idea": "🔹 一句话\n计数排序是**非比较**排序:不去比较元素谁大谁小,而是统计『每个值出现了多少次』,再按值从小到大把它们依次摆出来。只要值域 `k = max - min + 1` 不太大,就能做到 **O(n+k)** —— 突破了比较排序 `O(n log n)` 的下界。\n\n🔹 为什么能突破 O(n log n)\n比较排序每次只能问『a 比 b 大吗』,一次得 1 bit 信息,排 n 个元素至少需要 `log(n!) ≈ n log n` 次比较。计数排序换了打法:直接拿**值当数组下标**去『投票』,一步定位,不做任何两两比较,所以那条下界对它不适用。代价是它要求 key 是**有界整数**(或能映射成有界整数下标)。\n\n🔹 复杂度从哪来\n- 统计计数:遍历 n 个元素 → `O(n)`\n- 扫描计数数组:大小为值域 `k` → `O(k)`\n- 输出结果:`O(n)`\n合计 **O(n+k)** 时间、`O(n+k)` 空间。当 **k = O(n)**(值域与元素个数同量级)时整体线性;一旦 `k` 远大于 `n`(比如只排几个数但值横跨上亿),计数数组就会爆炸,这时反而该换比较排序。\n\n🔹 负数怎么办\n数组下标不能为负。取 `lo = min(a)` 作偏移,值 `x` 映射到下标 `x - lo`,输出时再 `+ lo` 还原。这样 `[-3, 5]` 的值域就被压到 `[0, 8]`。\n\n🔹 两种写法的取舍\n- **基础版**:统计完次数后,把每个值『重复 `cnt` 次』直接展开输出。最短最直观,但它只适合排**纯数字**——展开时丢掉了原始元素,无法携带卫星数据,也就谈不上稳定。\n- **稳定版**:对计数数组求**前缀和**,`cnt[v]` 变成『值 ≤ v 的元素个数』,也就是值 `v` 这一段在输出里的**结束下标**。再**从后往前**遍历原数组,把元素放到 `--cnt[v]` 处。前缀和 + 从后往前,恰好让相等元素保持输入时的先后顺序 → **稳定**。稳定性正是计数排序能当**基数排序**子过程的关键。\n\n🔹 稳定版过程追踪(从后往前填)\n```\n原数组 a = [1, 3, 1, 2]      (lo=1, 值域 1..3)\n① 计数      cnt = [2, 1, 1]   # 值1出现2次, 值2一次, 值3一次\n② 前缀和    cnt = [2, 3, 4]   # cnt[v]=值<=v的个数=该值段的结束下标\n③ 从后往前填 out(长度4):\n   x=2 → cnt[1]:3→2, out[2]=2     out=[_, _, 2, _]\n   x=1 → cnt[0]:2→1, out[1]=1     out=[_, 1, 2, _]\n   x=3 → cnt[2]:4→3, out[3]=3     out=[_, 1, 2, 3]\n   x=1 → cnt[0]:1→0, out[0]=1     out=[1, 1, 2, 3]\n两个 1 的相对顺序与输入一致 → 稳定\n```\n\n🔹 稳不稳定一览\n| 写法 | 稳定 | 能带卫星数据 | 典型用途 |\n| --- | --- | --- | --- |\n| 基础展开 | 否(信息已丢) | 否 | 快速排纯整数 |\n| 前缀和稳定 | 是 | 是 | 基数排序的每一位、按整型键排对象 |",
+  "complexity": {
+    "best": "O(n + k)",
+    "avg": "O(n + k)",
+    "worst": "O(n + k)",
+    "space": "O(n + k)",
+    "stable": true,
+    "in_place": false,
+    "note": "非比较排序,时间/空间均为 `O(n+k)`,`k = max - min + 1` 为值域。`k = O(n)` 时整体线性;`k` 远大于 `n` 时计数数组浪费严重。`stable=true` 指**前缀和稳定版**;基础展开版丢失原始元素,既不稳定也无法携带卫星数据。需 `O(n+k)` 辅助空间,**非原地**。"
+  },
+  "entry": "sort",
+  "test_code": "import random\nrandom.seed(20240614)\nassert sort([]) == []\nassert sort([1]) == [1]\nassert sort([2, 1]) == [1, 2]\nassert sort([5, 5, 5, 5]) == [5, 5, 5, 5]\nassert sort([3, -1, 0, -1, 9, 2, 2]) == sorted([3, -1, 0, -1, 9, 2, 2])\nassert sort([-5, -3, -8, -1, -8]) == sorted([-5, -3, -8, -1, -8])\nfor _ in range(400):\n    n = random.randint(0, 60)\n    arr = [random.randint(-30, 30) for _ in range(n)]\n    assert sort(list(arr)) == sorted(arr), arr",
+  "variants": [
+    {
+      "title": "基础计数(直接展开)",
+      "time": "O(n + k)",
+      "space": "O(n + k)",
+      "starred": false,
+      "note": "统计次数后按值展开,最短最直观;只适合纯整数,**丢失原始元素故不稳定**、无法带卫星数据。",
+      "code": "def sort(a):\n    \"\"\"基础计数排序:统计每个值出现次数,再按值从小到大展开。\n    支持负数:以 min 为偏移把值映射到非负下标。\n    直接展开会丢掉原始元素,故不稳定(纯整数下不可见,但无法携带卫星数据)。\"\"\"\n    a = list(a)\n    if not a:\n        return []\n    lo, hi = min(a), max(a)\n    cnt = [0] * (hi - lo + 1)\n    for x in a:\n        cnt[x - lo] += 1            # 以 x-lo 为下标投票\n    out = []\n    for i, c in enumerate(cnt):\n        out.extend([i + lo] * c)    # 按值展开,+lo 还原偏移\n    return out"
+    },
+    {
+      "title": "前缀和稳定版",
+      "time": "O(n + k)",
+      "space": "O(n + k)",
+      "starred": true,
+      "note": "前缀和定位 + 从后往前填,**保持相等元素相对顺序**;标准实现,也是基数排序的基石。",
+      "code": "def sort(a):\n    \"\"\"稳定计数排序:计数 -> 前缀和 -> 从后往前填。\n    前缀和后 cnt[v] = 值 <= v 的元素个数,即值 v 段在输出中的结束下标;\n    从后往前遍历原数组放到 --cnt[v] 处,保证相等元素相对顺序不变(稳定)。\n    支持负数:以 min 为偏移。\"\"\"\n    a = list(a)\n    if not a:\n        return []\n    lo, hi = min(a), max(a)\n    cnt = [0] * (hi - lo + 1)\n    for x in a:\n        cnt[x - lo] += 1\n    for i in range(1, len(cnt)):\n        cnt[i] += cnt[i - 1]        # 前缀和:每个值段的结束下标\n    out = [0] * len(a)\n    for x in reversed(a):           # 从后往前 + 前缀和 => 稳定\n        cnt[x - lo] -= 1\n        out[cnt[x - lo]] = x\n    return out"
+    },
+    {
+      "title": "通用整型键稳定排序",
+      "time": "O(n + k)",
+      "space": "O(n + k)",
+      "starred": false,
+      "note": "把稳定版推广到『按整型 key 排对象』,正是基数排序按位排序复用的子过程;稳定性在这里才真正可观测。",
+      "code": "def counting_sort_by_key(records, key):\n    \"\"\"稳定计数排序的通用形态:按整型 key 对任意记录排序,\n    保持相等 key 的相对顺序。这正是基数排序按某一位排序时复用的子过程。\"\"\"\n    records = list(records)\n    if not records:\n        return []\n    keys = [key(r) for r in records]\n    lo, hi = min(keys), max(keys)\n    cnt = [0] * (hi - lo + 1)\n    for kv in keys:\n        cnt[kv - lo] += 1\n    for i in range(1, len(cnt)):\n        cnt[i] += cnt[i - 1]\n    out = [None] * len(records)\n    for r in reversed(records):     # 从后往前保证稳定\n        kv = key(r) - lo\n        cnt[kv] -= 1\n        out[cnt[kv]] = r\n    return out",
+      "test_code": "import random\nrandom.seed(20240614)\n# 稳定性:相同 key 记录应保持输入顺序;与稳定的内置 sorted 对拍\ndata = [(3, 'a'), (1, 'b'), (3, 'c'), (1, 'd'), (2, 'e'), (3, 'f')]\ngot = counting_sort_by_key(data, key=lambda r: r[0])\nassert got == sorted(data, key=lambda r: r[0])\nassert [v for k, v in got if k == 3] == ['a', 'c', 'f']\nassert counting_sort_by_key([], key=lambda r: r) == []\nfor _ in range(200):\n    n = random.randint(0, 40)\n    recs = [(random.randint(-10, 10), i) for i in range(n)]\n    got = counting_sort_by_key(recs, key=lambda r: r[0])\n    assert got == sorted(recs, key=lambda r: r[0]), recs"
+    }
+  ],
+  "compare_table": "| 写法 | 稳定 | 携带卫星数据 | 典型用途 |\n| --- | --- | --- | --- |\n| 基础展开计数 | 否 | 否 | 快速排纯整数,代码最短 |\n| 前缀和稳定版 | 是 | 是 | 标准计数排序,面试默认 |\n| 通用整型键稳定版 | 是 | 是 | 按整型键排对象,基数排序子过程 |",
+  "gotchas": [
+    "值域 `k = max - min + 1`,**`k` 远大于 `n` 时计数数组爆炸**(比如只排几个数却横跨上亿),此时计数排序反而最差,应改用比较排序。",
+    "**有负数必须做偏移**:用 `x - min` 当下标、输出再 `+ min` 还原,否则负下标会从数组尾部错误索引。",
+    "稳定来自两点、缺一不可:对计数数组求**前缀和** + **从后往前**遍历原数组;若改成从前往后填,相等元素的相对顺序会反转,失去稳定性。",
+    "前缀和后 `cnt[v]` 是该值段的**结束下标(开区间右端)**,填入时要先 `cnt[v] -= 1` 再写 `out[cnt[v]]`,顺序不能反。",
+    "基础『展开』写法只适合纯数字:它丢掉了原始对象,既不稳定也无法携带卫星数据;要排带键的对象必须用前缀和稳定版。",
+    "空数组要特判:`min([])` / `max([])` 会抛异常。"
+  ],
+  "applications": [
+    {
+      "label": "LC 912 · 排序数组",
+      "url": "https://leetcode.cn/problems/sort-an-array/"
+    },
+    {
+      "label": "LC 75 · 颜色分类",
+      "url": "https://leetcode.cn/problems/sort-colors/"
+    },
+    {
+      "label": "LC 1122 · 数组的相对排序",
+      "url": "https://leetcode.cn/problems/relative-sort-array/"
+    },
+    {
+      "label": "LC 274 · H 指数",
+      "url": "https://leetcode.cn/problems/h-index/"
+    }
+  ],
+  "related": [
+    "radix-sort",
+    "bucket-sort"
+  ]
+}

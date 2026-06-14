@@ -1,0 +1,93 @@
+{
+  "id": "bit-tricks",
+  "title": "位运算技巧 Bit Tricks",
+  "category": "位运算",
+  "family": "math",
+  "tags": [
+    "位运算",
+    "异或",
+    "lowbit",
+    "枚举子集"
+  ],
+  "summary": "用二进制位直接表达逻辑的一组小招式:`n&(n-1)` 抹最低位 1、`n&-n` 取 lowbit、异或抵消成对数、二进制 mask 枚举子集,常把判断/计数降到 **O(1)**。",
+  "idea": "🔹 一句话\n位运算技巧不是某一个算法,而是一组『用二进制位直接表达逻辑』的小招式:把集合、计数、奇偶、2 的幂等问题映射到 `&`、`|`、`^`、`<<`、`>>` 上,常把一次判断/计数降到 **O(1)**,或把一组状态压进一个整数。\n\n🔹 lowbit:取出最低位的 1(n & -n)\n计算机用『补码』表示负数(按位取反再加一)。`-n` 恰好把 n 最低位 1 以下保持不变、最低位 1 以上全部翻转,于是 `n & -n` 只剩最低位的那个 1。这是树状数组、子集枚举的基石。\n```\nn      =  0101 1000   (= 88)\n-n(补码)=  1010 1000   (~n + 1)\nn & -n =  0000 1000   ← 只剩最低位的 1 (= 8)\n```\n\n🔹 异或(^)的三条性质\n`a ^ a == 0`(自身抵消)、`a ^ 0 == a`(0 是幺元),且满足交换律与结合律。于是『一堆数里成对出现的会两两抵消』——这正是『只出现一次的数字』的原理:全员异或,最后剩下的就是答案。\n\n🔹 popcount:数二进制里 1 的个数(Brian Kernighan)\n`n & (n - 1)` 会把 n 最低位的 1 连同其后的进位一起清掉,效果就是『抹掉最低位的一个 1』。循环做、做了几次就有几个 1,比逐位移位快——只循环『1 的个数』次,而不是字长次。\n```\nn=1011  n&(n-1)=1011&1010=1010  cnt=1\nn=1010  n&(n-1)=1010&1001=1000  cnt=2\nn=1000  n&(n-1)=1000&0111=0000  cnt=3\nn=0000  停止 → 共 3 个 1\n```\n\n🔹 判 2 的幂\n2 的幂二进制里有且仅有一个 1(1, 10, 100, ...),把它抹掉后就成 0:`n > 0 and (n & (n - 1)) == 0`。务必先判 `n > 0`,否则 n=0 时 `0 & -1 == 0` 也满足后半句,会被误判为 True。\n\n🔹 子集枚举:一个整数就是一个子集\nn 个元素的子集与 n 位二进制数一一对应:第 j 位为 1 表示选入第 j 个元素。让 mask 跑遍 `0 .. 2ⁿ-1`,就不重不漏地枚举出全部 2ⁿ 个子集。这是状态压缩 DP 的入口,也是回溯求子集的迭代版本。\n\n🔹 复杂度小结\n| 技巧 | 时间 | 关键位运算 |\n| --- | --- | --- |\n| popcount | O(1 的个数) | `n &= n-1` |\n| is_pow2 | O(1) | `n & (n-1)` |\n| single | O(n) | `^` |\n| subsets | O(n·2ⁿ) | `(mask>>j)&1` |",
+  "complexity": {
+    "best": "O(1)",
+    "avg": "O(1) ~ O(n·2ⁿ)",
+    "worst": "O(n·2ⁿ)",
+    "space": "O(1) ~ O(n·2ⁿ)",
+    "stable": null,
+    "in_place": null,
+    "note": "本条目是若干位运算技巧的合集,复杂度因技巧而异:`popcount` 为 `O(1 的个数)`(≤ 机器字长,可视作常数),`is_pow2` 为 `O(1)`,`single` 为 `O(n)`,`subsets` 要枚举 `2ⁿ` 个子集、每个 `O(n)`,故 `O(n·2ⁿ)`、空间也含 `O(n·2ⁿ)` 的输出。稳定/原地是排序概念,这里不适用,故取 `null`。"
+  },
+  "entry": "popcount",
+  "test_code": "import random\nrandom.seed(191)\nassert popcount(0) == 0\nassert popcount(1) == 1\nassert popcount(0b1011) == 3\nassert popcount((1 << 20) - 1) == 20\nfor _ in range(3000):\n    n = random.randint(0, 1 << 40)\n    assert popcount(n) == bin(n).count(\"1\"), n\n",
+  "variants": [
+    {
+      "title": "popcount:统计 1 的个数(Brian Kernighan)",
+      "time": "O(1 的个数)",
+      "space": "O(1)",
+      "starred": true,
+      "note": "`n &= n-1` 抹掉最低位 1,只循环『1 的个数』次,最经典的位招式;契约 `popcount(n) -> int`(n≥0)。Python 3.10+ 工程里可直接用 `n.bit_count()`。",
+      "code": "def popcount(n):\n    \"\"\"Brian Kernighan:每次 `n &= n - 1` 抹掉二进制里最低位的 1,\n    循环几次就有几个 1。约定 n 为非负整数(Python 负数是无限位补码,会死循环)。\"\"\"\n    cnt = 0\n    while n:\n        n &= n - 1          # 抹掉最低位的一个 1\n        cnt += 1\n    return cnt\n",
+      "test_code": "import random\nrandom.seed(191)\nassert popcount(0) == 0\nassert popcount(1) == 1\nassert popcount(0b1011) == 3\nassert popcount((1 << 20) - 1) == 20\nfor _ in range(3000):\n    n = random.randint(0, 1 << 40)\n    assert popcount(n) == bin(n).count(\"1\"), n\n"
+    },
+    {
+      "title": "判 2 的幂(n & (n-1) == 0)",
+      "time": "O(1)",
+      "space": "O(1)",
+      "starred": false,
+      "note": "2 的幂二进制只有一个 1,抹掉即 0;务必先判 `n > 0`。契约 `is_pow2(n) -> bool`。",
+      "code": "def is_pow2(n):\n    \"\"\"判断 n 是否为 2 的幂。2 的幂二进制里只有一个 1,\n    故 `n & (n - 1)` 抹掉那唯一的 1 后应为 0;必须先判 `n > 0`,\n    否则 n=0 时 `0 & -1 == 0` 会被误判为 True。\"\"\"\n    return n > 0 and (n & (n - 1)) == 0\n",
+      "test_code": "import random\nrandom.seed(231)\npows = {1 << k for k in range(0, 40)}      # 2^0 .. 2^39\nfor n in range(0, 1100):\n    assert is_pow2(n) == (n in pows), n\nfor _ in range(3000):\n    n = random.randint(-(1 << 20), 1 << 32)\n    assert is_pow2(n) == (n in pows), n\n"
+    },
+    {
+      "title": "只出现一次的数(全员异或)",
+      "time": "O(n)",
+      "space": "O(1)",
+      "starred": false,
+      "note": "其余元素都出现偶数次时,全部异或起来成对抵消,剩下答案。契约 `single(nums) -> int`。",
+      "code": "def single(nums):\n    \"\"\"除一个数只出现一次外,其余都出现两次(偶数次)。\n    全员异或:相同的数两两抵消(a ^ a == 0),最后剩下答案(a ^ 0 == a)。\"\"\"\n    res = 0\n    for x in nums:\n        res ^= x\n    return res\n",
+      "test_code": "import random\nfrom collections import Counter\nrandom.seed(136)\nassert single([1]) == 1\nassert single([2, 2, 5]) == 5\nassert single([4, 1, 2, 1, 2]) == 4\nfor _ in range(800):\n    uniq = random.randint(-(1 << 20), 1 << 20)\n    pairs = [random.randint(-(1 << 20), 1 << 20) for _ in range(random.randint(0, 25))]\n    arr = [uniq] + pairs + pairs\n    random.shuffle(arr)\n    odd = [v for v, c in Counter(arr).items() if c % 2 == 1]   # 出现奇数次的数\n    assert len(odd) == 1\n    assert single(arr) == odd[0], arr\n"
+    },
+    {
+      "title": "二进制枚举所有子集",
+      "time": "O(n·2ⁿ)",
+      "space": "O(n·2ⁿ)(含输出)",
+      "starred": false,
+      "note": "mask 跑遍 `0..2ⁿ-1`,第 j 位为 1 表示选 nums[j];状态压缩 / 回溯求子集的迭代版。契约 `subsets(nums) -> list`。",
+      "code": "def subsets(nums):\n    \"\"\"二进制枚举所有子集:用 0 .. 2^n-1 的每个 mask 表示一个子集,\n    mask 的第 j 位为 1 就把 nums[j] 选进来,共枚举 2^n 个子集。\"\"\"\n    n = len(nums)\n    res = []\n    for mask in range(1 << n):\n        res.append([nums[j] for j in range(n) if (mask >> j) & 1])\n    return res\n",
+      "test_code": "import itertools, random\nrandom.seed(78)\ndef brute(nums):\n    out = []\n    for r in range(len(nums) + 1):\n        out.extend(list(c) for c in itertools.combinations(nums, r))\n    return out\nassert subsets([]) == [[]]\nfor _ in range(300):\n    n = random.randint(0, 10)\n    nums = random.sample(range(-60, 60), n)      # 取互异元素,便于按集合对拍\n    got = subsets(nums)\n    assert len(got) == (1 << n)\n    assert sorted(map(tuple, got)) == sorted(map(tuple, brute(nums))), nums\n"
+    }
+  ],
+  "compare_table": "| 技巧 | 契约 | 关键位运算 | 时间 | 易错点 |\n| --- | --- | --- | --- | --- |\n| popcount | `popcount(n)` | `n &= n-1` | O(1 的个数) | 负数会死循环,约定 n≥0 |\n| 判 2 的幂 | `is_pow2(n)` | `n & (n-1)` | O(1) | 必须先判 `n>0` |\n| 只出现一次 | `single(nums)` | `^` | O(n) | 仅当其余偶数次成立 |\n| 子集枚举 | `subsets(nums)` | `(mask>>j)&1` | O(n·2ⁿ) | 指数爆炸,n 要小 |",
+  "gotchas": [
+    "**Brian Kernighan 的 `n &= n-1` 只适用于非负整数**:Python 负数是无限位补码,`n` 永远非零,循环不终止;要数负数的位需先 `n & mask` 限定字长。",
+    "判 2 的幂**必须先判 `n > 0`**:否则 n=0 时 `0 & (0-1) == 0 & -1 == 0`,会把 0 误判成 2 的幂。",
+    "全员异或求『只出现一次』**只在其余元素都出现偶数次(通常是两次)时成立**;若有元素出现三次等情形,要改用按位计数(对每一位的 1 计数取模)。",
+    "子集枚举判某位用 `(mask >> j) & 1` 或 `mask & (1 << j)`。**注意 Python 与 C/C++/Java 相反**:Python 里 `&` 的优先级**高于** `==`,所以 `mask & (1<<j) == 0` 会按 `(mask & (1<<j)) == 0` 解析(正确);而在 C/Java 里 `&` 低于 `==`,那里才必须写成 `(mask & (1<<j)) == 0` 加括号。",
+    "`n & -n` 取 lowbit 依赖补码:对 Python 负数仍能取到最低位 1(补码语义),但子集/计数枚举的复杂度是 `2ⁿ`,n 略大(>20)就指数爆炸,不可滥用。"
+  ],
+  "applications": [
+    {
+      "label": "LC 191 · 位1的个数",
+      "url": "https://leetcode.cn/problems/number-of-1-bits/"
+    },
+    {
+      "label": "LC 231 · 2 的幂",
+      "url": "https://leetcode.cn/problems/power-of-two/"
+    },
+    {
+      "label": "LC 136 · 只出现一次的数字",
+      "url": "https://leetcode.cn/problems/single-number/"
+    },
+    {
+      "label": "LC 78 · 子集",
+      "url": "https://leetcode.cn/problems/subsets/"
+    }
+  ],
+  "related": [
+    "backtracking",
+    "fast-power"
+  ]
+}

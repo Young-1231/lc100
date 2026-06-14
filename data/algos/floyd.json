@@ -1,0 +1,84 @@
+{
+  "id": "floyd",
+  "title": "Floyd-Warshall 多源最短路",
+  "category": "最短路",
+  "family": "graph",
+  "tags": [
+    "最短路",
+    "动态规划",
+    "稠密图",
+    "负权"
+  ],
+  "summary": "枚举**中转点 `k`** 逐层松弛,三重循环 `O(n³)` 一次求出**所有点对**最短路;稠密图与负权(无负环)首选,跑完看 `d[i][i]<0` 即可测负环。",
+  "idea": "🔹 一句话\nFloyd-Warshall 用一个 `n×n` 矩阵,枚举『允许经过哪些中转点』来逐层松弛,三重循环 `O(n³)` 一次性求出**所有点对**之间的最短路。代码极短,稠密图与含负权(无负环)的小图首选。\n\n🔹 DP 状态:为什么 `k` 必须最外层\n定义 `d^(k)[i][j]` = 只允许用 `{0,1,…,k-1}` 当中转点时 `i→j` 的最短路。加入第 `k` 个中转点时只有两种选择:不用它,`d^(k+1)[i][j] = d^(k)[i][j]`;或用它,`d^(k)[i][k] + d^(k)[k][j]`。两者取 `min`,这就是转移方程。\n`k` 是 DP 的**阶段维**(允许的中转点集合在变大),所以它必须在最外层。把 `k` 放到内层,就会拿『已经允许经过 k』的距离去更新另一个用到 k 的状态,逻辑串味、结果出错。\n\n🔹 为什么能原地滚动(只用一个矩阵)\n处理中转点 `k` 这一轮,我们读 `d[i][k]` 和 `d[k][j]`,要求它们仍是『没把 k 当中转』的旧值。恰好在第 `k` 轮里这两者不会被改:`d[i][k] = min(d[i][k], d[i][k]+d[k][k])`,只要 `d[k][k] >= 0`(无负环)就等于原值;`d[k][j]` 同理。所以一个矩阵原地更新即正确,空间 `O(n²)`。\n\n🔹 复杂度从哪来 / 和 Dijkstra 怎么比\n三层循环各 `n` 次 → 时间恒为 `O(n³)`,**与边数无关**。\n| 方法 | 时间 | 适用 | 负权 |\n| --- | --- | --- | --- |\n| Floyd | `O(n³)` | 稠密图、需要全源 | 支持(无负环) |\n| n 次 Dijkstra | `O(n·E·log n)` | 稀疏图 | 不支持 |\n| n 次 Bellman-Ford | `O(n·V·E)` | 稀疏 + 负权 | 支持 |\n稠密图 `E≈n²` 时 Floyd 常数更小、代码更短;稀疏图则跑 n 次 Dijkstra 更快。\n\n🔹 负环检测\n跑完后若任意 `d[i][i] < 0`,说明 `i` 落在一个负权环上(绕一圈回来总权重为负)。此时这些点对的『最短路』无定义(可以无限变小),应视为 `-∞`。基础版对角线初始为 `0`,只有负环能把它压成负数,所以这是一个 `O(n)` 的现成检测。\n\n🔹 三种写法的取舍\n① **标准三重循环**:只算距离,最常用、面试默认。② **带路径重建**:额外维护 `nxt[i][j]`(从 i 去 j 的下一步),松弛成功时 `nxt[i][j]=nxt[i][k]`,即可还原具体路径(注意负环会让还原死循环)。③ **传递闭包(Warshall)**:把 `min/+` 换成 `OR/AND`,求的是『可达性』——这揭示了 Floyd 本质是在一个半环上做 DP,同一套三重循环能解最短路、可达性、最大瓶颈路等一族问题。\n\n🔹 过程追踪(3 点有向环)\n```\n图: 0--3-->1   1--1-->2   2--2-->0   (对角线=0, 其余=∞)\n\n初始       k=0(经0)     k=1(经1)      k=2(经2,最终)\n  0 3 ∞     0 3 ∞         0 3 4         0 3 4\n  ∞ 0 1     ∞ 0 1         ∞ 0 1         3 0 1\n  2 ∞ 0     2 5 0         2 5 0         2 5 0\n           d[2][1]=2+3    d[0][2]=3+1   d[1][0]=1+2\n```",
+  "complexity": {
+    "best": "O(n³)",
+    "avg": "O(n³)",
+    "worst": "O(n³)",
+    "space": "O(n²)",
+    "stable": null,
+    "in_place": false,
+    "note": "时间恒为 `O(n³)`、**与边数无关**:稠密图(`E≈n²`)比跑 n 次 Dijkstra(`O(n·E·log n)`)常数更小、代码更短;稀疏图则相反。空间 `O(n²)` 即矩阵本身,DP 天然原地滚动、无需额外矩阵;此处为不污染入参做了一次拷贝,故 `in_place=false`。`stable` 对图算法无意义,取 null。"
+  },
+  "entry": "floyd",
+  "test_code": "import random\nrandom.seed(20240614)\nINF = float(\"inf\")\n\ndef brute_apsp(dist):\n    # 每个源点跑一遍 Bellman-Ford,作为独立于 Floyd 的对拍参照(允许负权、无负环)\n    n = len(dist)\n    edges = [(i, j, dist[i][j]) for i in range(n) for j in range(n)\n             if i != j and dist[i][j] != INF]\n    res = []\n    for s in range(n):\n        dd = [INF] * n\n        dd[s] = 0\n        for _ in range(n):\n            changed = False\n            for u, v, w in edges:\n                if dd[u] != INF and dd[u] + w < dd[v]:\n                    dd[v] = dd[u] + w\n                    changed = True\n            if not changed:\n                break\n        res.append(dd)\n    return res\n\ndef rand_graph(n, p, wmax):\n    g = [[0 if i == j else INF for j in range(n)] for i in range(n)]\n    for i in range(n):\n        for j in range(n):\n            if i != j and random.random() < p:\n                g[i][j] = random.randint(0, wmax)\n    return g\n\n# 已知结果:3 点有向环\ng0 = [[0, 3, INF], [INF, 0, 1], [2, INF, 0]]\nassert floyd(g0) == [[0, 3, 4], [3, 0, 1], [2, 5, 0]]\nassert floyd(g0) == brute_apsp(g0)\nassert g0 == [[0, 3, INF], [INF, 0, 1], [2, INF, 0]]   # 不污染入参\n\n# 负权但无负环(DAG)\ngn = [[0, -2, INF], [INF, 0, -1], [INF, INF, 0]]\nassert floyd(gn) == [[0, -2, -3], [INF, 0, -1], [INF, INF, 0]]\nassert floyd(gn) == brute_apsp(gn)\n\n# 边界:单点、两个互不可达的孤立点\nassert floyd([[0]]) == [[0]]\nassert floyd([[0, INF], [INF, 0]]) == [[0, INF], [INF, 0]]\n\n# 随机对拍(非负权 => 不会有负环)\nfor _ in range(300):\n    n = random.randint(1, 7)\n    g = rand_graph(n, 0.5, 12)\n    assert floyd(g) == brute_apsp(g), g\n",
+  "variants": [
+    {
+      "title": "标准三重循环(k 最外层)",
+      "time": "O(n³)",
+      "space": "O(n²)",
+      "starred": true,
+      "note": "**面试 / 工程默认**:三层 for,`k` 在最外层做中转点松弛。只算距离,最短小精悍。",
+      "code": "def floyd(dist):\n    \"\"\"标准 Floyd-Warshall:中转点 k 在最外层,三重循环松弛。\n    输入邻接矩阵 dist(dist[i][i]=0,无边=inf),返回全源最短路矩阵;不修改入参。\"\"\"\n    INF = float(\"inf\")\n    n = len(dist)\n    d = [row[:] for row in dist]            # 拷贝,避免污染入参\n    for k in range(n):                      # 阶段:允许经过的中转点,必须最外层\n        dk = d[k]\n        for i in range(n):\n            dik = d[i][k]\n            if dik == INF:                  # i 到不了 k,这一行经 k 中转无意义\n                continue\n            di = d[i]\n            for j in range(n):\n                nd = dik + dk[j]            # i -> … -> k -> … -> j\n                if nd < di[j]:\n                    di[j] = nd\n    return d\n"
+    },
+    {
+      "title": "带路径重建(维护 nxt 矩阵)",
+      "time": "O(n³)",
+      "space": "O(n²)",
+      "starred": false,
+      "note": "额外维护 `nxt[i][j]`,松弛成功时 `nxt[i][j]=nxt[i][k]`,即可还原任意 `i→j` 的具体最短路顶点序列(有负环时还原会死循环,需先排除)。",
+      "code": "def floyd_path(dist):\n    \"\"\"带路径重建的 Floyd-Warshall。\n    返回 (d, path):d 为最短路矩阵;path(i, j) 还原一条 i->j 的最短路顶点序列,\n    i 到不了 j 时返回 []。靠 nxt[i][j] = 从 i 去 j 的下一个顶点 来重建。\"\"\"\n    INF = float(\"inf\")\n    n = len(dist)\n    d = [row[:] for row in dist]\n    # 有直接边(含 i==j,dist[i][i]=0)则下一步就是 j,否则不可达记 None\n    nxt = [[j if dist[i][j] != INF else None for j in range(n)] for i in range(n)]\n    for k in range(n):\n        for i in range(n):\n            if d[i][k] == INF:\n                continue\n            for j in range(n):\n                nd = d[i][k] + d[k][j]\n                if nd < d[i][j]:\n                    d[i][j] = nd\n                    nxt[i][j] = nxt[i][k]   # 先朝『能到 k』的方向走\n    def path(i, j):\n        if nxt[i][j] is None:               # 不可达\n            return []\n        route = [i]\n        while i != j:                       # 无负环时必然终止\n            i = nxt[i][j]\n            route.append(i)\n        return route\n    return d, path\n",
+      "test_code": "import random\nrandom.seed(20240614)\nINF = float(\"inf\")\n\ndef brute_apsp(dist):\n    # 每个源点跑一遍 Bellman-Ford,作为独立于 Floyd 的对拍参照(允许负权、无负环)\n    n = len(dist)\n    edges = [(i, j, dist[i][j]) for i in range(n) for j in range(n)\n             if i != j and dist[i][j] != INF]\n    res = []\n    for s in range(n):\n        dd = [INF] * n\n        dd[s] = 0\n        for _ in range(n):\n            changed = False\n            for u, v, w in edges:\n                if dd[u] != INF and dd[u] + w < dd[v]:\n                    dd[v] = dd[u] + w\n                    changed = True\n            if not changed:\n                break\n        res.append(dd)\n    return res\n\ndef rand_graph(n, p, wmax):\n    g = [[0 if i == j else INF for j in range(n)] for i in range(n)]\n    for i in range(n):\n        for j in range(n):\n            if i != j and random.random() < p:\n                g[i][j] = random.randint(0, wmax)\n    return g\n\nfor _ in range(300):\n    n = random.randint(1, 7)\n    g = rand_graph(n, 0.5, 12)\n    d, path = floyd_path(g)\n    assert d == brute_apsp(g), g                 # 距离矩阵正确\n    for i in range(n):\n        for j in range(n):\n            route = path(i, j)\n            if d[i][j] == INF:\n                assert route == []               # 不可达\n            else:\n                assert route[0] == i and route[-1] == j\n                total = 0\n                for a, b in zip(route, route[1:]):\n                    assert g[a][b] != INF         # 每一步都是真实存在的边\n                    total += g[a][b]\n                assert total == d[i][j], (g, i, j, route)   # 还原长度 == 最短距离\n"
+    },
+    {
+      "title": "传递闭包(Warshall 布尔变体)",
+      "time": "O(n³)",
+      "space": "O(n²)",
+      "starred": false,
+      "note": "把 `min/+` 换成 `OR/AND`,同一套三重循环求**可达性**矩阵——说明 Floyd 本质是在半环上做 DP。契约不同,单独配测。",
+      "code": "def reachable(adj):\n    \"\"\"Warshall 传递闭包(Floyd 的布尔变体):把 min/+ 换成 OR/AND。\n    输入布尔邻接矩阵 adj(adj[i][j]=是否有直接边),\n    返回可达矩阵 r(r[i][j]=能否经 >=1 条边从 i 走到 j);不修改入参。\"\"\"\n    n = len(adj)\n    r = [list(map(bool, row)) for row in adj]\n    for k in range(n):\n        rk = r[k]\n        for i in range(n):\n            if not r[i][k]:                 # i 到不了 k,经 k 中转无意义\n                continue\n            ri = r[i]\n            for j in range(n):\n                if rk[j]:\n                    ri[j] = True\n    return r\n",
+      "test_code": "import random\nrandom.seed(20240614)\n\n\ndef brute_reach(adj):\n    # 从每个源点做一次图搜索(>=1 条边),作为传递闭包的对拍参照\n    n = len(adj)\n    res = [[False] * n for _ in range(n)]\n    for s in range(n):\n        stack = [j for j in range(n) if adj[s][j]]\n        while stack:\n            u = stack.pop()\n            if res[s][u]:\n                continue\n            res[s][u] = True\n            for j in range(n):\n                if adj[u][j] and not res[s][j]:\n                    stack.append(j)\n    return res\n\n\ndef rand_adj(n, p):\n    return [[random.random() < p for _ in range(n)] for _ in range(n)]\n\n\n# 已知小例:0->1->2->0 强连通环,任意点都能互达(含自身)\na0 = [[False, True, False], [False, False, True], [True, False, False]]\nassert reachable(a0) == [[True, True, True]] * 3\nassert reachable(a0) == brute_reach(a0)\n\n# 链(无环):闭包为严格上三角\na1 = [[False, True, False], [False, False, True], [False, False, False]]\nassert reachable(a1) == [[False, True, True], [False, False, True], [False, False, False]]\n\n# 接受 0/1 整数输入\nassert reachable([[0, 1], [0, 0]]) == [[False, True], [False, False]]\n\n# 随机对拍\nfor _ in range(400):\n    n = random.randint(1, 8)\n    adj = rand_adj(n, 0.35)\n    assert reachable(adj) == brute_reach(adj), adj\n"
+    }
+  ],
+  "compare_table": "| 写法 | 半环运算 | 额外结构 | 输出 | 典型场景 |\n| --- | --- | --- | --- | --- |\n| 标准三重循环 | `min / +` | 无 | 全源最短距离 | 稠密图最短路、负权(无负环) |\n| 带路径重建 | `min / +` | `nxt` 矩阵 | 距离 + 具体路径 | 需要输出方案 |\n| 传递闭包 | `OR / AND` | 无 | 可达性矩阵 | 连通性、关系传递 |",
+  "gotchas": [
+    "**`k` 必须在最外层**:它是 DP 的阶段维(允许的中转点集合)。放到内层会用『已允许经过 k』的距离去更新,结果错误。",
+    "原地滚动正确的前提是 `d[k][k] >= 0`(无负环):这样第 `k` 轮里 `d[i][k]`、`d[k][j]` 不会被改动,读到的仍是『未经 k 中转』的旧值。",
+    "**负环检测**:跑完后任意 `d[i][i] < 0` 即存在负权环,相关点对最短路应视为 `-∞`;此时路径重建会死循环,必须先排除。",
+    "用 `float('inf')` 当无穷大最稳;若改用大整数(如 `10**9`)当哨兵,`INF + w` 可能溢出成『更短』的假路径,需加 `if d[i][k] == INF: continue` 之类的保护。",
+    "记得把 `dist[i][i]` 初始化为 `0`、无边设为 `inf`;漏设对角线 0 会让自反距离与负环判断全错。",
+    "Floyd 默认在矩阵上原地计算,但要小心是否会污染调用方的输入——本实现统一先拷贝再算。"
+  ],
+  "applications": [
+    {
+      "label": "LC 1334 · 阈值距离内邻居最少的城市",
+      "url": "https://leetcode.cn/problems/find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance/"
+    },
+    {
+      "label": "LC 743 · 网络延迟时间",
+      "url": "https://leetcode.cn/problems/network-delay-time/"
+    },
+    {
+      "label": "LC 1462 · 课程表 IV(传递闭包)",
+      "url": "https://leetcode.cn/problems/course-schedule-iv/"
+    },
+    {
+      "label": "LC 2642 · 设计可以求最短路径的图类",
+      "url": "https://leetcode.cn/problems/design-graph-with-shortest-path-calculator/"
+    }
+  ],
+  "related": [
+    "dijkstra",
+    "bellman-ford"
+  ]
+}

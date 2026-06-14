@@ -13,6 +13,7 @@
 | 特性 | 说明 |
 | --- | --- |
 | 🧠 **100 题全覆盖** | 严格按 LeetCode 官方 Hot 100,Python 实现 |
+| 🧮 **算法基础板块** | 以 Hot 100 为基础,补 34 个经典『手撕』算法(排序/二分/字符串/图论/数学位运算/经典范式),每个含思路 + 2–5 种写法对比 + 复杂度大表 + 易错点,代码 100% 自测 |
 | 🟧 **一键去 LeetCode 练习** | 列表每行 + 详情页都有「去 LeetCode 练习」按钮,直达 leetcode.cn 原题盖码默写 |
 | 🧭 **新手练习指南** | 内置 `#/guide` 页,手把手讲注册 / 选 Python3 / Run / Submit / 看判题结果 / 高效习惯 |
 | 🔀 **翻题 + 随机** | 详情页上一题/下一题导航 + `←`/`→` 快捷键;全部题目页「🎲 随机一题」从筛选结果抽题 |
@@ -74,9 +75,13 @@ lc100/
 │   ├── problems.json       # 100 题摘要索引
 │   ├── days.json           # 7 天分组
 │   ├── problems/p0001.json # 每题完整数据(题面、多解法、源码)
-│   └── patterns/*.md       # 模式速记表(7 张)
+│   ├── patterns/*.md       # 模式速记表(7 张)
+│   ├── algo_families.json  # 算法基础:6 大家族分组 + 排序总览表
+│   ├── algos/<slug>.json   # 算法基础:每个经典算法全量(思路/多写法/复杂度…)
+│   └── algos.json          # 算法基础:列表索引(由 build_algos.py 生成)
 ├── solutions/              # 完整 .py 源码(可直接下载)
-└── scripts/build.py        # 从 hot100/ 解析生成 JSON
+├── scripts/build.py        # 从 hot100/ 解析生成题目 JSON
+└── scripts/build_algos.py  # 构建 + 自测「算法基础」板块
 ```
 
 ## 🚀 本地预览
@@ -212,6 +217,29 @@ git push
 | 6 | 栈 / 堆 / 贪心 | 12 | 单调栈, heapq, Top-K, 区间贪心 |
 | 7 | DP / 多维DP / 技巧 | 20 | 选/不选, 状态压缩, 滚动数组, Boyer-Moore |
 | | **合计** | **100** | |
+
+## 🧮 算法基础 / 经典算法板块
+
+除了 Hot 100,站点新增 **`#/algos`** 板块,作为面试算法的基本功补充。每个算法都按
+**思路 → 多种写法对比 → 最好/平均/最坏复杂度 + 稳定性/原地 → 易错点 → 关联 LeetCode 真题** 组织,
+代码全部经 `scripts/build_algos.py` 实跑自测(exec 每种写法的 `code` + `test_code` 对拍标准库/暴力)。
+
+| 家族 | 内容 |
+| --- | --- |
+| 🔢 排序全家桶 | 快排(Lomuto/Hoare/三路/随机化)· 归并 · 堆排 · 插入 · 选择 · 冒泡 · 希尔 · 计数 · 基数 · 桶 + 稳定性大对比表 |
+| 🎯 二分查找体系 | 闭区间 / 左闭右开 / lower_bound / upper_bound 四模板 · 旋转数组 · 二分答案 · 浮点二分 |
+| 🔤 字符串匹配 | KMP · Rabin-Karp 字符串哈希 · Manacher · Z 函数 · Trie |
+| 🕸️ 图论 | BFS/DFS · Dijkstra · Bellman-Ford/SPFA · Floyd · 拓扑排序 · 并查集 · 最小生成树 |
+| ➗ 数学 & 位运算 | 快速幂 · 欧几里得 GCD · 素数筛 · 位运算技巧 · 洗牌/蓄水池抽样 |
+| 🧩 经典范式模板 | 前缀和&差分 · 双指针滑窗 · 回溯 · 背包 DP · 单调栈/队列 |
+
+数据文件:`data/algo_families.json`(家族分组)、`data/algos/<slug>.json`(每个算法全量)、
+`data/algos.json`(列表索引,由构建脚本生成)。
+
+```bash
+# 修改/新增算法后:重建索引并跑全部写法自测
+python3 scripts/build_algos.py
+```
 
 ## 🤝 致谢
 

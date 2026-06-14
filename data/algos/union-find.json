@@ -1,0 +1,81 @@
+{
+  "id": "union-find",
+  "title": "并查集 Union-Find / DSU",
+  "category": "并查集",
+  "family": "graph",
+  "tags": [
+    "并查集",
+    "图",
+    "连通性"
+  ],
+  "summary": "用**森林**维护『谁和谁连通』:`find` 找根 + **路径压缩**,`union` **按秩 / 大小合并**;单次操作摊还近 `O(α(n))`,几乎是常数。",
+  "idea": "🔹 一句话\n并查集(Disjoint Set Union,DSU)用一片**森林**维护「一堆元素被划分成哪些不相交的集合」:每个集合是一棵树,**树根**当这个集合的代表(id)。两大操作——`find(x)` 找 x 所在树的根、`union(x,y)` 把两棵树合并——再配上两项优化,单次几乎是常数时间。\n\n🔹 森林怎么表示\n只用一个 `parent` 数组:`parent[x]` 指向 x 的父结点,根满足 `parent[root]==root`。\n- `find(x)`:顺着 parent 一路往上,直到根。\n- `connected(x,y)`:`find(x)==find(y)`(同根即同集合)。\n- `union(x,y)`:先各自 `find` 出根,再把**一个根挂到另一个根**下面,两棵树合成一棵。\n- 连通分量数 `count`:初始为 `n`,每成功合并一次(两根不同)就 `-1`。\n\n🔹 路径压缩:把树拍扁\n朴素 find 沿链上爬,链一长就 `O(n)`。**路径压缩**让每次 find 完顺手把查找路径上的所有结点**直接挂到根**下,下次再查一步到位。两种写法:递归版回溯时令 `parent[x]=find(parent[x])`;迭代版先找到根、再走第二趟把沿途结点改指向根。\n\n🔹 按秩 / 按大小合并:别让树长歪\nunion 若总「随便挂」,树会退化成链。于是合并时**按体量挑方向**:\n- 按秩(rank):`rank` 是**树高的上界**,把矮树挂到高树下;只有合并两棵等高树时,新根 `rank` 才 `+1`。\n- 按大小(size):记录每棵树的**结点数**,把小树挂到大树下,顺带能 `O(1)` 查任意连通块大小。\n两者都能把树高压到 `O(log n)`;再叠加路径压缩,树几乎是扁的。\n\n| 维度 | 按秩(rank) | 按大小(size) |\n| --- | --- | --- |\n| 附加数组 | 树高上界 `rank[]` | 结点数 `size[]` |\n| 合并规则 | 矮树挂到高树 | 小树挂到大树 |\n| 维护时机 | 仅等高合并时 `rank+1` | 每次合并 `size` 累加 |\n| 附带信息 | 无 | 随时拿到连通块大小 |\n| 复杂度 | 近 `O(α(n))` | 近 `O(α(n))` |\n\n🔹 为什么是近 O(α(n))\n单独用路径压缩、或单独用按秩合并,单次操作摊还都是 `O(log n)`;**两者同时上**,m 次操作总代价 `O(m·α(n))`——`α` 是**反阿克曼函数**,比对数还慢得多,现实里 `n` 取到天文数字 `α(n)` 也 `≤ 5`,所以单次摊还可当**常数**。代价只是 `parent` 数组外再加一个等长的 `rank`/`size` 数组,空间 `O(n)`。\n\n🔹 过程图示(按秩 + 路径压缩)\n```\n初始:每点自成一棵树,parent[i]=i,count=5\n  0   1   2   3   4\n\nunion(0,1):rank 相等 → 1 挂到 0,rank[0]=1,count=4\n    0       2   3   4\n    |\n    1\n\nunion(2,3):3 挂到 2,count=3\n    0       2       4\n    |       |\n    1       3\n\nunion(1,3):两棵 rank=1 的树,根 2 挂到根 0,rank[0]=2,count=2\n        0               4\n       / \\\n      1   2\n          |\n          3\n\nfind(3) 触发路径压缩:3 直接指向根 0\n        0               4\n      / | \\\n     1  2  3\n```\n\n🔹 三种写法取舍\n- 路径压缩 + 按秩:最经典,只多一个 `rank` 数组,**面试 / 工程首选**。\n- 路径压缩 + 按大小:复杂度相同,额外天然知道每个连通块多大(很多题目要用),需要时优先它。\n- 仅路径压缩:省掉平衡数组、代码最短,但单次摊还退化到 `O(log n)`——做教学对照或小规模够用,稳定性不如前两者。",
+  "complexity": {
+    "best": "O(α(n))",
+    "avg": "O(α(n))",
+    "worst": "O(log n)",
+    "space": "O(n)",
+    "stable": null,
+    "in_place": null,
+    "note": "`α(n)` 是**反阿克曼函数**,现实规模(`n ≤ 2^65536`)下 `α(n) ≤ 5`,可视作常数。**路径压缩 + 按秩 / 大小** 同时使用时,m 次操作总计 `O(m·α(n))`,单次摊还近 `O(α(n))`;单次最坏仍可能 `O(log n)`。**仅路径压缩**(无平衡)单次摊还退化为 `O(log n)`。空间 `O(n)`:一个 `parent` 数组,按秩 / 大小再加一个等长数组。`stable / in_place` 对数据结构不适用,取 null。"
+  },
+  "entry": "DSU",
+  "test_code": "import random\nrandom.seed(20240614)\n\n# —— 基础契约 ——\nd = DSU(5)\nassert d.count == 5\nassert d.connected(0, 0) is True\nassert d.connected(0, 1) is False\nd.union(0, 1)\nd.union(2, 3)\nassert d.connected(0, 1) is True\nassert d.connected(2, 3) is True\nassert d.connected(1, 2) is False\nassert d.count == 3                      # {0,1} {2,3} {4}\nd.union(1, 2)                            # 合并两组\nassert d.connected(0, 3) is True\nassert d.count == 2                      # {0,1,2,3} {4}\nd.union(0, 3)                            # 已连通,count 不变\nassert d.count == 2\nassert d.connected(4, 0) is False\n\n# —— 随机对拍:朴素 relabel 并查集作参照 ——\nclass _Naive:\n    def __init__(self, n):\n        self.lab = list(range(n))        # lab[x] = x 所在分量的标签\n    def union(self, x, y):\n        a, b = self.lab[x], self.lab[y]\n        if a != b:\n            for i in range(len(self.lab)):\n                if self.lab[i] == b:\n                    self.lab[i] = a      # 把 b 整组改名为 a\n    def connected(self, x, y):\n        return self.lab[x] == self.lab[y]\n    def count(self):\n        return len(set(self.lab))\n\nfor _ in range(200):\n    n = random.randint(1, 30)\n    dsu = DSU(n)\n    ref = _Naive(n)\n    for _ in range(random.randint(0, 40)):\n        x, y = random.randrange(n), random.randrange(n)\n        dsu.union(x, y)\n        ref.union(x, y)\n    for a in range(n):\n        for b in range(n):\n            assert dsu.connected(a, b) == ref.connected(a, b), (a, b)\n    assert dsu.count == ref.count(), (dsu.count, ref.count())",
+  "variants": [
+    {
+      "title": "路径压缩 + 按秩(rank)合并",
+      "time": "单次摊还近 O(α(n))",
+      "space": "O(n)",
+      "starred": true,
+      "note": "最经典写法:只多一个 `rank`(树高上界)数组,矮树挂高树。**面试 / 工程首选**。",
+      "code": "class DSU:\n    \"\"\"并查集:路径压缩 + 按秩(rank)合并。\n    rank 是每棵树高度的上界;合并时矮树挂到高树下,树高几乎不增长。\"\"\"\n    def __init__(self, n):\n        self.parent = list(range(n))   # parent[x]==x 即 x 为根\n        self.rank = [0] * n            # 每棵树高度的上界\n        self.count = n                 # 当前连通分量数\n\n    def find(self, x):\n        # 迭代两趟:先找到根,再把路径上的结点直接挂到根(路径压缩)\n        root = x\n        while self.parent[root] != root:\n            root = self.parent[root]\n        while self.parent[x] != root:\n            self.parent[x], x = root, self.parent[x]\n        return root\n\n    def union(self, x, y):\n        rx, ry = self.find(x), self.find(y)\n        if rx == ry:\n            return False               # 已同集合,不合并\n        if self.rank[rx] < self.rank[ry]:\n            rx, ry = ry, rx            # 保证 rx 是更高(或等高)的那棵\n        self.parent[ry] = rx           # 矮树挂到高树\n        if self.rank[rx] == self.rank[ry]:\n            self.rank[rx] += 1         # 等高合并,树高 +1\n        self.count -= 1\n        return True\n\n    def connected(self, x, y):\n        return self.find(x) == self.find(y)"
+    },
+    {
+      "title": "路径压缩 + 按大小(size)合并",
+      "time": "单次摊还近 O(α(n))",
+      "space": "O(n)",
+      "starred": false,
+      "note": "用 `size`(结点数)平衡:复杂度同按秩,额外能 `O(1)` 查任意连通块大小,**需要块大小时优先**。",
+      "code": "class DSU:\n    \"\"\"并查集:路径压缩 + 按大小(size)合并。\n    size 记录每棵树的结点数;合并时小树挂到大树下,并能 O(1) 取连通块大小。\"\"\"\n    def __init__(self, n):\n        self.parent = list(range(n))\n        self.size = [1] * n            # 每棵树的结点数\n        self.count = n\n\n    def find(self, x):\n        root = x\n        while self.parent[root] != root:\n            root = self.parent[root]\n        while self.parent[x] != root:  # 路径压缩\n            self.parent[x], x = root, self.parent[x]\n        return root\n\n    def union(self, x, y):\n        rx, ry = self.find(x), self.find(y)\n        if rx == ry:\n            return False\n        if self.size[rx] < self.size[ry]:\n            rx, ry = ry, rx            # 保证 rx 是更大的那棵\n        self.parent[ry] = rx           # 小树挂到大树\n        self.size[rx] += self.size[ry] # 合并后累加结点数\n        self.count -= 1\n        return True\n\n    def connected(self, x, y):\n        return self.find(x) == self.find(y)"
+    },
+    {
+      "title": "仅路径压缩(对照)",
+      "time": "单次摊还 O(log n)",
+      "space": "O(n)",
+      "starred": false,
+      "note": "省掉平衡数组、代码最短,递归压缩;但单次摊还退化到 `O(log n)`,**作教学对照**。",
+      "code": "class DSU:\n    \"\"\"对照写法:只做路径压缩,不按秩 / 大小平衡。\n    union 固定把 x 的根挂到 y 的根下,树可能长歪;\n    但递归路径压缩仍把单次摊还压到 O(log n),小规模下足够快。\"\"\"\n    def __init__(self, n):\n        self.parent = list(range(n))\n        self.count = n\n\n    def find(self, x):\n        # 递归 + 路径压缩:回溯时把 x 直接指向根\n        if self.parent[x] != x:\n            self.parent[x] = self.find(self.parent[x])\n        return self.parent[x]\n\n    def union(self, x, y):\n        rx, ry = self.find(x), self.find(y)\n        if rx == ry:\n            return False\n        self.parent[rx] = ry           # 固定方向合并,不做平衡\n        self.count -= 1\n        return True\n\n    def connected(self, x, y):\n        return self.find(x) == self.find(y)"
+    }
+  ],
+  "compare_table": "| 写法 | 平衡策略 | 附加数组 | 单次摊还 | 适用 |\n| --- | --- | --- | --- | --- |\n| 路径压缩 + 按秩 | rank(树高) | `rank[]` | 近 O(α(n)) | 面试 / 工程首选 |\n| 路径压缩 + 按大小 | size(结点数) | `size[]` | 近 O(α(n)) | 需连通块大小时 |\n| 仅路径压缩 | 无 | 无 | O(log n) | 教学对照 / 代码最短 |",
+  "gotchas": [
+    "**`union` 前必须先 `find` 找到两个根**再合并;直接 `parent[x]=y` 会把非根结点错连,破坏森林结构。",
+    "什么平衡都不做、find 也不压缩,就是朴素并查集——树会退化成链,`union/find` 掉到 `O(n)`。**路径压缩与按秩 / 大小至少要用一项,推荐都用**。",
+    "按秩合并里的 `rank` 是**树高上界**而非子树大小;只有合并两棵**等高**树时新根 `rank` 才 `+1`,矮树挂高树时 `rank` 不变。",
+    "`count`(连通分量数)只在**真正发生合并**(两根不同)时 `-=1`;对已连通的两点再 `union` 不能减,否则计数错。",
+    "路径压缩会改写 `parent` 指针,**无法据此还原历史合并顺序**;若要『连通块大小』需专门维护 `size`(按大小合并天然带)。",
+    "递归版 `find` 在极端长链上可能爆栈;超大规模或仅路径压缩场景建议改成迭代两趟写法。"
+  ],
+  "applications": [
+    {
+      "label": "LC 547 · 省份数量",
+      "url": "https://leetcode.cn/problems/number-of-provinces/"
+    },
+    {
+      "label": "LC 200 · 岛屿数量",
+      "url": "https://leetcode.cn/problems/number-of-islands/"
+    },
+    {
+      "label": "LC 684 · 冗余连接",
+      "url": "https://leetcode.cn/problems/redundant-connection/"
+    },
+    {
+      "label": "LC 1971 · 寻找图中是否存在路径",
+      "url": "https://leetcode.cn/problems/find-if-path-exists-in-graph/"
+    }
+  ],
+  "related": [
+    "mst",
+    "graph-traversal"
+  ]
+}

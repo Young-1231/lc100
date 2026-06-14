@@ -1,0 +1,90 @@
+{
+  "id": "binary-search",
+  "title": "二分查找模板 Binary Search",
+  "category": "二分查找",
+  "family": "searching",
+  "tags": [
+    "二分",
+    "有序数组",
+    "对数时间"
+  ],
+  "summary": "在**有序**数组上每次比较中点、扔掉一半,`O(log n)` 定位目标;`search` / `lower_bound` / `upper_bound` 是同一模板的不同边界。",
+  "idea": "🔹 一句话\n在**有序**数组上,拿区间中点 `mid` 和目标比一比,根据大小关系一次性扔掉一半,区间长度每轮减半,`O(log n)` 就能锁定答案。这是「减治(decrease & conquer)」的典范。\n\n🔹 复杂度从哪来\n每轮只做一次比较 `O(1)`,然后把候选区间砍掉一半:n → n/2 → n/4 → … → 1,一共 ⌈log₂n⌉ 轮,所以是 `O(log n)`。迭代写法不开递归栈,空间 `O(1)`。前提有两条,缺一不可:数组**已有序**、且支持 `O(1)` 随机访问(数组/`list` 可以,链表不行)。\n\n🔹 闭区间 vs 左闭右开(模板之争)\n两套主流模板的差别只在「区间右端取不取得到」,但 `hi` 初值、循环条件、收缩方式必须**整套配对**,混搭必错:\n\n| 模板 | 区间含义 | `hi` 初值 | 循环条件 | 命中左半收缩 |\n| --- | --- | --- | --- | --- |\n| 闭区间 | `[lo, hi]` 两端都是候选 | `len-1` | `lo <= hi` | `hi = mid - 1` |\n| 左闭右开 | `[lo, hi)` 取不到 `hi` | `len` | `lo < hi` | `hi = mid` |\n\n选哪套看习惯。闭区间「找到就返回下标」最直观;左闭右开和 `lower_bound` 同款边界,做边界题迁移最顺。\n\n🔹 循环不变量是灵魂\n写对二分的关键不是背代码,而是守住一句话:**答案(若存在)始终落在当前区间里**。每次收缩时,被丢掉的那一半必须**确定不含答案**——`a[mid] < t` 说明 `mid` 及其左侧都太小,可以安全丢弃左半(`lo = mid + 1`)。只要每步都满足不变量,退出时区间收敛到答案。\n\n🔹 lower_bound / upper_bound:更通用的「边界二分」\n直接找等于 `t` 的下标,遇到重复元素只能返回「某一个」。工程里更常用的是找**边界**:\n- `lower_bound`:第一个 `>= t` 的位置(等价 `bisect_left`),也就是「`t` 应当插入的位置」。\n- `upper_bound`:第一个 `> t` 的位置(等价 `bisect_right`)。\n\n二者都用左闭右开 `[0, len]`,答案可能等于 `len`(表示比所有元素都大)。它们能拼出几乎所有边界需求:`t` 是否存在 = `lower_bound(t) < len and a[lower_bound(t)] == t`;`t` 的出现次数 = `upper_bound(t) - lower_bound(t)`。\n\n🔹 过程追踪(闭区间,找 7)\n```\na = [1, 3, 5, 7, 9, 11], t = 7    下标: 0  1  2  3  4  5\nmid = lo + (hi-lo)//2  (向下取整,偏左)\n\n轮1: lo=0 hi=5  mid=2  a[2]=5 < 7  → lo=mid+1=3   区间 [3,5]\n轮2: lo=3 hi=5  mid=4  a[4]=9 > 7  → hi=mid-1=3   区间 [3,3]\n轮3: lo=3 hi=3  mid=3  a[3]=7 = 7  → 命中,返回 3\n```",
+  "complexity": {
+    "best": "O(1)",
+    "avg": "O(log n)",
+    "worst": "O(log n)",
+    "space": "O(1)",
+    "stable": null,
+    "in_place": null,
+    "note": "迭代写法空间 `O(1)`;递归写法栈深 `O(log n)`。前提是数组**已有序且支持 O(1) 随机访问**(链表做不了)。`best` 指中点恰好命中。查找不涉及稳定性/原地概念,故 `stable`、`in_place` 取 `null`。"
+  },
+  "entry": "search",
+  "test_code": "import random\nrandom.seed(20240614)\n\ndef brute(a, t):\n    return a.index(t) if t in a else -1   # 去重数组里 index 即唯一匹配下标\n\nassert search([], 5) == -1\nassert search([3], 3) == 0\nassert search([3], 7) == -1\nassert search([1, 3, 5, 7], 5) == 2\nassert search([1, 3, 5, 7], 4) == -1\nassert search([1, 3, 5, 7], 8) == -1\nfor _ in range(500):\n    n = random.randint(0, 40)\n    a = sorted(random.sample(range(-50, 51), n))   # 严格递增、无重复\n    for t in [random.randint(-60, 60) for _ in range(5)]:\n        assert search(list(a), t) == brute(a, t), (a, t)\n    for t in (a if a else [0]):                     # 命中每个已有元素\n        assert search(list(a), t) == brute(a, t), (a, t)",
+  "variants": [
+    {
+      "title": "闭区间 [l, r]",
+      "time": "O(log n)",
+      "space": "O(1)",
+      "starred": true,
+      "note": "最经典模板:闭区间 `[lo,hi]` 两端都是候选,`lo<=hi` 退出。找到直接返回下标,**面试/工程首选**。",
+      "code": "def search(a, t):\n    \"\"\"闭区间二分:区间 [lo, hi] 两端都是候选,循环条件 lo <= hi。\n    命中返回下标,否则返回 -1。\"\"\"\n    lo, hi = 0, len(a) - 1\n    while lo <= hi:                  # 区间非空\n        mid = lo + (hi - lo) // 2    # 防溢出的习惯写法(向下取整,偏左)\n        if a[mid] == t:\n            return mid\n        elif a[mid] < t:\n            lo = mid + 1             # 左半(含 mid)都太小,丢弃\n        else:\n            hi = mid - 1             # 右半(含 mid)都太大,丢弃\n    return -1",
+      "test_code": "import random\nrandom.seed(20240614)\n\ndef brute(a, t):\n    return a.index(t) if t in a else -1   # 去重数组里 index 即唯一匹配下标\n\nassert search([], 5) == -1\nassert search([3], 3) == 0\nassert search([3], 7) == -1\nassert search([1, 3, 5, 7], 5) == 2\nassert search([1, 3, 5, 7], 4) == -1\nassert search([1, 3, 5, 7], 8) == -1\nfor _ in range(500):\n    n = random.randint(0, 40)\n    a = sorted(random.sample(range(-50, 51), n))   # 严格递增、无重复\n    for t in [random.randint(-60, 60) for _ in range(5)]:\n        assert search(list(a), t) == brute(a, t), (a, t)\n    for t in (a if a else [0]):                     # 命中每个已有元素\n        assert search(list(a), t) == brute(a, t), (a, t)"
+    },
+    {
+      "title": "左闭右开 [l, r)",
+      "time": "O(log n)",
+      "space": "O(1)",
+      "starred": false,
+      "note": "左闭右开 `[lo,hi)`,`hi` 取不到、用 `hi=mid` 收缩。和 `lower_bound` 同款边界,做边界题迁移最顺。",
+      "code": "def search(a, t):\n    \"\"\"左闭右开二分:区间 [lo, hi),hi 取不到;循环条件 lo < hi。\n    命中返回下标,否则返回 -1。\"\"\"\n    lo, hi = 0, len(a)\n    while lo < hi:                   # 区间 [lo, hi) 非空\n        mid = lo + (hi - lo) // 2\n        if a[mid] == t:\n            return mid\n        elif a[mid] < t:\n            lo = mid + 1             # 收缩到 [mid+1, hi)\n        else:\n            hi = mid                 # 收缩到 [lo, mid),mid 已排除\n    return -1",
+      "test_code": "import random\nrandom.seed(20240614)\n\ndef brute(a, t):\n    return a.index(t) if t in a else -1   # 去重数组里 index 即唯一匹配下标\n\nassert search([], 5) == -1\nassert search([3], 3) == 0\nassert search([3], 7) == -1\nassert search([1, 3, 5, 7], 5) == 2\nassert search([1, 3, 5, 7], 4) == -1\nassert search([1, 3, 5, 7], 8) == -1\nfor _ in range(500):\n    n = random.randint(0, 40)\n    a = sorted(random.sample(range(-50, 51), n))   # 严格递增、无重复\n    for t in [random.randint(-60, 60) for _ in range(5)]:\n        assert search(list(a), t) == brute(a, t), (a, t)\n    for t in (a if a else [0]):                     # 命中每个已有元素\n        assert search(list(a), t) == brute(a, t), (a, t)"
+    },
+    {
+      "title": "lower_bound:第一个 ≥ t",
+      "time": "O(log n)",
+      "space": "O(1)",
+      "starred": false,
+      "note": "返回第一个 `>=t` 的位置(可能等于 `len`)。等价 `bisect_left`,直接解『插入位置 / 左边界』。",
+      "code": "def lower_bound(a, t):\n    \"\"\"第一个 >= t 的下标;若全部 < t 则返回 len(a)。等价于 bisect.bisect_left。\"\"\"\n    lo, hi = 0, len(a)               # 左闭右开,答案可落在 [0, len]\n    while lo < hi:\n        mid = lo + (hi - lo) // 2\n        if a[mid] < t:\n            lo = mid + 1             # a[mid] 太小,答案在右侧\n        else:\n            hi = mid                 # a[mid] >= t,mid 可能是答案,保留\n    return lo",
+      "test_code": "import random, bisect\nrandom.seed(20240614)\nassert lower_bound([], 5) == 0\nassert lower_bound([1, 2, 2, 2, 3], 2) == 1\nassert lower_bound([1, 2, 2, 2, 3], 4) == 5\nassert lower_bound([1, 2, 2, 2, 3], 0) == 0\nfor _ in range(500):\n    n = random.randint(0, 40)\n    a = sorted(random.randint(-15, 15) for _ in range(n))   # 允许大量重复\n    for t in [random.randint(-20, 20) for _ in range(6)]:\n        assert lower_bound(a, t) == bisect.bisect_left(a, t), (a, t)"
+    },
+    {
+      "title": "upper_bound:第一个 > t",
+      "time": "O(log n)",
+      "space": "O(1)",
+      "starred": false,
+      "note": "返回第一个 `>t` 的位置(可能等于 `len`)。等价 `bisect_right`;`upper_bound - lower_bound` 即 `t` 的出现次数。",
+      "code": "def upper_bound(a, t):\n    \"\"\"第一个 > t 的下标;若全部 <= t 则返回 len(a)。等价于 bisect.bisect_right。\"\"\"\n    lo, hi = 0, len(a)\n    while lo < hi:\n        mid = lo + (hi - lo) // 2\n        if a[mid] <= t:\n            lo = mid + 1             # a[mid] <= t,答案在右侧\n        else:\n            hi = mid                 # a[mid] > t,mid 可能是答案,保留\n    return lo",
+      "test_code": "import random, bisect\nrandom.seed(20240614)\nassert upper_bound([], 5) == 0\nassert upper_bound([1, 2, 2, 2, 3], 2) == 4\nassert upper_bound([1, 2, 2, 2, 3], 3) == 5\nassert upper_bound([1, 2, 2, 2, 3], 0) == 0\nfor _ in range(500):\n    n = random.randint(0, 40)\n    a = sorted(random.randint(-15, 15) for _ in range(n))\n    for t in [random.randint(-20, 20) for _ in range(6)]:\n        assert upper_bound(a, t) == bisect.bisect_right(a, t), (a, t)"
+    }
+  ],
+  "compare_table": "| 写法 | 区间 | 循环条件 | `a[mid]<t` 时 | 命中/否则收缩 | 返回值 |\n| --- | --- | --- | --- | --- | --- |\n| 闭区间 search | `[lo,hi]` | `lo<=hi` | `lo=mid+1` | `hi=mid-1` | 命中下标 / `-1` |\n| 左闭右开 search | `[lo,hi)` | `lo<hi` | `lo=mid+1` | `hi=mid` | 命中下标 / `-1` |\n| lower_bound | `[lo,hi)` | `lo<hi` | `lo=mid+1` | `hi=mid` | 首个 `>=t` / `len` |\n| upper_bound | `[lo,hi)` | `lo<hi` | `lo=mid+1`(`<=t`) | `hi=mid` | 首个 `>t` / `len` |",
+  "gotchas": [
+    "**开闭区间要整套一致**:闭区间用 `hi=len-1` + `lo<=hi` + `hi=mid-1`;左闭右开用 `hi=len` + `lo<hi` + `hi=mid`。两套混搭会漏查或越界。",
+    "**循环不变量**:答案始终落在当前区间内。每步被丢掉的半边必须确定不含答案(`a[mid]<t` 才能安全丢左半),否则漏解。",
+    "**当心死循环**:边界二分里收缩必须让区间严格变小。`lo<hi` 配 `hi=mid` 才安全;若写成 `lo=mid`,当 `lo` 与 `hi` 相邻时 `mid==lo` 永不前进就死循环了。",
+    "`mid` 用 `lo+(hi-lo)//2`:防止 `(lo+hi)` 溢出(Python 不溢出,但保留肌肉记忆);它向下取整偏左,正好和 `hi=mid` 的收缩配套。",
+    "**前提是有序**:无序必须先排序(`O(n log n)`),否则二分无意义。",
+    "有重复元素时 `search` 返回的是**某个**匹配下标,不保证是第一个/最后一个;要边界请用 `lower_bound` / `upper_bound`。"
+  ],
+  "applications": [
+    {
+      "label": "LC 704 · 二分查找",
+      "url": "https://leetcode.cn/problems/binary-search/"
+    },
+    {
+      "label": "LC 35 · 搜索插入位置",
+      "url": "https://leetcode.cn/problems/search-insert-position/"
+    },
+    {
+      "label": "LC 34 · 在排序数组中查找元素的第一个和最后一个位置",
+      "url": "https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/"
+    }
+  ],
+  "related": [
+    "binary-search-answer",
+    "quicksort",
+    "two-pointer-window"
+  ]
+}

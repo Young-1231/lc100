@@ -1,0 +1,92 @@
+{
+  "id": "z-function",
+  "title": "Z 函数 / 扩展 KMP",
+  "category": "字符串",
+  "family": "string",
+  "tags": [
+    "字符串匹配",
+    "线性时间",
+    "扩展 KMP"
+  ],
+  "summary": "`z[i]` = `s` 与后缀 `s[i:]` 的**最长公共前缀长度**;维护最右 **Z-box `[l,r)`** 复用前缀拷贝,**O(n)** 求出整张 z 表,可直接做匹配、求周期。",
+  "idea": "🔹 定义与约定\n对长度为 n 的字符串 s,**z 函数** `z[i]` = `s` 与其后缀 `s[i:]` 的**最长公共前缀(LCP)长度**:从位置 `i` 起,最长能往后匹配多少个字符与开头一致。本实现约定 **`z[0] = 0`**(`s` 与自身的 LCP 显然是 n,无信息量,置 0 更省事;有些资料约定 `z[0]=n`,引用时注意区别)。\n\n🔹 为什么又叫「扩展 KMP」\nKMP 的前缀函数 `pi[i]` 关心『以 i 结尾的最长 border』,Z 函数关心『从 i 开始与开头的匹配长度』,方向不同但都刻画了串的自相似结构,可互相转化。Z 函数常被称作**扩展 KMP / exkmp**,因为它直接给出『前缀 与 每个后缀』的匹配长度,信息比 KMP 更直接——字符串匹配、求最小周期、最长公共前后缀等问题都能一招拿下。\n\n🔹 暴力 O(n²) 与 Z-box 的核心思想\n最朴素的做法:对每个 i 从头逐字符比较,最坏(如 `\"aaaa…a\"`)退化到 O(n²)。优化的关键观察是:**已经匹配过的前缀拷贝可以复用**。我们维护一个区间 `[l, r)`(半开,称作 **Z-box**),它是『目前已知的、最靠右的、等于 s 某个前缀的子串』,即 `s[l:r] == s[0:r-l]`。盒内字符与开头前缀一一对应,于是处理新的 i 时往往不必从头比。\n\n🔹 Z-box [l, r) 的维护(算法心脏)\n处理位置 i 时,设当前盒子为 `[l, r)`:\n- **情况 A(`i ≥ r`,盒外)**:没有可复用信息,令 `z[i]=0`,从 `s[0]` 与 `s[i]` 起逐字符暴力扩展。\n- **情况 B(`i < r`,盒内)**:镜像位置 `i' = i - l`。盒子是前缀拷贝,故 `s[i:r] == s[i':r-l]`,而 `z[i']` 已算出:\n  - **B1(`z[i'] < r - i`)**:匹配在盒内就断,盒内信息完全可信,直接 `z[i] = z[i']`,**免比较**。\n  - **B2(`z[i'] ≥ r - i`)**:匹配可能延伸到盒外(未知),先令 `z[i] = r - i`,再从 `r` 处继续暴力扩展。\n- 扩展结束后若 `i + z[i] > r`,说明发现了更靠右的前缀拷贝,**更新盒子** `l = i, r = i + z[i]`。\n\n🔹 为什么是线性 O(n)\n所有『暴力扩展』的字符比较都发生在 **下标 ≥ r 的位置**,而每成功比中一个字符,`r` 就右移一格;`r` 只增不减且 ≤ n,因此跨所有 i 的暴力比较总次数是 O(n)。再加上主循环 O(n),总复杂度 **O(n)**、空间 O(n)。这与 KMP 的摊还分析同理。\n\n🔹 过程追踪(s = \"aabaab\")\n```\n索引 0 1 2 3 4 5\n字符 a a b a a b\ni=1 盒外: a=a✓, a≠b✗      → z[1]=1   盒=[1,2)\ni=2 盒外: a≠b✗            → z[2]=0   盒不变\ni=3 盒外: aab=aab✓✓✓ 越界 → z[3]=3   盒=[3,6)\ni=4 盒内: i'=1, z[1]=1 < r-i=2 → B1 z[4]=1(免比较)\ni=5 盒内: i'=2, z[2]=0 < r-i=1 → B1 z[5]=0(免比较)\n结果 z = [0, 1, 0, 3, 1, 0]\n```\n盒内两次都靠复用直接得出,省掉暴力比较;只有当镜像 z 值顶到盒边(B2)时,才需从 `r` 处继续比。\n\n🔹 用 Z 函数做字符串匹配\n要在文本 `text` 里找模式 `pat` 的所有出现:拼接 `s = pat + 分隔符 + text`(分隔符取一个既不在 pat 也不在 text 出现的字符,如 `chr(1)`),对 s 求 z。对落在 text 区段的位置 i,只要 `z[i] >= len(pat)` 即为一次完整匹配——分隔符保证 `z[i]` 不会越过 pat 长度。换算回 text 下标即得所有匹配起点,总复杂度 **O(n+m)**。\n\n🔹 各写法取舍\n- **朴素 O(n²)**:逐位比较,作为正确性基准与理解 z 定义的起点,小数据/对拍够用。\n- **线性 Z-box(首选)**:O(n) 标准实现,面试与工程默认。\n- **Z 做匹配**:把 z 用在拼接串上,匹配能力等价 KMP,代码却更直观。\n- **Z 判周期/重复子串**:`z[p] == n - p` 且 `p | n` 即存在周期 p,直接解决 LC 459 一类问题。",
+  "complexity": {
+    "best": "O(n)",
+    "avg": "O(n)",
+    "worst": "O(n)",
+    "space": "O(n)",
+    "stable": null,
+    "in_place": false,
+    "note": "n 为字符串长度。线性 Z-box 写法靠摊还分析得 **O(n)**:暴力比较只发生在下标 ≥ r 处,而 r 单调右移且 ≤ n。朴素写法为 O(n²)。约定 **`z[0]=0`**。`stable` 对本算法无意义记 `null`;返回新数组故 `in_place=false`。Z 做匹配时把 pat 与 text 拼接,复杂度 **O(n+m)**。"
+  },
+  "entry": "z_array",
+  "test_code": "import random\nrandom.seed(20240614)\n\ndef _naive_z(s):\n    n = len(s)\n    z = [0] * n\n    for i in range(1, n):\n        k = 0\n        while i + k < n and s[k] == s[i + k]:\n            k += 1\n        z[i] = k\n    return z\n\nassert z_array(\"\") == []\nassert z_array(\"a\") == [0]\nassert z_array(\"aaaa\") == [0, 3, 2, 1]\nassert z_array(\"aabaab\") == [0, 1, 0, 3, 1, 0]\nassert z_array(\"abacaba\") == _naive_z(\"abacaba\")\nfor _ in range(500):\n    n = random.randint(0, 40)\n    s = \"\".join(random.choice(\"ab\") for _ in range(n))\n    assert z_array(s) == _naive_z(s), s\nfor _ in range(200):\n    n = random.randint(0, 40)\n    s = \"\".join(random.choice(\"abcde\") for _ in range(n))\n    assert z_array(s) == _naive_z(s), s",
+  "variants": [
+    {
+      "title": "朴素 O(n²)",
+      "time": "O(n²)",
+      "space": "O(n)",
+      "starred": false,
+      "note": "对每个 i 从头逐字符比较;直观、是理解 z 定义与对拍的基准,遇 `\"aaaa…\"` 退化到 O(n²)。",
+      "code": "def z_array(s):\n    \"\"\"朴素 O(n^2):对每个 i 从头逐字符比较,求 s 与后缀 s[i:] 的最长公共前缀。\n    约定 z[0]=0。作为正确性基准与理解 z 定义的起点。\"\"\"\n    n = len(s)\n    z = [0] * n\n    for i in range(1, n):\n        k = 0\n        while i + k < n and s[k] == s[i + k]:\n            k += 1\n        z[i] = k\n    return z"
+    },
+    {
+      "title": "线性 Z-box(首选)",
+      "time": "O(n)",
+      "space": "O(n)",
+      "starred": true,
+      "note": "维护最右 Z-box `[l,r)`,盒内复用镜像 z 值、盒外暴力扩展;**摊还 O(n)**,面试/工程标准实现。",
+      "code": "def z_array(s):\n    \"\"\"线性 O(n):维护最右 Z-box [l, r)(半开),始终满足 s[l:r] == s[0:r-l]。\n    盒内复用镜像 z 值,盒外/盒边才逐字符暴力扩展;约定 z[0]=0。\"\"\"\n    n = len(s)\n    z = [0] * n\n    l = r = 0                       # 当前 Z-box [l, r),半开\n    for i in range(1, n):\n        if i < r:                   # 盒内:用镜像 i-l 处的 z 值复用\n            z[i] = min(r - i, z[i - l])\n        while i + z[i] < n and s[z[i]] == s[i + z[i]]:\n            z[i] += 1               # 盒外/盒边:逐字符扩展\n        if i + z[i] > r:            # 发现更靠右的前缀拷贝,更新盒子\n            l, r = i, i + z[i]\n    return z"
+    },
+    {
+      "title": "Z 做字符串匹配",
+      "time": "O(n + m)",
+      "space": "O(n + m)",
+      "starred": false,
+      "note": "拼接 `pat + chr(1) + text` 求 z,收集 `z[i] >= len(pat)` 的位置;匹配能力等价 KMP,代码更直观。",
+      "code": "def z_array(s):\n    n = len(s)\n    z = [0] * n\n    l = r = 0\n    for i in range(1, n):\n        if i < r:\n            z[i] = min(r - i, z[i - l])\n        while i + z[i] < n and s[z[i]] == s[i + z[i]]:\n            z[i] += 1\n        if i + z[i] > r:\n            l, r = i, i + z[i]\n    return z\n\n\ndef match(text, pat):\n    \"\"\"用 Z 函数找出 pat 在 text 中所有出现的起始下标(返回升序列表)。\n    拼接 s = pat + 分隔符 + text,对 s 求 z;text 区段中 z[i] >= len(pat)\n    即一次完整匹配。分隔符 chr(1) 须不在 pat/text 中出现。O(n+m)。\"\"\"\n    m = len(pat)\n    if m == 0:\n        return list(range(len(text) + 1))\n    s = pat + chr(1) + text\n    z = z_array(s)\n    res = []\n    base = m + 1                    # text 在拼接串中的起始偏移(pat + 1 个分隔符)\n    for i in range(base, len(s)):\n        if z[i] >= m:               # 分隔符保证 z[i] 不超过 m\n            res.append(i - base)\n    return res",
+      "test_code": "import random\nrandom.seed(20240614)\n\ndef _find_all(text, pat):\n    if pat == \"\":\n        return list(range(len(text) + 1))\n    res = []\n    for i in range(len(text) - len(pat) + 1):\n        if text[i:i + len(pat)] == pat:\n            res.append(i)\n    return res\n\nassert match(\"ababab\", \"ab\") == [0, 2, 4]\nassert match(\"aaaaa\", \"aa\") == [0, 1, 2, 3]\nassert match(\"abcabc\", \"abc\") == [0, 3]\nassert match(\"abc\", \"d\") == []\nassert match(\"abc\", \"abc\") == [0]\nassert match(\"abc\", \"\") == [0, 1, 2, 3]\nassert match(\"\", \"a\") == []\nfor _ in range(500):\n    tn = random.randint(0, 30)\n    pn = random.randint(1, 5)\n    text = \"\".join(random.choice(\"ab\") for _ in range(tn))\n    pat = \"\".join(random.choice(\"ab\") for _ in range(pn))\n    assert match(text, pat) == _find_all(text, pat), (text, pat)"
+    },
+    {
+      "title": "Z 判重复子串(LC 459)",
+      "time": "O(n)",
+      "space": "O(n)",
+      "starred": false,
+      "note": "存在周期 p(`p|n` 且 `z[p]==n-p`)即由块重复而成;Z 函数解周期问题的典型应用。",
+      "code": "def z_array(s):\n    n = len(s)\n    z = [0] * n\n    l = r = 0\n    for i in range(1, n):\n        if i < r:\n            z[i] = min(r - i, z[i - l])\n        while i + z[i] < n and s[z[i]] == s[i + z[i]]:\n            z[i] += 1\n        if i + z[i] > r:\n            l, r = i, i + z[i]\n    return z\n\n\ndef repeated_substring_pattern(s):\n    \"\"\"判断 s 是否由某个子串重复多次拼成(LC 459)。\n    若存在周期 p:0 < p < n 且 p | n 且 z[p] == n - p\n    (后缀 s[p:] 与前缀 s[:n-p] 完全重合),则 s 由 n/p 个长度 p 的块拼成。\"\"\"\n    n = len(s)\n    if n < 2:\n        return False\n    z = z_array(s)\n    for p in range(1, n):\n        if n % p == 0 and z[p] == n - p:\n            return True\n    return False",
+      "test_code": "import random\nrandom.seed(20240614)\n\ndef _ref(s):\n    if len(s) < 2:\n        return False\n    return s in (s + s)[1:-1]\n\nassert repeated_substring_pattern(\"abab\") is True\nassert repeated_substring_pattern(\"aba\") is False\nassert repeated_substring_pattern(\"abcabcabcabc\") is True\nassert repeated_substring_pattern(\"aabaaba\") is False\nassert repeated_substring_pattern(\"a\") is False\nassert repeated_substring_pattern(\"\") is False\nfor _ in range(500):\n    n = random.randint(0, 14)\n    s = \"\".join(random.choice(\"ab\") for _ in range(n))\n    assert repeated_substring_pattern(s) == _ref(s), s"
+    }
+  ],
+  "compare_table": "| 写法 | 契约 | 时间 | 适用 | 易错点 |\n| --- | --- | --- | --- | --- |\n| 朴素 | `z_array(s)` | O(n²) | 基准/对拍 | 无,但会退化 |\n| 线性 Z-box | `z_array(s)` | O(n) | 通用首选 | `min(r-i, z[i-l])` 与盒子更新 |\n| Z 做匹配 | `match(text,pat)` | O(n+m) | 找全部出现 | 分隔符要唯一、下标换算 |\n| Z 判周期 | `repeated_substring_pattern(s)` | O(n) | 周期/重复子串 | 只查 `p|n` 的 p |",
+  "gotchas": [
+    "**约定 `z[0]=0`**:`s` 与自身 LCP 是 n、无信息;若你的资料用 `z[0]=n`,套公式时务必统一,否则匹配/周期判断会偏。",
+    "线性写法盒内必须取 `z[i] = min(r - i, z[i - l])`:**漏掉 `r - i` 会越过盒子右界**,读到尚未验证的字符导致错误。",
+    "暴力扩展条件是 `s[z[i]] == s[i + z[i]]`(拿前缀第 `z[i]` 位和当前位比),不是 `s[i] == s[i + z[i]]`。",
+    "Z 做匹配的**分隔符必须不在 pat 与 text 中出现**(如 `chr(1)`);否则 `z[i]` 可能跨过分隔符,误判匹配。",
+    "判周期只需检查 `n % p == 0` 的 p:`z[p] == n - p` 但 `p` 不整除 n 时,s 只是『有部分重叠』而非整齐重复,**不能**算重复子串。",
+    "空串 / 单字符要正确:`z_array(\"\")==[]`、`z_array(\"a\")==[0]`,`repeated_substring_pattern` 对长度 <2 返回 `False`。"
+  ],
+  "applications": [
+    {
+      "label": "LC 28 · 找出字符串中第一个匹配项的下标",
+      "url": "https://leetcode.cn/problems/find-the-index-of-the-first-occurrence-in-a-string/"
+    },
+    {
+      "label": "LC 459 · 重复的子字符串",
+      "url": "https://leetcode.cn/problems/repeated-substring-pattern/"
+    },
+    {
+      "label": "LC 1392 · 最长快乐前缀",
+      "url": "https://leetcode.cn/problems/longest-happy-prefix/"
+    },
+    {
+      "label": "LC 686 · 重复叠加字符串匹配",
+      "url": "https://leetcode.cn/problems/repeated-string-match/"
+    }
+  ],
+  "related": [
+    "kmp",
+    "string-hash",
+    "manacher"
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "id": "binary-search-answer",
+  "title": "二分答案 & 浮点二分",
+  "category": "二分查找",
+  "family": "searching",
+  "tags": [
+    "二分查找",
+    "二分答案",
+    "浮点二分"
+  ],
+  "summary": "把『求最优解』转成『判定 `check(x)` + 二分』:当可行性随答案**单调**时,在**答案值域**上二分,`O(n log V)` 求最值;实数答案则用 `eps` 收敛。",
+  "idea": "🔹 一句话\n直接求最优解往往很难,但『给定一个候选答案 x,判断它行不行』通常很容易——这就是**二分答案**。只要可行性判定 `check(x)` 关于 x 单调,就能在**答案的值域**(而不是数组下标)上二分,把『求最优』降维成『判定 + 二分』。\n\n🔹 为什么能二分:单调性是唯一前提\n可行的 x 必须连成一段。以「最小化最大值」为例,x 越大越宽松,`check` 形如 `False…False True…True`(0…01…1),存在一个分界点:左边全不可行、右边全可行——要找的就是**最左的那个 True**。反过来「最大化最小值」是 `True…True False…False`,要找**最右的 True**。若 `check` 不单调,二分无效。\n\n🔹 三步套路\n1. **定值域** `[lo, hi]`:答案的最小/最大可能取值(如吃香蕉速度 `[1, max(piles)]`)。\n2. **写 check(x)**:给定答案 x,用贪心/模拟在 `O(n)` 内判断可行性——这步是核心。\n3. **二分边界**:每次 `check(mid)` 把值域砍半,`O(log V)` 次后收敛。总复杂度 `O(n log V)`,V 是值域宽度。\n\n🔹 两个方向 & mid 取整(最易错)\n| 目标 | 找 | check 为真时 | mid |\n| --- | --- | --- | --- |\n| 最小化最大值 | 最左 True | `hi = mid` | `(lo+hi)//2` 下取整 |\n| 最大化最小值 | 最右 True | `lo = mid` | `(lo+hi+1)//2` **上取整** |\n\n求最右 True 时若仍用下取整,当 `hi=lo+1` 且 `check(mid)` 为真,`lo=mid` 原地不动 → 死循环。**记住:哪边可能停住不动,mid 就往哪边多取一格。**\n\n🔹 浮点二分\n答案是实数(开方、解方程)时没有「整数相邻」的概念,`lo<hi` 几乎永远成立。改用**区间宽度 `hi-lo < eps`** 或**固定迭代次数**(如 `for _ in range(100)`,每轮折半,100 轮精度达约 `(hi-lo)/2¹⁰⁰`)作终止条件。坑:`x<1` 时 `sqrt(x)>x`,上界要取 `max(x, 1)`,否则二分不到真值。\n\n🔹 过程追踪(LC875 piles=[3,6,7,11], h=8)\n```\nlo,hi = 1,11\nmid=6  hours=1+1+2+2=6 <=8  可行→ hi=6\nmid=3  hours=1+2+3+4=10 >8  不行→ lo=4\nmid=5  hours=1+2+2+3=8 <=8  可行→ hi=5\nmid=4  hours=1+2+2+3=8 <=8  可行→ hi=4\nlo==hi=4  →  最小速度 4\n```",
+  "complexity": {
+    "best": "O(n log V)",
+    "avg": "O(n log V)",
+    "worst": "O(n log V)",
+    "space": "O(1)",
+    "stable": null,
+    "in_place": null,
+    "note": "n 为数据规模,V 为答案值域宽度(`hi-lo`):二分 `O(log V)` 次,每次判定 `check` 通常 `O(n)`。浮点二分把 `log V` 换成 `log((hi-lo)/eps)`,即收敛到 `eps` 精度所需的折半次数。空间为判定函数的额外开销(此处 `O(1)`,若 `check` 需先排序则为 `O(n)`)。`stable`/`in_place` 对『求一个数值答案』不适用,取 `null`。"
+  },
+  "entry": "min_eating_speed",
+  "test_code": "import random\nrandom.seed(875)\n\n# LC 官方用例\nassert min_eating_speed([3, 6, 7, 11], 8) == 4\nassert min_eating_speed([30, 11, 23, 4, 20], 5) == 30\nassert min_eating_speed([30, 11, 23, 4, 20], 6) == 23\nassert min_eating_speed([312884470], 312884469) == 2\nassert min_eating_speed([1000000000], 2) == 500000000\n\ndef brute(piles, h):\n    def hours(k):\n        return sum((p + k - 1) // k for p in piles)\n    k = 1\n    while hours(k) > h:                 # h >= 堆数 时必有解(k=max 时耗时=堆数)\n        k += 1\n    return k\n\nfor _ in range(300):\n    n = random.randint(1, 8)\n    piles = [random.randint(1, 40) for _ in range(n)]\n    h = random.randint(n, n + 25)       # 保证可行\n    assert min_eating_speed(piles, h) == brute(piles, h), (piles, h)",
+  "variants": [
+    {
+      "title": "二分答案模板·最小化最大值(LC875 珂珂吃香蕉)",
+      "time": "O(n log V)",
+      "space": "O(1)",
+      "starred": true,
+      "note": "**最经典的二分答案模板**:在答案值域上找『最左可行』。check 单调是前提,mid 下取整。",
+      "code": "def min_eating_speed(piles, h):\n    \"\"\"LC 875:二分『吃香蕉速度 k』。check(k) = 按速度 k 吃完所需小时数 <= h。\n    速度越大耗时越少 → 可行性单调,求最小可行 k(最左 True)。\"\"\"\n    def hours_needed(k):\n        return sum((p + k - 1) // k for p in piles)   # 整数上取整,避免浮点丢精度\n    lo, hi = 1, max(piles)                             # 速度至少 1,至多一次吃完最大堆\n    while lo < hi:\n        mid = (lo + hi) // 2                           # 求最左 True → 下取整\n        if hours_needed(mid) <= h:                     # 可行,尝试更小的速度\n            hi = mid\n        else:\n            lo = mid + 1\n    return lo",
+      "test_code": "import random\nrandom.seed(875)\n\n# LC 官方用例\nassert min_eating_speed([3, 6, 7, 11], 8) == 4\nassert min_eating_speed([30, 11, 23, 4, 20], 5) == 30\nassert min_eating_speed([30, 11, 23, 4, 20], 6) == 23\nassert min_eating_speed([312884470], 312884469) == 2\nassert min_eating_speed([1000000000], 2) == 500000000\n\ndef brute(piles, h):\n    def hours(k):\n        return sum((p + k - 1) // k for p in piles)\n    k = 1\n    while hours(k) > h:                 # h >= 堆数 时必有解(k=max 时耗时=堆数)\n        k += 1\n    return k\n\nfor _ in range(300):\n    n = random.randint(1, 8)\n    piles = [random.randint(1, 40) for _ in range(n)]\n    h = random.randint(n, n + 25)       # 保证可行\n    assert min_eating_speed(piles, h) == brute(piles, h), (piles, h)"
+    },
+    {
+      "title": "浮点二分·求平方根(my_sqrt)",
+      "time": "O(log((hi-lo)/eps))",
+      "space": "O(1)",
+      "starred": false,
+      "note": "实数答案用 `hi-lo < eps` 终止;`x<1` 时上界取 `max(x,1)`。也可换成固定迭代次数。",
+      "code": "def my_sqrt(x, eps=1e-7):\n    \"\"\"浮点二分求平方根:在 [0, max(x,1)] 上二分,使 mid*mid 逼近 x。\n    答案是实数,用『区间宽度 < eps』作为终止条件。\"\"\"\n    if x < 0:\n        raise ValueError(\"x 必须非负\")\n    lo, hi = 0.0, max(x, 1.0)        # x<1 时 sqrt(x)>x,上界须取 max(x,1)\n    while hi - lo > eps:\n        mid = (lo + hi) / 2\n        if mid * mid < x:            # 还偏小,真值在右半\n            lo = mid\n        else:\n            hi = mid\n    return (lo + hi) / 2",
+      "test_code": "import math, random\nrandom.seed(69)\n\nassert abs(my_sqrt(0.0)) < 1e-5\nfor x in [1e-6, 0.01, 0.25, 1.0, 2.0, 3.0, 7.5, 16.0, 50.0, 99.0]:\n    r = my_sqrt(x)\n    assert abs(r * r - x) < 1e-5, (x, r)\n    assert abs(r - math.sqrt(x)) < 1e-3, (x, r)\n\nfor _ in range(300):\n    x = random.uniform(0.0, 100.0)\n    r = my_sqrt(x)\n    assert abs(r * r - x) < 1e-5, (x, r)"
+    },
+    {
+      "title": "二分答案模板·最大化最小值(LC1552 磁力)",
+      "time": "O(n log V)",
+      "space": "O(n)",
+      "starred": false,
+      "note": "另一个方向:找『最右可行』,mid **必须上取整** `(lo+hi+1)//2`,否则 `hi=lo+1` 时死循环。",
+      "code": "def max_distance(position, m):\n    \"\"\"LC 1552:把 m 个球放进货架,最大化相邻两球的最小间距 d。\n    check(d) = 贪心能否放下 m 个(相邻间距 >= d);d 越大越难 → 求最大可行 d(最右 True)。\"\"\"\n    pos = sorted(position)\n    def can_place(d):\n        count, last = 1, pos[0]\n        for p in pos[1:]:\n            if p - last >= d:\n                count += 1\n                last = p\n        return count >= m\n    lo, hi = 1, pos[-1] - pos[0]\n    while lo < hi:\n        mid = (lo + hi + 1) // 2      # 求最右 True → 必须上取整,否则死循环\n        if can_place(mid):\n            lo = mid                  # 可行,试更大的间距\n        else:\n            hi = mid - 1\n    return lo",
+      "test_code": "import random\nrandom.seed(1552)\n\nassert max_distance([1, 2, 3, 4, 7], 3) == 3\nassert max_distance([5, 4, 3, 2, 1, 1000000000], 2) == 999999999\n\ndef brute(position, m):\n    pos = sorted(position)\n    def can(d):\n        count, last = 1, pos[0]\n        for p in pos[1:]:\n            if p - last >= d:\n                count += 1\n                last = p\n        return count >= m\n    best = 1\n    for d in range(1, pos[-1] - pos[0] + 1):\n        if can(d):\n            best = d\n    return best\n\nfor _ in range(300):\n    n = random.randint(2, 8)\n    pos = random.sample(range(0, 40), n)     # 互异坐标\n    m = random.randint(2, n)\n    assert max_distance(pos, m) == brute(pos, m), (pos, m)"
+    }
+  ],
+  "compare_table": "| 写法 | 求什么 | check 单调形态 | mid 取整 | 收敛靠 |\n| --- | --- | --- | --- | --- |\n| 最小化最大值 (LC875) | 最左 True | 0…01…1 | `(lo+hi)//2` 下取整 | `lo==hi` |\n| 最大化最小值 (LC1552) | 最右 True | 1…10…0 | `(lo+hi+1)//2` 上取整 | `lo==hi` |\n| 浮点二分 (开方) | 实数答案 | 同上 | `(lo+hi)/2` | 区间宽 < `eps` |",
+  "gotchas": [
+    "二分答案的前提是**可行性单调**:先确认 `check(x)` 在值域上是 `0…01…1` 或 `1…10…0`,否则不能二分。",
+    "**mid 取整方向**:求最左可行用 `(lo+hi)//2`(下取整);求最右可行必须用 `(lo+hi+1)//2`(上取整),否则 `hi=lo+1` 且 `check(mid)` 为真时 `lo=mid` 不前进 → 死循环。",
+    "**值域边界要包含真正答案**:开方时 `x<1` 则 `sqrt(x)>x`,上界要取 `max(x,1)`;别把 `lo/hi` 定窄了二分不到解。",
+    "check 里的整数上取整用 `(p+k-1)//k`,**别写** `math.ceil(p/k)` —— 大数下浮点 `p/k` 会丢精度导致结果偏差。",
+    "**浮点二分别用 `lo<hi` / `lo==hi` 当终止条件**(浮点几乎不会精确相等),用 `hi-lo>eps` 或固定迭代次数。",
+    "误差会被放大:`r` 的绝对误差 `ε` 反映到 `r²` 上约为 `2rε`,所以要求 `abs(r*r-x)` 很小时,`eps` 要取得更小、或限制 `x` 的范围。"
+  ],
+  "applications": [
+    {
+      "label": "LC 875 · 爱吃香蕉的珂珂",
+      "url": "https://leetcode.cn/problems/koko-eating-bananas/"
+    },
+    {
+      "label": "LC 410 · 分割数组的最大值",
+      "url": "https://leetcode.cn/problems/split-array-largest-sum/"
+    },
+    {
+      "label": "LC 69 · x 的平方根",
+      "url": "https://leetcode.cn/problems/sqrtx/"
+    },
+    {
+      "label": "LC 1552 · 两球之间的磁力",
+      "url": "https://leetcode.cn/problems/magnetic-force-between-two-balls/"
+    }
+  ],
+  "related": [
+    "binary-search"
+  ]
+}

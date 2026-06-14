@@ -1,0 +1,78 @@
+{
+  "id": "gcd",
+  "title": "欧几里得 GCD / 扩展欧几里得",
+  "category": "数论",
+  "family": "math",
+  "tags": [
+    "数论",
+    "欧几里得",
+    "扩展欧几里得"
+  ],
+  "summary": "用辗转相除 `gcd(a,b)=gcd(b,a%b)` 在 `O(log)` 步求最大公约数;**扩展版**还给出裴蜀系数 `a*x+b*y=g`,是求**模逆元**的通用钥匙。",
+  "idea": "🔹 一句话\ngcd(a, b) 是 a 与 b 的最大公约数。欧几里得算法基于一条恒等式:`gcd(a, b) = gcd(b, a % b)`,不断用「除数」和「余数」替换原来的两个数,直到余数为 0,此时另一个数就是答案。这就是「辗转相除」。\n\n🔹 为什么 gcd(a, b) = gcd(b, a % b)\n设 d 同时整除 a 和 b,则 d 必整除 `a - k*b`(任意整数 k),从而整除 `a % b`;反过来整除 b 与 `a % b` 的 d 也整除 a。于是 (a, b) 的公约数集合与 (b, a % b) 的公约数集合**完全相同**,最大者自然相等。每替换一次问题规模严格变小,余数终会归零。\n\n🔹 复杂度从哪来\n关键观察:每做一次取模,余数一定满足 `a % b < a / 2`(若 `b > a/2` 则 `a % b = a - b < a/2`;否则 `a % b < b <= a/2`)。也就是说每一步规模都掉到一半以下,所以步数是 `O(log min(a, b))`。最坏情况发生在**相邻的斐波那契数**(如 `gcd(F₁₂, F₁₁)`),每步只能削掉一点点 —— 这正是 Lamé 定理:步数约为 `logφ(min(a,b))`,φ 为黄金比。单步取模视作 `O(1)`(大整数则按位长计)。\n\n🔹 递归 vs 迭代\n| 写法 | 空间 | 备注 |\n| --- | --- | --- |\n| 递归 | `O(log n)` 栈 | 一行式、最贴近恒等式,可读性最好 |\n| 迭代 | `O(1)` | 无栈、无爆栈风险,工程首选 |\n两者步数完全相同,差别只在是否开递归栈。gcd 的递归深度本就是对数级,实践中两种写法都很安全。\n\n🔹 负数与 0 的约定\n本实现先 `abs` 再算,与标准库 `math.gcd` 对齐:结果恒为**非负**;`gcd(a, 0) = |a|`,特别地 `gcd(0, 0) = 0`。注意 Python 里 `a % b` 的符号跟随除数 b(与 C/Java 不同),不取绝对值直接对负数递归会得到带符号的结果,所以要先 `abs`。\n\n🔹 lcm:最小公倍数\n由 `gcd(a, b) * lcm(a, b) = |a*b|` 推出 `lcm(a, b) = a // gcd(a, b) * b`。**务必先除后乘**(写 `a // gcd * b` 而不是 `a * b // gcd`),在定长整数语言里可避免中间结果溢出;另外 a 或 b 为 0 时 lcm 约定为 0,套公式前要特判防除零。\n\n🔹 扩展欧几里得与模逆元\nexgcd(a, b) 在求 gcd 的同时给出一组整数 (x, y),满足**裴蜀等式** `a*x + b*y = gcd(a, b)`。做法是顺着递归回代:已知 `b*x1 + (a%b)*y1 = g`,把 `a % b = a - (a//b)*b` 代入整理得 `a*y1 + b*(x1 - (a//b)*y1) = g`,于是 `x = y1`、`y = x1 - (a//b)*y1`,边界 `exgcd(a, 0) = (a, 1, 0)`。\n最重要的应用是**模逆元**:当 `gcd(a, m) = 1` 时 `a*x + m*y = 1`,两边对 m 取模得 `a*x ≡ 1 (mod m)`,所以 `x % m` 就是 a 在模 m 下的乘法逆元(逆元存在 ⟺ a 与 m 互质)。这是不要求 m 为质数的通用求逆法(费马小定理求逆只适用于质数模)。\n\n🔹 过程追踪:gcd(48, 18)\n```\n48 = 2×18 + 12   → gcd(18, 12)\n18 = 1×12 +  6   → gcd(12,  6)\n12 = 2× 6 +  0   → gcd( 6,  0) = 6\n答案 6;余数序列 12 → 6 → 0,共 3 步(对数级)。\n```",
+  "complexity": {
+    "best": "O(1)",
+    "avg": "O(log min(a, b))",
+    "worst": "O(log min(a, b))",
+    "space": "O(1)",
+    "stable": null,
+    "in_place": null,
+    "note": "迭代写法空间 `O(1)`;递归写法栈深 `O(log min(a,b))`。`best` 指 `b` 整除 `a`(或 `b==0`)一步即出。最坏发生在相邻斐波那契数(Lamé 定理),步数仍是对数级。gcd 不涉及稳定性/原地概念,故 `stable`、`in_place` 取 `null`。"
+  },
+  "entry": "gcd",
+  "test_code": "import math, random\nrandom.seed(20240614)\nassert gcd(0, 0) == 0\nassert gcd(0, 5) == 5\nassert gcd(5, 0) == 5\nassert gcd(12, 8) == 4\nassert gcd(-12, 8) == 4         # 取绝对值,与 math.gcd 的非负约定一致\nassert gcd(-12, -8) == 4\nassert gcd(17, 5) == 1          # 互质\nassert gcd(100, 100) == 100\nfor _ in range(3000):\n    a = random.randint(-2000, 2000)\n    b = random.randint(-2000, 2000)\n    assert gcd(a, b) == math.gcd(a, b), (a, b)",
+  "variants": [
+    {
+      "title": "欧几里得递归",
+      "time": "O(log min(a, b))",
+      "space": "O(log min(a, b)) 栈",
+      "starred": false,
+      "note": "一行式、最贴近恒等式 `gcd(a,b)=gcd(b,a%b)`,可读性最好。先 `abs` 对齐 `math.gcd`。",
+      "code": "def gcd(a, b):\n    \"\"\"欧几里得递归:gcd(a, b) = gcd(b, a % b),递归到 b == 0 返回 a。\n    先取绝对值,匹配 math.gcd 的非负约定(gcd(0, 0) == 0)。\"\"\"\n    a, b = abs(a), abs(b)\n    if b == 0:\n        return a\n    return gcd(b, a % b)"
+    },
+    {
+      "title": "欧几里得迭代",
+      "time": "O(log min(a, b))",
+      "space": "O(1)",
+      "starred": true,
+      "note": "`while` 循环替代递归,无栈、无爆栈风险,**面试/工程首选**;步数与递归完全相同。",
+      "code": "def gcd(a, b):\n    \"\"\"欧几里得迭代:循环执行 a, b = b, a % b,直到 b == 0。\n    无递归栈、不会爆栈;先取绝对值以匹配 math.gcd(gcd(0, 0) == 0)。\"\"\"\n    a, b = abs(a), abs(b)\n    while b:\n        a, b = b, a % b\n    return a"
+    },
+    {
+      "title": "扩展欧几里得 + 模逆元",
+      "time": "O(log min(a, b))",
+      "space": "O(log min(a, b)) 栈",
+      "starred": false,
+      "note": "求 gcd 的同时给出裴蜀系数 `a*x+b*y=g`;`gcd(a,m)=1` 时 `x%m` 即 a 模 m 的逆元(不要求 m 为质数)。",
+      "code": "def exgcd(a, b):\n    \"\"\"扩展欧几里得:返回 (g, x, y),满足 a*x + b*y = g = gcd(a, b)(对非负整数定义)。\n    递归求 exgcd(b, a % b) = (g, x1, y1),回代 x = y1,y = x1 - (a // b) * y1。\"\"\"\n    if b == 0:\n        return a, 1, 0\n    g, x1, y1 = exgcd(b, a % b)\n    return g, y1, x1 - (a // b) * y1\n\n\ndef mod_inverse(a, m):\n    \"\"\"a 关于模 m 的乘法逆元;存在当且仅当 gcd(a, m) == 1,否则返回 None。\"\"\"\n    g, x, _ = exgcd(a % m, m)\n    if g != 1:\n        return None\n    return x % m",
+      "test_code": "import math, random\nrandom.seed(20240614)\n\ndef check(a, b):\n    g, x, y = exgcd(a, b)\n    assert g == math.gcd(a, b), (a, b, g)        # g 即最大公约数\n    assert a * x + b * y == g, (a, b, x, y, g)   # 裴蜀等式成立\n\ncheck(0, 0)\ncheck(0, 9)\ncheck(9, 0)\ncheck(12, 8)\ncheck(17, 5)\ncheck(100, 100)\nfor _ in range(3000):\n    a = random.randint(0, 2000)\n    b = random.randint(0, 2000)\n    check(a, b)\n\n# 模逆元:gcd(a, m) == 1 时 mod_inverse 给出唯一逆元,否则为 None\nassert mod_inverse(3, 11) == 4 and (3 * 4) % 11 == 1\nassert mod_inverse(2, 4) is None               # 不互质,逆元不存在\nfor _ in range(1000):\n    m = random.randint(2, 2000)\n    a = random.randint(1, 2000)\n    inv = mod_inverse(a, m)\n    if math.gcd(a % m, m) == 1:\n        assert inv is not None and (a * inv) % m == 1 % m, (a, m, inv)\n    else:\n        assert inv is None, (a, m)"
+    }
+  ],
+  "compare_table": "| 写法 | 返回 | 空间 | 何时用 |\n| --- | --- | --- | --- |\n| 欧几里得递归 | `gcd` | `O(log n)` 栈 | 一行式、最直观 |\n| 欧几里得迭代 | `gcd` | `O(1)` | 工程首选,无爆栈 |\n| 扩展欧几里得 | `(g, x, y)` | `O(log n)` 栈 | 需要裴蜀系数 / 模逆元 |",
+  "gotchas": [
+    "**0 与负数约定**:本实现先 `abs` 再算,结果恒非负、与 `math.gcd` 对齐;`gcd(a, 0) = |a|`,`gcd(0, 0) = 0`。",
+    "Python 的 `a % b` 符号跟随除数 b(与 C/Java 不同)。不先取绝对值,负数输入会得到带符号余数,gcd 可能为负 —— 这正是要 `abs` 的原因。",
+    "**lcm 先除后乘**:写 `a // gcd(a, b) * b`,别写 `a * b // gcd`(定长整数里中间值易溢出);且 a 或 b 为 0 时要特判,否则除零。",
+    "**模逆元存在性**:`a` 模 `m` 的逆元存在当且仅当 `gcd(a, m) == 1`;exgcd 求出的 `x` 可能为负,用 `x % m` 归一到 `[0, m)`。",
+    "扩展欧几里得这里**对非负整数定义**;返回的 `g` 对负数输入不保证等于 `math.gcd`(后者取绝对值),需要时先把 a、b 取正、最后再调符号。",
+    "递归基准是 `b == 0` 返回 `a`(不是 `a == 0`);写反了第一步就错。"
+  ],
+  "applications": [
+    {
+      "label": "LC 365 · 水壶问题",
+      "url": "https://leetcode.cn/problems/water-and-jug-problem/"
+    },
+    {
+      "label": "LC 1071 · 字符串的最大公因子",
+      "url": "https://leetcode.cn/problems/greatest-common-divisor-of-strings/"
+    },
+    {
+      "label": "LC 914 · 卡牌分组",
+      "url": "https://leetcode.cn/problems/x-of-a-kind-in-a-deck-of-cards/"
+    }
+  ],
+  "related": [
+    "fast-power",
+    "sieve"
+  ]
+}

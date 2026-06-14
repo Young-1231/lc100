@@ -1,0 +1,80 @@
+{
+  "id": "heapsort",
+  "title": "堆排序 Heap Sort",
+  "category": "排序",
+  "family": "sorting",
+  "tags": [
+    "选择类",
+    "原地",
+    "不稳定",
+    "优先队列"
+  ],
+  "summary": "把数组建成**大顶堆**,反复把堆顶最大值换到末尾再下沉;最好/平均/最坏都是 **`O(n log n)`** 且原地,选择排序的加速版。",
+  "idea": "🔹 一句话\n堆排序 = 用一个二叉堆当『不断吐出最值的容器』。先把数组原地整理成**大顶堆**(根最大),再反复把堆顶最大值换到数组末尾、把堆缩小一位并下沉恢复堆序;扫完一遍,数组天然升序。它本质是**选择排序的加速版**——选择排序每轮 `O(n)` 找最大,堆排序用堆把『找最大』降到 `O(log n)`。\n\n🔹 大顶堆与下标\n完全二叉树用数组表示:下标 `i` 的左孩子是 `2i+1`、右孩子 `2i+2`、父节点 `(i-1)//2`。大顶堆要求每个父节点 ≥ 它的孩子,所以根 `a[0]` 永远是全局最大。下标 `>= n//2` 的节点都是叶子(没有孩子),建堆时可以跳过。\n\n🔹 为什么用大顶堆做升序\n直觉上小顶堆(根最小)更顺,但要**原地**把结果写回同一数组,大顶堆才对:每轮把当前最大换到末尾,有效堆区从右往左缩,最大的元素被逐个『沉淀』到数组尾部,最终恰好是升序。若用小顶堆原地交换会得到降序;想用小顶堆升序就得额外开数组(见写法②)。\n\n🔹 建堆为什么是 O(n)(Floyd 自底向上)\n从最后一个非叶子节点 `n//2-1` 开始,向前对每个节点做一次 `siftDown`。关键:`siftDown` 的代价正比于**节点高度**,而堆里绝大多数节点都贴着底层、高度极小。高度为 `h` 的节点约有 `n/2^(h+1)` 个,`Σ h·n/2^(h+1)` 收敛到 `O(n)`。所以自底向上建堆是**线性**的,而不是『逐个插入』的 `O(n log n)`。\n\n🔹 排序阶段的 O(n log n)\n建好堆后做 `n-1` 次:把堆顶换到当前末尾 + 一次 `siftDown`。每次 `siftDown` 最多走树高 `O(log n)`,共 `O(n log n)`。注意堆排序的**最好/平均/最坏都是 O(n log n)**——没有快排那种退化,这是它最大的卖点;代价是常数较大、下标跳跃访问对 CPU 缓存不友好,实测通常比快排慢。\n\n🔹 siftDown 还是 siftUp\n建堆既能自顶向下逐个 `siftUp`(每来一个元素就上浮),也能自底向上 `siftDown`。前者是 `O(n log n)`,后者是 `O(n)`——所以**建堆永远用 siftDown**。`siftUp` 主要用在『往已有堆里 push 一个新元素』的场景。\n\n🔹 过程图示(对 [3,1,4,1,5] 排升序;`|` 左侧是堆区、右侧是已排好的尾巴)\n```\n原数组 [3,1,4,1,5]   下标 0..4,左孩子=2i+1 右孩子=2i+2\n\n建堆(从 i = n//2-1 = 1 起向前 siftDown):\n i=1: a[1]=1 与孩子(1,5) → 换 5   [3,5,4,1,1]\n i=0: a[0]=3 与孩子(5,4) → 换 5   [5,3,4,1,1]   ← 大顶堆,根=5\n\n排序(反复:堆顶↔末尾,缩堆,siftDown):\n [5,3,4,1,1]  换头尾→ [1,3,4,1|5]  siftDown→ [4,3,1,1|5]\n [4,3,1,1|5]  换→ [1,3,1|4,5]      siftDown→ [3,1,1|4,5]\n [3,1,1|4,5]  换→ [1,1|3,4,5]      siftDown→ [1,1|3,4,5]\n [1,1|3,4,5]  换→ [1|1,3,4,5]\n 结果 [1,1,3,4,5]\n```\n\n🔹 与优先队列 / Top-K 的关系\n堆真正的主场其实不是排序,而是『动态取最值』:**优先队列**(写法②的 `heapq`)就是堆。求『前 k 大』根本不用全排——维护一个大小为 `k` 的**小顶堆**扫一遍即可 `O(n log k)`(写法③),堆顶就是这 k 个里最小的、谁更大谁顶替它。这正是 LC 215 / 347 / 295 的通用套路。\n\n🔹 写法取舍\n- 写法①原地大顶堆:`O(1)` 额外空间、纯手写,面试出现频率最高,推荐主力。\n- 写法②`heapq`:几行搞定、可读性好,但要 `O(n)` 额外空间、且实际是借库实现;工程里要排序直接 `sorted` 更香,`heapq` 更多用于优先队列。\n- 写法③Top-K 堆:不是排序而是堆最常见的实战形态,`O(n log k)` 选出前 k 大,流式数据也适用。",
+  "complexity": {
+    "best": "O(n log n)",
+    "avg": "O(n log n)",
+    "worst": "O(n log n)",
+    "space": "O(1)",
+    "stable": false,
+    "in_place": true,
+    "note": "原地大顶堆(写法①)只用 `O(1)` 额外空间;此处为统一自测让 `sort` 返回新列表,核心是原地交换。写法②基于 `heapq` 需 `O(n)` 额外空间。无论输入如何都是 `O(n log n)`,没有快排式退化,但常数大、缓存不友好。"
+  },
+  "entry": "sort",
+  "test_code": "import random\nrandom.seed(20240607)\nassert sort([]) == []\nassert sort([1]) == [1]\nassert sort([2, 1]) == [1, 2]\nassert sort([5, 5, 5, 5]) == [5, 5, 5, 5]\nassert sort([3, -1, 0, -1, 9, 2, 2]) == sorted([3, -1, 0, -1, 9, 2, 2])\nassert sort(list(range(20, 0, -1))) == list(range(1, 21))\nfor _ in range(400):\n    n = random.randint(0, 60)\n    arr = [random.randint(-30, 30) for _ in range(n)]\n    assert sort(list(arr)) == sorted(arr), arr",
+  "variants": [
+    {
+      "title": "原地大顶堆(Floyd 建堆)",
+      "time": "O(n log n)(建堆 O(n) + n 次 siftDown)",
+      "space": "O(1)",
+      "starred": true,
+      "note": "纯手写、`O(1)` 额外空间,面试主力写法。关键是**自底向上 siftDown** 建堆与缩堆边界 `end-1`。",
+      "code": "def sort(a):\n    \"\"\"原地大顶堆 + Floyd 建堆。先从 n//2-1 向前逐个 siftDown 建大顶堆,\n    再反复把堆顶(当前最大)换到末尾、缩小堆区并 siftDown 恢复堆序。\n    额外空间 O(1)(此处为统一自测返回新列表,核心交换是原地的)。\"\"\"\n    a = list(a)\n    n = len(a)\n\n    def sift_down(start, end):\n        # 把 a[start] 下沉,使 [start, end] 维持大顶堆;end 是堆区右边界(含)\n        root = start\n        while True:\n            child = 2 * root + 1\n            if child > end:                 # 没有孩子,停\n                break\n            if child + 1 <= end and a[child + 1] > a[child]:\n                child += 1                  # 取较大的孩子\n            if a[root] < a[child]:\n                a[root], a[child] = a[child], a[root]\n                root = child\n            else:\n                break\n\n    for i in range(n // 2 - 1, -1, -1):     # Floyd 自底向上建堆,O(n)\n        sift_down(i, n - 1)\n    for end in range(n - 1, 0, -1):         # 反复把最大值沉到末尾\n        a[0], a[end] = a[end], a[0]\n        sift_down(0, end - 1)               # 已归位的 a[end] 不再进堆\n    return a"
+    },
+    {
+      "title": "基于 heapq(小顶堆依次弹出)",
+      "time": "O(n log n)(heapify O(n) + n 次 heappop)",
+      "space": "O(n)",
+      "starred": false,
+      "note": "标准库三行版:`heapify` 后连续 `heappop` 得升序。简洁但要 `O(n)` 额外空间且非原地。",
+      "code": "import heapq\n\ndef sort(a):\n    \"\"\"基于标准库 heapq(小顶堆):heapify 线性建堆后,依次 heappop 取出\n    当前最小,得到升序序列。写法极简,但需 O(n) 额外空间存放堆。\"\"\"\n    h = list(a)\n    heapq.heapify(h)                        # 原地建小顶堆,O(n)\n    return [heapq.heappop(h) for _ in range(len(h))]  # 每次弹最小,共 O(n log n)"
+    },
+    {
+      "title": "堆求前 k 大 Top-K",
+      "time": "O(n log k)",
+      "space": "O(k)",
+      "starred": false,
+      "note": "堆的实战主场:不全排,维护大小为 k 的**小顶堆**扫一遍。契约不同(`top_k(a,k)`),用写法级 test。",
+      "code": "import heapq\n\ndef top_k(a, k):\n    \"\"\"求前 k 大元素(降序返回)。维护一个大小为 k 的小顶堆:堆未满直接 push;\n    堆满后若当前元素比堆顶(k 个里最小的)大,就用它替换堆顶。O(n log k)。\"\"\"\n    if k <= 0:\n        return []\n    k = min(k, len(a))\n    heap = []                               # 小顶堆,堆顶是当前前 k 大里最小的\n    for x in a:\n        if len(heap) < k:\n            heapq.heappush(heap, x)\n        elif x > heap[0]:\n            heapq.heapreplace(heap, x)      # pop 最小再 push,一步到位\n    return sorted(heap, reverse=True)",
+      "test_code": "import random\nrandom.seed(20240608)\nassert top_k([], 3) == []\nassert top_k([5, 9, 1], 0) == []\nassert top_k([5, 9, 1], -2) == []\nassert top_k([3, 1, 2], 2) == [3, 2]\nassert top_k([1, 1, 1, 1], 2) == [1, 1]\nassert top_k([4, 4, 1, 2], 10) == [4, 4, 2, 1]\nfor _ in range(300):\n    n = random.randint(0, 50)\n    arr = [random.randint(-40, 40) for _ in range(n)]\n    k = random.randint(0, n + 2)\n    assert top_k(list(arr), k) == sorted(arr, reverse=True)[:k], (arr, k)"
+    }
+  ],
+  "compare_table": "| 写法 | 堆类型 | 额外空间 | 是否原地 | 适用场景 |\n| --- | --- | --- | --- | --- |\n| 原地大顶堆 | 大顶堆 | O(1) | 是 | 面试手写 / 原地排序 |\n| heapq 弹出 | 小顶堆 | O(n) | 否 | 快速写 / 优先队列 |\n| Top-K 堆 | 大小为 k 小顶堆 | O(k) | — | 前 k 大 / 流式数据 |",
+  "gotchas": [
+    "`siftDown` 比较右孩子前要先判 `child+1 <= end`,否则越界;判停条件是 `child > end`。",
+    "建堆必须从 `n//2-1` **向前**逐个 `siftDown`,不要从根开始,也不要用 n 次 `siftUp`(那是 `O(n log n)`)。",
+    "**要原地升序就用大顶堆**;误用小顶堆原地交换会得到降序。",
+    "排序阶段把堆顶换到 `a[end]` 后,`siftDown` 的右边界要传 `end-1`——已归位的元素不能再进堆。",
+    "**堆排序不稳定**:下沉/交换会打乱相等元素的相对次序;需要稳定排序请用归并排序。",
+    "`heapq` 只有小顶堆:想用它做大顶堆/降序,常用『取负数』或包装比较键的技巧。"
+  ],
+  "applications": [
+    {
+      "label": "LC 215 · 数组中的第 K 个最大元素",
+      "url": "https://leetcode.cn/problems/kth-largest-element-in-an-array/"
+    },
+    {
+      "label": "LC 347 · 前 K 个高频元素",
+      "url": "https://leetcode.cn/problems/top-k-frequent-elements/"
+    },
+    {
+      "label": "LC 295 · 数据流的中位数",
+      "url": "https://leetcode.cn/problems/find-median-from-data-stream/"
+    }
+  ],
+  "related": [
+    "quicksort",
+    "selection-sort",
+    "monotonic"
+  ]
+}

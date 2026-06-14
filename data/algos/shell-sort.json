@@ -1,0 +1,78 @@
+{
+  "id": "shell-sort",
+  "title": "希尔排序 Shell Sort",
+  "category": "排序",
+  "family": "sorting",
+  "tags": [
+    "插入排序",
+    "缩小增量",
+    "原地",
+    "不稳定"
+  ],
+  "summary": "插入排序的**分组加速版**:按递减的间隔 `gap` 分组插入,大步长先消远距离逆序,最后 `gap=1` 收尾;复杂度随 **gap 序列**变化。",
+  "idea": "🔹 一句话\n希尔排序(缩小增量排序,Diminishing Increment Sort)是**插入排序的加速版**:先按一个较大的间隔 `gap` 把数组分成若干分组,每组内部各自做插入排序;再逐步缩小 `gap`,最后 `gap=1` 时退化成一次普通插入排序收尾。\n\n🔹 为什么比插入排序快\n普通插入排序每次只能把元素往前挪 **1 格**:如果一个很小的元素躺在数组最右端,要走到最左端得挪 `n` 步,总代价正比于「逆序对数量」,最坏 O(n²)。希尔排序让元素一次跨 `gap` 格移动 —— 先用大 `gap` 把**远距离的逆序**快速消掉;等 `gap` 缩到 1 时,数组已经**基本有序**,此时插入排序几乎线性 O(n)。用大步长换效率,正是希尔排序的灵魂。\n\n🔹 gap 序列决定一切\n希尔排序的复杂度不是一个固定值,而是**完全由 gap 序列决定**,这也是它「平均复杂度至今仍是开放问题」的原因:\n- 经典(Shell 原版)`gap = n//2` 逐步减半:最坏 **O(n²)**。缺点是当 n 为 2 的幂时,除最后一轮外 gap 全为偶数,奇/偶下标元素直到 `gap=1` 才首次互相比较,效率打折(一般 n 下也可能出现奇数 gap,如 n=6 时为 3,1)。\n- Hibbard `2^k − 1`(1,3,7,15…):可证明最坏 **O(n^1.5)**。\n- Knuth `3k+1`(1,4,13,40…):生成简单、实战表现好,最坏 **O(n^1.5)**,工程里最常用(★)。\n\n🔹 为什么不稳定\n元素是按 `gap` **跨组**移动的,两个相等元素可能分属不同组,大步长移动时会让它们的相对次序被颠倒,所以希尔排序**不稳定**。一个最小反例(下标 = 原始位置):\n```\n输入  [1₀, 2₁, 1₂, 1₃]      n=4, gap=2\n gap=2 分组: {下标0,2}={1₀,1₂}  {下标1,3}={2₁,1₃}\n   i=3: 2₁>1₃ → 2₁ 右移到下标3,1₃ 跳到下标1\n        [1₀, 1₃, 1₂, 2₁]    ← 1₃ 越过了 1₂\n gap=1: 已基本有序,插入排序不再改动等值元素\n   结果 [1₀, 1₃, 1₂, 2₁]    ← 原本在前的 1₂ 跑到了 1₃ 后面 → 不稳定\n```\n\n🔹 过程图示(经典 gap=n//2)\n```\n初始 [8, 5, 3, 7, 1, 2]     n=6\ngap=3  分组比较下标 (0,3)(1,4)(2,5)\n       8↔7 5↔1 3↔2  →  [7, 1, 2, 8, 5, 3]\ngap=1  普通插入排序收尾\n                       →  [1, 2, 3, 5, 7, 8]\n```\n\n🔹 实现要点\n内层不用「交换」而用**移位**:把 `a[i]` 暂存到 `tmp`,把比它大的同组元素逐个右移 `gap` 步,最后让 `tmp` 一次落位,常数更小。无论哪种 gap 序列,**最后一轮必须是 `gap=1`** 才能保证整体有序。",
+  "complexity": {
+    "best": "O(n log n)",
+    "avg": "O(n^1.25) ~ O(n^1.5)(随 gap 序列)",
+    "worst": "O(n²)",
+    "space": "O(1)",
+    "stable": false,
+    "in_place": true,
+    "note": "复杂度**强依赖 gap 序列**:经典 `n//2` 最坏 `O(n²)`,Knuth/Hibbard 最坏 `O(n^1.5)`;平均复杂度至今没有精确结论。算法本身原地 `O(1)`;此处为统一自测让 `sort` 返回新列表,实际可对入参原地排序。"
+  },
+  "entry": "sort",
+  "test_code": "import random\nrandom.seed(20240614)\nassert sort([]) == []\nassert sort([1]) == [1]\nassert sort([2, 1]) == [1, 2]\nassert sort([5, 5, 5, 5]) == [5, 5, 5, 5]\nassert sort([3, -1, 0, -1, 9, 2, 2]) == sorted([3, -1, 0, -1, 9, 2, 2])\nfor _ in range(400):\n    n = random.randint(0, 60)\n    arr = [random.randint(-30, 30) for _ in range(n)]\n    assert sort(list(arr)) == sorted(arr), arr",
+  "variants": [
+    {
+      "title": "经典 gap = n//2 逐步减半",
+      "time": "平均 ≈ O(n^1.5) / 最坏 O(n²)",
+      "space": "O(1)",
+      "starred": false,
+      "note": "最好记的入门写法,但 gap 在末轮前全是偶数,效率不如下面两种序列。",
+      "code": "def sort(a):\n    \"\"\"经典希尔排序(Shell 原版):gap 从 n//2 起每轮减半到 1。\n    每个 gap 下对各分组做插入排序,内层用移位而非交换。\"\"\"\n    a = list(a)\n    n = len(a)\n    gap = n // 2\n    while gap > 0:\n        for i in range(gap, n):\n            tmp = a[i]\n            j = i\n            while j >= gap and a[j - gap] > tmp:   # 同组内比 tmp 大的右移 gap 步\n                a[j] = a[j - gap]\n                j -= gap\n            a[j] = tmp                              # tmp 一次落位\n        gap //= 2                                   # 缩小增量,最后必为 1\n    return a"
+    },
+    {
+      "title": "Knuth 序列 gap = 3k+1",
+      "time": "最坏 O(n^1.5)",
+      "space": "O(1)",
+      "starred": true,
+      "note": "gap 序列 1,4,13,40,…,生成简单、实战表现好,工程/面试首选。",
+      "code": "def sort(a):\n    \"\"\"Knuth 序列希尔排序:gap 取 1,4,13,40,…(h = 3h+1)。\n    起步取首个 ≥ n//3 的项(1,4,13,40,… 中不小于 n//3 的最小项,如 n=100 时为 40),每轮 gap //= 3 缩小,最坏 O(n^1.5)。\"\"\"\n    a = list(a)\n    n = len(a)\n    gap = 1\n    while gap < n // 3:        # 取首个 >= n//3 的 gap(1,4,13,40,… 中不小于 n//3 的最小项)\n        gap = gap * 3 + 1\n    while gap >= 1:\n        for i in range(gap, n):\n            tmp = a[i]\n            j = i\n            while j >= gap and a[j - gap] > tmp:\n                a[j] = a[j - gap]\n                j -= gap\n            a[j] = tmp\n        gap //= 3              # 40→13→4→1→0,最后一轮恰好 gap=1\n    return a"
+    },
+    {
+      "title": "Hibbard 序列 gap = 2^k − 1",
+      "time": "最坏 O(n^1.5)",
+      "space": "O(1)",
+      "starred": false,
+      "note": "gap 序列 1,3,7,15,…,相邻 gap 互质性更好;先收集再从大到小遍历。",
+      "code": "def sort(a):\n    \"\"\"Hibbard 序列希尔排序:gap 取 …,15,7,3,1(2^k − 1)。\n    先生成不超过 n 的所有 gap,再从大到小依次插入排序,最坏 O(n^1.5)。\"\"\"\n    a = list(a)\n    n = len(a)\n    gaps = []\n    k = 1\n    while (1 << k) - 1 < n:    # 1,3,7,15,… 收集 < n 的所有 gap\n        gaps.append((1 << k) - 1)\n        k += 1\n    for gap in reversed(gaps): # 从大到小;gaps 含 1,保证最后一轮 gap=1\n        for i in range(gap, n):\n            tmp = a[i]\n            j = i\n            while j >= gap and a[j - gap] > tmp:\n                a[j] = a[j - gap]\n                j -= gap\n            a[j] = tmp\n    return a"
+    }
+  ],
+  "compare_table": "| gap 序列 | 公式 | 最坏复杂度 | 备注 |\n| --- | --- | --- | --- |\n| 经典(Shell) | `n//2` 减半 | O(n²) | 最好记,偶数 gap 拖效率 |\n| Hibbard | `2^k − 1` | O(n^1.5) | 1,3,7,15… 互质性好 |\n| Knuth | `3k+1` | O(n^1.5) | 1,4,13,40… 实战首选(★) |",
+  "gotchas": [
+    "**最后一轮必须是 `gap=1`**,否则不保证整体有序 —— `gap=1` 本质就是普通插入排序兜底。",
+    "经典写法循环条件用 `while gap > 0` 配 `gap //= 2`;若写成别的递减方式要确保能终止且能取到 1,别死循环。",
+    "内层比较条件用严格 `>`(`a[j-gap] > tmp`),相等不移动 —— 这是插入排序的习惯,但希尔排序**仍然不稳定**,因为跨组的大步长移动会颠倒相等元素的相对次序。",
+    "建议用**移位**(暂存 `tmp` 逐个右移)而非两两交换,交换写法每步多一次写回,常数更大。",
+    "别背一个固定的大 O:希尔排序复杂度**随 gap 序列变化**,经典 `n//2` 最坏 `O(n²)`,Knuth/Hibbard 最坏 `O(n^1.5)`。"
+  ],
+  "applications": [
+    {
+      "label": "LC 912 · 排序数组",
+      "url": "https://leetcode.cn/problems/sort-an-array/"
+    },
+    {
+      "label": "LC 147 · 对链表进行插入排序",
+      "url": "https://leetcode.cn/problems/insertion-sort-list/"
+    },
+    {
+      "label": "LC 148 · 排序链表",
+      "url": "https://leetcode.cn/problems/sort-list/"
+    }
+  ],
+  "related": [
+    "insertion-sort",
+    "quicksort",
+    "heapsort"
+  ]
+}

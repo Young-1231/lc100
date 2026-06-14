@@ -1,0 +1,78 @@
+{
+  "id": "selection-sort",
+  "title": "选择排序 Selection Sort",
+  "category": "排序",
+  "family": "sorting",
+  "tags": [
+    "原地",
+    "不稳定",
+    "交换最少"
+  ],
+  "summary": "把数组分成已排序区和未排序区,每轮从未排序区**选出最小值**接到已排序区末尾;比较恒为 `~n²/2`,但**交换次数最少(≤ n-1)**。",
+  "idea": "🔹 一句话\n把数组分成「已排序区(左)」和「未排序区(右)」。每一轮在未排序区里扫一遍,挑出**最小值**,放到未排序区的最前面 —— 已排序区就向右长一格。重复 n-1 轮即排好。这是最朴素的「选出极值」思想。\n\n🔹 为什么永远是 O(n²)\n第 i 轮要在剩下的元素里找最小值,需要约 n-i-1 次比较。总比较次数 = (n-1)+(n-2)+…+1 = n(n-1)/2,**与输入是否有序完全无关**。所以选择排序的最好、平均、最坏都是 O(n²),它没有插入排序/冒泡排序那种「数据近乎有序时提前收工」的福利。\n\n🔹 交换次数最少:它唯一的高光\n虽然比较多,但每一轮**最多只交换一次**(把选中的最小值换到位),整趟下来交换次数 ≤ n-1 —— 是所有基于交换的排序里最少的。当「比较便宜、搬移元素昂贵」(例如元素体积很大、写入代价高)时,这一点让选择排序在特定场景反而有实战价值。\n\n🔹 为什么不稳定\n交换是「隔空换位」:把远处的最小值一脚踢到前面,可能让某个相等元素越过它的同值伙伴。\n例:`[5a, 5b, 2]`,第一轮把 `2` 和 `5a` 交换 → `[2, 5b, 5a]`,两个 5 的相对次序被打乱。想稳定就得「移动代替交换」(见稳定版写法),但那样会丢掉「少交换」的好处,移动量退化到 O(n²)。\n\n🔹 双向选择:轮数减半,比较省得不多\n一轮里**同时**记录最小值与最大值,最小值放左端、最大值放右端,左右边界一起向中间收,外层轮数从 n-1 降到约 n/2。省下的主要是循环与边界维护的常数;但每个元素一轮要比两次(和当前最小比、和当前最大比),**总比较次数仍是 ~n²/2**,渐进复杂度不变。它最易踩的坑:把最小值换到 `left` 后,如果最大值原本就在 `left`,它已被挪到 `mn` 处,必须先修正 `mx = mn` 再去放最大值,否则把刚放好的最小值又换走。\n\n🔹 过程图示(标准写法,全程只发生 1 次交换)\n```\n初始              [5, 2, 4, 1]\ni=0 未排序区找最小 = 1(idx3),换 a0,a3   [1, 2, 4, 5]   已排序 | 1\ni=1 未排序区找最小 = 2(idx1),mn==i 不换  [1, 2, 4, 5]   已排序 | 1 2\ni=2 未排序区找最小 = 4(idx2),mn==i 不换  [1, 2, 4, 5]   已排序 | 1 2 4\n完成(最后一个自动到位)                   [1, 2, 4, 5]\n```\n\n🔹 三种基础排序横向对比\n| 算法 | 比较次数 | 交换/移动 | 能否提前结束 | 稳定 |\n| --- | --- | --- | --- | --- |\n| 选择排序 | 恒 ~n²/2 | 交换 ≤ n-1(**最少**) | 不能 | 否 |\n| 冒泡排序 | ~n²/2 | 交换最多 ~n²/2 | 能(加标志位) | 是 |\n| 插入排序 | 近序时 ~n | 移动随逆序对数 | 自带(近序极快) | 是 |",
+  "complexity": {
+    "best": "O(n²)",
+    "avg": "O(n²)",
+    "worst": "O(n²)",
+    "space": "O(1)",
+    "stable": false,
+    "in_place": true,
+    "note": "比较次数恒为 `n(n-1)/2`,**与输入无关**,故最好/平均/最坏都是 `O(n²)`;交换次数 ≤ `n-1`,是基于交换的排序里最少的。算法本身原地(`O(1)` 辅助空间);此处为统一自测让 `sort` 返回新列表,可改为对入参原地排序。"
+  },
+  "entry": "sort",
+  "test_code": "import random\nrandom.seed(20240614)\nassert sort([]) == []\nassert sort([1]) == [1]\nassert sort([2, 1]) == [1, 2]\nassert sort([5, 5, 5, 5]) == [5, 5, 5, 5]\nassert sort([3, -1, 0, -1, 9, 2, 2]) == sorted([3, -1, 0, -1, 9, 2, 2])\nfor _ in range(400):\n    n = random.randint(0, 60)\n    arr = [random.randint(-30, 30) for _ in range(n)]\n    assert sort(list(arr)) == sorted(arr), arr",
+  "variants": [
+    {
+      "title": "标准选择排序",
+      "time": "O(n²)(恒定,与输入无关)",
+      "space": "O(1)",
+      "starred": true,
+      "note": "最直白的写法:每轮选未排序区最小值换到前面。**交换 ≤ n-1 次**,面试/教学首选。",
+      "code": "def sort(a):\n    \"\"\"标准选择排序:每一轮在未排序区里线性扫描出最小值,\n    与未排序区的第一个位置交换,使已排序区从左侧逐格增长。\"\"\"\n    a = list(a)\n    n = len(a)\n    for i in range(n - 1):\n        mn = i                       # 先假设未排序区第一个元素最小\n        for j in range(i + 1, n):\n            if a[j] < a[mn]:         # 严格小于才更新,保留靠左的相等元素\n                mn = j\n        if mn != i:                  # 只有真的更小才交换 → 交换次数 ≤ n-1\n            a[i], a[mn] = a[mn], a[i]\n    return a"
+    },
+    {
+      "title": "双向选择(一轮选最小+最大)",
+      "time": "O(n²)(轮数 ~n/2,比较仍 ~n²/2)",
+      "space": "O(1)",
+      "starred": false,
+      "note": "一趟同时把最小、最大放到两端,轮数减半省常数;注意 `mx == left` 的修正坑。",
+      "code": "def sort(a):\n    \"\"\"双向选择排序:一轮里同时找出最小值和最大值,\n    分别放到当前区间的两端,外层轮数从 n-1 降到约 n/2。\"\"\"\n    a = list(a)\n    left, right = 0, len(a) - 1\n    while left < right:\n        mn = mx = left\n        for j in range(left, right + 1):\n            if a[j] < a[mn]:\n                mn = j\n            if a[j] > a[mx]:\n                mx = j\n        a[left], a[mn] = a[mn], a[left]    # 最小值就位\n        if mx == left:                     # 最大值原本在 left,已被换到 mn 处\n            mx = mn\n        a[right], a[mx] = a[mx], a[right]   # 最大值就位\n        left += 1\n        right -= 1\n    return a"
+    },
+    {
+      "title": "稳定版(移动代替交换)",
+      "time": "比较 O(n²) + 移动 O(n²)",
+      "space": "O(1)",
+      "starred": false,
+      "note": "用整体右移插入代替交换,换来**稳定**,但移动量升到 O(n²),丢掉『少交换』优势。",
+      "code": "def sort(a):\n    \"\"\"稳定版选择排序:找到最小值后不『交换』,而是把它抽出、\n    把 [i, mn) 整体右移一格再插回到 i —— 相等元素的相对次序得以保留,\n    代价是把 O(1) 次交换换成最多 O(n) 次移动,总移动量退化到 O(n²)。\"\"\"\n    a = list(a)\n    n = len(a)\n    for i in range(n):\n        mn = i\n        for j in range(i + 1, n):\n            if a[j] < a[mn]:        # 严格小于 → 取最靠左的最小值,这是稳定的关键\n                mn = j\n        key = a[mn]\n        while mn > i:               # [i, mn) 整体右移一格,给 key 腾位\n            a[mn] = a[mn - 1]\n            mn -= 1\n        a[i] = key\n    return a",
+      "test_code": "import random\nrandom.seed(20240614)\nassert sort([]) == []\nassert sort([1]) == [1]\nassert sort([5, 5, 5, 5]) == [5, 5, 5, 5]\nfor _ in range(200):\n    n = random.randint(0, 50)\n    arr = [random.randint(-10, 10) for _ in range(n)]\n    assert sort(list(arr)) == sorted(arr), arr\n\nclass _Rec:\n    __slots__ = (\"k\", \"o\")\n    def __init__(self, k, o):\n        self.k = k\n        self.o = o\n    def __lt__(self, other):\n        return self.k < other.k\n    def __gt__(self, other):\n        return self.k > other.k\n\nfor _ in range(200):                       # 验证稳定性:相等 key 应保持原始下标次序\n    n = random.randint(0, 40)\n    items = [_Rec(random.randint(0, 3), o) for o in range(n)]\n    got = [(x.k, x.o) for x in sort(list(items))]\n    exp = [(x.k, x.o) for x in sorted(items, key=lambda x: x.k)]\n    assert got == exp"
+    }
+  ],
+  "compare_table": "| 写法 | 每轮做什么 | 外层轮数 | 比较次数 | 数据搬移 | 稳定 |\n| --- | --- | --- | --- | --- | --- |\n| 标准 | 选 1 个最小放左端 | n-1 | ~n²/2 | 交换 ≤ n-1 | 否 |\n| 双向选择 | 同时选最小+最大放两端 | ~n/2 | ~n²/2(比标准略多) | 交换 ≤ n-1 | 否 |\n| 稳定版 | 选最小+区间右移插入 | n-1 | ~n²/2 | 移动 O(n²) | 是 |",
+  "gotchas": [
+    "选择排序的比较次数与输入无关,**即使数组已经有序,也要走满 `~n²/2` 次比较**,没有插入/冒泡那种『近乎有序就提前结束』的优化空间。",
+    "**标准选择排序不稳定**:把最小值隔空换到前面时,可能让一个相等元素越过它的同值伙伴(如 `[5a,5b,2]` → `[2,5b,5a]`)。要稳定就得用『移动代替交换』。",
+    "双向选择的经典坑:把最小值换到 `left` 后,若**最大值原本就在 `left`**,它已被换到 `mn` 处,必须 `if mx == left: mx = mn` 再去放最大值,否则会把刚放好的最小值又换走。",
+    "内层只在 `a[j] < a[mn]` **严格小于**时更新 `mn`;用 `<=` 会让 `mn` 跳到靠右的相等元素,既无意义又更伤稳定性。",
+    "记得只在 `mn != i` 时才交换,跳过『自己和自己换』—— 这正是『交换次数 ≤ n-1』的来源。"
+  ],
+  "applications": [
+    {
+      "label": "LC 912 · 排序数组",
+      "url": "https://leetcode.cn/problems/sort-an-array/"
+    },
+    {
+      "label": "LC 215 · 数组中的第 K 个最大元素(部分选择)",
+      "url": "https://leetcode.cn/problems/kth-largest-element-in-an-array/"
+    },
+    {
+      "label": "LC 414 · 第三大的数(反复选最大)",
+      "url": "https://leetcode.cn/problems/third-maximum-number/"
+    }
+  ],
+  "related": [
+    "insertion-sort",
+    "bubble-sort",
+    "heapsort"
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "id": "sieve",
+  "title": "素数筛 Sieve",
+  "category": "数论",
+  "family": "math",
+  "tags": [
+    "数论",
+    "素数",
+    "筛法",
+    "预处理"
+  ],
+  "summary": "反过来想:不逐个判素,而是把每个素数的**倍数**一律划掉,剩下的就是素数;`O(n log log n)` 预处理一片素数表。",
+  "idea": "🔹 一句话\n要找出 1..n 内所有素数,与其逐个做素性判定,不如反过来:从小到大,把每个素数的倍数全部划掉(它们必是合数),没被划掉的就是素数。这就是『筛法』。\n\n🔹 埃氏筛:O(n log log n) 从哪来\n枚举 i=2..n,若 i 还没被标记为合数,它就是素数,随即把 i 的倍数 i*i, i*i+i, ... 全标成合数。每个素数 p 大约标记 n/p 次,总标记数 ≈ n·(1/2 + 1/3 + 1/5 + ... + 1/p),而素数倒数和 ~ ln ln n,故总复杂度 O(n log log n)。注意:一个合数会被它的多个素因子各标记一次(如 12 被 2 和 3 各划一次),这点重复正是 log log n 因子的根源。\n\n🔹 三个关键优化\n- 从 i*i 起标记:比 i 小的倍数 2i, 3i, …, (i-1)i 都含有比 i 更小的素因子,早被前面的素数划掉了,从 i*i 开始即可,省掉大量重复。\n- 外层只到 √n:若 i>√n 仍未被标记,它已是素数,而它的最小倍数 i*i>n 已超界,无需再筛。\n- Python 里还可把内层循环换成切片批量赋值 `sieve[i*i::i] = bytes(段长)`,把热点交给底层 C 实现,实测快数倍。\n\n🔹 线性筛(欧拉筛):如何压到 O(n)\n埃氏筛的浪费在于同一个合数被重复标记。线性筛保证每个合数只被它的『最小质因子』唯一一次标记:\n枚举 i,对已知素数表里的每个 p(从小到大)标记 i*p;一旦 `i % p == 0` 就 break。原因:此刻 p 是 i 的最小质因子,若继续用更大的素数 q 去标记 i*q,那么 i*q 的最小质因子其实仍是 p(因为 p | i),这个合数将来会由更大的数配 p 标记,现在标就重复了。于是每个合数恰被标记一次 → O(n)。代价是要维护素数表、break 逻辑易写错;且 Python 里常数较大,未必比切片版埃氏筛快。\n\n🔹 过程追踪(埃氏筛,n=12)\n```\n索引   2  3  4  5  6  7  8  9 10 11 12\ni=2  素数,划 4 6 8 10 12             → 4,6,8,10,12 被标记\ni=3  素数,划 9 12(12 已被划过)      → 9 被标记\ni=4  已被标记,跳过\ni=5  5*5=25>12,内层为空;i 之后同理\n结果  2  3  5  7 11\n```\n\n🔹 怎么选\n绝大多数场景用埃氏筛足矣:代码短、好记、O(n log log n) 已经飞快。数据规模极大、追求理论 O(n),或顺带要『每个数的最小质因子 / 欧拉函数』时用线性筛。Python 工程里想要最快,选切片加速版埃氏筛。",
+  "complexity": {
+    "best": "O(n log log n)",
+    "avg": "O(n log log n)",
+    "worst": "O(n log log n)",
+    "space": "O(n)",
+    "stable": null,
+    "in_place": null,
+    "note": "埃氏筛 `O(n log log n)`,线性筛 `O(n)`;空间都是一张长度 `n+1` 的标记表 `O(n)`。stable/in_place 对『筛素数』不适用,故取 `null`。"
+  },
+  "entry": "primes_upto",
+  "test_code": "import random\nrandom.seed(20240614)\n\ndef _is_prime(x):\n    if x < 2:\n        return False\n    i = 2\n    while i * i <= x:\n        if x % i == 0:\n            return False\n        i += 1\n    return True\n\ndef _ref(n):\n    return [x for x in range(2, n + 1) if _is_prime(x)]\n\n# 边界\nassert primes_upto(-5) == []\nassert primes_upto(0) == []\nassert primes_upto(1) == []\nassert primes_upto(2) == [2]\nassert primes_upto(3) == [2, 3]\nassert primes_upto(10) == [2, 3, 5, 7]\n# 与试除法参考逐一对拍(含连续小值)\nfor n in range(0, 220):\n    assert primes_upto(n) == _ref(n), n\n# 随机较大规模对拍\nfor _ in range(40):\n    n = random.randint(0, 5000)\n    assert primes_upto(n) == _ref(n), n",
+  "variants": [
+    {
+      "title": "埃氏筛(从 i*i 起标记)",
+      "time": "O(n log log n)",
+      "space": "O(n)",
+      "starred": true,
+      "note": "最常考、最好记的标准写法:内层从 `i*i` 起标记,避开重复。面试默认答案。",
+      "code": "import math\n\ndef primes_upto(n):\n    \"\"\"埃拉托斯特尼筛:枚举 i,若 i 未被标记则为素数,再从 i*i 起把 i 的倍数标成合数。\n    返回所有 <=n 的素数(升序)。\"\"\"\n    if n < 2:\n        return []\n    is_comp = [False] * (n + 1)          # is_comp[k]=True 表示 k 是合数\n    primes = []\n    for i in range(2, n + 1):\n        if not is_comp[i]:\n            primes.append(i)\n            for j in range(i * i, n + 1, i):   # 小于 i*i 的倍数已被更小素因子标记\n                is_comp[j] = True\n    return primes"
+    },
+    {
+      "title": "埃氏筛 · 切片加速(bytearray)",
+      "time": "O(n log log n)",
+      "space": "O(n)",
+      "starred": false,
+      "note": "同为埃氏筛,但用 `bytearray` + 切片批量赋值把内层交给 C;Python 工程里实测最快。",
+      "code": "import math\n\ndef primes_upto(n):\n    \"\"\"埃氏筛 + 切片批量标记:用 bytearray 存表,外层只到 √n,内层用\n    sieve[i*i::i] = bytes(k) 一次性把整条等差子序列清零,热点交给 C,Python 里最快。\"\"\"\n    if n < 2:\n        return []\n    sieve = bytearray([1]) * (n + 1)     # 1=暂定素数,0=合数\n    sieve[0] = sieve[1] = 0\n    for i in range(2, math.isqrt(n) + 1):\n        if sieve[i]:\n            sieve[i * i :: i] = bytes(len(sieve[i * i :: i]))\n    return [i for i in range(2, n + 1) if sieve[i]]"
+    },
+    {
+      "title": "线性筛 / 欧拉筛",
+      "time": "O(n)",
+      "space": "O(n)",
+      "starred": false,
+      "note": "每个合数只被最小质因子标记一次,理论 O(n);还能顺带求最小质因子、欧拉函数等。",
+      "code": "def primes_upto(n):\n    \"\"\"线性筛(欧拉筛):每个合数只被它的最小质因子标记一次,做到 O(n)。\n    关键在内层 break —— 当 i % p == 0 时 p 是 i 的最小质因子,继续用更大素数标记会重复。\"\"\"\n    if n < 2:\n        return []\n    is_comp = bytearray(n + 1)\n    primes = []\n    for i in range(2, n + 1):\n        if not is_comp[i]:\n            primes.append(i)\n        for p in primes:\n            if i * p > n:\n                break\n            is_comp[i * p] = 1\n            if i % p == 0:               # p 是 i 的最小质因子,保证每个合数只标一次\n                break\n    return primes"
+    }
+  ],
+  "compare_table": "| 写法 | 复杂度 | 重复标记 | Python 实测 | 适用 |\n| --- | --- | --- | --- | --- |\n| 埃氏筛(标准) | O(n log log n) | 有 | 中 | 面试默认、首选 |\n| 埃氏筛(切片) | O(n log log n) | 有 | 最快 | 大规模、工程 |\n| 线性筛(欧拉) | O(n) | 无 | 较慢(常数大) | 需最小质因子/极大 n |",
+  "gotchas": [
+    "**内层要从 `i*i` 起,不是 `2*i`**:小于 `i*i` 的 i 倍数都含有更小素因子,早被划过了。",
+    "`n < 2` 应先返回 `[]`:切片版的 `sieve[0]=sieve[1]=0` 会下标越界、线性筛的 `bytearray(n+1)` 在 n 为负时报 `ValueError`(list 版 `[False]*(n+1)` 虽不报错也应统一处理)。`0` 和 `1` 都不是素数。",
+    "埃氏筛里一个合数会被多个素因子重复标记(如 12 被 2、3 各标一次),这正是 `log log n` 因子的来源;线性筛靠 `i % p == 0` 时 break 消除重复。",
+    "线性筛的 break **必须在标记之后判断 `i % p == 0`**,且 break 的是内层 for;漏写 break 会重复标记、退化且出错。",
+    "外层枚举到 `√n` 即可(再大的 i 其 `i*i` 已超界);用 `math.isqrt` 取整,别用浮点 `n**0.5` 以免边界误差。",
+    "用 `bytearray` 比 `list[bool]` 省内存(1 字节/格);Python 中切片批量赋值远快于逐格循环。"
+  ],
+  "applications": [
+    {
+      "label": "LC 204 · 计数质数",
+      "url": "https://leetcode.cn/problems/count-primes/"
+    },
+    {
+      "label": "LC 2761 · 和等于目标值的质数对",
+      "url": "https://leetcode.cn/problems/prime-pairs-with-target-sum/"
+    },
+    {
+      "label": "LC 263 · 丑数",
+      "url": "https://leetcode.cn/problems/ugly-number/"
+    }
+  ],
+  "related": [
+    "gcd"
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "id": "kmp",
+  "title": "KMP 字符串匹配",
+  "category": "字符串",
+  "family": "string",
+  "tags": [
+    "字符串匹配",
+    "前缀函数",
+    "线性"
+  ],
+  "summary": "失配时 **text 指针永不回退**,只让模式串按**最长公共前后缀**右滑,把朴素 O(n·m) 压到 **O(n+m)** 的单模式串匹配。",
+  "idea": "🔹 一句话\n朴素匹配每次失配就把 text 指针退回去重扫,最坏 **O(n·m)**。KMP 的洞见:**text 指针永不回退**,失配时只把模式串 `pat` 向右滑到一个『仍可能匹配』的位置——滑多远由 `pat` 自身的**最长公共前后缀**决定。\n\n🔹 next / 失配数组是什么\n对 `pat` 的每个位置,记 `nxt[j]` = 子串 `pat[0..j-1]` 的**最长公共真前后缀**长度(真=不取整段)。含义:当前面 `j` 个字符已匹配、却在 `pat[j]` 处失配时,这 `j` 个字符的某个后缀可能正好是 `pat` 的前缀,于是把 `j` 直接滑到 `nxt[j]`,复用这段已知信息,而不必从头再来。前缀函数 `π` 是同一个量的 0 索引版:`π[i]` = `pat[0..i]` 的最长公共前后缀长度(border)。\n\n🔹 失配时为什么能直接回跳\n已匹配的前缀 = text 当前窗口的内容。若该前缀的『最长 border』长 `k`,说明前缀的末 `k` 个字符 == 开头 `k` 个字符,而末 `k` 个正贴着失配点。把 `pat` 右滑,让开头 `k` 个对齐到原末 `k` 个的位置,这 `k` 个字符必然仍匹配,直接从第 `k` 位继续比即可——这就是『回跳到 `nxt[j]` / `π[k-1]`』。比 border 更短的对齐都不可能成功,所以这是**安全的最大滑动**。\n\n🔹 失配回跳图示(pat = `ababc`)\n```\ntext:  a b a b d ...\npat:   a b a b c\n              ↑ 失配:text 'd' ≠ pat 'c',此前已匹配 \"abab\"\n\"abab\" 的最长公共前后缀 = \"ab\"(长 2),令模式指针回跳到 2:\ntext:  a b a b d ...\npat:       a b a b c\n              ↑ 模式串整体右滑 2 格,text 指针 i 不动,继续比 'd' vs 'a'\n```\n\n🔹 为什么是 O(n+m)\n匹配阶段:`text` 指针 `i` 单调前进、绝不回退,贡献 **O(n)**;模式指针每成功匹配最多 +1、每次回跳至少 -1 且不会变负,所以它的总增量 ≤ n,总回跳次数也 ≤ n。构造 `next/π` 本质是 `pat` 自我匹配,同理 **O(m)**。合计 **O(n+m)**,额外空间 O(m) 存数组。这正是 KMP 优于朴素 O(n·m) 的根因:已经比对过的信息一次都不浪费。\n\n🔹 三种写法怎么选\n- **经典 next 数组(-1 哨兵)**:严蔚敏教材风格,`nxt[0]=-1`,构造与匹配共用一套 `if 相等或哨兵 → 双指针前进 else 回跳` 逻辑,代码紧凑但下标含义稍绕。\n- **前缀函数 π(主流)**:0 索引,`π` 值直接是 border 长度,失配用 `while k>0: k=π[k-1]` 回跳,语义最清晰,竞赛与面试主流,**首选**。\n- **统一写法(拼接)**:对 `pat + 分隔符 + text` 只跑一次前缀函数,`π` 值等于 `m` 处即一次匹配——把『建表』与『匹配』合二为一,最短;代价是需要一个不出现在原串里的分隔符,且空间升到 O(n+m)。",
+  "complexity": {
+    "best": "O(n+m)",
+    "avg": "O(n+m)",
+    "worst": "O(n+m)",
+    "space": "O(m)",
+    "stable": null,
+    "in_place": null,
+    "note": "n = text 长度,m = pat 长度。预处理 `next/π` 数组是 pat 的自我匹配,O(m);匹配阶段 text 指针不回退,O(n)。空间 O(m) 存失配数组;『统一写法』因拼接 `pat+分隔符+text` 升到 O(n+m)。`stable`/`in_place` 是排序概念,对匹配算法不适用,记 null。"
+  },
+  "entry": "kmp",
+  "test_code": "import random\nrandom.seed(20240614)\n\n# —— 边界用例 ——\nassert kmp(\"\", \"\") == 0          # 空 pat 约定返回 0(与 str.find 一致)\nassert kmp(\"abc\", \"\") == 0       # 空 pat\nassert kmp(\"\", \"a\") == -1        # 空 text 非空 pat\nassert kmp(\"a\", \"a\") == 0\nassert kmp(\"a\", \"b\") == -1\nassert kmp(\"abc\", \"abcd\") == -1  # pat 比 text 长\nassert kmp(\"aaaa\", \"aaaa\") == 0\nassert kmp(\"aaaa\", \"aaaaa\") == -1\nassert kmp(\"aaaaaa\", \"aab\") == -1   # 全相同 text 找不到\nassert kmp(\"aaaab\", \"aab\") == 2     # 含失配回跳\nassert kmp(\"mississippi\", \"issip\") == 4\nassert kmp(\"ababab\", \"abab\") == 0\nassert kmp(\"ababab\", \"bab\") == 1\n\n# —— 与 str.find 对拍:小字母表更容易撞出 border / 失配回跳 ——\nfor _ in range(1500):\n    n = random.randint(0, 12)\n    m = random.randint(0, 5)\n    text = \"\".join(random.choice(\"ab\") for _ in range(n))\n    pat = \"\".join(random.choice(\"ab\") for _ in range(m))\n    assert kmp(text, pat) == text.find(pat), (text, pat)\n\n# —— 大字母表 ——\nfor _ in range(1500):\n    n = random.randint(0, 24)\n    m = random.randint(0, 6)\n    text = \"\".join(random.choice(\"abcde\") for _ in range(n))\n    pat = \"\".join(random.choice(\"abcde\") for _ in range(m))\n    assert kmp(text, pat) == text.find(pat), (text, pat)\n",
+  "variants": [
+    {
+      "title": "经典 next 数组(-1 哨兵)",
+      "time": "O(n+m)",
+      "space": "O(m)",
+      "starred": false,
+      "note": "严蔚敏教材风格:`nxt[0]=-1` 哨兵,构造与匹配共用一套推进逻辑,代码紧凑但下标稍绕。",
+      "code": "def build_next(pat):\n    \"\"\"构造失配数组:nxt[j] = pat[0..j-1] 的最长公共真前后缀长度;nxt[0] = -1 作哨兵(代表整体右移一格)。\"\"\"\n    m = len(pat)\n    nxt = [0] * m\n    nxt[0] = -1\n    k = -1                 # k:当前最长公共前后缀的末位下标(= 前缀长度 - 1)\n    j = 0\n    while j < m - 1:\n        if k == -1 or pat[j] == pat[k]:\n            j += 1\n            k += 1\n            nxt[j] = k\n        else:\n            k = nxt[k]     # 失配则沿失配链回跳\n    return nxt\n\n\ndef kmp(text, pat):\n    \"\"\"经典 next 数组写法:text 指针 i 永不回退,失配时模式指针 j 回跳到 nxt[j]。\"\"\"\n    n, m = len(text), len(pat)\n    if m == 0:\n        return 0\n    nxt = build_next(pat)\n    i = j = 0\n    while i < n and j < m:\n        if j == -1 or text[i] == pat[j]:   # j == -1 是哨兵:相当于整体右移一格\n            i += 1\n            j += 1\n        else:\n            j = nxt[j]\n    return i - m if j == m else -1\n"
+    },
+    {
+      "title": "前缀函数 π(主流写法)",
+      "time": "O(n+m)",
+      "space": "O(m)",
+      "starred": true,
+      "note": "0 索引,`π` 值即 border 长度,失配 `k=π[k-1]` 回跳,语义最清晰,面试/工程首选。",
+      "code": "def prefix_function(s):\n    \"\"\"前缀函数:pi[i] = s[0..i] 的最长公共真前后缀(border)长度,0 索引。\"\"\"\n    n = len(s)\n    pi = [0] * n\n    for i in range(1, n):\n        k = pi[i - 1]\n        while k > 0 and s[i] != s[k]:\n            k = pi[k - 1]          # 失配:回退到更短的 border\n        if s[i] == s[k]:\n            k += 1\n        pi[i] = k\n    return pi\n\n\ndef kmp(text, pat):\n    \"\"\"前缀函数主流写法:k = 已匹配的 pat 前缀长度,失配用 k = pi[k-1] 回跳。\"\"\"\n    m = len(pat)\n    if m == 0:\n        return 0\n    pi = prefix_function(pat)\n    k = 0\n    for i, ch in enumerate(text):\n        while k > 0 and ch != pat[k]:\n            k = pi[k - 1]\n        if ch == pat[k]:\n            k += 1\n        if k == m:                 # 配满整个 pat,返回起点\n            return i - m + 1\n    return -1\n"
+    },
+    {
+      "title": "前缀函数统一写法(拼接)",
+      "time": "O(n+m)",
+      "space": "O(n+m)",
+      "starred": false,
+      "note": "对 `pat+分隔符+text` 只跑一次前缀函数,`π==m` 处即匹配;最短,但需分隔符不出现在原串中。",
+      "code": "def prefix_function(s):\n    \"\"\"前缀函数:pi[i] = s[0..i] 的最长公共真前后缀(border)长度。\"\"\"\n    n = len(s)\n    pi = [0] * n\n    for i in range(1, n):\n        k = pi[i - 1]\n        while k > 0 and s[i] != s[k]:\n            k = pi[k - 1]\n        if s[i] == s[k]:\n            k += 1\n        pi[i] = k\n    return pi\n\n\ndef kmp(text, pat):\n    \"\"\"统一写法:对 pat + 分隔符 + text 跑一次前缀函数,pi 值 == m 处即匹配末尾。\n    分隔符须既不在 text 也不在 pat 中出现,否则 border 可能跨越分隔符导致误判。\"\"\"\n    m = len(pat)\n    if m == 0:\n        return 0\n    sep = \"\\x00\"\n    s = pat + sep + text\n    pi = prefix_function(s)\n    for i in range(m + 1, len(s)):\n        if pi[i] == m:\n            return i - 2 * m       # i 是匹配末尾在拼接串中的下标,换算回 text 起点\n    return -1\n"
+    }
+  ],
+  "compare_table": "| 写法 | 下标约定 | 失配回跳 | 额外空间 | 备注 |\n| --- | --- | --- | --- | --- |\n| 经典 next(-1 哨兵) | `nxt[0]=-1` | `j=nxt[j]` | O(m) | 教材经典,下标稍绕 |\n| 前缀函数 π | 0 索引 border 长 | `k=π[k-1]` | O(m) | 语义清晰,主流(首选) |\n| π 统一写法 | 拼接串 | —(复用前缀函数) | O(n+m) | 最短,需分隔符 |",
+  "gotchas": [
+    "空模式串约定:`str.find(\"\")` 返回 `0`,本实现也让 `kmp(text, \"\")==0`,别返回 -1。",
+    "KMP 的命脉是 **text 指针 i 从不回退**;一旦失配时回退 i,就退化成朴素匹配 O(n·m)。",
+    "经典写法里 `nxt[0]=-1` 是哨兵,匹配时遇 `j==-1` 要把 `i`、`j` **同时 +1**(整体右移一格);漏掉哨兵分支会越界或死循环。",
+    "前缀函数回跳必须写 `k = π[k-1]`(回退到『前 k 个字符』的 border),写成 `π[k]` 会错位。",
+    "求的是**真**前后缀(border 不能取整段),否则回跳原地踏步,造成死循环。",
+    "统一写法的分隔符必须是**既不在 text 也不在 pat** 中出现的字符,否则前缀函数会跨越分隔符匹配,`π` 值虚高导致误判。"
+  ],
+  "applications": [
+    {
+      "label": "LC 28 · 找出字符串中第一个匹配项的下标",
+      "url": "https://leetcode.cn/problems/find-the-index-of-the-first-occurrence-in-a-string/"
+    },
+    {
+      "label": "LC 459 · 重复的子字符串",
+      "url": "https://leetcode.cn/problems/repeated-substring-pattern/"
+    },
+    {
+      "label": "LC 214 · 最短回文串",
+      "url": "https://leetcode.cn/problems/shortest-palindrome/"
+    }
+  ],
+  "related": [
+    "z-function",
+    "string-hash"
+  ]
+}

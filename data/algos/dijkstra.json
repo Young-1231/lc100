@@ -1,0 +1,75 @@
+{
+  "id": "dijkstra",
+  "title": "Dijkstra 最短路",
+  "category": "最短路",
+  "family": "graph",
+  "tags": [
+    "最短路",
+    "贪心",
+    "堆",
+    "非负权"
+  ],
+  "summary": "单源非负权最短路:每次贪心确定离源**最近的未定点**(`出堆即确定`),用它松弛邻居。堆优化 `O(E log V)`。",
+  "idea": "🔹 一句话\n单源最短路:从源点 `src` 出发,逐步『确定』当前离源最近的点。维护距离数组 `dist[]`,每次取出 dist 最小且尚未确定的点 u,用它去**松弛(relax)**邻居:`dist[v] = min(dist[v], dist[u]+w)`。本质是 BFS 的加权版 + 贪心。\n\n🔹 核心不变量:出堆即确定\n当一个点 u **第一次以最小 dist 被取出**时,它的 `dist[u]` 就是最终最短路,以后不会再被更短的路径更新。为什么成立?因为所有边权非负:任何尚未确定的点要绕到 u,起步距离就已经 ≥ 当前最小值,再加上非负边只会更大,不可能更短。这就是 Dijkstra 的灵魂——贪心地确定一个点,**永不反悔**。\n\n🔹 为什么必须非负权\n若存在负权边,『出堆即确定』立刻失效:一个已经确定的点,可能因为后面某条负边被绕出一条更短的路,但它已经被『锁死』了,于是答案错误。负权要改用 **Bellman-Ford**(还能检测负环)或 **Floyd**(全源)。\n\n🔹 复杂度从哪来\n- **堆优化**:每条边至多触发一次成功松弛,对应一次入堆;堆中至多 `O(E)` 条记录,每次 push/pop 为 `O(log E)=O(log V)`,合计 `O(E log V)`。**稀疏图**(E≈V)首选。\n- **朴素 O(V²)**:每轮线性扫描在未确定点中找最小 dist,单轮 `O(V)`,共 V 轮 → `O(V²)`;松弛总量 `O(E)`。当图**稠密**(E≈V²)时,`O(V²)` 反而优于 `O(E log V)`,且不用堆、常数小。\n\n🔹 懒删除 vs decrease-key\n教科书 Dijkstra 需要『减小堆里某点的 key』(decrease-key),但 Python 的 `heapq` 不支持。通行技巧是**懒删除**:松弛成功就直接 push 一条新的 `(更小距离, 点)`,旧记录留在堆里不管;弹出时若发现 `d > dist[u]`(这条记录已过期),直接跳过即可。实现简单、实测高效。\n\n🔹 过程追踪(堆优化,src=0)\n```\n有向带权图:\n   0 --1--> 1     1 --2--> 2     2 --3--> 4\n   0 --4--> 2     1 --7--> 3\n\n堆=[(0,0)]                          dist=[0, ∞, ∞, ∞, ∞]\n弹(0,0) 定0  松弛 1=1, 2=4         dist=[0, 1, 4, ∞, ∞]  堆=[(1,1),(4,2)]\n弹(1,1) 定1  松弛 2=1+2=3<4, 3=8   dist=[0, 1, 3, 8, ∞]  堆=[(3,2),(4,2)✗,(8,3)]\n弹(3,2) 定2  松弛 4=3+3=6          dist=[0, 1, 3, 8, 6]  堆=[(4,2)✗,(6,4),(8,3)]\n弹(4,2) d=4>dist[2]=3 → 过期,跳过(懒删除)\n弹(6,4) 定4  无出边\n弹(8,3) 定3  无出边\n结果 dist=[0, 1, 3, 8, 6]\n```\n\n🔹 两种写法怎么选\n| 写法 | 复杂度 | 适用 | 额外结构 |\n| --- | --- | --- | --- |\n| 堆优化 | `O(E log V)` | 稀疏图(默认) | 小根堆 + 邻接表 |\n| 朴素 O(V²) | `O(V²)` | 稠密图 / n 很小 | 仅 dist、done 数组 |\n两者算的结果完全一致,只是『找下一个最近点』的手段不同:堆 vs 线性扫描。",
+  "complexity": {
+    "best": "O(E log V)",
+    "avg": "O(E log V)",
+    "worst": "O(E log V)",
+    "space": "O(V + E)",
+    "stable": null,
+    "in_place": false,
+    "note": "复杂度针对**堆优化**写法:`O(E log V)`,空间 `O(V+E)`(邻接表 + 堆 + dist)。**朴素写法**为时间 `O(V²)`、空间 `O(V+E)`,稠密图(E≈V²)时更优。排序无关概念,故 stable=null;算法新建辅助结构,非原地。"
+  },
+  "entry": "dijkstra",
+  "test_code": "import random\nrandom.seed(20240614)\nINF = float(\"inf\")\n\n\ndef _ref(n, edges, src):\n    \"\"\"Bellman-Ford 参考实现(非负权下与 Dijkstra 必然一致),用于随机对拍。\"\"\"\n    dist = [INF] * n\n    dist[src] = 0\n    for _ in range(n - 1):\n        changed = False\n        for u, v, w in edges:\n            if dist[u] != INF and dist[u] + w < dist[v]:\n                dist[v] = dist[u] + w\n                changed = True\n        if not changed:\n            break\n    return dist\n\n\n# 固定带权图:断言已知最短路\nedges1 = [(0, 1, 1), (0, 2, 4), (1, 2, 2), (1, 3, 7), (2, 4, 3)]\nassert dijkstra(5, edges1, 0) == [0, 1, 3, 8, 6]\nassert dijkstra(5, edges1, 1) == [INF, 0, 2, 7, 5]\n\n# 含不可达点 = inf(节点 3 无入边)\nassert dijkstra(4, [(0, 1, 5), (1, 2, 3)], 0) == [0, 5, 8, INF]\n\n# 边界:单点、自环、重边\nassert dijkstra(1, [], 0) == [0]\nassert dijkstra(2, [(0, 0, 1), (0, 1, 4), (0, 1, 2)], 0) == [0, 2]\n\n# 随机对拍(与 Bellman-Ford):随机非负权有向图,含自环 / 重边 / 不可达\nfor _ in range(400):\n    n = random.randint(1, 9)\n    m = random.randint(0, n * 3)\n    edges = [(random.randrange(n), random.randrange(n), random.randint(0, 9))\n             for _ in range(m)]\n    src = random.randrange(n)\n    assert dijkstra(n, list(edges), src) == _ref(n, list(edges), src), (n, edges, src)\n",
+  "variants": [
+    {
+      "title": "堆优化(heapq + 懒删除)",
+      "time": "O(E log V)",
+      "space": "O(V + E)",
+      "starred": true,
+      "note": "**面试 / 工程首选**:邻接表 + 小根堆;`heapq` 无 decrease-key,用懒删除(弹出时 `d>dist[u]` 跳过)。稀疏图最快。",
+      "code": "import heapq\n\n\ndef dijkstra(n, edges, src):\n    \"\"\"堆优化 Dijkstra:邻接表 + 小根堆懒删除。出堆即确定,O(E log V),适合稀疏图。\"\"\"\n    g = [[] for _ in range(n)]\n    for u, v, w in edges:\n        g[u].append((v, w))\n    INF = float(\"inf\")\n    dist = [INF] * n\n    dist[src] = 0\n    pq = [(0, src)]                 # (当前距离, 节点)\n    while pq:\n        d, u = heapq.heappop(pq)\n        if d > dist[u]:            # 懒删除:过期的旧记录,跳过\n            continue\n        for v, w in g[u]:\n            nd = d + w\n            if nd < dist[v]:       # 松弛成功才入堆\n                dist[v] = nd\n                heapq.heappush(pq, (nd, v))\n    return dist\n"
+    },
+    {
+      "title": "朴素 O(V²)(线性选最小)",
+      "time": "O(V²)",
+      "space": "O(V + E)",
+      "starred": false,
+      "note": "不用堆,每轮 `O(V)` 线性扫描选未确定的最小 dist 点。**稠密图**(E≈V²)反而比堆优化更快、常数更小。",
+      "code": "def dijkstra(n, edges, src):\n    \"\"\"朴素 O(V^2) Dijkstra:每轮线性扫描在未确定点里选最小 dist,适合稠密图,无需堆。\"\"\"\n    g = [[] for _ in range(n)]\n    for u, v, w in edges:\n        g[u].append((v, w))\n    INF = float(\"inf\")\n    dist = [INF] * n\n    dist[src] = 0\n    done = [False] * n\n    for _ in range(n):\n        u, best = -1, INF\n        for i in range(n):          # 线性找未确定点中的最小 dist\n            if not done[i] and dist[i] < best:\n                best, u = dist[i], i\n        if u == -1:                 # 剩下的都不可达,提前结束\n            break\n        done[u] = True\n        for v, w in g[u]:\n            if dist[u] + w < dist[v]:\n                dist[v] = dist[u] + w\n    return dist\n"
+    }
+  ],
+  "compare_table": "| 写法 | 时间 | 适用图 | 额外结构 | 关键技巧 |\n| --- | --- | --- | --- | --- |\n| 堆优化 | `O(E log V)` | 稀疏(E≈V) | 小根堆 + 邻接表 | 懒删除替代 decrease-key |\n| 朴素 O(V²) | `O(V²)` | 稠密(E≈V²) | 仅 dist / done 数组 | 每轮线性选最小 |",
+  "gotchas": [
+    "**只适用于非负权**:有负权边会破坏『出堆即确定』,必须改用 Bellman-Ford(可测负环)或 Floyd。",
+    "懒删除写法弹出后要先判 `if d > dist[u]: continue` 跳过过期记录,否则会对同一点重复松弛(不会错但变慢)。",
+    "入堆元素要写成 `(dist, node)` 元组,让堆**按距离排序**;只 push 节点会得到错误顺序。",
+    "不可达点的 `dist` 应保持 `float('inf')`;松弛前堆优化靠『从未入堆』、朴素靠 `u==-1` break 来天然处理,别误初始化成 0。",
+    "重边 / 自环无需去重:邻接表照单全收,`nd < dist[v]` 的松弛判断天然取最小、忽略更差的边。",
+    "朴素写法每轮若找不到可选点(最小仍为 inf)必须 `break`,否则会把不可达点错误地标记为已确定。"
+  ],
+  "applications": [
+    {
+      "label": "LC 743 · 网络延迟时间",
+      "url": "https://leetcode.cn/problems/network-delay-time/"
+    },
+    {
+      "label": "LC 1631 · 最小体力消耗路径",
+      "url": "https://leetcode.cn/problems/path-with-minimum-effort/"
+    },
+    {
+      "label": "LC 778 · 水位上升的泳池中游泳",
+      "url": "https://leetcode.cn/problems/swim-in-rising-water/"
+    },
+    {
+      "label": "LC 1514 · 概率最大的路径",
+      "url": "https://leetcode.cn/problems/path-with-maximum-probability/"
+    }
+  ],
+  "related": [
+    "bellman-ford",
+    "floyd",
+    "mst"
+  ]
+}

@@ -1,5 +1,5 @@
 // All page views.
-import { getProblems, getDays, getProblem, getPattern } from "./data.js";
+import { getProblems, getDays, getProblem, getPattern, getAlgos, getAlgoFamilies, getAlgo } from "./data.js";
 import { renderDoc, renderMarkdown } from "./markdown.js";
 import { progress } from "./progress.js";
 import { renderViz } from "./viz.js";
@@ -165,6 +165,26 @@ export async function renderHome() {
         快捷键:<span class="kbd">/</span> 搜索,<span class="kbd">←</span><span class="kbd">→</span> 翻题,
         <span class="kbd">O</span> 打开 LeetCode,<span class="kbd">D</span> 切换暗色,<span class="kbd">Esc</span> 返回首页。
       </p>
+    </section>
+    <section class="container">
+      <h2 class="section-title">算法基础 · 经典算法</h2>
+      <p class="section-sub">以 Hot 100 为基础,补齐面试常考的『手撕』算法:排序 / 二分 / 字符串 / 图论 / 数学位运算 / 经典范式。每个算法都有思路、多写法对比、复杂度与易错点。</p>
+      <div class="day-grid">
+        ${[
+          ["sorting", "🔢", "排序全家桶", "快排·归并·堆排·计数·基数·桶 + 稳定性大对比"],
+          ["searching", "🎯", "二分查找体系", "四种边界模板 + 旋转数组 + 二分答案"],
+          ["string", "🔤", "字符串匹配", "KMP · 字符串哈希 · Manacher · Z 函数 · Trie"],
+          ["graph", "🕸️", "图论", "最短路 · 拓扑 · 并查集 · 最小生成树"],
+          ["math", "➗", "数学 & 位运算", "快速幂 · 筛法 · GCD · 位运算 · 抽样"],
+          ["paradigm", "🧩", "经典范式模板", "前缀和差分 · 滑窗 · 回溯 · 背包 · 单调栈"],
+        ].map(([key, icon, t, sub]) => `
+          <a class="day-card" href="#/algos">
+            <span class="day-badge">${icon} 基础</span>
+            <h3>${escapeHtml(t)}</h3>
+            <div class="meta"><span style="font-size:12px;color:var(--text-mute)">${escapeHtml(sub)}</span></div>
+          </a>`).join("")}
+      </div>
+      <p class="section-sub" style="margin-top:16px"><a href="#/algos">→ 进入算法基础</a></p>
     </section>
     <section class="container">
       <h2 class="section-title">模式速记表</h2>
@@ -932,7 +952,8 @@ export function renderAbout() {
       <div class="hero">
         <h1>关于 LC100</h1>
         <p class="lead">这是一个面向面试的 LeetCode Hot 100 全题解项目,Python 实现。所有题目自带单元测试通过,
-          多解法题给出 2–4 种解法的复杂度对比。</p>
+          多解法题给出 2–4 种解法的复杂度对比。另设<strong><a href="#/algos">算法基础</a></strong>板块,
+          补齐排序 / 二分 / 字符串 / 图论 / 数学位运算 / 经典范式等『手撕』算法。</p>
       </div>
       <section>
         <h2 class="section-title">项目特性</h2>
@@ -940,6 +961,7 @@ export function renderAbout() {
           <li>✅ 100 题全覆盖,严格按官方 Hot 100 + 灵神分类</li>
           <li>✅ 多解法对比:暴力 → 优化 → 最优,展示思路演进</li>
           <li>✅ 中文详解 + 复杂度速查 + 踩坑提醒</li>
+          <li>✅ <a href="#/algos">算法基础</a>:34 个经典算法,每个含思路 + 多写法对比 + 复杂度大表 + 易错点,代码 100% 自测</li>
           <li>✅ ASCII 可视化(链表/二叉树/滑动窗口)</li>
           <li>✅ 进度追踪(localStorage)</li>
           <li>✅ 7 张模式速记表,把 100 题压成 7 张图</li>
@@ -957,4 +979,261 @@ gh repo create lc100 --public --source=. --push
 # https://&lt;username&gt;.github.io/lc100/</code></pre>
       </section>
     </div>`;
+}
+
+// ===================== 算法基础 · 列表 =====================
+// 把 families 的 algo_ids 拍平成一个有序序列(用于详情页上一个/下一个导航)。
+function flattenAlgoOrder(families) {
+  const order = [];
+  for (const fam of Object.values(families)) {
+    for (const id of (fam.algo_ids || [])) order.push(id);
+  }
+  return order;
+}
+
+export async function renderAlgos() {
+  const app = document.getElementById("app");
+  app.innerHTML = `<div class="loader"></div>`;
+  let algos, families;
+  try {
+    [algos, families] = await Promise.all([getAlgos(), getAlgoFamilies()]);
+  } catch {
+    app.innerHTML = `<div class="container empty">算法数据加载失败。</div>`;
+    return;
+  }
+  const byId = new Map(algos.map(a => [a.id, a]));
+  const totalVariants = algos.reduce((acc, a) => acc + (a.n_variants || 0), 0);
+  const famCount = Object.keys(families).length;
+
+  const famSections = Object.values(families).map(fam => {
+    const cards = (fam.algo_ids || []).map(id => {
+      const a = byId.get(id);
+      if (!a) return "";
+      const tags = (a.tags || []).slice(0, 3)
+        .map(t => `<span class="algo-tag">${escapeHtml(t)}</span>`).join("");
+      return `
+        <a class="day-card algo-card" href="#/algo/${a.id}">
+          <h3>${escapeHtml(a.title)}</h3>
+          <p class="algo-summary">${escInlineMd(a.summary || "")}</p>
+          <div class="algo-tags">${tags}</div>
+          <div class="algo-card-foot">
+            <span class="algo-cx-chip" title="平均时间复杂度">${escapeHtml(a.complexity_brief || "")}</span>
+            ${a.n_variants ? `<span class="star" title="${a.n_variants} 种写法">★ ${a.n_variants} 写法</span>` : ""}
+          </div>
+        </a>`;
+    }).join("");
+    const overview = fam.overview
+      ? `<details class="algo-overview"><summary>📊 ${escapeHtml(fam.title)}总览对比</summary><div class="md">${renderMarkdown(fam.overview)}</div></details>`
+      : "";
+    return `
+      <section class="container algo-family" id="fam-${fam.key}">
+        <h2 class="section-title"><span class="fam-icon">${fam.icon || "▸"}</span>${escapeHtml(fam.title)}</h2>
+        <p class="section-sub">${escapeHtml(fam.desc || "")}</p>
+        ${overview}
+        <div class="day-grid">${cards}</div>
+      </section>`;
+  }).join("");
+
+  const famNav = Object.values(families)
+    .map(f => `<button class="fam-pill" type="button" data-target="fam-${f.key}">${f.icon || ""} ${escapeHtml(f.title)}</button>`)
+    .join("");
+
+  app.innerHTML = `
+    <section class="hero container">
+      <h1>算法基础 · 经典算法<br/>思路 · 多种写法对比 · 复杂度 · 易错点</h1>
+      <p class="lead">以 Hot 100 为基础,补齐面试常考的『手撕』算法。每个算法给出核心思路、2–5 种写法对比、
+        最好/平均/最坏复杂度与稳定性,以及踩坑点和关联的 LeetCode 真题。</p>
+      <div class="hero-stats">
+        <div class="stat"><span class="num accent">${algos.length}</span><span class="label">经典算法</span></div>
+        <div class="stat"><span class="num">${totalVariants}</span><span class="label">写法实现</span></div>
+        <div class="stat"><span class="num">${famCount}</span><span class="label">算法家族</span></div>
+        <div class="stat"><span class="num">100%</span><span class="label">代码自测</span></div>
+      </div>
+      <div class="fam-nav">${famNav}</div>
+    </section>
+    ${famSections}`;
+
+  // 家族导航:JS 平滑滚动(避免改 location.hash 触发 hash 路由)
+  app.querySelectorAll(".fam-pill").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const t = document.getElementById(btn.dataset.target);
+      if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+}
+
+// ===================== 算法基础 · 详情 =====================
+export async function renderAlgo(id) {
+  const app = document.getElementById("app");
+  app.innerHTML = `<div class="loader"></div>`;
+  let data, algos, families;
+  try {
+    [data, algos, families] = await Promise.all([getAlgo(id), getAlgos(), getAlgoFamilies()]);
+  } catch {
+    app.innerHTML = `<div class="container empty">算法 “${escapeHtml(id)}” 不存在。<a href="#/algos">返回算法基础</a></div>`;
+    return;
+  }
+  const byId = new Map(algos.map(a => [a.id, a]));
+  const order = flattenAlgoOrder(families);
+  const idx = order.indexOf(id);
+  const prevId = idx > 0 ? order[idx - 1] : null;
+  const nextId = idx >= 0 && idx < order.length - 1 ? order[idx + 1] : null;
+  const prev = prevId ? byId.get(prevId) : null;
+  const next = nextId ? byId.get(nextId) : null;
+  window.__lc = { prev: null, next: null, leetcode: null }; // 关掉题目页快捷键
+
+  const variants = data.variants || [];
+  const starIdx = pickStarIdx(variants);
+  const cx = data.complexity || {};
+  const flag = (v) => v === true ? "✅ 是" : v === false ? "❌ 否" : "—";
+
+  const apps = (data.applications || []).map(a => {
+    if (a && a.url) return `<a class="algo-app" href="${a.url}" target="_blank" rel="noopener">${SVG_EXT}<span>${escapeHtml(a.label)}</span></a>`;
+    return `<span class="algo-app algo-app-plain">${escapeHtml(a && a.label ? a.label : a)}</span>`;
+  }).join("");
+
+  const related = (data.related || []).map(rid => {
+    const r = byId.get(rid);
+    return r ? `<a class="algo-rel" href="#/algo/${rid}">${escapeHtml(r.title)}</a>` : "";
+  }).join("");
+
+  const famTitle = data.family && families[data.family] ? families[data.family].title : "";
+
+  app.innerHTML = `
+    <div class="container">
+      <a class="detail-back" href="#/algos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        算法基础 · ${escapeHtml(famTitle)}
+      </a>
+      <div class="detail-header">
+        <div class="detail-meta">
+          <span class="badge">${escapeHtml(data.category || famTitle)}</span>
+          ${(data.tags || []).map(t => `<span class="algo-tag">${escapeHtml(t)}</span>`).join("")}
+        </div>
+        <h1>${escapeHtml(data.title)}</h1>
+        ${data.summary ? `<p class="algo-detail-summary">${escInlineMd(data.summary)}</p>` : ""}
+      </div>
+      <div class="detail-layout">
+        <article id="detail-main">
+          <section class="detail-section" id="sec-idea">
+            <h2>💡 思路 & 直觉</h2>
+            <div class="md">${renderDoc(data.idea)}</div>
+          </section>
+
+          <section class="detail-section" id="sec-cx">
+            <h2>🧮 复杂度 & 性质</h2>
+            <div class="algo-cx-grid">
+              <div class="cx-card"><div class="cx-label">最好</div><div class="cx-big">${escapeHtml(cx.best || "—")}</div></div>
+              <div class="cx-card"><div class="cx-label">平均</div><div class="cx-big">${escapeHtml(cx.avg || "—")}</div></div>
+              <div class="cx-card"><div class="cx-label">最坏</div><div class="cx-big">${escapeHtml(cx.worst || "—")}</div></div>
+              <div class="cx-card"><div class="cx-label">空间</div><div class="cx-big">${escapeHtml(cx.space || "—")}</div></div>
+              <div class="cx-card"><div class="cx-label">稳定</div><div class="cx-big">${flag(cx.stable)}</div></div>
+              <div class="cx-card"><div class="cx-label">原地</div><div class="cx-big">${flag(cx.in_place)}</div></div>
+            </div>
+            ${cx.note ? `<p class="cx-note">${escInlineMd(cx.note)}</p>` : ""}
+          </section>
+
+          ${variants.length ? `
+          <section class="detail-section" id="sec-variants">
+            <h2>多种写法对比 <span class="badge">${variants.length} 种</span></h2>
+            <p class="sol-tip">每种写法都是可独立运行的完整实现,均已通过自测;点「复制」拿走即用。</p>
+            <div class="sol-tabs" id="algo-tabs">
+              ${variants.map((v, i) => `
+                <button class="sol-tab ${i === starIdx ? "active" : ""}" data-i="${i}">
+                  ${v.starred ? '<span class="star">★</span>' : ""}<span>${escapeHtml(v.title)}</span>
+                </button>`).join("")}
+            </div>
+            <div id="algo-panels">
+              ${variants.map((v, i) => `
+                <div class="sol-content ${i === starIdx ? "active" : ""}" data-i="${i}">
+                  <div class="sol-meta">
+                    ${v.time  ? `<span class="chip"><strong>时间</strong>${escapeHtml(v.time)}</span>` : ""}
+                    ${v.space ? `<span class="chip"><strong>空间</strong>${escapeHtml(v.space)}</span>` : ""}
+                    ${v.starred ? `<span class="chip" style="background:var(--accent-soft);color:var(--accent)"><strong>★</strong>推荐</span>` : ""}
+                  </div>
+                  ${v.note ? `<p class="algo-variant-note">${escInlineMd(v.note)}</p>` : ""}
+                  ${codeBlock(v.code, "python")}
+                </div>`).join("")}
+            </div>
+          </section>` : ""}
+
+          ${data.compare_table ? `
+          <section class="detail-section" id="sec-compare">
+            <h2>📊 对比表</h2>
+            <div class="md">${renderMarkdown(data.compare_table)}</div>
+          </section>` : ""}
+
+          ${(data.gotchas && data.gotchas.length) ? `
+          <section class="detail-section" id="sec-gotchas">
+            <h2>⚠️ 易错点 / 注意</h2>
+            <div class="gotchas">
+              <ul>${data.gotchas.map(g => `<li>${escInlineMd(g)}</li>`).join("")}</ul>
+            </div>
+          </section>` : ""}
+
+          ${apps ? `
+          <section class="detail-section" id="sec-apps">
+            <h2>🔗 关联题目</h2>
+            <div class="algo-apps">${apps}</div>
+          </section>` : ""}
+
+          ${related ? `
+          <section class="detail-section" id="sec-related">
+            <h2>🧩 相关算法</h2>
+            <div class="algo-rels">${related}</div>
+          </section>` : ""}
+        </article>
+        <aside class="toc">
+          <div class="toc-title">本页目录</div>
+          <ol>
+            <li><a class="toc-link" data-target="sec-idea">💡 思路 & 直觉</a></li>
+            <li><a class="toc-link" data-target="sec-cx">🧮 复杂度 & 性质</a></li>
+            ${variants.length ? `<li><a class="toc-link" data-target="sec-variants">多种写法对比</a></li>` : ""}
+            ${data.compare_table ? `<li><a class="toc-link" data-target="sec-compare">📊 对比表</a></li>` : ""}
+            ${(data.gotchas && data.gotchas.length) ? `<li><a class="toc-link" data-target="sec-gotchas">⚠️ 易错点</a></li>` : ""}
+            ${apps ? `<li><a class="toc-link" data-target="sec-apps">🔗 关联题目</a></li>` : ""}
+            ${related ? `<li><a class="toc-link" data-target="sec-related">🧩 相关算法</a></li>` : ""}
+          </ol>
+        </aside>
+      </div>
+      <nav class="prob-nav">
+        ${prev
+          ? `<a class="prev" href="#/algo/${prev.id}"><span class="nav-dir">← 上一个</span><span class="nav-title">${escapeHtml(prev.title)}</span></a>`
+          : `<span class="prev nav-empty"></span>`}
+        ${next
+          ? `<a class="next" href="#/algo/${next.id}"><span class="nav-dir">下一个 →</span><span class="nav-title">${escapeHtml(next.title)}</span></a>`
+          : `<span class="next nav-empty"></span>`}
+      </nav>
+    </div>`;
+
+  // 目录:JS 平滑滚动(避免改 location.hash 触发 hash 路由)
+  document.querySelectorAll(".toc-link").forEach(a => {
+    a.addEventListener("click", () => {
+      const t = document.getElementById(a.dataset.target);
+      if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+
+  // 写法 tab 切换
+  const tabs = document.querySelectorAll("#algo-tabs .sol-tab");
+  const panels = document.querySelectorAll("#algo-panels .sol-content");
+  tabs.forEach(t => t.addEventListener("click", () => {
+    tabs.forEach(x => x.classList.remove("active"));
+    panels.forEach(x => x.classList.remove("active"));
+    t.classList.add("active");
+    document.querySelector(`#algo-panels .sol-content[data-i="${t.dataset.i}"]`).classList.add("active");
+    highlightAll();
+  }));
+
+  // 复制
+  document.querySelectorAll(".copy-btn").forEach(b => {
+    b.addEventListener("click", () => {
+      const code = b.closest(".code-block").querySelector("pre.code").innerText;
+      navigator.clipboard.writeText(code);
+      b.querySelector("span").textContent = "已复制";
+      setTimeout(() => b.querySelector("span").textContent = "复制", 1200);
+    });
+  });
+
+  highlightAll();
 }

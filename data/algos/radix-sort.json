@@ -1,0 +1,86 @@
+{
+  "id": "radix-sort",
+  "title": "基数排序 Radix Sort",
+  "category": "排序",
+  "family": "sorting",
+  "tags": [
+    "非比较",
+    "稳定",
+    "线性时间"
+  ],
+  "summary": "把数看成若干**位**,从低位到高位用**稳定计数排序**逐位归位;非比较、整数键,可达线性 `O(d·(n+k))`。",
+  "idea": "🔹 一句话\n基数排序是『非比较』排序:不直接比较两个数谁大,而是把每个数看成若干位(digit),从最低位到最高位、一位一位地用『稳定排序』把它们归位。所有位排完,整体也就有序了。\n\n🔹 分配-收集 与 为什么 O(d·(n+k))\n处理某一位时,按这一位的取值(0~k-1,k 称为基数 radix)把元素分到 k 个桶里再依次收集——这恰好是一趟『计数排序』,代价 `O(n+k)`。设最大数有 d 位,就要做 d 趟,总复杂度 `O(d·(n+k))`。当键长 d 视为常数、且 k=O(n) 时,基数排序是真正的线性 `O(n)`,这正是它能绕过 O(n log n) 比较排序下界的原因:它根本没在『比较』。\n\n🔹 为什么子过程必须稳定(LSD 的灵魂)\nLSD(Least Significant Digit,从低位到高位)的正确性完全建立在『子排序稳定』之上:排高位时,凡高位相同的元素必须保持它们在低位已排好的相对顺序;否则低位的功夫就白费了。计数排序天然稳定(前缀和定位 + 逆序回填),所以是基数排序的标配搭档。这也是『基数排序整体稳定』的来源。\n\n🔹 LSD vs MSD\n- LSD 从低位排到高位,无需递归、实现简单,定长整数最常用。\n- MSD(从高位到低位)更像桶排序/快排:先按高位分组,再对每组递归,适合变长字符串(字典序)与提前剪枝,但实现更繁、要处理分组与递归边界。\n\n🔹 基数(radix)怎么选:d 与 k 的权衡\n基数 k 越大,每个数的位数 d 越少(趟数变少),但每趟的桶数 k 变大、计数数组更占空间。十进制 k=10 最直观;工程里常取 k=2^8=256 按『字节』处理,32 位整数只需 4 趟,取位用位运算 `(x>>shift)&0xFF`,通常最快。\n\n🔹 负数怎么办\n朴素按位取模只对非负整数成立(`-13 % 10` 在 Python 得 7,跨正负比较语义就乱了)。两种修法:\n1. 偏移法:整体减去最小值平移到非负,排完再加回,实现最省心。\n2. 正负分离:负数取绝对值单独排,反转后取负放最前;非负部分照常排,再拼接。\n\n🔹 过程追踪(LSD 十进制,稳定计数子过程)\n```\n输入  [170, 45, 75, 90, 802, 24,  2, 66]\n按个位 [170, 90, 802,  2, 24, 45, 75, 66]\n按十位 [802,  2, 24, 45, 66, 170, 75, 90]\n按百位 [  2, 24, 45, 66, 75, 90, 170, 802]   ← 有序\n每一趟 = 一遍稳定计数排序:统计该位 0..9 的个数 → 前缀和 → 逆序回填。\n```",
+  "complexity": {
+    "best": "O(d·(n+k))",
+    "avg": "O(d·(n+k))",
+    "worst": "O(d·(n+k))",
+    "space": "O(n+k)",
+    "stable": true,
+    "in_place": false,
+    "note": "d 为最大键在基数 k 下的位数(`d=⌈log_k(max)⌉`),k 为基数(十进制 k=10,按字节 k=256)。`best=avg=worst` 全是 `O(d·(n+k))`:无论是否有序都要逐位扫,没有提前结束。当 d 视为常数且 k=O(n) 时退化为线性 `O(n)`。空间 `O(n+k)`:输出数组 O(n) + 计数/桶数组 O(k);偏移/分离法只额外多 O(n) 临时数组。整体**稳定**(靠稳定的计数子过程),**非原地**。"
+  },
+  "entry": "sort",
+  "test_code": "import random\nrandom.seed(20240614)\nassert sort([]) == []\nassert sort([0]) == [0]\nassert sort([5, 5, 5, 5]) == [5, 5, 5, 5]\nassert sort([3, -1, 0, -1, 9, 2, 2]) == sorted([3, -1, 0, -1, 9, 2, 2])\nassert sort([-5, -3, -8, -1]) == [-8, -5, -3, -1]\nassert sort([-1000000, 1000000, 0]) == [-1000000, 0, 1000000]\nfor _ in range(400):\n    n = random.randint(0, 60)\n    arr = [random.randint(-500, 500) for _ in range(n)]\n    assert sort(list(arr)) == sorted(arr), arr",
+  "variants": [
+    {
+      "title": "LSD 十进制按位(非负整数)",
+      "time": "O(d·(n+10))",
+      "space": "O(n+10)",
+      "starred": false,
+      "note": "教学基础写法:以**稳定计数排序**为子过程,个位→十位→…逐位排。**仅支持非负整数**,故用写法级测试覆盖。",
+      "code": "def sort(a):\n    \"\"\"LSD 基数排序(十进制,仅支持非负整数)。\n    以计数排序为稳定子过程,从最低位到最高位逐位排序。\"\"\"\n    a = list(a)\n    if not a:\n        return a\n    mx = max(a)\n    exp = 1                              # 当前处理位:个位=1,十位=10,...\n    while mx // exp > 0:                 # 还有更高位就继续\n        cnt = [0] * 10\n        for x in a:\n            cnt[(x // exp) % 10] += 1    # 统计该位每个数字出现次数\n        for i in range(1, 10):\n            cnt[i] += cnt[i - 1]         # 前缀和 → 每个桶的右边界(exclusive)\n        out = [0] * len(a)\n        for x in reversed(a):            # 逆序回填,保证稳定\n            d = (x // exp) % 10\n            cnt[d] -= 1\n            out[cnt[d]] = x\n        a = out\n        exp *= 10\n    return a",
+      "test_code": "import random\nrandom.seed(20240607)\nassert sort([]) == []\nassert sort([0]) == [0]\nassert sort([0, 0, 0]) == [0, 0, 0]\nassert sort([5, 3, 3, 9, 1, 0, 12, 7]) == sorted([5, 3, 3, 9, 1, 0, 12, 7])\nfor _ in range(400):\n    n = random.randint(0, 60)\n    arr = [random.randint(0, 9999) for _ in range(n)]\n    assert sort(list(arr)) == sorted(arr), arr"
+    },
+    {
+      "title": "处理负数 · 偏移法(整体平移为非负)",
+      "time": "O(d·(n+10)),d 看 max-min",
+      "space": "O(n)",
+      "starred": true,
+      "note": "减最小值平移到非负、排完加回,几行就支持负数;干净通用,面试/工程首选。",
+      "code": "def sort(a):\n    \"\"\"处理负数 · 偏移法:整体减去最小值平移到非负,做非负 LSD 基数排序,最后加回。\"\"\"\n    a = list(a)\n    if not a:\n        return a\n    lo = min(a)\n    b = [x - lo for x in a]              # 平移到 [0, max-lo]\n    mx = max(b)\n    exp = 1\n    while mx // exp > 0:\n        cnt = [0] * 10\n        for x in b:\n            cnt[(x // exp) % 10] += 1\n        for i in range(1, 10):\n            cnt[i] += cnt[i - 1]\n        out = [0] * len(b)\n        for x in reversed(b):\n            d = (x // exp) % 10\n            cnt[d] -= 1\n            out[cnt[d]] = x\n        b = out\n        exp *= 10\n    return [x + lo for x in b]           # 还原偏移"
+    },
+    {
+      "title": "处理负数 · 正负分离",
+      "time": "O(d·(n+10))",
+      "space": "O(n)",
+      "starred": false,
+      "note": "负数取绝对值单独排,反转取负放最前;思路直观,但拼接与反转细节易错。",
+      "code": "def sort(a):\n    \"\"\"处理负数 · 正负分离:负数取绝对值排序后反转再取负,与非负部分拼接。\"\"\"\n    a = list(a)\n    if not a:\n        return a\n\n    def lsd_nonneg(arr):                 # 非负整数的 LSD 基数排序\n        if not arr:\n            return arr\n        mx = max(arr)\n        exp = 1\n        while mx // exp > 0:\n            cnt = [0] * 10\n            for x in arr:\n                cnt[(x // exp) % 10] += 1\n            for i in range(1, 10):\n                cnt[i] += cnt[i - 1]\n            out = [0] * len(arr)\n            for x in reversed(arr):\n                d = (x // exp) % 10\n                cnt[d] -= 1\n                out[cnt[d]] = x\n            arr = out\n            exp *= 10\n        return arr\n\n    neg = [-x for x in a if x < 0]       # 负数 → 绝对值\n    pos = [x for x in a if x >= 0]\n    neg = lsd_nonneg(neg)               # 绝对值升序\n    neg = [-x for x in reversed(neg)]   # 反转再取负 → 真实升序(最负在前)\n    pos = lsd_nonneg(pos)\n    return neg + pos"
+    },
+    {
+      "title": "大基数 base 256(按字节)+ 偏移",
+      "time": "O(d·(n+256)),32 位整数 d=4",
+      "space": "O(n+256)",
+      "starred": false,
+      "note": "基数取 2^8 按字节处理,趟数 d 大幅减少、位运算取位,工程里通常最快;代价是计数数组变大。",
+      "code": "def sort(a):\n    \"\"\"大基数 · base 256(按字节)+ 偏移处理负数。\n    基数取 2^8,用位运算逐字节取位;基数越大趟数 d 越少,代价是计数数组 k 变大。\"\"\"\n    a = list(a)\n    if not a:\n        return a\n    lo = min(a)\n    b = [x - lo for x in a]             # 偏移到非负\n    mx = max(b)\n    shift = 0\n    while (mx >> shift) > 0:            # 还有更高字节就继续\n        cnt = [0] * 256\n        for x in b:\n            cnt[(x >> shift) & 0xFF] += 1\n        for i in range(1, 256):\n            cnt[i] += cnt[i - 1]\n        out = [0] * len(b)\n        for x in reversed(b):\n            d = (x >> shift) & 0xFF\n            cnt[d] -= 1\n            out[cnt[d]] = x\n        b = out\n        shift += 8\n    return [x + lo for x in b]"
+    }
+  ],
+  "compare_table": "| 写法 | 基数 k / 趟数 d | 负数 | 额外空间 | 取舍 |\n| --- | --- | --- | --- | --- |\n| LSD 十进制(非负) | 10 / ⌈log10 max⌉ | 不支持 | O(n+10) | 教学基础 |\n| 偏移法 | 10 / 看 max-min | 支持 | O(n) | 通用首选 |\n| 正负分离 | 10 / ⌈log10 max⌉ | 支持 | O(n) | 思路直观 |\n| base 256 | 256 / ⌈bits/8⌉ | 支持(偏移) | O(n+256) | 趟数少、最快 |",
+  "gotchas": [
+    "基数排序是**非比较**排序,只对整数或定长键(及可映射成定长键的对象)适用;不能像快排那样对任意可比较对象排序。",
+    "**子过程必须稳定!** LSD 从低位到高位,靠的是『排高位时低位的相对顺序不被打乱』。计数排序的逆序回填 `for x in reversed(a)` 正是稳定性的关键,改成正序回填会破坏稳定、导致结果错误。",
+    "计数排序定位要么『前缀和=右边界 + 逆序回填』,要么『前缀和=左边界 + 正序回填』,**两者不能混用**,否则破坏稳定性。",
+    "**直接对含负数的数组按位取模会出错**(`-13 % 10` 在 Python 得 7,跨正负的位语义不对);必须先偏移或正负分离。",
+    "d(位数)不是常数时别盲目宣称线性:复杂度是 `O(d·(n+k))`,键值范围极大(d 很大)时可能反而不如 `O(n log n)` 的比较排序。",
+    "终止条件用 `mx // exp > 0`(或 `mx >> shift > 0`);全 0 数组 `mx=0` 时一趟都不跑,直接返回,别写成死循环或漏判空数组。"
+  ],
+  "applications": [
+    {
+      "label": "LC 912 · 排序数组",
+      "url": "https://leetcode.cn/problems/sort-an-array/"
+    },
+    {
+      "label": "LC 164 · 最大间距",
+      "url": "https://leetcode.cn/problems/maximum-gap/"
+    },
+    {
+      "label": "LC 1122 · 数组的相对排序",
+      "url": "https://leetcode.cn/problems/relative-sort-array/"
+    }
+  ],
+  "related": [
+    "counting-sort",
+    "bucket-sort"
+  ]
+}

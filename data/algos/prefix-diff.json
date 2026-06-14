@@ -1,0 +1,84 @@
+{
+  "id": "prefix-diff",
+  "title": "前缀和 & 差分",
+  "category": "前缀和差分",
+  "family": "paradigm",
+  "tags": [
+    "前缀和",
+    "差分",
+    "区间查询",
+    "容斥"
+  ],
+  "summary": "**前缀和**把区间求和摊销成 `O(1)` 查询;**差分**是它的逆运算,把区间加值摊销成 `O(1)` 更新;二维版用**容斥**(右下-上-左+左上)。",
+  "idea": "🔹 一句话\n前缀和把『区间求和』摊销成 O(1):先花 O(n) 预处理出累加数组,之后任意区间和都是一次减法。差分是它的**逆运算**——把『区间整体加值』摊销成 O(1)。二维版本再叠一层容斥。\n\n🔹 一维前缀和:O(1) 区间查询\n定义 `pre[0]=0`、`pre[i]=a[0]+…+a[i-1]`(前 i 项之和)。则闭区间 `[l, r]` 的和 = `pre[r+1] - pre[l]`。\n复杂度从哪来:`pre` 是一遍线性递推 `pre[i+1]=pre[i]+a[i]`,预处理 O(n);之后每次查询只做一次减法 O(1)。『多查询、不改值』的场景最划算:m 次查询从暴力 O(nm) 降到 O(n+m)。\n多开一位(长度 n+1、`pre[0]=0`)是为了让 `l=0` 时 `pre[l]=0` 不必特判。\n\n🔹 差分:前缀和的逆运算\n要把区间 `[l, r]` 的每个数都加 `val`,暴力是 O(r-l)。差分换个角度只记『相邻差』:`diff[l]+=val`、`diff[r+1]-=val`,每次更新只动两个位置 O(1)。所有更新做完后,对 `diff` 求一遍前缀和就还原出最终数组——因为前缀和与差分互为逆运算。适合『多次区间修改、最后统一查询』。\n\n🔹 二维前缀和:容斥(右下 - 上 - 左 + 左上)\n`pre[i][j]` 表示左上角 (0,0) 到 (i-1,j-1) 这块矩形的和。递推时新加一格,上方和左方各被算了一次、它们重叠的左上块被算了两次,于是容斥:\n`pre[i][j] = pre[i-1][j] + pre[i][j-1] - pre[i-1][j-1] + mat[i-1][j-1]`。\n查询子矩阵 `[r1..r2][c1..c2]` 同理,大矩形减去上边、减去左边、再把被减两次的左上角补回:\n`sum = pre[r2+1][c2+1] - pre[r1][c2+1] - pre[r2+1][c1] + pre[r1][c1]`。\n\n```\n二维容斥图示(求阴影 D = 子矩阵 [r1..r2][c1..c2]):\n          c1        c2\n        +-----+----------+\n  r1    |  A  |    B     |\n        +-----+----------+\n        |  C  |    D     |   ← 想要 D\n  r2    +-----+----------+\n全图 A+B+C+D = pre[r2+1][c2+1]\nA+B         = pre[r1][c2+1]    (上方两块)\nA+C         = pre[r2+1][c1]    (左方两块)\nA           = pre[r1][c1]      (左上角被减两次,补回一次)\n=> D = (A+B+C+D) - (A+B) - (A+C) + A\n```\n\n🔹 三种写法怎么选\n| 场景 | 写法 | 预处理 | 单次操作 |\n| --- | --- | --- | --- |\n| 多次区间求和、数组不变 | 一维前缀和 | O(n) | 查询 O(1) |\n| 多次区间加值、最后看结果 | 一维差分 | O(1) | 更新 O(1) |\n| 多次子矩阵求和、矩阵不变 | 二维前缀和 | O(nm) | 查询 O(1) |",
+  "complexity": {
+    "best": "O(n + q)",
+    "avg": "O(n + q)",
+    "worst": "O(n + q)",
+    "space": "O(n)",
+    "stable": null,
+    "in_place": false,
+    "note": "以一维前缀和为例:预处理 `O(n)`、每次区间查询 `O(1)`,q 次查询共 `O(n+q)`,额外数组 `O(n)`。一维差分:每次区间更新 `O(1)`、最后 `O(n)` 还原。二维前缀和:预处理 `O(nm)`、每次子矩阵查询 `O(1)`,空间 `O(nm)`。`stable`/`in_place` 对这类查询/预处理技巧无意义,故记 null/false。"
+  },
+  "entry": "range_sums",
+  "test_code": "import random\nrandom.seed(20240614)\n\ndef _brute(a, queries):\n    return [sum(a[l:r + 1]) for (l, r) in queries]\n\nassert range_sums([], []) == []\nassert range_sums([5], [(0, 0)]) == [5]\nassert range_sums([1, 2, 3, 4], [(0, 3), (1, 2), (2, 2)]) == [10, 5, 3]\nfor _ in range(400):\n    n = random.randint(1, 40)\n    a = [random.randint(-20, 20) for _ in range(n)]\n    queries = []\n    for _ in range(random.randint(0, 10)):\n        l = random.randint(0, n - 1)\n        r = random.randint(l, n - 1)\n        queries.append((l, r))\n    assert range_sums(a, queries) == _brute(a, queries), (a, queries)",
+  "variants": [
+    {
+      "title": "一维前缀和(区间求和)",
+      "time": "预处理 O(n) + 每次查询 O(1)",
+      "space": "O(n)",
+      "starred": true,
+      "note": "最常用:静态数组多次区间求和。多开一位、`pre[0]=0`,查询写 `pre[r+1]-pre[l]` 免特判。",
+      "code": "def range_sums(a, queries):\n    \"\"\"一维前缀和:pre[0]=0,pre[i]=a[0..i-1] 之和;\n    闭区间 [l, r] 的和 = pre[r+1] - pre[l]。预处理 O(n),每次查询 O(1)。\"\"\"\n    n = len(a)\n    pre = [0] * (n + 1)\n    for i in range(n):\n        pre[i + 1] = pre[i] + a[i]\n    res = []\n    for l, r in queries:\n        res.append(pre[r + 1] - pre[l])\n    return res"
+    },
+    {
+      "title": "一维差分(区间加值)",
+      "time": "每次更新 O(1) + 还原 O(n)",
+      "space": "O(n)",
+      "starred": false,
+      "note": "前缀和的逆运算:多次区间整体加值、最后统一查询。`diff[l]+=val`、`diff[r+1]-=val`,末尾求前缀和还原。",
+      "code": "def apply_ranges(n, updates):\n    \"\"\"一维差分:对区间 [l, r] 整体加 val,只需 diff[l]+=val、diff[r+1]-=val(O(1))。\n    所有更新做完后,对 diff 求前缀和即还原出最终数组(差分是前缀和的逆运算)。\n    diff 开成长度 n+1,避免 r=n-1 时 diff[r+1] 越界。\"\"\"\n    diff = [0] * (n + 1)\n    for l, r, val in updates:\n        diff[l] += val\n        diff[r + 1] -= val\n    res = [0] * n\n    cur = 0\n    for i in range(n):\n        cur += diff[i]\n        res[i] = cur\n    return res",
+      "test_code": "import random\nrandom.seed(20240614)\n\ndef _brute(n, updates):\n    res = [0] * n\n    for l, r, val in updates:\n        for i in range(l, r + 1):\n            res[i] += val\n    return res\n\nassert apply_ranges(0, []) == []\nassert apply_ranges(3, []) == [0, 0, 0]\nassert apply_ranges(5, [(1, 3, 2)]) == [0, 2, 2, 2, 0]\nassert apply_ranges(4, [(0, 3, 1), (1, 2, -5)]) == [1, -4, -4, 1]\nfor _ in range(400):\n    n = random.randint(1, 40)\n    updates = []\n    for _ in range(random.randint(0, 12)):\n        l = random.randint(0, n - 1)\n        r = random.randint(l, n - 1)\n        val = random.randint(-10, 10)\n        updates.append((l, r, val))\n    assert apply_ranges(n, updates) == _brute(n, updates), (n, updates)"
+    },
+    {
+      "title": "二维前缀和(子矩阵求和)",
+      "time": "预处理 O(nm) + 每次查询 O(1)",
+      "space": "O(nm)",
+      "starred": false,
+      "note": "容斥递推与容斥查询各一行:别漏 `+ 左上角`,否则左上块被多减一次。",
+      "code": "def submatrix_sums(mat, queries):\n    \"\"\"二维前缀和:pre[i][j] = 左上角 (0,0) 到 (i-1,j-1) 的矩形和。\n    递推(容斥):pre[i][j] = pre[i-1][j] + pre[i][j-1] - pre[i-1][j-1] + mat[i-1][j-1]。\n    子矩阵 [r1..r2][c1..c2] 和(容斥):\n        pre[r2+1][c2+1] - pre[r1][c2+1] - pre[r2+1][c1] + pre[r1][c1]。\"\"\"\n    rows = len(mat)\n    cols = len(mat[0]) if rows else 0\n    pre = [[0] * (cols + 1) for _ in range(rows + 1)]\n    for i in range(rows):\n        for j in range(cols):\n            pre[i + 1][j + 1] = (pre[i][j + 1] + pre[i + 1][j]\n                                 - pre[i][j] + mat[i][j])\n    res = []\n    for r1, c1, r2, c2 in queries:\n        s = (pre[r2 + 1][c2 + 1] - pre[r1][c2 + 1]\n             - pre[r2 + 1][c1] + pre[r1][c1])\n        res.append(s)\n    return res",
+      "test_code": "import random\nrandom.seed(20240614)\n\ndef _brute(mat, queries):\n    out = []\n    for r1, c1, r2, c2 in queries:\n        s = 0\n        for i in range(r1, r2 + 1):\n            for j in range(c1, c2 + 1):\n                s += mat[i][j]\n        out.append(s)\n    return out\n\nassert submatrix_sums([[5]], [(0, 0, 0, 0)]) == [5]\nassert submatrix_sums([[1, 2], [3, 4]], [(0, 0, 1, 1), (0, 1, 1, 1)]) == [10, 6]\nfor _ in range(300):\n    rows = random.randint(1, 12)\n    cols = random.randint(1, 12)\n    mat = [[random.randint(-10, 10) for _ in range(cols)] for _ in range(rows)]\n    queries = []\n    for _ in range(random.randint(0, 8)):\n        r1 = random.randint(0, rows - 1)\n        r2 = random.randint(r1, rows - 1)\n        c1 = random.randint(0, cols - 1)\n        c2 = random.randint(c1, cols - 1)\n        queries.append((r1, c1, r2, c2))\n    assert submatrix_sums(mat, queries) == _brute(mat, queries), (mat, queries)"
+    }
+  ],
+  "compare_table": "| 写法 | 解决的问题 | 预处理 | 单次操作 | 还原/查询 |\n| --- | --- | --- | --- | --- |\n| 一维前缀和 | 静态数组、区间求和 | O(n) | 查询 O(1) | — |\n| 一维差分 | 多次区间加值 | O(1) | 更新 O(1) | 末尾 O(n) 还原 |\n| 二维前缀和 | 静态矩阵、子矩阵求和 | O(nm) | 查询 O(1) | — |",
+  "gotchas": [
+    "前缀和数组多开一位、`pre[0]=0`,查询写成 `pre[r+1]-pre[l]`;若不留哨兵,`l=0` 时要特判。",
+    "**闭区间还是开区间要一以贯之**:本文用闭区间 `[l, r]`,前缀和对应 `pre[r+1]-pre[l]`,差分对应 `diff[r+1]-=val`。",
+    "差分数组要开成长度 `n+1`:当 `r=n-1` 时 `diff[r+1]` 即 `diff[n]`,否则越界。",
+    "二维容斥别漏 `+ 左上角`:`pre[r2+1][c2+1] - pre[r1][c2+1] - pre[r2+1][c1] + pre[r1][c1]`,少加一项会把左上块多减一次。",
+    "前缀和只适合『静态多查询』。若区间求和与**单点修改交替进行**,每次改值都要 O(n) 重建前缀和,应改用树状数组 / 线段树。",
+    "求区间和取模时减法可能为负:Python `%` 天然非负,但 C++/Java 需 `(pre[r+1]-pre[l]+MOD)%MOD`。"
+  ],
+  "applications": [
+    {
+      "label": "LC 303 · 区域和检索 - 数组不可变",
+      "url": "https://leetcode.cn/problems/range-sum-query-immutable/"
+    },
+    {
+      "label": "LC 304 · 二维区域和检索 - 矩阵不可变",
+      "url": "https://leetcode.cn/problems/range-sum-query-2d-immutable/"
+    },
+    {
+      "label": "LC 1109 · 航班预订统计(差分)",
+      "url": "https://leetcode.cn/problems/corporate-flight-bookings/"
+    },
+    {
+      "label": "LC 560 · 和为 K 的子数组(前缀和 + 哈希)",
+      "url": "https://leetcode.cn/problems/subarray-sum-equals-k/"
+    }
+  ],
+  "related": [
+    "two-pointer-window",
+    "monotonic"
+  ]
+}

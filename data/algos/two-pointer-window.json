@@ -1,0 +1,83 @@
+{
+  "id": "two-pointer-window",
+  "title": "双指针 & 滑动窗口 Two Pointers & Sliding Window",
+  "category": "双指针滑窗",
+  "family": "paradigm",
+  "tags": [
+    "双指针",
+    "滑动窗口",
+    "单调性"
+  ],
+  "summary": "用两个**只进不退**的下标把 O(n²) 枚举压成 O(n):有序数组用**对撞双指针**,连续子串/子数组用**滑动窗口**右扩左缩。",
+  "idea": "🔹 两类问题,一个共同点\n「双指针」与「滑动窗口」本质都是用两个下标在序列上移动,把朴素 O(n²) 的两层枚举压成 O(n) 一趟扫描。关键在于:每个指针**只朝一个方向走、不回头**,所以总移动步数被钉死在 O(n)。能这么做的前提是问题具备某种**单调性**——移动指针带来的变化方向是可预测的。\n\n🔹 对撞双指针:i、j 从两端相向逼近\n适用于**有序数组**里找一对元素(如两数之和)。i 在左、j 在右,看当前和 `s = a[i] + a[j]`:\n- `s == t`:命中,返回。\n- `s < t`:和偏小,只能让左指针右移(`a[i]` 变大)——右移 j 只会让和更小,毫无意义。\n- `s > t`:和偏大,右指针左移(`a[j]` 变小)。\n正因为数组**有序**,「太小只能从左边补、太大只能从右边减」这条单调性成立,每一步都能安全排除一整行/一整列候选,O(n) 扫完。**数组无序时这个推理就崩了**,必须先排序或改用哈希表。\n\n🔹 滑动窗口:右扩、左缩,守住一个『合法窗口』\n适用于**连续子数组 / 子串**的最优问题。用 `[left, right]` 表示当前窗口:right 不断右移把新元素纳入;一旦窗口**违反约束**(出现重复字符 / 和过大),就右移 left 收缩,直到窗口重新合法。\n- 不变量:每处理完一个 right,窗口 `[left, right]` 始终满足约束。\n- 为什么 O(n):left 与 right 各自最多从头走到尾,合计 ≤ 2n 步,**均摊** O(n)。收缩要用 `while` 而非 `if`——一次可能要缩掉好几个元素。\n\n🔹 求『最长』 vs 求『最短』:更新答案的时机正好相反\n| 目标 | 窗口何时算合法 | 收缩条件 | 何时更新答案 |\n| --- | --- | --- | --- |\n| 最长无重复子串 | 窗口内无重复 | 出现重复就缩 | 窗口**合法时**取 max |\n| 最短和 ≥ target | 窗口和 ≥ target | 已满足就尽量缩 | 收缩**过程中**取 min |\n求最长是「能扩就扩、违规才缩、合法时记录」;求最短是「先扩到满足、再拼命缩、每次满足都记录」。模板很像但更新点相反,套错会全盘皆错。\n\n🔹 定长还是变长?\n- **定长窗口**:大小固定为 k(如『长度 k 子数组最大和』),right 进一个、left 必出一个,代码最简。\n- **变长窗口**:大小随约束伸缩(上面两个滑窗例子都是),需要一个 while 收缩循环。\n- 变长滑窗对『和』类问题**要求元素非负**:只有这样『扩窗和单增、缩窗和单减』才成立;一旦有负数,收缩不再安全,得改用前缀和等手段。\n\n🔹 过程图示(最短子数组,target=7,a=[2,3,1,2,4,3])\n```\nright=0  [2]            sum=2   <7\nright=1  [2,3]          sum=5   <7\nright=2  [2,3,1]        sum=6   <7\nright=3  [2,3,1,2]      sum=8  ≥7 → 记 len=4,缩 → [3,1,2]  sum=6\nright=4  [3,1,2,4]      sum=10 ≥7 → 记 len=4,缩 → [1,2,4]  sum=7\n                                  ≥7 → 记 len=3,缩 → [2,4]    sum=6\nright=5  [2,4,3]        sum=9  ≥7 → 记 len=3,缩 → [4,3]    sum=7\n                                  ≥7 → 记 len=2 ✔,缩 → [3]   sum=3\n答案 = 2  (子数组 [4,3])\n```",
+  "complexity": {
+    "best": "O(n)",
+    "avg": "O(n)",
+    "worst": "O(n)",
+    "space": "O(1) ~ O(k)",
+    "stable": null,
+    "in_place": null,
+    "note": "三种写法的指针/窗口边界都只单向前进,各自最多走 n 步,故都是 O(n) 一趟扫描。对撞双指针与最短子数组只用常数额外空间 `O(1)`;最长无重复子串需一个集合记录窗口内字符,额外空间 `O(k)`(k 为字符集大小或窗口最大长度)。双指针/滑窗不是排序,稳定性与原地性不适用,记为 null。"
+  },
+  "entry": "length_of_longest_substring",
+  "test_code": "import random\nrandom.seed(333333)\n\ndef _brute(s):\n    best = 0\n    n = len(s)\n    for i in range(n):\n        seen = set()\n        for j in range(i, n):\n            if s[j] in seen:\n                break\n            seen.add(s[j])\n            if j - i + 1 > best:\n                best = j - i + 1\n    return best\n\nassert length_of_longest_substring(\"abcabcbb\") == 3\nassert length_of_longest_substring(\"bbbbb\") == 1\nassert length_of_longest_substring(\"pwwkew\") == 3\nassert length_of_longest_substring(\"\") == 0\nassert length_of_longest_substring(\" \") == 1\nassert length_of_longest_substring(\"dvdf\") == 3\nassert length_of_longest_substring(\"abba\") == 2\n\nfor _ in range(1000):\n    n = random.randint(0, 30)\n    s = \"\".join(random.choice(\"abcd\") for _ in range(n))\n    assert length_of_longest_substring(s) == _brute(s), s",
+  "variants": [
+    {
+      "title": "对撞双指针 · 有序数组两数之和",
+      "time": "O(n)",
+      "space": "O(1)",
+      "starred": false,
+      "note": "对撞双指针的代表:**有序**是前提,靠单调性 O(n) 一趟定位;此处返回 **0-based** 下标,无解返回 `(-1, -1)`。",
+      "code": "def two_sum_sorted(a, t):\n    \"\"\"有序(非降序)数组对撞双指针求两数之和。\n    i 从左、j 从右相向逼近;返回满足 a[i]+a[j]==t 的一对下标 (i, j)\n    (0-based,i<j);无解返回 (-1, -1)。注:LC 167 要求返回 1-based,\n    把结果各 +1 即可。\"\"\"\n    i, j = 0, len(a) - 1\n    while i < j:\n        s = a[i] + a[j]\n        if s == t:\n            return (i, j)\n        if s < t:        # 和偏小:只能让左端变大\n            i += 1\n        else:            # 和偏大:只能让右端变小\n            j -= 1\n    return (-1, -1)",
+      "test_code": "import random\nrandom.seed(167167)\n\ndef _exists(a, t):\n    n = len(a)\n    for i in range(n):\n        for j in range(i + 1, n):\n            if a[i] + a[j] == t:\n                return True\n    return False\n\nassert two_sum_sorted([2, 7, 11, 15], 9) == (0, 1)\nassert two_sum_sorted([2, 3, 4], 6) == (0, 2)\nassert two_sum_sorted([-3, -1, 0, 4], 3) == (1, 3)\nassert two_sum_sorted([], 0) == (-1, -1)\nassert two_sum_sorted([5], 5) == (-1, -1)\nassert two_sum_sorted([1, 2, 3], 100) == (-1, -1)\n\nfor _ in range(600):\n    n = random.randint(0, 40)\n    a = sorted(random.randint(-20, 20) for _ in range(n))\n    t = random.randint(-45, 45)\n    r = two_sum_sorted(a, t)\n    if r == (-1, -1):\n        assert not _exists(a, t), (a, t)\n    else:\n        i, j = r\n        assert 0 <= i < j < n and a[i] + a[j] == t, (a, t, r)"
+    },
+    {
+      "title": "变长滑动窗口 · 最长无重复子串",
+      "time": "O(n)",
+      "space": "O(k)",
+      "starred": true,
+      "note": "面试最高频的滑窗模板:右扩左缩、用 `while` 收缩去重,均摊 O(n)。求**最长**——窗口**合法时**才更新答案。",
+      "code": "def length_of_longest_substring(s):\n    \"\"\"滑动窗口求最长无重复字符子串的长度。\n    right 右扩纳入新字符;一旦窗口内出现重复,就用 while 右移 left 收缩,\n    直到窗口 [left, right] 重新无重复。每个字符最多进出窗口各一次,O(n)。\"\"\"\n    seen = set()\n    left = 0\n    best = 0\n    for right, ch in enumerate(s):\n        while ch in seen:          # 收缩到窗口内不含 ch\n            seen.discard(s[left])\n            left += 1\n        seen.add(ch)\n        if right - left + 1 > best:\n            best = right - left + 1\n    return best"
+    },
+    {
+      "title": "变长滑动窗口 · 最短子数组",
+      "time": "O(n)",
+      "space": "O(1)",
+      "starred": false,
+      "note": "求**最短**的变长滑窗:窗口和满足条件后**尽量收缩并取 min**;**依赖元素非负**才能保证窗口和单调。无解返回 `0`。",
+      "code": "def min_subarray_len(target, a):\n    \"\"\"变长滑动窗口求『和 >= target 的最短连续子数组长度』(a 为非负数)。\n    right 累加扩张;一旦窗口和 >= target,就用 while 收缩 left 找更短解。\n    依赖元素非负:扩窗和单增、缩窗和单减,收缩才安全。无解返回 0。\"\"\"\n    left = 0\n    total = 0\n    best = float(\"inf\")\n    for right, x in enumerate(a):\n        total += x\n        while total >= target:\n            if right - left + 1 < best:\n                best = right - left + 1\n            total -= a[left]\n            left += 1\n    return best if best != float(\"inf\") else 0",
+      "test_code": "import random\nrandom.seed(209209)\n\ndef _brute(target, a):\n    n = len(a)\n    best = n + 1\n    for i in range(n):\n        s = 0\n        for j in range(i, n):\n            s += a[j]\n            if s >= target:\n                if j - i + 1 < best:\n                    best = j - i + 1\n                break\n    return best if best <= n else 0\n\nassert min_subarray_len(7, [2, 3, 1, 2, 4, 3]) == 2\nassert min_subarray_len(4, [1, 4, 4]) == 1\nassert min_subarray_len(11, [1, 1, 1, 1, 1, 1, 1, 1]) == 0\nassert min_subarray_len(3, []) == 0\nassert min_subarray_len(15, [1, 2, 3, 4, 5]) == 5\nassert min_subarray_len(6, [10]) == 1\n\nfor _ in range(1000):\n    n = random.randint(0, 30)\n    a = [random.randint(0, 10) for _ in range(n)]\n    target = random.randint(1, 70)\n    assert min_subarray_len(target, a) == _brute(target, a), (target, a)"
+    }
+  ],
+  "compare_table": "| 写法 | 指针形态 | 前提条件 | 额外空间 | 更新答案时机 |\n| --- | --- | --- | --- | --- |\n| 对撞双指针(两数之和) | 两端相向逼近 | 数组有序 | O(1) | 命中即返回 |\n| 滑窗求最长(无重复子串) | 同向,右扩左缩 | 约束可增量判断 | O(k) | 窗口合法时取 max |\n| 滑窗求最短(和 ≥ target) | 同向,右扩左缩 | 元素非负 | O(1) | 窗口满足时取 min |",
+  "gotchas": [
+    "对撞双指针**前提是数组有序**;无序时单调性不成立,要么先排序、要么改用哈希表(无序两数之和的标准解)。",
+    "滑动窗口的左指针**只前进不回退**,且收缩用 `while` 不是 `if`——去重时可能要一次缩掉多个元素。",
+    "**变长最短子数组依赖元素全为非负**:含负数时窗口和不再单调,收缩不安全,应改用前缀和 + 单调队列/二分等手段。",
+    "更新答案的时机别套反:求**最长**在『窗口合法时』取 max,求**最短**在『窗口满足后收缩时』取 min。",
+    "边界返回值要对:`min_subarray_len` 无解返回 `0`(不是 `inf`),`length_of_longest_substring` 空串返回 `0`,`two_sum_sorted` 无解返回 `(-1, -1)`。"
+  ],
+  "applications": [
+    {
+      "label": "LC 167 · 两数之和 II - 输入有序数组",
+      "url": "https://leetcode.cn/problems/two-sum-ii-input-array-is-sorted/"
+    },
+    {
+      "label": "LC 3 · 无重复字符的最长子串",
+      "url": "https://leetcode.cn/problems/longest-substring-without-repeating-characters/"
+    },
+    {
+      "label": "LC 209 · 长度最小的子数组",
+      "url": "https://leetcode.cn/problems/minimum-size-subarray-sum/"
+    },
+    {
+      "label": "LC 76 · 最小覆盖子串",
+      "url": "https://leetcode.cn/problems/minimum-window-substring/"
+    }
+  ],
+  "related": [
+    "prefix-diff",
+    "monotonic",
+    "binary-search"
+  ]
+}

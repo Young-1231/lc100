@@ -1,0 +1,80 @@
+{
+  "id": "shuffle-reservoir",
+  "title": "洗牌 & 蓄水池抽样",
+  "category": "随机化",
+  "family": "math",
+  "tags": [
+    "随机化",
+    "洗牌",
+    "蓄水池抽样",
+    "数据流"
+  ],
+  "summary": "**Fisher-Yates** 从后往前逐位与前面随机一个交换,等概率得到任意排列;**蓄水池抽样**在长度未知的数据流上一遍扫描、只用 `O(k)` 空间等概率取样(k=1 时第 `i` 个以 `1/i` 替换)。",
+  "idea": "🔹 一句话\n两个问题、同一种『流式随机』思想:**洗牌**是把数组等概率地重排成它的任意一个排列;**蓄水池抽样**是在『总长度未知、数据像水流只能看一遍』时,只用 `O(1)`/`O(k)` 空间等概率取样。\n\n🔹 Fisher-Yates 洗牌:从后往前换\n从最后一位 `i = n-1` 往前,每步在 `[0, i]`(**含 i 自己**)里随机挑下标 `j`,交换 `a[i], a[j]`,然后 `i` 左移;换过的尾部就『冻结』不再动。\n为什么等概率(归纳):把某元素放到位置 `n-1` 的概率是 `1/n`,再把某元素放到 `n-2`(在剩下 `n-1` 个里)的概率是 `1/(n-1)`……连乘得 `1/n · 1/(n-1) ··· 1 = 1/n!`,而排列共 `n!` 个,故每个排列概率相等。\n\n🔹 经典错误:全程 `randint(0, n-1)`\n若每步都在『整个数组』里随机交换,会产生 `n^n` 种等概率的操作序列,但排列只有 `n!` 个;`n^n` 不是 `n!` 的整数倍 → 分布必然有偏。这是面试高频陷阱:随机源的范围必须**逐步收缩**。\n\n🔹 蓄水池抽样 k=1:`1/i` 概率替换\n水流来第 `i` 个(1-based)元素时,以 `1/i` 概率用它替换当前留存样本。\n为什么等概率(裂项):第 `i` 个最终留下 = 当场被选中 × 之后每一个都没把它换掉 = `1/i × i/(i+1) × (i+1)/(i+2) × ··· × (n-1)/n`,中间项首尾相消,结果恰为 `1/n`。\n\n🔹 蓄水池抽样 k 个:`k/i` 概率入池\n前 `k` 个直接装满池;第 `i` 个(`i>k`)以 `k/i` 概率入选,入选就随机踢掉池里某一格。同样的裂项可证:每个元素最终在池中的概率都是 `k/n`。\n\n🔹 复杂度从哪来\n三者都是『一遍扫描』:时间 `O(n)`。空间上,洗牌可原地 `O(1)`;蓄水池 k=1 用 `O(1)`、k 个用 `O(k)`,**与流长 n 无关**——这正是蓄水池存在的意义:处理放不进内存的超大/无限数据流。\n\n🔹 过程追踪(蓄水池 k=1,流 = [a, b, c, d])\n```\ni=1  来 a   1/1 必留           样本 = a\ni=2  来 b   1/2 替换?是 → b    样本 = b\ni=3  来 c   1/3 替换?否        样本 = b\ni=4  来 d   1/4 替换?否        样本 = b\n最终每个元素被选概率都 = 1/4\n```",
+  "complexity": {
+    "best": "O(n)",
+    "avg": "O(n)",
+    "worst": "O(n)",
+    "space": "O(1) ~ O(k)",
+    "stable": null,
+    "in_place": null,
+    "note": "三者都是单遍扫描,时间恒为 `O(n)`(n 为元素/流长度)。空间:Fisher-Yates 洗牌可原地 `O(1)`(此处为自测返回新列表);蓄水池 k=1 用 `O(1)`、k 个用 `O(k)`,**与 n 无关**,故能处理放不进内存的超大流。随机化重排/抽样谈不上稳定性与原地的统一定义,取 `null`。"
+  },
+  "entry": "shuffle",
+  "test_code": "import random\nrandom.seed(20240614)\nfor _ in range(300):\n    n = random.randint(0, 25)\n    arr = [random.randint(-9, 9) for _ in range(n)]\n    assert sorted(shuffle(arr)) == sorted(arr)",
+  "variants": [
+    {
+      "title": "Fisher-Yates 洗牌",
+      "time": "O(n)",
+      "space": "O(1) 原地",
+      "starred": true,
+      "note": "等概率全排列的**唯一正确**做法(`random.shuffle` 即此);从后往前,随机下标范围**必须含当前位 i**。",
+      "code": "import random\n\ndef shuffle(a):\n    \"\"\"Fisher-Yates 洗牌:从后往前,a[i] 与 [0, i] 中随机一个交换。\n    返回新列表,等概率得到每个排列;j 的范围必须含 i 本身(允许原地不动)。\n    去掉首行 list(a) 即为原地 O(1) 额外空间版本。\"\"\"\n    a = list(a)\n    for i in range(len(a) - 1, 0, -1):\n        j = random.randint(0, i)        # 含端点 i:允许换到自己\n        a[i], a[j] = a[j], a[i]\n    return a",
+      "test_code": "import random\nrandom.seed(20240614)\nassert shuffle([]) == []\nassert shuffle([7]) == [7]\nfor _ in range(500):\n    n = random.randint(0, 30)\n    arr = [random.randint(-10, 10) for _ in range(n)]\n    out = shuffle(arr)\n    assert sorted(out) == sorted(arr)        # 是合法排列(含重复也成立)\n    assert len(out) == len(arr)\n# 确实在打乱:可区分序列多次洗牌应出现 >1 种排列(非恒等)\nbase = list(range(10))\nseen = {tuple(shuffle(base)) for _ in range(80)}\nassert len(seen) >= 2\n# 不修改入参\norig = [1, 2, 3, 4, 5]\n_ = shuffle(orig)\nassert orig == [1, 2, 3, 4, 5]"
+    },
+    {
+      "title": "蓄水池抽样 k=1",
+      "time": "O(n) 单遍",
+      "space": "O(1)",
+      "starred": false,
+      "note": "流长未知也能等概率取 1 个:第 `i` 个以 `1/i` 概率替换,裂项相消证得每个元素概率 `1/n`。",
+      "code": "import random\n\ndef sample_one(stream):\n    \"\"\"蓄水池抽样 k=1:只用 O(1) 空间从『未知长度』数据流等概率取 1 个。\n    遍历到第 i 个(1-based)元素时,以 1/i 概率用它替换当前结果。\n    流为空时返回 None。\"\"\"\n    result = None\n    for i, x in enumerate(stream, start=1):\n        if random.randint(1, i) == 1:       # 命中概率恰为 1/i\n            result = x\n    return result",
+      "test_code": "import random\nrandom.seed(20240614)\nstream = [10, 20, 30, 40, 50]\nsset = set(stream)\npicks = set()\nfor _ in range(600):\n    x = sample_one(stream)\n    assert x in stream                       # 返回值一定来自流\n    picks.add(x)\nassert picks <= sset                         # 抽样集合 ⊆ set(stream)\nassert len(picks) >= 2                       # 覆盖到 ≥2 个不同元素(确在随机)\nassert sample_one([99]) == 99                # 单元素流必返回该元素\nassert sample_one([]) is None               # 空流"
+    },
+    {
+      "title": "蓄水池抽样 k 个",
+      "time": "O(n) 单遍",
+      "space": "O(k)",
+      "starred": false,
+      "note": "k=1 的推广:前 k 个填满池,第 `i` 个以 `k/i` 概率入选并随机替换,每元素入选概率 `k/n`。",
+      "code": "import random\n\ndef reservoir(stream, k):\n    \"\"\"蓄水池抽样 k 个:前 k 个直接装满池;第 i 个(i>k,1-based)以 k/i\n    概率入选,入选则随机替换池中某一格。一遍流、O(k) 空间,每元素入选概率 k/n。\n    流长不足 k 时返回整条流。\"\"\"\n    pool = []\n    for i, x in enumerate(stream, start=1):\n        if i <= k:\n            pool.append(x)\n        else:\n            j = random.randint(1, i)        # 1..i;命中 [1,k] 的概率为 k/i\n            if j <= k:\n                pool[j - 1] = x\n    return pool",
+      "test_code": "import random\nrandom.seed(20240614)\nstream = list(range(20))                      # 互异元素,便于查重\nsset = set(stream)\nfor _ in range(600):\n    out = reservoir(stream, 5)\n    assert len(out) == 5                      # 恰好 k 个\n    assert len(set(out)) == 5                 # k 个互异\n    assert set(out) <= sset                   # 都来自流\n# k 不小于流长:返回整条流(顺序无关,用集合比)\nassert set(reservoir([1, 2, 3], 5)) == {1, 2, 3}\nassert reservoir([], 3) == []"
+    }
+  ],
+  "compare_table": "| 写法 | 解决的问题 | 关键概率 | 时间 | 额外空间 |\n| --- | --- | --- | --- | --- |\n| Fisher-Yates 洗牌 | 等概率全排列 | 第 i 步在 `[0,i]` 等概率选 | O(n) | O(1) 可原地 |\n| 蓄水池 k=1 | 流式取 1 个 | 第 i 个以 `1/i` 替换 | O(n) | O(1) |\n| 蓄水池 k 个 | 流式取 k 个 | 第 i 个以 `k/i` 入池 | O(n) | O(k) |",
+  "gotchas": [
+    "Fisher-Yates 的随机下标范围**必须含当前位 i 本身**(`randint(0, i)`);写成 `randint(0, i-1)` 或全程 `randint(0, n-1)` 都会让分布有偏。",
+    "经典反例:每步都在整个数组里随机交换,会得到 `n^n` 种等概率操作序列,但排列只有 `n!` 个,`n^n` 不被 `n!` 整除 → **一定偏**。",
+    "蓄水池 k=1 的替换概率是 `1/i`(`i` 为 1-based 序号)而非 `1/n`——遍历时根本不知道 n,这正是蓄水池的精髓。",
+    "蓄水池要『边读边定』:读到第 `i` 个就立刻决定去留,**不能先求总数 n 再回头取**,否则失去 `O(k)` 空间与单遍流的意义。",
+    "别把 `randint(1, i) == 1` 误写成 `randint(0, i) == 0`(范围错一位、概率就偏);全程用 1-based 计数最不易错。",
+    "这些写法依赖伪随机数,自测**只能断言不变量**(是合法排列 / 元素来自流 / 个数与互异),断言具体分布会偶发失败。"
+  ],
+  "applications": [
+    {
+      "label": "LC 384 · 打乱数组",
+      "url": "https://leetcode.cn/problems/shuffle-an-array/"
+    },
+    {
+      "label": "LC 382 · 链表随机节点",
+      "url": "https://leetcode.cn/problems/linked-list-random-node/"
+    },
+    {
+      "label": "LC 398 · 随机数索引",
+      "url": "https://leetcode.cn/problems/random-pick-index/"
+    }
+  ],
+  "related": [
+    "bit-tricks"
+  ]
+}

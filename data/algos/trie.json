@@ -1,0 +1,76 @@
+{
+  "id": "trie",
+  "title": "Trie 字典树",
+  "category": "字典树",
+  "family": "string",
+  "tags": [
+    "字符串",
+    "前缀树",
+    "树"
+  ],
+  "summary": "把一组字符串按**公共前缀**合并成多叉树:`is_end` 标记单词结尾,`insert/search/startsWith` 都是 **`O(L)`**,与词数无关。",
+  "idea": "🔹 一句话\nTrie(字典树 / 前缀树)把一组字符串按**公共前缀合并**成一棵多叉树:从根到某个结点的路径拼出一个前缀,共享的前缀只存一份。它把『按前缀检索』做到极致——查询只与单词长度 `L` 有关,**与词典规模 N 无关**。\n\n🔹 结构长什么样\n结点本身不存字符,字符存在**边**上:一条从父指向子的边标着字符 `c`,意思是「在当前前缀后接 `c`」。每个结点只放两样东西:`children`(各字符 → 子结点的映射)和 `is_end`(布尔:从根到这里的路径是否构成一个**被插入过的完整单词**)。\n\n🔹 三种操作都是 O(L)\n`insert / search / startsWith` 都是同一套动作:从根出发,按字符**逐个下沉**。每读一个字符走一步,最多走 `L` 步;每步在 `children` 里查/建一个结点是 `O(1)`(dict 走哈希,数组走下标)。所以三种操作都是 `O(L)`,和已存词数 N 无关——这正是 Trie 相对『哈希表 + 逐个比较前缀』的核心优势。\n\n```\n插入 \"app\" / \"apple\" / \"bat\" 之后(* 表示 is_end=True):\n\n        (root)\n        /     \\\n       a       b\n       |       |\n       p       a\n       |       |\n       p*      t*\n       |\n       l\n       |\n       e*\n\nsearch(\"app\")    沿 a-p-p 到 p*,is_end=True   → True\nsearch(\"ap\")     沿 a-p 到 p,is_end=False      → False\nstartsWith(\"ap\") 能沿 a-p 走通,结点存在         → True\nstartsWith(\"ax\") a 下面没有 x 这条边            → False\n```\n\n🔹 为什么必须有 is_end\n光有树形分不清『单词』和『前缀』:插入 \"apple\" 会顺带建出 a / ap / app / appl 这些中间结点,但它们并不是被插入的单词。`is_end` 就是用来区分两者:`search` 走到末尾后还要 `is_end` 为真才算命中;`startsWith` 只要路径走得通即可,**不看 is_end**。这是 search 与 startsWith 唯一的差别。\n\n🔹 dict 子结点 vs 26-定长数组\n| 维度 | dict 子结点 | 26-定长数组 |\n| --- | --- | --- |\n| 子结点存储 | `{字符: 结点}`,按需建 | `[None]*26`,下标 `ord(c)-97` |\n| 空间 | 紧凑,约总字符数 | 每结点固定 26 槽,稀疏时浪费 |\n| 常数 | 哈希,常数略大 | 数组寻址,极快、缓存友好 |\n| 字符集 | 任意(含 Unicode) | 仅限固定小字母表 |\n| 适用 | 通用、面试默认 | 字符集小且追求极致速度 |\n\n🔹 一句话记忆\n边是字符、点是前缀、`is_end` 标单词、查询只看长度。",
+  "complexity": {
+    "best": "O(L)",
+    "avg": "O(L)",
+    "worst": "O(L)",
+    "space": "O(N·L·Σ)",
+    "stable": null,
+    "in_place": null,
+    "note": "`L` 为单词长度、`N` 为词数、`Σ` 为字符集大小(小写英文 26)。`insert/search/startsWith` 都只沿一条长度 `L` 的路径走,所以**与词数 N 无关**,恒为 `O(L)`。空间是『结点数 × 每结点子表』:dict 实现按实际分支存,约 `O(总字符数)`;26-数组实现每结点固定开 26 槽,最坏 `O(N·L·Σ)`、空槽浪费明显。`stable/in_place` 对数据结构不适用,取 null。"
+  },
+  "entry": "Trie",
+  "test_code": "import random\nrandom.seed(20240614)\n\n# —— 基础契约 ——\nt = Trie()\nt.insert(\"apple\")\nassert t.search(\"apple\") is True          # 已插入\nassert t.search(\"app\") is False           # 只是前缀,未作为单词插入\nassert t.startsWith(\"app\") is True        # 是某个单词的前缀\nassert t.startsWith(\"apple\") is True\nassert t.startsWith(\"appl\") is True\nassert t.startsWith(\"b\") is False         # 不存在的前缀\nassert t.search(\"\") is False              # 空串未插入\nassert t.startsWith(\"\") is True           # 根永远存在\nt.insert(\"app\")\nassert t.search(\"app\") is True            # 现在作为单词插入了\nassert t.search(\"appl\") is False\nassert t.search(\"apples\") is False        # 更长,未插入\n\n# —— 空串边界 ——\nt2 = Trie()\nt2.insert(\"\")\nassert t2.search(\"\") is True\nassert t2.startsWith(\"\") is True\nassert t2.search(\"a\") is False\nassert t2.startsWith(\"a\") is False\n\n# —— 随机对拍:用 set 作朴素参照 ——\nalphabet = \"abcde\"\ndef rand_word():\n    return \"\".join(random.choice(alphabet) for _ in range(random.randint(1, 6)))\n\nfor _ in range(200):\n    tr = Trie()\n    ref = set()\n    inserted = []\n    for _ in range(random.randint(0, 20)):\n        w = rand_word()\n        tr.insert(w)\n        ref.add(w)\n        inserted.append(w)\n    # 随机查询(含命中与未命中)\n    for _ in range(30):\n        q = rand_word()\n        assert tr.search(q) == (q in ref), (q, ref)\n        assert tr.startsWith(q) == any(w.startswith(q) for w in ref), (q, ref)\n    # 已插入词:整词命中,且其每个前缀 startsWith 必真\n    for w in inserted:\n        assert tr.search(w) is True, w\n        for k in range(1, len(w) + 1):\n            assert tr.startsWith(w[:k]) is True, (w, k)",
+  "variants": [
+    {
+      "title": "dict 子结点(通用)",
+      "time": "insert/search/startsWith 均 O(L)",
+      "space": "约 O(总字符数)",
+      "starred": true,
+      "note": "用 `{字符: 结点}` 按需建子结点:支持任意字符集、空间紧凑,**面试与工程默认写法**。",
+      "code": "class TrieNode:\n    __slots__ = (\"children\", \"is_end\")\n    def __init__(self):\n        self.children = {}      # 字符 -> TrieNode,按需创建\n        self.is_end = False     # 从根到这里是否构成一个被插入的完整单词\n\nclass Trie:\n    def __init__(self):\n        self.root = TrieNode()\n\n    def insert(self, word):\n        node = self.root\n        for ch in word:\n            nxt = node.children.get(ch)\n            if nxt is None:\n                nxt = TrieNode()\n                node.children[ch] = nxt\n            node = nxt\n        node.is_end = True\n\n    def _walk(self, s):\n        \"\"\"沿 s 逐字符下沉;走得通返回末端结点,否则 None。\"\"\"\n        node = self.root\n        for ch in s:\n            node = node.children.get(ch)\n            if node is None:\n                return None\n        return node\n\n    def search(self, word):\n        node = self._walk(word)\n        return node is not None and node.is_end   # 必须是单词结尾\n\n    def startsWith(self, prefix):\n        return self._walk(prefix) is not None     # 路径存在即可"
+    },
+    {
+      "title": "26-定长数组(极致速度)",
+      "time": "insert/search/startsWith 均 O(L)",
+      "space": "O(N·L·26)",
+      "starred": false,
+      "note": "每结点固定开 `[None]*26`,下标 `ord(c)-97`:数组寻址极快、缓存友好;但**仅限小写字母**且稀疏时空间浪费。",
+      "code": "class TrieNode:\n    __slots__ = (\"children\", \"is_end\")\n    def __init__(self):\n        self.children = [None] * 26   # 固定 26 槽,下标 = ord(c) - ord('a')\n        self.is_end = False\n\nclass Trie:\n    def __init__(self):\n        self.root = TrieNode()\n\n    def insert(self, word):\n        node = self.root\n        for ch in word:\n            i = ord(ch) - 97          # 'a' 的码点是 97\n            if node.children[i] is None:\n                node.children[i] = TrieNode()\n            node = node.children[i]\n        node.is_end = True\n\n    def _walk(self, s):\n        node = self.root\n        for ch in s:\n            i = ord(ch) - 97\n            node = node.children[i]\n            if node is None:\n                return None\n        return node\n\n    def search(self, word):\n        node = self._walk(word)\n        return node is not None and node.is_end\n\n    def startsWith(self, prefix):\n        return self._walk(prefix) is not None"
+    },
+    {
+      "title": "双哈希集合(非树对照)",
+      "time": "insert O(L²) / 查询 O(L)",
+      "space": "O(总字符数 × L)",
+      "starred": false,
+      "note": "不建树,直接用两个集合存『单词』与『所有前缀』:查询仍 O(L)、代码最短;但前缀集合膨胀,且**无法扩展删除/按前缀枚举**。作对照写法。",
+      "code": "class Trie:\n    \"\"\"非树实现:两个哈希集合分别记录『完整单词』与『所有前缀』。\n    查询仍是 O(L)(哈希一个长度 L 的串),代码最短;\n    代价是前缀集合体积膨胀,且无法扩展到删除 / 按前缀枚举等 Trie 拿手操作。\"\"\"\n    def __init__(self):\n        self.words = set()        # 被插入过的完整单词\n        self.prefixes = set()     # 这些单词的所有前缀(含空串与整词)\n\n    def insert(self, word):\n        self.words.add(word)\n        for i in range(len(word) + 1):\n            self.prefixes.add(word[:i])\n\n    def search(self, word):\n        return word in self.words\n\n    def startsWith(self, prefix):\n        return prefix in self.prefixes"
+    }
+  ],
+  "compare_table": "| 写法 | 子结点结构 | 空间 | 字符集 | 适用 |\n| --- | --- | --- | --- | --- |\n| dict 子结点 | `{字符: 结点}` | 紧凑(约总字符数) | 任意 | 通用 / 面试首选 |\n| 26-定长数组 | `[None]*26` | 每结点固定 26 槽 | 仅小写字母 | 字符集小、追求极速 |\n| 双哈希集合 | 无树,两个 set | 前缀集合膨胀 | 任意 | 仅作对照,能力受限 |",
+  "gotchas": [
+    "**search 与 startsWith 的唯一区别是要不要看 `is_end`**:search 走到末尾后还得 `is_end` 为真才命中;startsWith 只要路径走得通。混淆会把『只是前缀的串』误判成已插入单词。",
+    "结点**不存字符**,字符存在『边』上;别在结点里再塞一份 `char` 造成冗余。",
+    "26-数组实现的下标 `ord(c)-ord('a')` **只对小写字母成立**:遇到大写 / 数字 / Unicode 会越界或漏判,这类字符集必须换 dict。",
+    "别忘了空串边界:`insert(\"\")` 应把**根结点**的 `is_end` 置真,于是 `search(\"\")` 为真、`startsWith(\"\")` **恒为真**(根永远存在)。",
+    "用『集合存所有前缀』也能 O(L) 查询且代码最短,但前缀集合会膨胀到 `O(总字符数 × L)` 量级,且**无法扩展**到删除、按前缀枚举 / 计数等 Trie 拿手的操作——能力被锁死。"
+  ],
+  "applications": [
+    {
+      "label": "LC 208 · 实现 Trie (前缀树)",
+      "url": "https://leetcode.cn/problems/implement-trie-prefix-tree/"
+    },
+    {
+      "label": "LC 211 · 添加与搜索单词 - 数据结构设计",
+      "url": "https://leetcode.cn/problems/design-add-and-search-words-data-structure/"
+    },
+    {
+      "label": "LC 212 · 单词搜索 II",
+      "url": "https://leetcode.cn/problems/word-search-ii/"
+    }
+  ],
+  "related": [
+    "kmp",
+    "string-hash"
+  ]
+}

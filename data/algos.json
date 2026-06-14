@@ -1,0 +1,493 @@
+[
+  {
+    "id": "quicksort",
+    "title": "快速排序 Quick Sort",
+    "category": "排序",
+    "family": "sorting",
+    "tags": [
+      "分治",
+      "原地",
+      "不稳定"
+    ],
+    "summary": "选 pivot 做**分区**,小的甩左、大的甩右,再递归两侧;平均最快的通用排序。",
+    "complexity_brief": "O(n log n)",
+    "n_variants": 4
+  },
+  {
+    "id": "mergesort",
+    "title": "归并排序 Merge Sort",
+    "category": "排序",
+    "family": "sorting",
+    "tags": [
+      "分治",
+      "稳定",
+      "非原地"
+    ],
+    "summary": "**分治**:对半切开各自排好,再把两个有序子段**合并**;最坏也稳定 `O(n log n)`,代价是 O(n) 额外空间。",
+    "complexity_brief": "O(n log n)",
+    "n_variants": 3
+  },
+  {
+    "id": "heapsort",
+    "title": "堆排序 Heap Sort",
+    "category": "排序",
+    "family": "sorting",
+    "tags": [
+      "选择类",
+      "原地",
+      "不稳定",
+      "优先队列"
+    ],
+    "summary": "把数组建成**大顶堆**,反复把堆顶最大值换到末尾再下沉;最好/平均/最坏都是 **`O(n log n)`** 且原地,选择排序的加速版。",
+    "complexity_brief": "O(n log n)",
+    "n_variants": 3
+  },
+  {
+    "id": "insertion-sort",
+    "title": "插入排序 Insertion Sort",
+    "category": "排序",
+    "family": "sorting",
+    "tags": [
+      "原地",
+      "稳定",
+      "自适应"
+    ],
+    "summary": "维护已排序前缀,把每个新元素**插入**到前缀的正确位置;**稳定**、原地,**近乎有序时 O(n)**,小数组很快。",
+    "complexity_brief": "O(n²)",
+    "n_variants": 2
+  },
+  {
+    "id": "selection-sort",
+    "title": "选择排序 Selection Sort",
+    "category": "排序",
+    "family": "sorting",
+    "tags": [
+      "原地",
+      "不稳定",
+      "交换最少"
+    ],
+    "summary": "把数组分成已排序区和未排序区,每轮从未排序区**选出最小值**接到已排序区末尾;比较恒为 `~n²/2`,但**交换次数最少(≤ n-1)**。",
+    "complexity_brief": "O(n²)",
+    "n_variants": 3
+  },
+  {
+    "id": "bubble-sort",
+    "title": "冒泡排序 Bubble Sort",
+    "category": "排序",
+    "family": "sorting",
+    "tags": [
+      "原地",
+      "稳定",
+      "教学经典"
+    ],
+    "summary": "反复比较相邻元素并交换,最大值逐趟『浮』到末端;**稳定**、原地,但平均/最坏都是 **O(n²)**,主要价值在教学与理解排序本质。",
+    "complexity_brief": "O(n²)",
+    "n_variants": 3
+  },
+  {
+    "id": "shell-sort",
+    "title": "希尔排序 Shell Sort",
+    "category": "排序",
+    "family": "sorting",
+    "tags": [
+      "插入排序",
+      "缩小增量",
+      "原地",
+      "不稳定"
+    ],
+    "summary": "插入排序的**分组加速版**:按递减的间隔 `gap` 分组插入,大步长先消远距离逆序,最后 `gap=1` 收尾;复杂度随 **gap 序列**变化。",
+    "complexity_brief": "O(n^1.25) ~ O(n^1.5)(随 gap 序列)",
+    "n_variants": 3
+  },
+  {
+    "id": "counting-sort",
+    "title": "计数排序 Counting Sort",
+    "category": "排序",
+    "family": "sorting",
+    "tags": [
+      "非比较",
+      "线性时间",
+      "稳定"
+    ],
+    "summary": "**非比较**排序:统计每个值出现的次数,再按值从小到大摆出来;值域 `k` 不大时达到 **O(n+k)** 线性,前缀和写法还能做到**稳定**。",
+    "complexity_brief": "O(n + k)",
+    "n_variants": 3
+  },
+  {
+    "id": "radix-sort",
+    "title": "基数排序 Radix Sort",
+    "category": "排序",
+    "family": "sorting",
+    "tags": [
+      "非比较",
+      "稳定",
+      "线性时间"
+    ],
+    "summary": "把数看成若干**位**,从低位到高位用**稳定计数排序**逐位归位;非比较、整数键,可达线性 `O(d·(n+k))`。",
+    "complexity_brief": "O(d·(n+k))",
+    "n_variants": 4
+  },
+  {
+    "id": "bucket-sort",
+    "title": "桶排序 Bucket Sort",
+    "category": "排序",
+    "family": "sorting",
+    "tags": [
+      "非比较",
+      "分桶",
+      "稳定看桶内"
+    ],
+    "summary": "把元素按值域**散布到若干桶**,桶内各自排序,再按桶序拼接;均匀分布时近 `O(n)`,**非比较**思想,稳定性看桶内排序。",
+    "complexity_brief": "O(n + k)",
+    "n_variants": 3
+  },
+  {
+    "id": "binary-search",
+    "title": "二分查找模板 Binary Search",
+    "category": "二分查找",
+    "family": "searching",
+    "tags": [
+      "二分",
+      "有序数组",
+      "对数时间"
+    ],
+    "summary": "在**有序**数组上每次比较中点、扔掉一半,`O(log n)` 定位目标;`search` / `lower_bound` / `upper_bound` 是同一模板的不同边界。",
+    "complexity_brief": "O(log n)",
+    "n_variants": 4
+  },
+  {
+    "id": "binary-search-answer",
+    "title": "二分答案 & 浮点二分",
+    "category": "二分查找",
+    "family": "searching",
+    "tags": [
+      "二分查找",
+      "二分答案",
+      "浮点二分"
+    ],
+    "summary": "把『求最优解』转成『判定 `check(x)` + 二分』:当可行性随答案**单调**时,在**答案值域**上二分,`O(n log V)` 求最值;实数答案则用 `eps` 收敛。",
+    "complexity_brief": "O(n log V)",
+    "n_variants": 3
+  },
+  {
+    "id": "kmp",
+    "title": "KMP 字符串匹配",
+    "category": "字符串",
+    "family": "string",
+    "tags": [
+      "字符串匹配",
+      "前缀函数",
+      "线性"
+    ],
+    "summary": "失配时 **text 指针永不回退**,只让模式串按**最长公共前后缀**右滑,把朴素 O(n·m) 压到 **O(n+m)** 的单模式串匹配。",
+    "complexity_brief": "O(n+m)",
+    "n_variants": 3
+  },
+  {
+    "id": "string-hash",
+    "title": "字符串哈希 Rabin-Karp",
+    "category": "字符串",
+    "family": "string",
+    "tags": [
+      "字符串匹配",
+      "滚动哈希",
+      "哈希"
+    ],
+    "summary": "给模式串和文本每个窗口算**多项式哈希指纹**,滚动 `O(1)` 更新,指纹相同再逐字符确认,期望 `O(n+m)` 找首个匹配。",
+    "complexity_brief": "O(n+m)",
+    "n_variants": 3
+  },
+  {
+    "id": "manacher",
+    "title": "Manacher 最长回文",
+    "category": "字符串",
+    "family": "string",
+    "tags": [
+      "字符串",
+      "回文",
+      "线性扫描"
+    ],
+    "summary": "插 `#` 把奇偶回文统一成奇数,再靠**最右回文边界**与**镜像臂长**复用,**O(n)** 求最长回文子串长度。",
+    "complexity_brief": "O(n)",
+    "n_variants": 3
+  },
+  {
+    "id": "z-function",
+    "title": "Z 函数 / 扩展 KMP",
+    "category": "字符串",
+    "family": "string",
+    "tags": [
+      "字符串匹配",
+      "线性时间",
+      "扩展 KMP"
+    ],
+    "summary": "`z[i]` = `s` 与后缀 `s[i:]` 的**最长公共前缀长度**;维护最右 **Z-box `[l,r)`** 复用前缀拷贝,**O(n)** 求出整张 z 表,可直接做匹配、求周期。",
+    "complexity_brief": "O(n)",
+    "n_variants": 4
+  },
+  {
+    "id": "trie",
+    "title": "Trie 字典树",
+    "category": "字典树",
+    "family": "string",
+    "tags": [
+      "字符串",
+      "前缀树",
+      "树"
+    ],
+    "summary": "把一组字符串按**公共前缀**合并成多叉树:`is_end` 标记单词结尾,`insert/search/startsWith` 都是 **`O(L)`**,与词数无关。",
+    "complexity_brief": "O(L)",
+    "n_variants": 3
+  },
+  {
+    "id": "graph-traversal",
+    "title": "图遍历 BFS / DFS",
+    "category": "图遍历",
+    "family": "graph",
+    "tags": [
+      "图",
+      "BFS",
+      "DFS",
+      "队列",
+      "栈/递归"
+    ],
+    "summary": "从起点出发系统访问所有可达点、每点只访问一次:**BFS** 用队列分层(等权图直接得最短步数),**DFS** 用栈/递归一条路走到底;核心都靠 `visited` 去重,均为 `O(V+E)`。",
+    "complexity_brief": "O(V+E)",
+    "n_variants": 3
+  },
+  {
+    "id": "dijkstra",
+    "title": "Dijkstra 最短路",
+    "category": "最短路",
+    "family": "graph",
+    "tags": [
+      "最短路",
+      "贪心",
+      "堆",
+      "非负权"
+    ],
+    "summary": "单源非负权最短路:每次贪心确定离源**最近的未定点**(`出堆即确定`),用它松弛邻居。堆优化 `O(E log V)`。",
+    "complexity_brief": "O(E log V)",
+    "n_variants": 2
+  },
+  {
+    "id": "bellman-ford",
+    "title": "Bellman-Ford / SPFA",
+    "category": "最短路",
+    "family": "graph",
+    "tags": [
+      "最短路",
+      "负权",
+      "负环检测"
+    ],
+    "summary": "对所有边反复**松弛** `V-1` 轮,求**带负权**的单源最短路;第 `V` 轮还能松弛即存在**负环**。`SPFA` 是它的队列优化版,稀疏图更快。",
+    "complexity_brief": "O(V·E)",
+    "n_variants": 2
+  },
+  {
+    "id": "floyd",
+    "title": "Floyd-Warshall 多源最短路",
+    "category": "最短路",
+    "family": "graph",
+    "tags": [
+      "最短路",
+      "动态规划",
+      "稠密图",
+      "负权"
+    ],
+    "summary": "枚举**中转点 `k`** 逐层松弛,三重循环 `O(n³)` 一次求出**所有点对**最短路;稠密图与负权(无负环)首选,跑完看 `d[i][i]<0` 即可测负环。",
+    "complexity_brief": "O(n³)",
+    "n_variants": 3
+  },
+  {
+    "id": "topo-sort",
+    "title": "拓扑排序 Topological Sort",
+    "category": "拓扑排序",
+    "family": "graph",
+    "tags": [
+      "有向无环图",
+      "BFS",
+      "DFS",
+      "判环"
+    ],
+    "summary": "把 **DAG** 的节点排成一条线,使每条边 `u→v` 都满足 u 在 v 前;**有环则无解返回 `[]`**。两条主路:Kahn 入度 BFS 与 DFS 后序逆序。",
+    "complexity_brief": "O(V+E)",
+    "n_variants": 3
+  },
+  {
+    "id": "union-find",
+    "title": "并查集 Union-Find / DSU",
+    "category": "并查集",
+    "family": "graph",
+    "tags": [
+      "并查集",
+      "图",
+      "连通性"
+    ],
+    "summary": "用**森林**维护『谁和谁连通』:`find` 找根 + **路径压缩**,`union` **按秩 / 大小合并**;单次操作摊还近 `O(α(n))`,几乎是常数。",
+    "complexity_brief": "O(α(n))",
+    "n_variants": 3
+  },
+  {
+    "id": "mst",
+    "title": "最小生成树 Kruskal / Prim",
+    "category": "最小生成树",
+    "family": "graph",
+    "tags": [
+      "图论",
+      "贪心",
+      "并查集",
+      "堆优化"
+    ],
+    "summary": "在带权无向图里选 `n-1` 条边连通所有点、总权重最小;**Kruskal**(排序+并查集)与 **Prim**(堆扩展)都靠**切割性质**贪心,图不连通返回 -1。",
+    "complexity_brief": "O(E log V)",
+    "n_variants": 2
+  },
+  {
+    "id": "fast-power",
+    "title": "快速幂 Fast Power",
+    "category": "快速幂",
+    "family": "math",
+    "tags": [
+      "数学",
+      "分治",
+      "位运算"
+    ],
+    "summary": "把指数按**二进制**拆开,用 `平方 + 按位累乘` 把 a^b 从 O(b) 降到 **O(log b)**;思想可推广到矩阵幂与快速乘。",
+    "complexity_brief": "O(log b)",
+    "n_variants": 4
+  },
+  {
+    "id": "gcd",
+    "title": "欧几里得 GCD / 扩展欧几里得",
+    "category": "数论",
+    "family": "math",
+    "tags": [
+      "数论",
+      "欧几里得",
+      "扩展欧几里得"
+    ],
+    "summary": "用辗转相除 `gcd(a,b)=gcd(b,a%b)` 在 `O(log)` 步求最大公约数;**扩展版**还给出裴蜀系数 `a*x+b*y=g`,是求**模逆元**的通用钥匙。",
+    "complexity_brief": "O(log min(a, b))",
+    "n_variants": 3
+  },
+  {
+    "id": "sieve",
+    "title": "素数筛 Sieve",
+    "category": "数论",
+    "family": "math",
+    "tags": [
+      "数论",
+      "素数",
+      "筛法",
+      "预处理"
+    ],
+    "summary": "反过来想:不逐个判素,而是把每个素数的**倍数**一律划掉,剩下的就是素数;`O(n log log n)` 预处理一片素数表。",
+    "complexity_brief": "O(n log log n)",
+    "n_variants": 3
+  },
+  {
+    "id": "bit-tricks",
+    "title": "位运算技巧 Bit Tricks",
+    "category": "位运算",
+    "family": "math",
+    "tags": [
+      "位运算",
+      "异或",
+      "lowbit",
+      "枚举子集"
+    ],
+    "summary": "用二进制位直接表达逻辑的一组小招式:`n&(n-1)` 抹最低位 1、`n&-n` 取 lowbit、异或抵消成对数、二进制 mask 枚举子集,常把判断/计数降到 **O(1)**。",
+    "complexity_brief": "O(1) ~ O(n·2ⁿ)",
+    "n_variants": 4
+  },
+  {
+    "id": "shuffle-reservoir",
+    "title": "洗牌 & 蓄水池抽样",
+    "category": "随机化",
+    "family": "math",
+    "tags": [
+      "随机化",
+      "洗牌",
+      "蓄水池抽样",
+      "数据流"
+    ],
+    "summary": "**Fisher-Yates** 从后往前逐位与前面随机一个交换,等概率得到任意排列;**蓄水池抽样**在长度未知的数据流上一遍扫描、只用 `O(k)` 空间等概率取样(k=1 时第 `i` 个以 `1/i` 替换)。",
+    "complexity_brief": "O(n)",
+    "n_variants": 3
+  },
+  {
+    "id": "prefix-diff",
+    "title": "前缀和 & 差分",
+    "category": "前缀和差分",
+    "family": "paradigm",
+    "tags": [
+      "前缀和",
+      "差分",
+      "区间查询",
+      "容斥"
+    ],
+    "summary": "**前缀和**把区间求和摊销成 `O(1)` 查询;**差分**是它的逆运算,把区间加值摊销成 `O(1)` 更新;二维版用**容斥**(右下-上-左+左上)。",
+    "complexity_brief": "O(n + q)",
+    "n_variants": 3
+  },
+  {
+    "id": "two-pointer-window",
+    "title": "双指针 & 滑动窗口 Two Pointers & Sliding Window",
+    "category": "双指针滑窗",
+    "family": "paradigm",
+    "tags": [
+      "双指针",
+      "滑动窗口",
+      "单调性"
+    ],
+    "summary": "用两个**只进不退**的下标把 O(n²) 枚举压成 O(n):有序数组用**对撞双指针**,连续子串/子数组用**滑动窗口**右扩左缩。",
+    "complexity_brief": "O(n)",
+    "n_variants": 3
+  },
+  {
+    "id": "backtracking",
+    "title": "回溯模板 Backtracking",
+    "category": "回溯",
+    "family": "paradigm",
+    "tags": [
+      "回溯",
+      "DFS",
+      "枚举",
+      "剪枝",
+      "递归"
+    ],
+    "summary": "在决策树上 **DFS** 枚举所有候选,核心是『**选择 → 递归 → 撤销**』:做一步选择就递归深入,回来时必须撤销以换下一个分支;靠 `start`/`used` 去重、靠剪枝提速。",
+    "complexity_brief": "O(n·2ⁿ)",
+    "n_variants": 3
+  },
+  {
+    "id": "knapsack",
+    "title": "背包 DP 模板 Knapsack",
+    "category": "背包DP",
+    "family": "paradigm",
+    "tags": [
+      "动态规划",
+      "背包",
+      "滚动数组"
+    ],
+    "summary": "对每件物品做**选 / 不选**的 DP;一维滚动时 `0-1 背包容量逆序`、`完全背包容量正序`,只差一个遍历方向。",
+    "complexity_brief": "O(n·W)",
+    "n_variants": 3
+  },
+  {
+    "id": "monotonic",
+    "title": "单调栈 & 单调队列",
+    "category": "单调栈队列",
+    "family": "paradigm",
+    "tags": [
+      "单调栈",
+      "单调队列",
+      "双端队列",
+      "均摊 O(n)"
+    ],
+    "summary": "用一个**单调容器**维护『尚未确定答案的候选』,入栈/入队前弹掉被新元素**击败或失效**的旧元素;每个元素只进出一次,整体 **O(n)**。",
+    "complexity_brief": "O(n)",
+    "n_variants": 4
+  }
+]

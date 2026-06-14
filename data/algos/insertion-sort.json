@@ -1,0 +1,69 @@
+{
+  "id": "insertion-sort",
+  "title": "插入排序 Insertion Sort",
+  "category": "排序",
+  "family": "sorting",
+  "tags": [
+    "原地",
+    "稳定",
+    "自适应"
+  ],
+  "summary": "维护已排序前缀,把每个新元素**插入**到前缀的正确位置;**稳定**、原地,**近乎有序时 O(n)**,小数组很快。",
+  "idea": "🔹 一句话\n把数组看成『已排序前缀 + 待处理后缀』。每轮从后缀取第一个元素 `key`,在前缀里找到它该待的位置插进去——就像摸到一张牌后插进已经理好的手牌。前缀长度每轮 +1,`n-1` 轮后整副有序。\n\n🔹 复杂度从哪来\n每轮开销 = 比较次数 + 移动次数,两者都取决于 `key` 要往前走多远。\n- 逆序数组:第 `i` 个元素要一路比到头,代价 `i`,总和 `1+2+…+(n-1) = O(n²)`(最坏)。\n- 已经有序:每个 `key` 只和左邻比一次就停,共 `n-1` 次比较、0 次移动,`O(n)`(最好)。\n- 随机数据:平均每个元素往回走一半,仍是 `O(n²)`(平均)。\n这正是它『自适应 adaptive』的来历:输入越接近有序越快。后移条件用严格大于、相等元素不越位,所以**稳定**;全程在原数组上挪元素,所以**原地**、额外空间 `O(1)`。\n\n🔹 两种写法的取舍\n- 标准:从 `i-1` 往前,边比较边把更大的元素后移一格,遇到不大于 `key` 的就停。比较与移动是同一趟,代码最短。\n- 二分插入:前缀已有序,可用 `bisect` 在 `O(log n)` 次比较内定位插入点,再把后面一段整体后移一格。它把**比较**次数从 `O(n)` 降到 `O(log n)`,但**移动**仍是 `O(n)`/轮,总复杂度不变;最好情况还从 `O(n)` 退化成 `O(n log n)`(每轮固定要二分)。只有当『比较』本身昂贵(如比长字符串)时才更划算。\n\n🔹 过程图示(标准,竖线左侧为已排序区)\n```\n[5 | 2, 4, 1]   起手:已排序区只有 5\n取 2:2<5,后移 5            [2, 5 | 4, 1]\n取 4:4<5 后移 5,4>2 停下   [2, 4, 5 | 1]\n取 1:比 5、4、2 都小,移到队首 [1, 2, 4, 5]\n```\n\n🔹 为什么工程里仍随处可见\n`n` 很小时常数极低、无递归、不吃额外内存,实测比快排/归并更快;所以 Timsort、introsort 等工业级排序在子区间缩到十几个元素时,都会『切到插入排序』收尾。它还天然支持**在线**处理:数据边来边插。",
+  "complexity": {
+    "best": "O(n)",
+    "avg": "O(n²)",
+    "worst": "O(n²)",
+    "space": "O(1)",
+    "stable": true,
+    "in_place": true,
+    "note": "最好情况(已有序)只需 `n-1` 次比较、0 次移动,故 `O(n)`;平均/最坏需逐个回插,`O(n²)`。原地,额外空间 `O(1)`。为统一自测,`sort` 返回新列表;改成对入参原地排序即可省下这份拷贝。"
+  },
+  "entry": "sort",
+  "test_code": "import random\nrandom.seed(20240614)\n\nassert sort([]) == []\nassert sort([1]) == [1]\nassert sort([2, 1]) == [1, 2]\nassert sort([5, 5, 5, 5]) == [5, 5, 5, 5]\nassert sort([3, -1, 0, -1, 9, 2, 2]) == sorted([3, -1, 0, -1, 9, 2, 2])\n\n# 与标准库对拍(含重复、负数、空、单元素由上方覆盖)\nfor _ in range(400):\n    n = random.randint(0, 60)\n    arr = [random.randint(-30, 30) for _ in range(n)]\n    assert sort(list(arr)) == sorted(arr), arr\n\n# 稳定性:仅按 key 比较的元素,排序后相等 key 的原始顺序(tag)必须保持\nclass Item:\n    def __init__(self, key, tag):\n        self.key, self.tag = key, tag\n    def __lt__(self, other):\n        return self.key < other.key\n    def __gt__(self, other):\n        return self.key > other.key\n\nitems = [Item(random.randint(0, 4), idx) for idx in range(60)]\nres = sort(items)\nexp = sorted(items, key=lambda x: x.key)   # Python sorted 稳定,作为基准\nassert [(x.key, x.tag) for x in res] == [(x.key, x.tag) for x in exp]",
+  "variants": [
+    {
+      "title": "标准插入(边比较边后移)",
+      "time": "最好 O(n) / 平均·最坏 O(n²)",
+      "space": "O(1)",
+      "starred": true,
+      "note": "最常见写法:比较与后移合成一趟。**近乎有序时退化为 O(n)**,面试/工程首选。",
+      "code": "def sort(a):\n    \"\"\"标准插入排序:维护已排序前缀,每次把下一个元素从后往前比较、\n    边比较边把更大的元素后移一格,空出位置后插入。\"\"\"\n    a = list(a)\n    for i in range(1, len(a)):\n        key = a[i]\n        j = i - 1\n        while j >= 0 and a[j] > key:   # 严格大于才后移 -> 相等元素不越位,稳定\n            a[j + 1] = a[j]\n            j -= 1\n        a[j + 1] = key\n    return a"
+    },
+    {
+      "title": "二分插入(bisect 定位 + 整段后移)",
+      "time": "比较 O(n log n) / 移动 O(n²),总体 O(n²)",
+      "space": "O(1)",
+      "starred": false,
+      "note": "用二分把**比较**降到 `O(log n)`/轮,但**移动**仍是 `O(n)`/轮;只有比较昂贵(如长字符串)时才更值。",
+      "code": "import bisect\n\ndef sort(a):\n    \"\"\"二分插入排序:前缀已有序,用 bisect_right 在 O(log n) 次比较内定位插入点,\n    再把 [pos, i) 整段右移一格。减少比较次数,但移动仍是 O(n)/轮。\"\"\"\n    a = list(a)\n    for i in range(1, len(a)):\n        key = a[i]\n        pos = bisect.bisect_right(a, key, 0, i)  # 用 right:插到相等元素之后 -> 稳定\n        a[pos + 1:i + 1] = a[pos:i]              # 把 [pos, i) 整体右移一格\n        a[pos] = key\n    return a"
+    }
+  ],
+  "compare_table": "| 写法 | 比较/轮 | 移动/轮 | 最好情况 | 稳定 | 适用 |\n| --- | --- | --- | --- | --- | --- |\n| 标准 | O(n) | O(n) | O(n) | 是 | 通用首选,自适应 |\n| 二分插入 | O(log n) | O(n) | O(n log n) | 是 | 比较昂贵时 |",
+  "gotchas": [
+    "后移条件必须用**严格大于** `a[j] > key`;写成 `>=` 会让相等元素越位,**破坏稳定性**且白白多移。",
+    "二分插入只省『比较』、不省『移动』,**总复杂度仍是 O(n²)**;而且每轮固定要二分,最好情况从 `O(n)` 退化为 `O(n log n)`。",
+    "二分定位要用 `bisect_right`(而非 `bisect_left`)才保持稳定——把新元素插到相等元素之后。",
+    "整段后移 `a[pos+1:i+1] = a[pos:i]` 两侧切片长度必须相等(都是 `i-pos`),写错下标会丢/漏元素。",
+    "内层下标从 `i-1` 往前,循环条件别忘了 `j >= 0`,否则越界访问 `a[-1]` 会静默回绕导致错误。"
+  ],
+  "applications": [
+    {
+      "label": "LC 147 · 对链表进行插入排序",
+      "url": "https://leetcode.cn/problems/insertion-sort-list/"
+    },
+    {
+      "label": "LC 912 · 排序数组",
+      "url": "https://leetcode.cn/problems/sort-an-array/"
+    },
+    {
+      "label": "LC 35 · 搜索插入位置(二分定位)",
+      "url": "https://leetcode.cn/problems/search-insert-position/"
+    }
+  ],
+  "related": [
+    "shell-sort",
+    "bubble-sort",
+    "binary-search"
+  ]
+}

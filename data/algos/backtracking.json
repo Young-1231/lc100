@@ -1,0 +1,86 @@
+{
+  "id": "backtracking",
+  "title": "回溯模板 Backtracking",
+  "category": "回溯",
+  "family": "paradigm",
+  "tags": [
+    "回溯",
+    "DFS",
+    "枚举",
+    "剪枝",
+    "递归"
+  ],
+  "summary": "在决策树上 **DFS** 枚举所有候选,核心是『**选择 → 递归 → 撤销**』:做一步选择就递归深入,回来时必须撤销以换下一个分支;靠 `start`/`used` 去重、靠剪枝提速。",
+  "idea": "🔹 一句话\n回溯就是『深度优先地枚举所有候选,走不通就撤销上一步、换下一个分支』。本质是带『现场恢复』的 DFS:在一棵决策树上往下走,凑出一个完整解就收集,遇到死路或选项用尽就回退到父节点换下一种选择。\n\n🔹 通用模板:选择 → 递归 → 撤销\n几乎所有回溯题都套同一副骨架:\n```\ndef backtrack(状态):\n    if 满足终止条件:\n        res.append(path[:])      # 收一份『拷贝』,不能直接存 path 本身\n        return\n    for 选择 in 当前可选列表:\n        做选择(改 path / 标 used)     # 选择\n        backtrack(下一状态)            # 递归\n        撤销选择(还原 path / used)     # 撤销 —— 回溯的灵魂\n```\n三件套:`path` 记录当前路径、『可选列表』决定每层有哪些分支、终止条件决定何时收解。**做过什么就要撤销什么**,否则状态会污染兄弟分支。\n\n🔹 三道题套同一个模板\n| 题 | 终止条件 | 控制重复 | 元素能否复用 |\n| --- | --- | --- | --- |\n| 子集 `subsets` | 每个节点都是解 | 传 `start` 只向后取 | 否 |\n| 全排列 `permute` | `len(path)==n` | `used[]` 标记已选 | 否(各用一次) |\n| 组合总和 `combination_sum` | `remain==0` | 传 `start` 防顺序重复 | 是(递归传 `i`) |\n\n🔹 两类去重:位置去重 vs 标记去重\n- **组合 / 子集**:同一组元素 `{2,3}` 不该既算 `[2,3]` 又算 `[3,2]`。办法是递归带一个 `start`,每层只从 `start` 往后选,天然只生成『下标递增』的组合,顺序重复被掐死。\n- **排列**:每个元素都要用、且顺序算不同结果,所以不能用 `start`,改用 `used[]` 标记谁已在 `path` 里。\n- **能否复用同一元素**:组合总和允许一个数选多次,关键是递归仍传 `i`(而非 `i+1`),下一层就能再次选中自己;若改传 `i+1`,则每个元素至多用一次。\n\n🔹 含重复元素的输入怎么去重(经典套路)\n当输入本身带重复(如 `[1,1,2]` 求子集/组合),光靠 `start` 仍会产出重复解。标准套路:**先排序**,再在 for 循环里跳过『同层重复值』:\n```\nnums.sort()\nfor i in range(start, n):\n    if i > start and nums[i] == nums[i-1]:\n        continue          # 同一层用过相同的值就跳过这条分支\n    path.append(nums[i]); backtrack(i + 1); path.pop()\n```\n要点是条件写 `i > start` 而不是 `i > 0`:同一层(兄弟分支)里相同值只取第一个;不同层(父子)允许出现相同值,否则会漏解。\n\n🔹 剪枝:回溯提速的关键\n朴素回溯会走遍整棵决策树。剪枝就是『提前判定某条分支不可能出解,直接砍掉』。组合总和里把 `candidates` 排序后,一旦 `cand[i] > remain` 就 `break` —— 后面只会更大,不必再试。好剪枝能把指数级常数砍掉一大截(但改变不了最坏复杂度的阶)。\n\n🔹 复杂度从哪来\n回溯的时间 ≈ **解的个数 × 生成单个解的代价**,本质是决策树的节点总数:\n- 子集:`2ⁿ` 个解、每个拷贝 `O(n)` → `O(n·2ⁿ)`。\n- 全排列:`n!` 个解、每个 `O(n)` → `O(n·n!)`。\n- 组合总和:无多项式上界,最坏指数级;剪枝降的是实际开销而非最坏阶。\n额外空间(不计输出):递归栈深 `O(n)` + `path`/`used` 各 `O(n)`。\n\n🔹 决策树图示(子集 `[1,2,3]`,每层『选 / 不选』)\n```\n                        []\n           选1 /                   \\ 不选1\n         [1]                        []\n      选2 / \\ 不选2             选2 / \\ 不选2\n    [1,2]    [1]              [2]      []\n    /  \\     /  \\           /  \\     /  \\\n[1,2,3][1,2][1,3][1]    [2,3] [2]   [3]   []\n叶子共 2³ = 8 个,每个叶子对应一个子集;整棵『选/不选』树含 2⁴−1 = 15 个节点(内部节点只是部分状态)。下面代码用等价的『start 向后取』写法,在每个节点直接收一个子集\n```",
+  "complexity": {
+    "best": "O(n·2ⁿ)",
+    "avg": "O(n·2ⁿ)",
+    "worst": "O(n·n!)",
+    "space": "O(n)",
+    "stable": null,
+    "in_place": null,
+    "note": "回溯的时间 ≈ **解的个数 × 拷贝单个解的 `O(n)`**,本质是决策树的节点数,故随题而变:子集 `O(n·2ⁿ)`、全排列 `O(n·n!)`、组合总和最坏指数级(剪枝只降常数、不改最坏阶)。空间 `O(n)` 指递归栈深 + `path`/`used`,**不含**存放所有解的输出本身。稳定性/原地对『枚举范式』不适用,取 `null`。"
+  },
+  "entry": "subsets",
+  "test_code": "import random\nfrom itertools import combinations\nrandom.seed(20240614)\n\ndef _powerset(xs):\n    out = []\n    for k in range(len(xs) + 1):\n        for c in combinations(xs, k):\n            out.append(tuple(sorted(c)))\n    return sorted(out)\n\ndef _norm(lsts):\n    return sorted(tuple(sorted(x)) for x in lsts)\n\nassert subsets([]) == [[]]\nassert _norm(subsets([1])) == [(), (1,)]\nassert len(subsets([1, 2, 3])) == 8\nfor _ in range(200):\n    n = random.randint(0, 7)\n    nums = random.sample(range(-20, 20), n)                  # 互异元素\n    got = subsets(nums)\n    assert len(got) == 2 ** n                                # 恰好 2^n 个\n    assert _norm(got) == _powerset(nums)                     # 与 itertools 幂集对拍\n    assert len({tuple(sorted(s)) for s in got}) == len(got)  # 无重复子集\n",
+  "variants": [
+    {
+      "title": "子集 subsets(start 向后取)",
+      "time": "O(n·2ⁿ)",
+      "space": "O(n) 递归栈",
+      "starred": true,
+      "note": "回溯最干净的样板:**树上每个节点都是一个解**,靠 `start` 只向后取做组合去重。吃透它,排列与组合总和都是它的变体。",
+      "code": "def subsets(nums):\n    \"\"\"子集:对每个位置做『选 / 不选』分支,回溯枚举全部 2^n 个子集。\n    模板:选择 -> 递归 -> 撤销;传 start 只向后取,保证组合不重复。\"\"\"\n    res = []\n    path = []\n    n = len(nums)\n    def backtrack(start):\n        res.append(path[:])           # 树上每个节点都是一个合法子集,先收一份拷贝\n        for i in range(start, n):\n            path.append(nums[i])      # 选择\n            backtrack(i + 1)          # 递归:从 i+1 往后,避免顺序重复\n            path.pop()                # 撤销\n    backtrack(0)\n    return res\n",
+      "test_code": "import random\nfrom itertools import combinations\nrandom.seed(20240614)\n\ndef _powerset(xs):\n    out = []\n    for k in range(len(xs) + 1):\n        for c in combinations(xs, k):\n            out.append(tuple(sorted(c)))\n    return sorted(out)\n\ndef _norm(lsts):\n    return sorted(tuple(sorted(x)) for x in lsts)\n\nassert subsets([]) == [[]]\nassert _norm(subsets([1])) == [(), (1,)]\nassert len(subsets([1, 2, 3])) == 8\nfor _ in range(200):\n    n = random.randint(0, 7)\n    nums = random.sample(range(-20, 20), n)                  # 互异元素\n    got = subsets(nums)\n    assert len(got) == 2 ** n                                # 恰好 2^n 个\n    assert _norm(got) == _powerset(nums)                     # 与 itertools 幂集对拍\n    assert len({tuple(sorted(s)) for s in got}) == len(got)  # 无重复子集\n"
+    },
+    {
+      "title": "全排列 permute(used 标记)",
+      "time": "O(n·n!)",
+      "space": "O(n) 递归栈 + used",
+      "starred": false,
+      "note": "排列要『每个元素用且仅用一次、顺序算不同』,所以弃用 `start`、改 `used[]` 标记;终止条件是 `path` 填满 `n`。",
+      "code": "def permute(nums):\n    \"\"\"全排列:用 used[] 标记已选元素,每层从所有未用元素里挑一个填入 path。\n    模板:选择(标 used)-> 递归 -> 撤销(清 used);path 填满 n 即一个排列。\"\"\"\n    res = []\n    path = []\n    n = len(nums)\n    used = [False] * n\n    def backtrack():\n        if len(path) == n:\n            res.append(path[:])       # 收一份拷贝\n            return\n        for i in range(n):\n            if used[i]:               # 排列要求每个元素只用一次\n                continue\n            used[i] = True            # 选择\n            path.append(nums[i])\n            backtrack()               # 递归\n            path.pop()                # 撤销\n            used[i] = False\n    backtrack()\n    return res\n",
+      "test_code": "import random\nimport math\nfrom itertools import permutations\nrandom.seed(20240614)\n\ndef _norm(lsts):\n    return sorted(tuple(x) for x in lsts)\n\nassert permute([]) == [[]]\nassert permute([1]) == [[1]]\nfor _ in range(200):\n    n = random.randint(0, 6)\n    nums = random.sample(range(-20, 20), n)                  # 互异元素\n    got = permute(nums)\n    assert len(got) == math.factorial(n)                    # 恰好 n! 个\n    assert _norm(got) == sorted(permutations(nums))         # 与 itertools 全排列对拍\n    assert len({tuple(p) for p in got}) == len(got)         # 无重复排列\n"
+    },
+    {
+      "title": "组合总和 combination_sum(可复用 + 剪枝)",
+      "time": "最坏指数级",
+      "space": "O(target/min) 递归深度",
+      "starred": false,
+      "note": "在子集模板上加两件事:递归传 `i` 允许复用元素、排序后 `cand>remain` 即 `break` 剪枝。把传参改成 `i+1` 就变成『每元素只用一次』(对应 LC 40)。",
+      "code": "def combination_sum(candidates, target):\n    \"\"\"组合总和:候选互异且每个数可『重复选』,求所有和为 target 的组合(组合无序、互不重复)。\n    去重靠递归传 start 只向后取,杀掉 [2,3]/[3,2] 这类顺序重复;\n    复用自己靠递归传 i(而非 i+1);排序后可对超界分支剪枝。\"\"\"\n    res = []\n    path = []\n    cand = sorted(candidates)\n    n = len(cand)\n    def backtrack(start, remain):\n        if remain == 0:\n            res.append(path[:])\n            return\n        for i in range(start, n):\n            if cand[i] > remain:      # 剪枝:已排序,后面只会更大,直接停\n                break\n            path.append(cand[i])      # 选择\n            backtrack(i, remain - cand[i])   # 传 i 而非 i+1:允许再次选中当前元素\n            path.pop()                # 撤销\n    backtrack(0, target)\n    return res\n",
+      "test_code": "import random\nfrom itertools import combinations_with_replacement\nrandom.seed(20240614)\n\ndef _brute(cands, target):\n    vals = sorted({c for c in cands if c > 0})\n    res = set()\n    if target < 0:\n        return res\n    small = [c for c in vals if c <= target]\n    maxk = (target // min(small)) if small else 0\n    for k in range(maxk + 1):\n        for comb in combinations_with_replacement(small, k):\n            if sum(comb) == target:\n                res.add(comb)         # cwr 在有序列表上产出非降序元组,天然规范\n    return res\n\ndef _norm(lsts):\n    return sorted(tuple(sorted(x)) for x in lsts)\n\nassert _norm(combination_sum([2, 3, 6, 7], 7)) == _norm([[2, 2, 3], [7]])\nassert _norm(combination_sum([2, 3, 5], 8)) == _norm([[2, 2, 2, 2], [2, 3, 3], [3, 5]])\nassert combination_sum([2], 1) == []\nfor _ in range(120):\n    k = random.randint(1, 5)\n    cands = random.sample(range(2, 10), k)                    # 互异正整数\n    target = random.randint(1, 12)\n    got = combination_sum(cands, target)\n    assert _norm(got) == sorted(_brute(cands, target))       # 与暴力枚举对拍\n    for c in got:\n        assert sum(c) == target                              # 每个组合确实凑出 target\n    assert len({tuple(sorted(c)) for c in got}) == len(got)  # 无重复组合\n"
+    }
+  ],
+  "compare_table": "| 写法 | 终止条件 | 控制重复 | 剪枝 | 解数量级 |\n| --- | --- | --- | --- | --- |\n| 子集 `subsets` | 每个节点收解 | `start` 向后取 | 无(全枚举) | `2ⁿ` |\n| 全排列 `permute` | `path` 满 `n` | `used[]` 标记 | 无(全枚举) | `n!` |\n| 组合总和 `combination_sum` | `remain==0` | `start` + 递归传 `i` | 排序后 `cand>remain` 即 break | 指数级 |",
+  "gotchas": [
+    "**收解必须存拷贝** `res.append(path[:])`;直接 `res.append(path)` 存的是同一个列表引用,后续撤销会把已收的解一起改空。",
+    "**选择与撤销必须严格配对**:`append`/`pop`、`used=True`/`used=False` 成对出现,否则状态会污染兄弟分支,结果错乱。",
+    "**组合用 `start`、排列用 `used`,别混用**:排列若误加 `start` 会漏掉逆序排列;组合若误用 `used` 会冒出 `[2,3]`/`[3,2]` 这类顺序重复。",
+    "组合总和『可复用元素』递归要传 `i`;若想每个元素**只用一次**(LC 40),改传 `i+1`,且对带重复的输入还要『排序 + 同层去重』。",
+    "**输入自带重复值的去重**:先排序,再 `if i > start and a[i] == a[i-1]: continue`;判的是 `i > start`(同层去重)而非 `i > 0`,否则会误杀父子层的合法重复。",
+    "剪枝 `cand[i] > remain` 能 `break` 的前提是 **`candidates` 已排序**;不排序只能 `continue`,提速大打折扣。"
+  ],
+  "applications": [
+    {
+      "label": "LC 78 · 子集",
+      "url": "https://leetcode.cn/problems/subsets/"
+    },
+    {
+      "label": "LC 46 · 全排列",
+      "url": "https://leetcode.cn/problems/permutations/"
+    },
+    {
+      "label": "LC 39 · 组合总和",
+      "url": "https://leetcode.cn/problems/combination-sum/"
+    },
+    {
+      "label": "LC 22 · 括号生成",
+      "url": "https://leetcode.cn/problems/generate-parentheses/"
+    }
+  ],
+  "related": [
+    "bit-tricks",
+    "knapsack"
+  ]
+}

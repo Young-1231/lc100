@@ -1,0 +1,83 @@
+{
+  "id": "bucket-sort",
+  "title": "桶排序 Bucket Sort",
+  "category": "排序",
+  "family": "sorting",
+  "tags": [
+    "非比较",
+    "分桶",
+    "稳定看桶内"
+  ],
+  "summary": "把元素按值域**散布到若干桶**,桶内各自排序,再按桶序拼接;均匀分布时近 `O(n)`,**非比较**思想,稳定性看桶内排序。",
+  "idea": "🔹 一句话\n桶排序假设输入大致『均匀分布』在某个区间上。先开 `k` 个桶,按值域把每个元素**散布**到对应的桶里(落点是 O(1) 的算术,不靠比较);每个桶内部各自排好序,最后从小到大把桶依次拼起来。它和计数、基数排序同属**非比较**家族——不问『谁大谁小』,而用『值』直接定位。\n\n🔹 为什么能比 O(n log n) 更快\n基于比较的排序下界是 `O(n log n)`,因为它只能反复问两两大小。桶排序换了个问法:用元素的**值**直接算出它该落进哪个桶,这一步 O(1)。只要元素被均匀摊到各桶、每桶元素个数是常数,桶内排序几乎不花时间,整体就逼近线性。代价是:要对数据**分布**做假设,并额外开 `O(n+k)` 的桶空间(因此**非原地**)。\n\n🔹 复杂度从哪来\n设 `n` 个元素分进 `k` 个桶。散布 + 拼接是 `O(n+k)`;桶内排序才是关键:若桶内用 `O(m²)` 的插入排序,总代价是 `Σ O(mᵢ²)`。\n- **均匀分布 + k≈n**:每桶期望 `O(1)` 个元素,`Σ mᵢ² = O(n)`,总计 **`O(n+k)=O(n)`**。\n- **最坏**:所有元素挤进同一个桶,`Σ mᵢ² = O(n²)`,**退化成桶内排序的最坏 `O(n²)`**。\n所以桶排序是『有条件的快』——条件就是分布均匀、桶数得当。\n\n🔹 三种写法的取舍\n| 写法 | 适用 | 桶内 | 复杂度 |\n| --- | --- | --- | --- |\n| 基础(均匀分桶) | 任意整数 | 插入排序 | 均匀 O(n) / 最坏 O(n²) |\n| 整数特化(桶=值) | 整数且值域不大 | 无需 | O(n+k) |\n| 经典 [0,1) 浮点 | [0,1) 均匀小数 | sorted | 期望 O(n) |\n- 基础版按 `min/max` 把值域切成 `n` 段,用 `x-min` 偏移天然支持**负数**,最通用。\n- 整数特化让『一个值一个桶』,只数个数、不排序——这其实就**退化成了计数排序**,值域 `k` 不大时极快。\n- 经典版是教科书(CLRS)那张图:输入是 `[0,1)` 上均匀分布的小数,桶下标直接 `int(n*x)`。\n\n🔹 过程图示(基础版,整数)\n```\na = [22, 5, 13, 28, 7, 19]    n=6 个桶, lo=5 hi=28, span=23\n下标 idx = (x-lo)*n // span    (x==hi 收回末桶)\n\n  桶0    桶1   桶2    桶3    桶4    桶5\n [5,7]   []   [13]   [19]   [22]   [28]\n   |\n 桶内插入排序 -> [5,7]\n 顺序拼接 -> [5, 7, 13, 19, 22, 28]\n```\n\n🔹 和计数 / 基数排序的关系\n桶排序是这一族的『母题』:把每个『值』当成一个桶,就是**计数排序**;按位(个位、十位…)反复分桶再合并,就是**基数排序**。三者都以空间换时间、都不做元素比较,区别只在『桶怎么定义、要不要桶内排序』。",
+  "complexity": {
+    "best": "O(n + k)",
+    "avg": "O(n + k)",
+    "worst": "O(n²)",
+    "space": "O(n + k)",
+    "stable": null,
+    "in_place": false,
+    "note": "`k` 为桶数。均匀分布且 `k≈n` 时每桶期望 `O(1)` 个元素、桶内排序总计 `O(n)`,故近 `O(n)`;分布极端(全挤进一个桶)退化为桶内排序的最坏 `O(n²)`。需额外 `O(n+k)` 桶空间,故**非原地**。是否**稳定**取决于:桶内排序是否稳定 + 是否按原序入桶——两者都满足才稳定,故此处置 `null`。"
+  },
+  "entry": "sort",
+  "test_code": "import random\nrandom.seed(20240614)\n\nassert sort([]) == []\nassert sort([1]) == [1]\nassert sort([2, 1]) == [1, 2]\nassert sort([5, 5, 5, 5]) == [5, 5, 5, 5]                 # 全相等\nassert sort([-7, -3, -3, -10, 0]) == sorted([-7, -3, -3, -10, 0])  # 全负 + 重复\nassert sort([3, -1, 0, -1, 9, 2, 2]) == sorted([3, -1, 0, -1, 9, 2, 2])\n\n# 与标准库对拍:小值域、密集重复\nfor _ in range(400):\n    n = random.randint(0, 60)\n    arr = [random.randint(-30, 30) for _ in range(n)]\n    assert sort(list(arr)) == sorted(arr), arr\n\n# 大值域、稀疏(桶宽较大,考验下标计算)\nfor _ in range(60):\n    n = random.randint(0, 40)\n    arr = [random.randint(-1000, 1000) for _ in range(n)]\n    assert sort(list(arr)) == sorted(arr), arr",
+  "variants": [
+    {
+      "title": "基础桶排序(均匀分桶 + 桶内插入)",
+      "time": "均匀 O(n+k) / 最坏 O(n²)",
+      "space": "O(n + k)",
+      "starred": true,
+      "note": "按 `min/max` 把值域切成 `n` 段,`x-min` 偏移**支持负数**;按原序入桶 + 桶内稳定插入 -> **整体稳定**。最通用,面试/工程首选。",
+      "code": "def sort(a):\n    \"\"\"基础桶排序:按值域 [lo,hi] 把元素均匀分到 n 个桶,\n    桶内用(稳定的)插入排序,再按桶序拼接。整数版,天然支持负数。\"\"\"\n    a = list(a)\n    n = len(a)\n    if n <= 1:\n        return a\n    lo, hi = min(a), max(a)\n    if lo == hi:                       # 所有元素相等,无需分桶\n        return a\n    span = hi - lo\n    buckets = [[] for _ in range(n)]\n    for x in a:\n        idx = (x - lo) * n // span     # 纯整数运算:x<hi -> 0..n-1\n        if idx >= n:                   # x == hi 时为 n,收回最后一个桶\n            idx = n - 1\n        buckets[idx].append(x)         # 按原序入桶 -> 配稳定桶内排序即整体稳定\n    def insertion(b):                  # 桶内稳定排序(严格 > 才后移)\n        for i in range(1, len(b)):\n            key = b[i]\n            j = i - 1\n            while j >= 0 and b[j] > key:\n                b[j + 1] = b[j]\n                j -= 1\n            b[j + 1] = key\n        return b\n    out = []\n    for b in buckets:\n        out.extend(insertion(b))\n    return out"
+    },
+    {
+      "title": "整数特化(桶=值,退化为计数)",
+      "time": "O(n + k),k=值域大小",
+      "space": "O(n + k)",
+      "starred": false,
+      "note": "整数且值域 `k` 不大时,『一个值一个桶』只数个数、不排序,这其实就是**计数排序**;值域很大或稀疏会浪费桶空间。",
+      "code": "def sort(a):\n    \"\"\"整数特化桶排序:每个『值』一个桶。统计 [lo,hi] 上每个值的出现次数,\n    再从小到大输出 —— 桶=值时无需桶内排序,这其实就是计数排序。\"\"\"\n    a = list(a)\n    if not a:\n        return a\n    lo, hi = min(a), max(a)\n    count = [0] * (hi - lo + 1)        # 第 v 个桶对应值 v+lo\n    for x in a:\n        count[x - lo] += 1             # 用 x-lo 偏移,支持负数\n    out = []\n    for v, c in enumerate(count):\n        out.extend([v + lo] * c)       # 按桶序(即值序)展开\n    return out"
+    },
+    {
+      "title": "经典 [0,1) 浮点桶排序(CLRS)",
+      "time": "期望 O(n) / 最坏 O(n log n)",
+      "space": "O(n)",
+      "starred": false,
+      "note": "教科书版:输入是 `[0,1)` 均匀小数,桶下标 `int(n*x)`。契约与整数版不同,用**写法级 test** 单独覆盖。",
+      "code": "def sort(a):\n    \"\"\"经典桶排序(CLRS 版):输入是 [0,1) 上(近似)均匀分布的浮点数。\n    第 i 个桶装 [i/n,(i+1)/n) 的数,桶内排序后顺序拼接。\n    均匀分布时每桶期望 O(1) 个元素,整体期望 O(n)。\"\"\"\n    a = list(a)\n    n = len(a)\n    if n <= 1:\n        return a\n    buckets = [[] for _ in range(n)]\n    for x in a:\n        idx = int(n * x)               # x in [0,1) -> idx in [0, n-1]\n        buckets[idx].append(x)\n    out = []\n    for b in buckets:\n        b.sort()                       # 桶内排序;均匀时每桶 O(1)\n        out.extend(b)\n    return out",
+      "test_code": "import random\nrandom.seed(20240615)\n\nassert sort([]) == []\nassert sort([0.5]) == [0.5]\nassert sort([0.0, 0.0, 0.999, 0.5, 0.5, 0.1, 0.1]) == sorted([0.0, 0.0, 0.999, 0.5, 0.5, 0.1, 0.1])\n\nfor _ in range(300):\n    n = random.randint(0, 60)\n    arr = [random.random() for _ in range(n)]          # [0,1) 均匀分布\n    assert sort(list(arr)) == sorted(arr), arr"
+    }
+  ],
+  "compare_table": "| 写法 | 输入 | 桶定义 | 桶内排序 | 稳定 | 复杂度 |\n| --- | --- | --- | --- | --- | --- |\n| 基础(均匀分桶) | 任意整数 | 值域均分 n 段 | 插入(稳定) | 是 | 均匀 O(n) / 最坏 O(n²) |\n| 整数特化 | 整数, 值域 k 小 | 一个值一个桶 | 无需 | 是 | O(n+k) |\n| 经典 [0,1) | [0,1) 均匀小数 | [i/n,(i+1)/n) | sorted(稳定) | 是 | 期望 O(n) |",
+  "gotchas": [
+    "**桶数 `k` 要选好**:太少则桶内元素多、退化到桶内排序的 `O(n²)`;太多则空桶浪费空间。整数版常取 `k=n`。",
+    "**最坏 `O(n²)`**:输入分布极不均(或全相等)时所有元素落进同一桶,桶排序就退化成它桶内用的那个排序的最坏情况。",
+    "**负数 / 任意范围**必须按 `min/max` 分桶或先做偏移(`x-min`);直接 `int(n*x)` 那套**只适用于 `[0,1)`**。",
+    "下标边界:`x==max`(或浮点 `x→1`)时算出的桶号会越界到第 `k` 个桶,要 **clamp 回 `k-1`**。整数版用 `(x-lo)*n//span` 全整数运算可避免浮点误差。",
+    "**稳定性不是天生的**:要既『按原序入桶』又『桶内用稳定排序』才稳定;桶内换成快排等不稳定算法就不再稳定。",
+    "整数特化(桶=值)虽快,但**值域 `k` 远大于 `n` 时**(稀疏大整数)会开出巨量空桶,空间爆炸——这种场景该用基数排序。"
+  ],
+  "applications": [
+    {
+      "label": "LC 912 · 排序数组",
+      "url": "https://leetcode.cn/problems/sort-an-array/"
+    },
+    {
+      "label": "LC 164 · 最大间距",
+      "url": "https://leetcode.cn/problems/maximum-gap/"
+    },
+    {
+      "label": "LC 347 · 前 K 个高频元素(按频次分桶)",
+      "url": "https://leetcode.cn/problems/top-k-frequent-elements/"
+    },
+    {
+      "label": "LC 220 · 存在重复元素 III(按值域分桶)",
+      "url": "https://leetcode.cn/problems/contains-duplicate-iii/"
+    }
+  ],
+  "related": [
+    "counting-sort",
+    "radix-sort",
+    "insertion-sort"
+  ]
+}

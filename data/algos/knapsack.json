@@ -1,0 +1,80 @@
+{
+  "id": "knapsack",
+  "title": "背包 DP 模板 Knapsack",
+  "category": "背包DP",
+  "family": "paradigm",
+  "tags": [
+    "动态规划",
+    "背包",
+    "滚动数组"
+  ],
+  "summary": "对每件物品做**选 / 不选**的 DP;一维滚动时 `0-1 背包容量逆序`、`完全背包容量正序`,只差一个遍历方向。",
+  "idea": "🔹 一句话\n背包问题:容量为 W 的背包 + 若干物品,每件有重量 `weight` 和价值 `value`,求不超重时能装下的最大总价值。核心是对每件物品做**选 / 不选**的决策,用 DP 把指数级的子集枚举压成多项式。\n\n🔹 状态与转移(0-1 背包)\n设 `dp[i][c]` = 只考虑前 i 件物品、容量为 c 时的最大价值。第 i 件要么不选,要么选(前提是 `c >= w_i`):\n```\ndp[i][c] = max(\n    dp[i-1][c],              # 不选第 i 件,价值与前 i-1 件相同\n    dp[i-1][c - w_i] + v_i   # 选第 i 件:从『前 i-1 件、容量 c-w_i』转移,保证只选一次\n)\n```\n答案是 `dp[n][W]`。时间 O(n·W)(填满 n×W 的表),空间 O(n·W)。注意 W 是『容量数值』,所以这是**伪多项式**复杂度:W 越大表越大。\n\n🔹 滚动数组降维\n观察转移:`dp[i][*]` 只依赖上一行 `dp[i-1][*]`,因此只需保留一行 `dp[c]`,空间从 O(n·W) 降到 O(W)。降维之后,**容量的遍历方向**成了胜负手。\n\n🔹 为什么 0-1 逆序、完全正序(最易错点)\n一维转移写作 `dp[c] = max(dp[c], dp[c-w] + v)`,关键看 `dp[c-w]` 拿到的是『上一行的旧值』还是『本行已更新的新值』:\n- **0-1 背包**:每件最多选一次,需要 `dp[c-w]` 是『还没考虑本件』的旧值 → 容量**逆序** `c: W → w`。逆序时更新 dp[c] 用到的 dp[c-w] 尚未被本件改写,等价于二维的 `dp[i-1][c-w]`。\n- **完全背包**:每件可选无限次,需要 `dp[c-w]` 是『可能已经用过本件』的新值 → 容量**正序** `c: w → W`,允许同一件被反复叠加。\n\n🔹 遍历方向追踪(单件物品)\n```\n物品 (w=2, v=3),W=5,初始 dp=[0,0,0,0,0,0]\n逆序(0-1):c=5←dp[3], c=4←dp[2], c=3←dp[1], c=2←dp[0]   每个 dp[c-2] 都还是旧值 0\n  → dp = [0,0,3,3,3,3]   这件最多贡献一次\n正序(完全):c=2←dp[0]=0→3, c=3←dp[1]=0→3, c=4←dp[2]=3→6, c=5←dp[3]=3→6\n  → dp = [0,0,3,3,6,6]   容量够就能再装一件,价值叠加多次\n```\n\n🔹 各写法取舍\n- 二维:`dp[i][c]` 物理含义最清晰,便于理解与调试,也方便回溯方案;代价是空间 O(n·W)。\n- 一维逆序(首选):空间 O(W),代码最短,是面试/竞赛的默认写法;唯一要点是容量逆序。\n- 完全背包一维正序:与 0-1 只差遍历方向,记住『正序 = 可重复』,即可继续推广到多重背包等变体。",
+  "complexity": {
+    "best": "O(n·W)",
+    "avg": "O(n·W)",
+    "worst": "O(n·W)",
+    "space": "O(W)",
+    "stable": null,
+    "in_place": false,
+    "note": "n 为物品数、W 为容量。一维滚动空间 `O(W)`,二维为 `O(n·W)`。因复杂度依赖容量数值 W,属于**伪多项式**:W 很大时并不高效。stable/in_place 对 DP 不适用,记为 null/false。"
+  },
+  "entry": "knapsack01",
+  "test_code": "import random\n\ndef brute01(W, weights, values):\n    n = len(weights)\n    best = 0\n    for mask in range(1 << n):\n        w = v = 0\n        for i in range(n):\n            if mask >> i & 1:\n                w += weights[i]\n                v += values[i]\n        if w <= W:\n            best = max(best, v)\n    return best\n\nrandom.seed(20240614)\nassert knapsack01(0, [], []) == 0\nassert knapsack01(5, [6], [10]) == 0          # 唯一物品超重,装不下\nassert knapsack01(6, [6], [10]) == 10\nassert knapsack01(4, [1, 3, 4, 5], [15, 20, 30, 35]) == 35\nassert knapsack01(10, [2, 2, 6, 5, 4], [6, 3, 5, 4, 6]) == brute01(10, [2, 2, 6, 5, 4], [6, 3, 5, 4, 6])\nfor _ in range(400):\n    n = random.randint(0, 9)\n    W = random.randint(0, 16)\n    weights = [random.randint(1, 8) for _ in range(n)]\n    values = [random.randint(0, 20) for _ in range(n)]\n    assert knapsack01(W, weights, values) == brute01(W, weights, values), (W, weights, values)",
+  "variants": [
+    {
+      "title": "0-1 背包(二维)",
+      "time": "O(n·W)",
+      "space": "O(n·W)",
+      "starred": false,
+      "note": "最直观:`dp[i][c]` 含义清晰,便于理解与回溯方案;空间较大。",
+      "code": "def knapsack01(W, weights, values):\n    \"\"\"0-1 背包(二维)。dp[i][c]:前 i 件、容量 c 时的最大价值。\n\n    每件物品只能选 0 或 1 次,从『前 i-1 件』转移保证不重复选。\n    \"\"\"\n    n = len(weights)\n    dp = [[0] * (W + 1) for _ in range(n + 1)]\n    for i in range(1, n + 1):\n        w, v = weights[i - 1], values[i - 1]\n        for c in range(W + 1):\n            dp[i][c] = dp[i - 1][c]                          # 不选第 i 件\n            if w <= c:                                       # 容量够才能选\n                dp[i][c] = max(dp[i][c], dp[i - 1][c - w] + v)\n    return dp[n][W]"
+    },
+    {
+      "title": "0-1 背包(一维滚动,容量逆序)",
+      "time": "O(n·W)",
+      "space": "O(W)",
+      "starred": true,
+      "note": "面试/竞赛默认写法:滚动数组降到 O(W),容量**必须逆序**保证每件只选一次。",
+      "code": "def knapsack01(W, weights, values):\n    \"\"\"0-1 背包(一维滚动)。容量逆序遍历:dp[c-w] 取到的仍是上一行旧值,\n    保证每件物品最多被选一次。空间从 O(n*W) 降到 O(W)。\n    \"\"\"\n    dp = [0] * (W + 1)\n    for w, v in zip(weights, values):\n        for c in range(W, w - 1, -1):                        # 逆序 c: W -> w\n            dp[c] = max(dp[c], dp[c - w] + v)\n    return dp[W]"
+    },
+    {
+      "title": "完全背包(一维,容量正序)",
+      "time": "O(n·W)",
+      "space": "O(W)",
+      "starred": false,
+      "note": "每件可选无限次,与 0-1 只差遍历方向:容量**正序**让同一件反复叠加。契约不同(`knapsack_complete`),用写法级 test 对拍带重复暴力。",
+      "code": "def knapsack_complete(W, weights, values):\n    \"\"\"完全背包(一维)。每件物品可选无限次。容量正序遍历:dp[c-w] 取到的\n    是本行已更新的新值,因此同一件物品可被反复叠加。\n    \"\"\"\n    dp = [0] * (W + 1)\n    for w, v in zip(weights, values):\n        for c in range(w, W + 1):                            # 正序 c: w -> W\n            dp[c] = max(dp[c], dp[c - w] + v)\n    return dp[W]",
+      "test_code": "import random\n\ndef brute_complete(W, weights, values):\n    n = len(weights)\n    best = 0\n    def rec(i, cap, val):\n        nonlocal best\n        if i == n:\n            best = max(best, val)\n            return\n        k = 0\n        while k * weights[i] <= cap:\n            rec(i + 1, cap - k * weights[i], val + k * values[i])\n            k += 1\n    rec(0, W, 0)\n    return best\n\nrandom.seed(20240614)\nassert knapsack_complete(0, [], []) == 0\nassert knapsack_complete(5, [6], [10]) == 0       # 物品超重\nassert knapsack_complete(7, [3], [4]) == 8        # 3 可装两次,价值 8\nassert knapsack_complete(11, [1, 2, 5], [1, 6, 14]) == 32\nfor _ in range(200):\n    n = random.randint(0, 4)\n    W = random.randint(0, 12)\n    weights = [random.randint(2, 6) for _ in range(n)]\n    values = [random.randint(0, 12) for _ in range(n)]\n    assert knapsack_complete(W, weights, values) == brute_complete(W, weights, values), (W, weights, values)"
+    }
+  ],
+  "compare_table": "| 写法 | 状态 | 容量遍历 | 每件可选次数 | 空间 |\n| --- | --- | --- | --- | --- |\n| 0-1 二维 | dp[i][c] | 任意 | ≤ 1 | O(n·W) |\n| 0-1 一维 | dp[c] | 逆序 W→w | ≤ 1 | O(W) |\n| 完全一维 | dp[c] | 正序 w→W | 无限 | O(W) |",
+  "gotchas": [
+    "一维 0-1 背包容量**必须逆序**;写成正序就变成了完全背包(每件被重复计入)。",
+    "完全背包容量**必须正序**;写成逆序就退化回 0-1 背包。",
+    "复杂度 `O(n·W)` 是**伪多项式**:依赖容量数值 W 的大小,而非输入规模的位数,W 极大时并不高效。",
+    "一维写法外层枚举物品、内层枚举容量,**两层顺序不能交换**,否则无法保证每件物品的处理边界。",
+    "若求『**恰好装满**』而非『不超过容量』,初始化要改:`dp[0]=0`、其余 `dp[c]=-inf` 表示不可达,最后判断答案是否为 -inf。"
+  ],
+  "applications": [
+    {
+      "label": "LC 416 · 分割等和子集",
+      "url": "https://leetcode.cn/problems/partition-equal-subset-sum/"
+    },
+    {
+      "label": "LC 322 · 零钱兑换",
+      "url": "https://leetcode.cn/problems/coin-change/"
+    },
+    {
+      "label": "LC 518 · 零钱兑换 II",
+      "url": "https://leetcode.cn/problems/coin-change-2/"
+    },
+    {
+      "label": "LC 474 · 一和零",
+      "url": "https://leetcode.cn/problems/ones-and-zeroes/"
+    }
+  ],
+  "related": [
+    "backtracking"
+  ]
+}

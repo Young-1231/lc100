@@ -1,0 +1,87 @@
+{
+  "id": "fast-power",
+  "title": "快速幂 Fast Power",
+  "category": "快速幂",
+  "family": "math",
+  "tags": [
+    "数学",
+    "分治",
+    "位运算"
+  ],
+  "summary": "把指数按**二进制**拆开,用 `平方 + 按位累乘` 把 a^b 从 O(b) 降到 **O(log b)**;思想可推广到矩阵幂与快速乘。",
+  "idea": "🔹 一句话\n要算 a^b,朴素做法是把 a 连乘 b 次,需要 O(b) 次乘法。快速幂把指数 b 按**二进制**拆开:b 里每个为 1 的二进制位 2^k 对应一个 a^(2^k),把这些因子乘起来就是答案,只要 O(log b) 次乘法。\n\n🔹 为什么是 O(log b)\n核心恒等式:a^b = (a^(b/2))^2(b 为偶) 或 a·(a^((b-1)/2))^2(b 为奇)。每递推一层指数减半,所以乘法次数 = b 的二进制位数 = ⌊log₂ b⌋+1 = O(log b)。迭代写法维护两个量:`result` 累计答案,`base` 表示当前位代表的 a^(2^k);从低位到高位扫 b,这一位是 1 就把 `base` 乘进 `result`,每步 `base` 自乘一次平方(对应下一位 2^(k+1))。\n\n🔹 迭代过程追踪(power(3, 13),13 = 1101₂,从低位到高位)\n```\ne=13  result=1      base=3        e&1=1 → result=3\ne=6   result=3      base=9        e&1=0 → 跳过\ne=3   result=3      base=81       e&1=1 → result=243\ne=1   result=243    base=6561     e&1=1 → result=1594323\ne=0   结束,返回 1594323 = 3^13\n每步都执行 base = base*base、e >>= 1;只有当前位为 1 才把 base 乘进 result\n```\n\n🔹 取模快速幂\n求 a^b mod m 时,利用 (x·y) mod m = ((x mod m)·(y mod m)) mod m,在每一步乘法后**立刻取模**,`result` 与 `base` 永远不超过 m²,防止数值膨胀(在 C++/Java 里则是防止溢出)。初值要写成 `result = 1 % m`,这样 m=1 时能正确返回 0。注意:负指数在取模意义下要用**模逆元**(费马小定理),不是简单取倒数。\n\n🔹 推广到矩阵:O(log n) 求斐波那契\n快速幂只要求底层运算满足**结合律**,矩阵乘法正好满足,所以同样适用。斐波那契有矩阵恒等式:\n| 矩阵幂 | 等于 |\n| --- | --- |\n| `[[1,1],[1,0]]^n` | `[[F(n+1), F(n)], [F(n), F(n-1)]]` |\n于是把 `[[1,1],[1,0]]` 做 n 次幂(快速幂),取右上角即 F(n),复杂度 O(log n)(2×2 矩阵乘是常数)。这招能把各种**线性递推**从 O(n) 降到 O(log n)。\n\n🔹 还能推广到「快速乘」\n当 a·b 本身会溢出(大数模乘)时,把乘法也按 b 的二进制拆成 O(log b) 次加法(俗称龟速乘),与快速幂同构。Python 整数不溢出用不上,但竞赛 C++/Java 很常见。\n\n🔹 各写法取舍\n- **迭代快速幂**:空间 O(1)、无栈深风险,工程与面试首选。\n- **递归快速幂**:贴近 a^b=(a^(b/2))² 的数学定义、最好懂,但有 O(log b) 递归栈。\n- **取模快速幂**:模意义下的标准件,密码学 / 计数题必备。\n- **矩阵快速幂**:把快速幂思想升维,解线性递推 / 路径计数。",
+  "complexity": {
+    "best": "O(log b)",
+    "avg": "O(log b)",
+    "worst": "O(log b)",
+    "space": "O(1)",
+    "stable": null,
+    "in_place": null,
+    "note": "复杂度按乘法次数计,恒为 `O(log b)`(b 的二进制位数)。迭代版额外空间 `O(1)`,递归版递归栈 `O(log b)`。矩阵快速幂每步是固定大小矩阵乘(2×2 为常数),整体仍 `O(log n)`。稳定/原地是排序概念,这里不适用,故取 `null`。注:Python 大整数乘法本身并非真 O(1),此处按机器字乘法计数。"
+  },
+  "entry": "power",
+  "test_code": "import random\nrandom.seed(50)\nassert power(2, 10) == 1024\nassert power(2, 0) == 1\nassert power(5, 0) == 1\nassert power(0, 0) == 1          # 与 Python 0**0 == 1 一致\nassert power(0, 5) == 0\nassert power(-3, 3) == -27\nassert power(-2, 4) == 16\nfor _ in range(400):\n    a = random.randint(-12, 12)\n    b = random.randint(0, 24)\n    assert power(a, b) == a ** b, (a, b)\n",
+  "variants": [
+    {
+      "title": "整数快速幂(迭代)",
+      "time": "O(log b)",
+      "space": "O(1)",
+      "starred": true,
+      "note": "无递归栈、空间 O(1),**工程与面试首选**;契约 `power(a, b) -> int`(b≥0)。",
+      "code": "def power(a, b):\n    \"\"\"整数快速幂(迭代)。约定 b >= 0,返回 a ** b。\n    按 b 的二进制从低位到高位扫描:result 累计答案,base 是当前位代表的 a^(2^k)。\"\"\"\n    result = 1\n    base = a\n    e = b\n    while e > 0:\n        if e & 1:            # 当前最低位为 1,把这一位的贡献乘进答案\n            result *= base\n        base *= base         # base 平方,前进到下一个二进制位 a^(2^(k+1))\n        e >>= 1\n    return result\n",
+      "test_code": "import random\nrandom.seed(50)\nassert power(2, 10) == 1024\nassert power(2, 0) == 1\nassert power(5, 0) == 1\nassert power(0, 0) == 1          # 与 Python 0**0 == 1 一致\nassert power(0, 5) == 0\nassert power(-3, 3) == -27\nassert power(-2, 4) == 16\nfor _ in range(400):\n    a = random.randint(-12, 12)\n    b = random.randint(0, 24)\n    assert power(a, b) == a ** b, (a, b)\n"
+    },
+    {
+      "title": "整数快速幂(递归)",
+      "time": "O(log b)",
+      "space": "O(log b) 递归栈",
+      "starred": false,
+      "note": "直接照搬 `a^b=(a^(b/2))²` 的数学定义,最好理解;只递归一次,深度 O(log b)。",
+      "code": "def power(a, b):\n    \"\"\"整数快速幂(递归)。直接照搬恒等式 a^b = (a^(b/2))^2 (·a 若 b 为奇)。约定 b >= 0。\"\"\"\n    if b == 0:\n        return 1\n    half = power(a, b >> 1)   # 先算 a^(b//2),只递归一次,深度 O(log b)\n    sq = half * half\n    return sq * a if (b & 1) else sq\n",
+      "test_code": "import random\nrandom.seed(51)\nassert power(2, 10) == 1024\nassert power(7, 0) == 1\nassert power(0, 0) == 1\nassert power(-2, 5) == -32\nassert power(3, 13) == 1594323\nfor _ in range(400):\n    a = random.randint(-12, 12)\n    b = random.randint(0, 24)\n    assert power(a, b) == a ** b, (a, b)\n"
+    },
+    {
+      "title": "取模快速幂",
+      "time": "O(log b)",
+      "space": "O(1)",
+      "starred": false,
+      "note": "每步乘后立刻取模,等价内置 `pow(a,b,m)`;密码学 / 计数题必备。契约 `power_mod(a, b, m) -> int`。",
+      "code": "def power_mod(a, b, m):\n    \"\"\"取模快速幂。约定 b >= 0, m >= 1,返回 (a ** b) % m,与内置 pow(a, b, m) 等价。\n    每步乘法后立刻取模,防止中间结果膨胀/溢出。\"\"\"\n    result = 1 % m           # m == 1 时应为 0\n    base = a % m\n    e = b\n    while e > 0:\n        if e & 1:\n            result = result * base % m\n        base = base * base % m\n        e >>= 1\n    return result\n",
+      "test_code": "import random\nrandom.seed(52)\nassert power_mod(2, 10, 1000) == 24\nassert power_mod(3, 0, 7) == 1\nassert power_mod(5, 3, 1) == 0          # 任何数模 1 都是 0\nassert power_mod(2, 100, 1_000_000_007) == pow(2, 100, 1_000_000_007)\nfor _ in range(600):\n    a = random.randint(-50, 50)\n    b = random.randint(0, 40)\n    m = random.randint(1, 97)\n    assert power_mod(a, b, m) == pow(a, b, m), (a, b, m)\n"
+    },
+    {
+      "title": "矩阵快速幂求斐波那契",
+      "time": "O(log n)",
+      "space": "O(1)",
+      "starred": false,
+      "note": "把快速幂升维到 2×2 矩阵,O(log n) 求第 n 项;契约 `fib(n) -> int`(fib(0)=0)。",
+      "code": "def fib(n):\n    \"\"\"矩阵快速幂求斐波那契,O(log n)。约定 n >= 0,fib(0)=0, fib(1)=1。\n    利用 [[1,1],[1,0]]^n = [[F(n+1),F(n)],[F(n),F(n-1)]],取右上角即 F(n)。\"\"\"\n    def mul(A, B):           # 2x2 矩阵乘法\n        return [\n            [A[0][0]*B[0][0] + A[0][1]*B[1][0], A[0][0]*B[0][1] + A[0][1]*B[1][1]],\n            [A[1][0]*B[0][0] + A[1][1]*B[1][0], A[1][0]*B[0][1] + A[1][1]*B[1][1]],\n        ]\n    result = [[1, 0], [0, 1]]   # 单位矩阵,n=0 时直接得 F(0)=0\n    base = [[1, 1], [1, 0]]\n    e = n\n    while e > 0:                # 对矩阵套同一套快速幂\n        if e & 1:\n            result = mul(result, base)\n        base = mul(base, base)\n        e >>= 1\n    return result[0][1]\n",
+      "test_code": "ref = [0, 1]\nfor i in range(2, 80):\n    ref.append(ref[-1] + ref[-2])\nassert fib(0) == 0\nassert fib(1) == 1\nassert fib(2) == 1\nassert fib(10) == 55\nassert fib(20) == 6765\nfor n in range(0, 80):\n    assert fib(n) == ref[n], n\n"
+    }
+  ],
+  "compare_table": "| 写法 | 契约 | 适用 | 空间 | 关键点 |\n| --- | --- | --- | --- | --- |\n| 迭代快速幂 | `power(a,b)` | 通用 a^b | O(1) | 工程首选,无栈深 |\n| 递归快速幂 | `power(a,b)` | 教学 / 易懂 | O(log b) | 贴近恒等式 |\n| 取模快速幂 | `power_mod(a,b,m)` | 模意义运算 | O(1) | 每步取模,init `1 % m` |\n| 矩阵快速幂 | `fib(n)` | 线性递推 / 路径数 | O(1) | 单位矩阵起步,取 `[0][1]` |",
+  "gotchas": [
+    "循环条件用 `while e > 0`;每轮**无论奇偶**都要 `base *= base` 且 `e >>= 1`,只是偶数位不把 base 乘进 result——别漏掉偶数步的平方。",
+    "`b == 0` 必须返回 1(`a^0 = 1`,含 `0^0 = 1`,与 Python 一致);迭代版靠 `result` 初值为 1 自然覆盖。",
+    "取模快速幂**每一步都要取模**(result 与 base 都取),且初值写 `result = 1 % m` 才能正确处理 m=1。",
+    "负指数:整数 `power` 约定 b≥0;若底数为实数且 n<0,应算 a^|n| 再取倒数(见 LC 50)。但**模意义下的负指数**要用模逆元(费马小定理),不能简单取倒数。",
+    "矩阵快速幂初值是**单位矩阵**(不是零矩阵);斐波那契用 `[[1,1],[1,0]]^n`,结果取右上角 `[0][1]` 才是 F(n)。"
+  ],
+  "applications": [
+    {
+      "label": "LC 50 · Pow(x, n)",
+      "url": "https://leetcode.cn/problems/powx-n/"
+    },
+    {
+      "label": "LC 372 · 超级次方",
+      "url": "https://leetcode.cn/problems/super-pow/"
+    },
+    {
+      "label": "LC 509 · 斐波那契数",
+      "url": "https://leetcode.cn/problems/fibonacci-number/"
+    }
+  ],
+  "related": [
+    "gcd"
+  ]
+}

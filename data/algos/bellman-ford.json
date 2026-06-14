@@ -1,0 +1,69 @@
+{
+  "id": "bellman-ford",
+  "title": "Bellman-Ford / SPFA",
+  "category": "最短路",
+  "family": "graph",
+  "tags": [
+    "最短路",
+    "负权",
+    "负环检测"
+  ],
+  "summary": "对所有边反复**松弛** `V-1` 轮,求**带负权**的单源最短路;第 `V` 轮还能松弛即存在**负环**。`SPFA` 是它的队列优化版,稀疏图更快。",
+  "idea": "🔹 一句话\n带**负权**的单源最短路。反复做一个简单动作——**松弛(relax)**:对边 `u→v`,若 `dist[u]+w < dist[v]` 就更新 `dist[v]`。把所有边松弛 `V-1` 轮,最短路就出来了;若再松弛一轮还能变小,就说明图里有**负环**。\n\n🔹 松弛是唯一的原子操作\n`dist[v]` 表示『目前找到的、源点到 v 的最短距离上界』。松弛 `u→v` 就是问一句:『绕道 u 再走这条边到 v,会不会更近?』几乎所有最短路算法(Dijkstra / SPFA / Floyd)本质都是松弛,区别只在**松弛的顺序与次数**。Bellman-Ford 最朴素:不挑顺序,把每条边都松弛,重复足够多轮。\n\n🔹 为什么恰好 V-1 轮\n关键事实:无负环时,任意最短路都是**简单路径**,至多 `V-1` 条边。用归纳法——第 `k` 轮结束后,所有『最短路恰好用 ≤k 条边』的点距离都已正确;而最长的最短路只有 `V-1` 条边,所以 `V-1` 轮后全部收敛。每轮扫全部 `E` 条边,合起来就是 `O(V·E)`。实践中常加一句『某轮一条边都没松弛就提前停』,收敛快时能省下大量轮次。\n\n🔹 负环检测:第 V 轮还能松弛\n无负环时 `V-1` 轮后已是不动点,再扫一轮**不可能**有任何松弛。反过来,若第 `V` 轮仍有某条边能松弛,就只可能是存在一条**负权环**——绕环一圈总权为负,能把环上点的距离无限拉低、永远收敛不了。注意:这样只能查到**从源点可达**的负环;要查整图任意负环,需另设一个到所有点距离都为 0 的『超级源点』。\n\n🔹 SPFA:只松弛『有戏』的点\n朴素 BF 每轮都盲扫全部边,但其实只有『上一轮距离刚被改短的点』,它的出边这轮才可能产生新松弛。SPFA 用一个队列维护这些『待松弛』的点:弹出队首,松弛它的出边;被改短的邻居若不在队里就入队。平均比朴素 BF 快很多,稀疏图近 `O(E)`;但**最坏仍是 `O(V·E)`**(存在专门卡它的构造图)。负环判定改用计数:**某点入队次数 ≥ V**(等价于其最短路边数 ≥ V),说明它落在一个负环上。\n\n🔹 三兄弟怎么选\n| 算法 | 负权 | 负环 | 复杂度 | 场景 |\n| --- | --- | --- | --- | --- |\n| Dijkstra | ✗ | ✗ | `O(E log V)` | 非负权单源,最快 |\n| Bellman-Ford / SPFA | ✓ | 可检测 | `O(V·E)` | 有负权 / 要判负环 |\n| Floyd | ✓ | 可检测 | `O(V³)` | 全源、点少、稠密 |\n\n🔹 过程追踪(标准写法,e1)\n```\n点 0 1 2 3   边: 0→1(4) 0→2(5) 1→2(-3) 2→3(2) 1→3(6)\n初始  dist = [0, ∞, ∞, ∞]\n轮1   0→1: d[1]=4    0→2: d[2]=5    1→2: d[2]=min(5,4-3)=1\n      2→3: d[3]=1+2=3    1→3: d[3]=min(3,4+6)=3\n      dist = [0, 4, 1, 3]\n轮2   逐边检查,无一可再变小 → 本轮无松弛,提前结束\n判环  再扫一遍仍无松弛 ⇒ 无负环\n结果  dist = [0, 4, 1, 3]\n```",
+  "complexity": {
+    "best": "O(E)",
+    "avg": "O(V·E)",
+    "worst": "O(V·E)",
+    "space": "O(V)",
+    "stable": null,
+    "in_place": null,
+    "note": "`V` 为点数、`E` 为边数。标准写法每轮扫全部边、共 `V-1` 轮,加一轮判负环,稳定 `O(V·E)`;加上『本轮无松弛即停』后,最好可达 `O(E)`(一两轮就收敛)。SPFA 平均远快于此(稀疏图近 `O(E)`),但存在能把它卡到 `O(V·E)` 的构造图。空间:`dist`/队列 `O(V)`,SPFA 另需邻接表 `O(V+E)`。最短路不涉及排序的稳定性/原地,故 `stable`、`in_place` 取 `null`。"
+  },
+  "entry": "bellman_ford",
+  "test_code": "import random, math\nrandom.seed(20240614)\nINF = math.inf\n\n\ndef brute(n, edges, src):\n    # 枚举所有简单路径取最短(无负环时最短路必为简单路径,故此参照正确)\n    adj = [[] for _ in range(n)]\n    for u, v, w in edges:\n        adj[u].append((v, w))\n    best = [INF] * n\n\n    def dfs(u, d, seen):\n        if d < best[u]:\n            best[u] = d\n        for v, w in adj[u]:\n            if v not in seen:\n                seen.add(v)\n                dfs(v, d + w, seen)\n                seen.discard(v)\n\n    dfs(src, 0, {src})\n    return best\n\n\n# —— 固定用例:含负权、无负环 ——\ne1 = [(0, 1, 4), (0, 2, 5), (1, 2, -3), (2, 3, 2), (1, 3, 6)]\nd1, neg1 = bellman_ford(4, e1, 0)\nassert neg1 is False\nassert d1 == [0, 4, 1, 3]\nassert d1 == brute(4, e1, 0)\n\n# 不可达点保持 inf\ne2 = [(0, 1, 2), (2, 3, 1)]\nd2, neg2 = bellman_ford(4, e2, 0)\nassert neg2 is False\nassert d2[2] == INF and d2[3] == INF\nassert d2 == brute(4, e2, 0)\n\n# —— 固定用例:含从 src 可达的负环 ——\ne3 = [(0, 1, 1), (1, 2, -1), (2, 1, -1)]       # 1<->2 负环,经 0 可达\nassert bellman_ford(3, e3, 0)[1] is True\ne4 = [(0, 1, 2), (1, 1, -1)]                    # 负权自环也是负环\nassert bellman_ford(2, e4, 0)[1] is True\n\n# —— 随机对拍 1:DAG(边只从小编号指向大编号,权可负)⇒ 必无负环 ——\nfor _ in range(300):\n    n = random.randint(1, 6)\n    edges = [(u, v, random.randint(-5, 9))\n             for u in range(n) for v in range(u + 1, n) if random.random() < 0.5]\n    dist, neg = bellman_ford(n, edges, 0)\n    assert neg is False, (n, edges)\n    assert dist == brute(n, edges, 0), (n, edges)\n\n# —— 随机对拍 2:可含环但权非负 ⇒ 必无负环 ——\nfor _ in range(300):\n    n = random.randint(1, 6)\n    edges = [(random.randint(0, n - 1), random.randint(0, n - 1), random.randint(0, 9))\n             for _ in range(random.randint(0, 2 * n))]\n    dist, neg = bellman_ford(n, edges, 0)\n    assert neg is False, (n, edges)\n    assert dist == brute(n, edges, 0), (n, edges)\n\n# —— 随机对拍 3:链 + 负回边构造『从 src 可达的负环』⇒ 必为 True ——\nfor _ in range(300):\n    m = random.randint(1, 5)\n    n = m + 1 + random.randint(0, 3)\n    edges = [(i, i + 1, 1) for i in range(m)]           # 链 0->1->...->m,沿途均从 0 可达\n    edges.append((m, 0, -(m + random.randint(1, 5))))   # 负回边,使环 0->...->m->0 总权为负\n    for _ in range(random.randint(0, 5)):               # 再撒些随机边(不会消除已存在的负环)\n        edges.append((random.randint(0, n - 1), random.randint(0, n - 1),\n                      random.randint(-3, 5)))\n    assert bellman_ford(n, edges, 0)[1] is True, (n, edges)\n",
+  "variants": [
+    {
+      "title": "标准 Bellman-Ford(V-1 轮松弛)",
+      "time": "O(V·E)(提前收敛时最好 O(E))",
+      "space": "O(V)",
+      "starred": false,
+      "note": "最朴素也最好记:把每条边松弛 `V-1` 轮,再多扫一轮判负环。边以边表直接给、或图较稠密时直接用它。",
+      "code": "import math\n\n\ndef bellman_ford(n, edges, src):\n    \"\"\"标准 Bellman-Ford:对所有边松弛 V-1 轮,求带负权的单源最短路。\n    第 V 轮若仍能松弛 ⇒ 存在从 src 可达的负环。\n    n 个点(编号 0..n-1),edges=[(u, v, w)] 为有向边、权可负,src 为源点。\n    返回 (dist, has_neg_cycle):dist[v] 是 src 到 v 的最短距离,不可达为 math.inf。\"\"\"\n    INF = math.inf\n    dist = [INF] * n\n    dist[src] = 0\n    # 不含负环时,最短路是简单路径、至多 V-1 条边,故松弛 V-1 轮必收敛\n    for _ in range(n - 1):\n        updated = False\n        for u, v, w in edges:\n            if dist[u] != INF and dist[u] + w < dist[v]:\n                dist[v] = dist[u] + w\n                updated = True\n        if not updated:                 # 本轮无松弛 ⇒ 已达不动点,后续轮也不会变,提前结束\n            break\n    # 第 V 轮:仍能松弛 ⇒ 存在从 src 可达的负环(距离可被无限拉低)\n    has_neg = False\n    for u, v, w in edges:\n        if dist[u] != INF and dist[u] + w < dist[v]:\n            has_neg = True\n            break\n    return dist, has_neg\n"
+    },
+    {
+      "title": "SPFA(队列优化 + 入队计数判负环)",
+      "time": "平均远小于 O(V·E),最坏 O(V·E)",
+      "space": "O(V+E)",
+      "starred": true,
+      "note": "只松弛『刚被改短』的点,稀疏图上快得多;入队次数 `>= V` 即判定负环。竞赛/工程里带负权时的常用首选。",
+      "code": "import math\nfrom collections import deque\n\n\ndef bellman_ford(n, edges, src):\n    \"\"\"SPFA(Shortest Path Faster Algorithm):Bellman-Ford 的队列优化版。\n    只把『距离刚被改短』的点入队,再用它的出边去松弛邻居,避免每轮盲扫全部边。\n    判负环:某点入队次数 >= V ⇒ 存在从 src 可达的负环。\n    返回 (dist, has_neg_cycle),不可达为 math.inf。\"\"\"\n    INF = math.inf\n    adj = [[] for _ in range(n)]\n    for u, v, w in edges:\n        adj[u].append((v, w))\n    dist = [INF] * n\n    dist[src] = 0\n    in_queue = [False] * n\n    cnt = [0] * n                        # cnt[v]:v 的入队次数\n    q = deque([src])\n    in_queue[src] = True\n    cnt[src] = 1\n    while q:\n        u = q.popleft()\n        in_queue[u] = False              # 出队;之后若再被松弛可重新入队\n        du = dist[u]\n        for v, w in adj[u]:\n            if du + w < dist[v]:\n                dist[v] = du + w\n                if not in_queue[v]:      # 已在队中则只更新距离,不重复入队\n                    q.append(v)\n                    in_queue[v] = True\n                    cnt[v] += 1\n                    if cnt[v] >= n:      # 入队 >= V 次 ⇒ 该点处在一个负环上\n                        return dist, True\n    return dist, False\n"
+    }
+  ],
+  "compare_table": "| 写法 | 松弛策略 | 负环判定 | 平均 | 最坏 | 适合 |\n| --- | --- | --- | --- | --- | --- |\n| 标准 BF | 每轮扫全部边 ×(V-1) | 第 V 轮仍可松弛 | `O(V·E)` | `O(V·E)` | 边表直接给 / 稠密图 |\n| SPFA | 队列只松弛刚更新的点 | 某点入队次数 ≥ V | 远小于 `O(V·E)` | `O(V·E)` | 稀疏图,常用 |",
+  "gotchas": [
+    "松弛前必须判 `dist[u] != inf`,否则 `inf + 负权` 会算出一个有限值,把**不可达点**误标成可达。",
+    "**`V-1` 轮不能少**:少了可能还没收敛;判负环必须再单独跑『第 `V` 轮』,本轮仍能松弛才说明有负环。",
+    "标准 BF 与 SPFA 都只能发现**从源点可达**的负环。要检测整图任意负环,需建一个到所有点距离为 0 的『超级源点』(或对每个未访问点重启)。",
+    "SPFA 判负环用**入队次数 `>= V`**(等价『最短路边数 `>= V`』);别忘了 `in_queue` 去重,否则同一点反复入队会让计数失真。",
+    "**SPFA 不是 Dijkstra 的替代品**:存在专门把 SPFA 卡到 `O(V·E)` 的网格图;**非负权**图请直接上堆优化 Dijkstra(`O(E log V)`)。",
+    "像 LC 787 这类**限「≤K 步」**的最短路不能直接套 BF:要么只迭代 `K+1` 轮,要么每轮都基于**上一轮的 dist 快照**松弛,防止一轮内连续松弛跨越多条边。"
+  ],
+  "applications": [
+    {
+      "label": "LC 743 · 网络延迟时间",
+      "url": "https://leetcode.cn/problems/network-delay-time/"
+    },
+    {
+      "label": "LC 787 · K 站中转内最便宜的航班(限 ≤K 步,需改造)",
+      "url": "https://leetcode.cn/problems/cheapest-flights-within-k-stops/"
+    },
+    {
+      "label": "LC 1514 · 概率最大的路径(乘性松弛)",
+      "url": "https://leetcode.cn/problems/path-with-maximum-probability/"
+    }
+  ],
+  "related": [
+    "dijkstra",
+    "floyd"
+  ]
+}
