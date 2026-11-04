@@ -1,0 +1,2034 @@
+{
+ "categories": [
+  {
+   "name": "哈希表",
+   "ids": [
+    1,
+    3,
+    347,
+    146
+   ]
+  },
+  {
+   "name": "双指针",
+   "ids": [
+    21,
+    206,
+    141,
+    19,
+    15,
+    11
+   ]
+  },
+  {
+   "name": "滑动窗口",
+   "ids": [
+    76,
+    209
+   ]
+  },
+  {
+   "name": "单调栈",
+   "ids": [
+    739,
+    84,
+    42
+   ]
+  },
+  {
+   "name": "二叉树和递归",
+   "ids": [
+    94,
+    104,
+    101,
+    236,
+    235,
+    124,
+    98,
+    230,
+    450
+   ]
+  },
+  {
+   "name": "回溯和DFS",
+   "ids": [
+    46,
+    39,
+    78,
+    22,
+    200,
+    113
+   ]
+  },
+  {
+   "name": "动态规划",
+   "ids": [
+    70,
+    300,
+    322,
+    1143,
+    72,
+    198,
+    121,
+    122,
+    53,
+    152,
+    312,
+    354
+   ]
+  },
+  {
+   "name": "二分查找",
+   "ids": [
+    33,
+    34,
+    4
+   ]
+  },
+  {
+   "name": "前缀和",
+   "ids": [
+    560,
+    525
+   ]
+  },
+  {
+   "name": "贪心",
+   "ids": [
+    55,
+    56,
+    134
+   ]
+  },
+  {
+   "name": "位运算",
+   "ids": [
+    136,
+    231
+   ]
+  },
+  {
+   "name": "图论",
+   "ids": [
+    207
+   ]
+  },
+  {
+   "name": "前缀树",
+   "ids": [
+    208
+   ]
+  },
+  {
+   "name": "链表",
+   "ids": [
+    2,
+    92
+   ]
+  },
+  {
+   "name": "数学",
+   "ids": [
+    169,
+    202
+   ]
+  }
+ ],
+ "items": [
+  {
+   "id": 1,
+   "title": "两数之和",
+   "method": "哈希表版",
+   "steps": [
+    "遍历数组，用哈希表记录「数值→下标」",
+    "对于每个数，检查「目标值 - 当前数」是否在哈希表中",
+    "若在，直接返回两个下标",
+    "若不在，将当前数存入哈希表"
+   ],
+   "oneliner": "哈希表存数值找差值，O(1) 查找，两数之和一边走一边查。",
+   "code": "class Solution:\n    def twoSum(self, nums: List[int], target: int) -> List[int]:\n        seen = {}  # 哈希表：数值 -> 下标\n        for i, x in enumerate(nums):\n            if target - x in seen:  # 查差值是否已见过\n                return [seen[target - x], i]\n            seen[x] = i  # 存入当前数",
+   "points": [
+    {
+     "k": "查找方式",
+     "v": "哈希表实现 O(1) 查找，比暴力双循环 O(n²) 更优。"
+    },
+    {
+     "k": "一边遍历一边存入",
+     "v": "避免用同一个元素两次（如 nums[i] + nums[i] 不合法）。"
+    },
+    {
+     "k": "返回值是下标",
+     "v": "找到的是两个数对应的下标，而非数值本身。"
+    }
+   ],
+   "followup": "若问「为什么不用双指针」，答：双指针需排序后会改变下标关系，哈希表保留下标且只需一遍遍历。",
+   "category": "哈希表",
+   "in_site": true,
+   "difficulty": "Easy",
+   "leetcode_url": "https://leetcode.cn/problems/two-sum/",
+   "day": 1
+  },
+  {
+   "id": 3,
+   "title": "无重复字符的最长子串",
+   "method": "滑动窗口",
+   "steps": [
+    "右指针扩展窗口，左指针收缩去重",
+    "用哈希表记录字符出现情况",
+    "右指针每移一位检查是否重复，若重复则左指针收缩直到无重复"
+   ],
+   "oneliner": "滑动窗口扩右收左，哈希表记录字符最新位置，重复则收缩。",
+   "code": "class Solution:\n    def lengthOfLongestSubstring(self, s: str) -> int:\n        char_index = {}  # 哈希表：字符 -> 最新下标\n        left = 0  # 左指针\n        max_len = 0  # 最长长度\n        for right, ch in enumerate(s):  # 右指针扩展\n            if ch in char_index and char_index[ch] >= left:  # 字符在窗口内重复\n                left = char_index[ch] + 1  # 收缩左指针\n            char_index[ch] = right  # 更新字符最新位置\n            max_len = max(max_len, right - left + 1)  # 更新最大长度\n        return max_len",
+   "points": [
+    {
+     "k": "收缩条件",
+     "v": "char_index[ch] >= left 说明字符在当前窗口内出现过，需要收缩左指针。"
+    },
+    {
+     "k": "更新位置",
+     "v": "每轮都把 char_index[ch] 更新为最新下标，保证记录的是最近一次出现的位置。"
+    },
+    {
+     "k": "最长长度",
+     "v": "每次迭代都更新 max_len，确保记录的是全局最长的无重复子串长度。"
+    }
+   ],
+   "followup": "",
+   "category": "哈希表",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/longest-substring-without-repeating-characters/",
+   "day": 1
+  },
+  {
+   "id": 347,
+   "title": "前 K 个高频元素",
+   "method": "堆排序",
+   "steps": [
+    "先用 Counter 统计每个数的出现频率",
+    "维护一个大小为 K 的最小堆",
+    "遍历的过程中保持堆的大小为 K，最后堆里的元素就是频率最高的 K 个"
+   ],
+   "oneliner": "Counter 统计频率，最小堆保留 K 个最大，O(NlogK)。",
+   "code": "import heapq\nfrom collections import Counter\n\nclass Solution:\n    def topKFrequent(self, nums: List[int], k: int) -> List[int]:\n        freq = Counter(nums)  # 统计频率\n        heap = []  # 最小堆，存(count, num)\n        for num, count in freq.items():\n            heapq.heappush(heap, (count, num))  # 插入堆\n            if len(heap) > k:  # 保持堆大小为k\n                heapq.heappop(heap)  # 弹出最小的\n        return [num for count, num in heap]  # 返回堆中的数",
+   "points": [
+    {
+     "k": "堆排序规则",
+     "v": "用元组 (count, num) 入堆，Python 最小堆按 count 从小到大排序，count 最小的会被最先弹出。"
+    },
+    {
+     "k": "维护大小为 K",
+     "v": "堆满后每次 push 新元素会自动 pop 掉 count 最小的，保证堆里始终是频率最大的 K 个。"
+    },
+    {
+     "k": "最终结果",
+     "v": "遍历完成后，堆中剩余的 K 个元素就是出现频率最高的 K 个数，无需再排序。"
+    }
+   ],
+   "followup": "",
+   "category": "哈希表",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/top-k-frequent-elements/",
+   "day": 6
+  },
+  {
+   "id": 146,
+   "title": "LRU 缓存",
+   "method": "哈希表+双向链表",
+   "steps": [
+    "哈希表提供 O(1) 查找",
+    "双向链表维护访问顺序（头最新，尾最旧）",
+    "get 时将节点移到头，put 时新节点放头，超容量删尾节点"
+   ],
+   "oneliner": "哈希表 O(1) 查找，双向链表维护顺序，头最新尾最旧。",
+   "code": "class DLinkedNode:\n    def __init__(self, key=0, val=0):\n        self.key = key\n        self.val = val\n        self.prev = None\n        self.next = None\n\nclass LRUCache:\n    def __init__(self, capacity: int):\n        self.capacity = capacity\n        self.cache = {}  # 哈希表：key -> 节点\n        self.head = DLinkedNode()  # 虚拟头\n        self.tail = DLinkedNode()  # 虚拟尾\n        self.head.next = self.tail\n        self.tail.prev = self.head\n\n    def _remove(self, node):\n        node.prev.next = node.next\n        node.next.prev = node.prev\n\n    def _add_to_head(self, node):\n        node.next = self.head.next\n        node.prev = self.head\n        self.head.next.prev = node\n        self.head.next = node\n\n    def get(self, key: int) -> int:\n        if key in self.cache:\n            node = self.cache[key]\n            self._remove(node)  # 从原位置移除\n            self._add_to_head(node)  # 移到头部\n            return node.val\n        return -1\n\n    def put(self, key: int, val: int) -> None:\n        if key in self.cache:\n            node = self.cache[key]\n            node.val = val\n            self._remove(node)\n            self._add_to_head(node)\n        else:\n            node = DLinkedNode(key, val)\n            self.cache[key] = node\n            self._add_to_head(node)\n            if len(self.cache) > self.capacity:\n                removed = self.tail.prev  # 移除最久未使用的\n                self._remove(removed)\n                del self.cache[removed.key]",
+   "points": [
+    {
+     "k": "双向链表顺序",
+     "v": "头部是最近访问的节点，尾部是最久未使用的节点，删除操作在 tail.prev 进行。"
+    },
+    {
+     "k": "哈希表作用",
+     "v": "key → 节点，实现 O(1) 时间复杂度的查找、插入、删除。"
+    },
+    {
+     "k": "容量超限处理",
+     "v": "删除 tail.prev（最久未使用的节点）后，同时从哈希表中移除对应的 key，保持一致性。"
+    }
+   ],
+   "followup": "",
+   "category": "哈希表",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/lru-cache/",
+   "day": 3
+  },
+  {
+   "id": 21,
+   "title": "合并两个有序链表",
+   "method": "迭代版",
+   "steps": [
+    "新建 dummy 节点，用 cur 指针链接结果",
+    "比较 l1 和 l2 的头节点，小的接入 cur 后移",
+    "最后把剩余的链表接入"
+   ],
+   "oneliner": "双指针比较，小的接入指针后移，迭代合并。",
+   "code": "class Solution:\n    def mergeTwoLists(self, l1: ListNode, l2: ListNode) -> ListNode:\n        dummy = ListNode()  # 哑节点\n        cur = dummy\n        while l1 and l2:  # 比较两链表头\n            if l1.val <= l2.val:\n                cur.next = l1\n                l1 = l1.next\n            else:\n                cur.next = l2\n                l2 = l2.next\n            cur = cur.next\n        cur.next = l1 or l2  # 接入剩余部分\n        return dummy.next",
+   "points": [
+    {
+     "k": "哑节点作用",
+     "v": "统一处理头节点为空的边界情况，cur = dummy 起步，return dummy.next 即为结果。"
+    },
+    {
+     "k": "循环终止条件",
+     "v": "while l1 and l2 同时不为空时才比较，任一为空则直接接入剩余部分。"
+    },
+    {
+     "k": "时间空间复杂度",
+     "v": "时间 O(n+m)（两链表长度之和），空间 O(1)（仅用指针，无额外数组）。"
+    }
+   ],
+   "followup": "",
+   "category": "双指针",
+   "in_site": true,
+   "difficulty": "Easy",
+   "leetcode_url": "https://leetcode.cn/problems/merge-two-sorted-lists/",
+   "day": 3
+  },
+  {
+   "id": 206,
+   "title": "反转链表",
+   "method": "迭代版",
+   "steps": [
+    "用 prev、cur 双指针",
+    "逐个反转指针方向：cur.next = prev",
+    "prev、cur 同时后移"
+   ],
+   "oneliner": "prev、cur 双指针，逐个反转指针方向。",
+   "code": "class Solution:\n    def reverseList(self, head: ListNode) -> ListNode:\n        prev = None\n        cur = head\n        while cur:\n            next_node = cur.next  # 保存下一个\n            cur.next = prev  # 反转指针\n            prev = cur  # prev后移\n            cur = next_node  # cur后移\n        return prev  # prev是新头",
+   "points": [
+    {
+     "k": "核心操作三步曲",
+     "v": "next_node = cur.next → cur.next = prev → prev = cur → cur = next_node。"
+    },
+    {
+     "k": "最终 prev 指向新头",
+     "v": "循环结束时 prev 指向原链表的尾节点，即新链表的头节点。"
+    },
+    {
+     "k": "空间时间复杂度",
+     "v": "空间 O(1)（仅用三个指针），时间 O(n)（遍历一次链表）。"
+    }
+   ],
+   "followup": "",
+   "category": "双指针",
+   "in_site": true,
+   "difficulty": "Easy",
+   "leetcode_url": "https://leetcode.cn/problems/reverse-linked-list/",
+   "day": 3
+  },
+  {
+   "id": 141,
+   "title": "环形链表",
+   "method": "Floyd 快慢指针",
+   "steps": [
+    "快指针每次走两步，慢指针每次走一步",
+    "若链表有环，两指针必相遇",
+    "相遇则有环，否则无环"
+   ],
+   "oneliner": "快慢指针赛跑，有环必相遇，O(n)。",
+   "code": "class Solution:\n    def hasCycle(self, head: ListNode) -> bool:\n        fast = slow = head  # 初始化快慢指针\n        while fast and fast.next:  # 快指针能走\n            fast = fast.next.next  # 快走两步\n            slow = slow.next  # 慢走一步\n            if fast == slow:  # 相遇\n                return True\n        return False",
+   "points": [
+    {
+     "k": "快慢指针速度差",
+     "v": "快指针每次走两步，慢指针每次走一步，相对速度为 1，有环必相遇。"
+    },
+    {
+     "k": "无环情况处理",
+     "v": "快指针会先走到 None（链表尾部），while fast and fast.next 条件不满足时退出循环。"
+    },
+    {
+     "k": "相遇即有环",
+     "v": "快慢指针相遇说明存在环，返回 True；正常走到终点则无环，返回 False。"
+    }
+   ],
+   "followup": "",
+   "category": "双指针",
+   "in_site": true,
+   "difficulty": "Easy",
+   "leetcode_url": "https://leetcode.cn/problems/linked-list-cycle/",
+   "day": 3
+  },
+  {
+   "id": 19,
+   "title": "删除链表的倒数第 N 个结点",
+   "method": "快慢指针",
+   "steps": [
+    "快慢指针初始都指向 dummy",
+    "快指针先走 n+1 步，然后快慢一起走",
+    "当快到末尾时，慢指针的下一个就是待删除节点"
+   ],
+   "oneliner": "快指针先走 n+1 步，双指针齐走，快到末尾时慢指针指向待删节点。",
+   "code": "class Solution:\n    def removeNthFromEnd(self, head: ListNode, n: int) -> ListNode:\n        dummy = ListNode(next=head)  # 哑节点\n        fast = slow = dummy\n        for _ in range(n + 1):  # 快指针先走n+1步\n            fast = fast.next\n        while fast:  # 双指针齐走\n            fast = fast.next\n            slow = slow.next\n        slow.next = slow.next.next  # 删除节点\n        return dummy.next",
+   "points": [
+    {
+     "k": "哑节点必要性",
+     "v": "统一处理「删除头节点」这种边界情况，无需单独判断，代码更简洁。"
+    },
+    {
+     "k": "快指针先走 n+1 步",
+     "v": "使得 slow 最终指向待删除节点的前一个位置，便于执行删除操作。"
+    },
+    {
+     "k": "时间空间复杂度",
+     "v": "时间 O(n)（遍历一次），空间 O(1)（仅用指针），最常用的标准双指针套路。"
+    }
+   ],
+   "followup": "",
+   "category": "双指针",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/remove-nth-node-from-end-of-list/",
+   "day": 3
+  },
+  {
+   "id": 15,
+   "title": "三数之和",
+   "method": "排序+双指针",
+   "steps": [
+    "排序数组，遍历第一个数，双指针找两数之和等于负的第一个数",
+    "去重：跳过相同的第一个数、两数之和相同的组合",
+    "结果存储三元组"
+   ],
+   "oneliner": "排序后遍历 a，双指针找 b+c=-a，去重跳过相同值。",
+   "code": "class Solution:\n    def threeSum(self, nums: List[int]) -> List[List[int]]:\n        nums.sort()  # 排序\n        result = []\n        n = len(nums)\n        for i in range(n - 2):  # 遍历第一个数\n            if nums[i] > 0:  # 优化：第一个数大于0则无解\n                break\n            if i > 0 and nums[i] == nums[i - 1]:  # 去重\n                continue\n            left = i + 1\n            right = n - 1\n            while left < right:  # 双指针找另外两个数\n                s = nums[i] + nums[left] + nums[right]\n                if s == 0:\n                    result.append([nums[i], nums[left], nums[right]])\n                    left += 1\n                    right -= 1\n                    while left < right and nums[left] == nums[left - 1]:\n                        left += 1\n                    while left < right and nums[right] == nums[right + 1]:\n                        right -= 1\n                elif s < 0:\n                    left += 1\n                else:\n                    right -= 1\n        return result",
+   "points": [
+    {
+     "k": "排序的必要性",
+     "v": "排序后方便用双指针，且相同元素相邻，便于去重。"
+    },
+    {
+     "k": "去重策略",
+     "v": "外层跳过重复的 nums[i]，内层 while 跳过重复的 nums[left] 和 nums[right]。"
+    },
+    {
+     "k": "三数之和为零",
+     "v": "若 nums[i] > 0 则后面全是正数，不可能凑出零，直接 break 优化。"
+    }
+   ],
+   "followup": "",
+   "category": "双指针",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/3sum/",
+   "day": 1
+  },
+  {
+   "id": 11,
+   "title": "盛最多水的容器",
+   "method": "双指针收窄",
+   "steps": [
+    "左右指针向中间收敛",
+    "每次移动短板（因为水高由短板决定，移动长板不可能增加面积）",
+    "记录最大面积"
+   ],
+   "oneliner": "双指针收窄，移动短板更新最大面积，O(n)。",
+   "code": "class Solution:\n    def maxArea(self, height: List[int]) -> int:\n        left = 0\n        right = len(height) - 1\n        max_area = 0\n        while left < right:\n            area = min(height[left], height[right]) * (right - left)  # 计算面积\n            max_area = max(max_area, area)  # 更新最大\n            if height[left] < height[right]:  # 移动短板\n                left += 1\n            else:\n                right -= 1\n        return max_area",
+   "points": [
+    {
+     "k": "短板决定高度",
+     "v": "水的容量由较短的那根柱子决定，移动长板不可能增加水量（高度不会变高）。"
+    },
+    {
+     "k": "为何移动短板",
+     "v": "移动短板后，新的较短板可能变高，从而增大水量，需要尝试。"
+    },
+    {
+     "k": "双指针收敛",
+     "v": "左右指针向中间收敛，每次移动一端，直到相遇为止，保证找到全局最大。"
+    }
+   ],
+   "followup": "",
+   "category": "双指针",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/container-with-most-water/",
+   "day": 1
+  },
+  {
+   "id": 76,
+   "title": "最小覆盖子串",
+   "method": "滑动窗口",
+   "steps": [
+    "右指针扩展窗口，左指针收缩去优化",
+    "用哈希表记录窗口内字符数量和需要的字符数量",
+    "当窗口包含所有目标字符时收缩左指针"
+   ],
+   "oneliner": "滑动窗口扩右收左，哈希表比较窗口与目标字符数，包含则收左。",
+   "code": "from collections import Counter\n\nclass Solution:\n    def minWindow(self, s: str, t: str) -> str:\n        need = Counter(t)  # 需要的字符计数\n        window = Counter()  # 窗口内字符计数\n        left = 0\n        valid = 0  # 已满足的字符种类数\n        min_len = float('inf')\n        min_start = 0\n        for right, c in enumerate(s):  # 扩右指针\n            if c in need:\n                window[c] += 1\n                if window[c] == need[c]:  # 该字符满足\n                    valid += 1\n            while valid == len(need):  # 包含所有字符，收左指针\n                if right - left + 1 < min_len:\n                    min_len = right - left + 1\n                    min_start = left\n                c_left = s[left]\n                if c_left in need:\n                    if window[c_left] == need[c_left]:\n                        valid -= 1\n                    window[c_left] -= 1\n                left += 1\n        return s[min_start:min_start + min_len] if min_len != float('inf') else ''",
+   "points": [
+    {
+     "k": "双计数器设计",
+     "v": "need 记录目标字符的需求量，window 记录窗口内的数量，valid 记录已满足需求的字符种类数。"
+    },
+    {
+     "k": "收缩窗口的时机",
+     "v": "当 valid == len(need)（所有字符都已满足）时，尝试收缩左边界寻找更优解。"
+    },
+    {
+     "k": "收缩时的细节",
+     "v": "如果 window[c_left] == need[c_left]，收缩后该字符就不满足了，需要 valid--。"
+    }
+   ],
+   "followup": "",
+   "category": "滑动窗口",
+   "in_site": true,
+   "difficulty": "Hard",
+   "leetcode_url": "https://leetcode.cn/problems/minimum-window-substring/",
+   "day": 1
+  },
+  {
+   "id": 209,
+   "title": "长度最小的子数组",
+   "method": "滑动窗口",
+   "steps": [
+    "右指针扩展窗口，累加和",
+    "当窗口和 >= target 时收缩左指针更新最短长度",
+    "直到窗口和 < target 继续扩展右指针"
+   ],
+   "oneliner": "滑动窗口扩右收左，和大于目标时收缩更新最短长度。",
+   "code": "class Solution:\n    def minSubArrayLen(self, target: int, nums: List[int]) -> int:\n        left = 0\n        cur_sum = 0  # 当前窗口和\n        min_len = float('inf')\n        for right in range(len(nums)):  # 扩右指针\n            cur_sum += nums[right]\n            while cur_sum >= target:  # 收左指针\n                min_len = min(min_len, right - left + 1)\n                cur_sum -= nums[left]\n                left += 1\n        return min_len if min_len != float('inf') else 0",
+   "points": [
+    {
+     "k": "扩右收左循环",
+     "v": "外层 for 扩右指针累加和，内层 while 收左指针直到和小于 target。"
+    },
+    {
+     "k": "何时收缩",
+     "v": "cur_sum >= target 时才收缩左边界，此时窗口已满足条件，记录长度后尝试缩小。"
+    },
+    {
+     "k": "复杂度分析",
+     "v": "每个元素最多进入和离开窗口各一次，时间 O(n)，空间 O(1)，优于暴力枚举所有子数组。"
+    }
+   ],
+   "followup": "",
+   "category": "滑动窗口",
+   "in_site": false,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/minimum-size-subarray-sum/"
+  },
+  {
+   "id": 739,
+   "title": "每日温度",
+   "method": "单调栈",
+   "steps": [
+    "栈存温度索引，遍历温度数组",
+    "当前温度比栈顶高时，弹出栈顶计算距离",
+    "栈顶索引对应的等待天数 = 当前索引 - 栈顶索引"
+   ],
+   "oneliner": "单调递减栈，栈顶是等待升温的天数，当前更高则弹出计算。",
+   "code": "class Solution:\n    def dailyTemperatures(self, T: List[int]) -> List[int]:\n        n = len(T)\n        result = [0] * n\n        stack = []  # 存索引，单调递减\n        for i, temp in enumerate(T):\n            while stack and T[stack[-1]] < temp:  # 比栈顶高则弹出\n                prev = stack.pop()\n                result[prev] = i - prev  # 计算距离\n            stack.append(i)\n        return result",
+   "points": [
+    {
+     "k": "单调递减栈",
+     "v": "栈内元素对应的温度严格递减，栈顶是当前还没找到更高温度的「待升温」日子。"
+    },
+    {
+     "k": "弹出时机",
+     "v": "当前温度 T[i] 比栈顶对应温度高时，说明栈顶那天等到了升温，弹出并计算等待天数。"
+    },
+    {
+     "k": "存索引而非温度",
+     "v": "栈中存放下标 i，弹出 prev 后用 i - prev 即可得到天数差值。"
+    }
+   ],
+   "followup": "",
+   "category": "单调栈",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/daily-temperatures/",
+   "day": 6
+  },
+  {
+   "id": 84,
+   "title": "柱状图中最大的矩形",
+   "method": "单调栈",
+   "steps": [
+    "数组两侧补 0，方便处理边界",
+    "单调递增栈，存索引",
+    "遇到更小的柱就弹出，计算以弹出柱为高度的矩形最大面积"
+   ],
+   "oneliner": "单调递增栈，两侧补0，弹出时计算面积，宽度 = 右边界 - 左边界 - 1。",
+   "code": "class Solution:\n    def largestRectangleArea(self, heights: List[int]) -> int:\n        heights = [0] + heights + [0]  # 两侧补0\n        stack = [0]  # 栈，存索引\n        max_area = 0\n        for i in range(1, len(heights)):\n            while heights[i] < heights[stack[-1]]:  # 遇到更小的柱\n                h = heights[stack.pop()]  # 弹出高度\n                w = i - stack[-1] - 1  # 宽度\n                max_area = max(max_area, h * w)\n            stack.append(i)\n        return max_area",
+   "points": [
+    {
+     "k": "两侧补 0 的作用",
+     "v": "在最左边和最右边各加一个高度为 0 的柱，确保所有柱最终都能弹出，避免边界处理。"
+    },
+    {
+     "k": "宽度计算公式",
+     "v": "弹出时宽度 = 当前索引 i - 新栈顶索引 stack[-1] - 1，即「右边界 - 左边界 - 1」。"
+    },
+    {
+     "k": "单调递增栈",
+     "v": "栈内高度严格递增，遇到更小的柱时触发弹出，计算以弹出柱为高度的矩形最大面积。"
+    }
+   ],
+   "followup": "",
+   "category": "单调栈",
+   "in_site": true,
+   "difficulty": "Hard",
+   "leetcode_url": "https://leetcode.cn/problems/largest-rectangle-in-histogram/",
+   "day": 6
+  },
+  {
+   "id": 42,
+   "title": "接雨水",
+   "method": "单调栈",
+   "steps": [
+    "单调递减栈",
+    "遇到比栈顶高的柱就形成低洼，计算雨水量",
+    "水量 = 宽度 × (min(左柱, 右柱) - 低洼高度)"
+   ],
+   "oneliner": "单调递减栈，形成低洼时累加雨水量。",
+   "code": "class Solution:\n    def trap(self, height: List[int]) -> int:\n        stack = []  # 单调递减栈，存索引\n        water = 0\n        for i, h in enumerate(height):\n            while stack and h > height[stack[-1]]:  # 比栈顶高形成低洼\n                bottom = stack.pop()\n                if not stack:  # 没有左边界\n                    break\n                w = i - stack[-1] - 1  # 宽度\n                cur_h = min(h, height[stack[-1]]) - height[bottom]  # 高度\n                water += w * cur_h\n            stack.append(i)\n        return water",
+   "points": [
+    {
+     "k": "形成低洼的条件",
+     "v": "当前高度 h > height[stack[-1]] 时，形成低洼（凹槽），可以接雨水。"
+    },
+    {
+     "k": "左右边界确定",
+     "v": "弹出低洼 bottom 后，新的栈顶 stack[-1] 就是左边界，当前索引 i 是右边界。"
+    },
+    {
+     "k": "能接水的高度",
+     "v": "cur_h = min(左边界高度, 右边界高度) - 低洼高度，bottom 不高于两侧，cur_h ≥ 0；遇到等高柱时为 0，不影响结果。"
+    }
+   ],
+   "followup": "",
+   "category": "单调栈",
+   "in_site": true,
+   "difficulty": "Hard",
+   "leetcode_url": "https://leetcode.cn/problems/trapping-rain-water/",
+   "day": 1
+  },
+  {
+   "id": 94,
+   "title": "二叉树的中序遍历",
+   "method": "栈模拟",
+   "steps": [
+    "模拟递归：左子树一直入栈",
+    "弹出节点访问，然后右子树入栈",
+    "直到栈空且节点为空"
+   ],
+   "oneliner": "栈模拟递归：一路向左入栈，弹出访问再转向右子树，O(n)。",
+   "code": "class Solution:\n    def inorderTraversal(self, root: TreeNode) -> List[int]:\n        result = []\n        stack = []\n        cur = root\n        while cur or stack:\n            while cur:  # 左子树全部入栈\n                stack.append(cur)\n                cur = cur.left\n            cur = stack.pop()  # 弹出访问\n            result.append(cur.val)\n            cur = cur.right  # 处理右子树\n        return result",
+   "points": [
+    {
+     "k": "外层循环条件",
+     "v": "while cur or stack，保证左子树全部入栈后，栈空且节点空时才退出。"
+    },
+    {
+     "k": "内层 while 的作用",
+     "v": "把当前节点的所有左子节点全部入栈，实现「左子树优先」的遍历顺序。"
+    },
+    {
+     "k": "弹出后的处理",
+     "v": "弹出节点访问其值后，立即转向处理右子树，切换到右子树继续同样的流程。"
+    }
+   ],
+   "followup": "",
+   "category": "二叉树和递归",
+   "in_site": true,
+   "difficulty": "Easy",
+   "leetcode_url": "https://leetcode.cn/problems/binary-tree-inorder-traversal/",
+   "day": 4
+  },
+  {
+   "id": 104,
+   "title": "二叉树的最大深度",
+   "method": "递归",
+   "steps": [
+    "递归返回左右子树最大深度 +1",
+    "空节点返回 0"
+   ],
+   "oneliner": "递归返回左右最大深度+1，O(n)。",
+   "code": "class Solution:\n    def maxDepth(self, root: TreeNode) -> int:\n        if not root:  # 递归终止\n            return 0\n        return max(self.maxDepth(root.left), self.maxDepth(root.right)) + 1",
+   "points": [
+    {
+     "k": "递归终止条件",
+     "v": "空节点返回深度 0，这是递归的「锚点」，所有递归最终都会走到这里。"
+    },
+    {
+     "k": "每个节点深度公式",
+     "v": "max(左子树深度, 右子树深度) + 1，+1 是因为要算上当前节点本身这一层。"
+    },
+    {
+     "k": "后序遍历顺序",
+     "v": "先递归处理左右子树（子问题），再返回当前节点的深度，符合自底向上的计算逻辑。"
+    }
+   ],
+   "followup": "",
+   "category": "二叉树和递归",
+   "in_site": true,
+   "difficulty": "Easy",
+   "leetcode_url": "https://leetcode.cn/problems/maximum-depth-of-binary-tree/",
+   "day": 4
+  },
+  {
+   "id": 101,
+   "title": "对称二叉树",
+   "method": "递归",
+   "steps": [
+    "递归比较左子树和右子树是否互为镜像",
+    "两节点都空返回 True，一方空返回 False",
+    "值相等且内外都镜像才对称"
+   ],
+   "oneliner": "递归比较左右子树是否互为镜像，O(n)。",
+   "code": "class Solution:\n    def isSymmetric(self, root: TreeNode) -> bool:\n        def check(p, q):\n            if not p and not q:  # 两节点都空\n                return True\n            if not p or not q:  # 一方空\n                return False\n            return p.val == q.val and check(p.left, q.right) and check(p.right, q.left)\n        return check(root.left, root.right) if root else True",
+   "points": [
+    {
+     "k": "递归比较顺序",
+     "v": "每次递归比较 (p.left, q.right) 和 (p.right, q.left)，即「外对外、内对内」的镜像比较。"
+    },
+    {
+     "k": "递归终止情况",
+     "v": "两个节点都为空返回 True（对称），只有一个为空返回 False（不对称）。"
+    },
+    {
+     "k": "对称条件",
+     "v": "节点值相等 AND 左子树和右子树都对称，三者缺一不可。"
+    }
+   ],
+   "followup": "",
+   "category": "二叉树和递归",
+   "in_site": true,
+   "difficulty": "Easy",
+   "leetcode_url": "https://leetcode.cn/problems/symmetric-tree/",
+   "day": 4
+  },
+  {
+   "id": 236,
+   "title": "二叉树的最近公共祖先",
+   "method": "后序递归",
+   "steps": [
+    "用后序遍历递归找 p/q",
+    "若当前节点是 p/q 或空，直接返回",
+    "递归左右子树，若左右都有结果，当前是祖先",
+    "若只有一边有结果，返回那一边"
+   ],
+   "oneliner": "后序递归找 p/q，左右都找到则当前是祖先，只找到一边返回那一边。",
+   "code": "class Solution:\n    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':\n        if not root or root == p or root == q:  # 终止条件\n            return root\n        left = self.lowestCommonAncestor(root.left, p, q)  # 递归左\n        right = self.lowestCommonAncestor(root.right, p, q)  # 递归右\n        if not left:  # 左子树没找到\n            return right\n        if not right:  # 右子树没找到\n            return left\n        return root  # 左右都找到，当前是祖先",
+   "points": [
+    {
+     "k": "终止条件设计",
+     "v": "找到 p 或 q 或空节点就立即返回，是递归的「锚点」，避免无效搜索。"
+    },
+    {
+     "k": "后序遍历的必要性",
+     "v": "先递归找子树结果，再判断当前节点，符合「自底向上」找祖先的逻辑。"
+    },
+    {
+     "k": "核心判断逻辑",
+     "v": "左右都有结果 → 当前是最近公共祖先；只有一边有 → 祖先在这一侧，返回那一边的结果。"
+    }
+   ],
+   "followup": "",
+   "category": "二叉树和递归",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/",
+   "day": 4
+  },
+  {
+   "id": 235,
+   "title": "二叉搜索树的最近公共祖先",
+   "method": "BST特性",
+   "steps": [
+    "利用 BST 特性：p/q 都在左子树则向左，都在右子树则向右",
+    "否则当前节点即为最近公共祖先"
+   ],
+   "oneliner": "BST 特性：pq 同侧就往那侧走，分叉处即为祖先，O(H)。",
+   "code": "class Solution:\n    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':\n        while root:\n            if p.val < root.val and q.val < root.val:  # 都在左\n                root = root.left\n            elif p.val > root.val and q.val > root.val:  # 都在右\n                root = root.right\n            else:  # 分叉点\n                return root\n        return root",
+   "points": [
+    {
+     "k": "利用 BST 有序性",
+     "v": "左子树所有节点值 < 根节点值 < 右子树所有节点值，可根据 p、q 与当前节点值的大小关系判断方向。"
+    },
+    {
+     "k": "同侧递归",
+     "v": "p 和 q 都小于当前节点则走向左子树，都大于则走向右子树。"
+    },
+    {
+     "k": "分叉点即祖先",
+     "v": "一旦 p、q 分布在当前节点两侧，当前节点就是最近公共祖先，无需继续向下。"
+    }
+   ],
+   "followup": "",
+   "category": "二叉树和递归",
+   "in_site": false,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-search-tree/"
+  },
+  {
+   "id": 124,
+   "title": "二叉树的最大路径和",
+   "method": "后序递归",
+   "steps": [
+    "后序递归计算每个节点贡献的最大路径",
+    "节点的最大贡献 = max(0, 左贡献, 右贡献) + 节点值",
+    "最大路径 = max(全局最大, 左贡献 + 右贡献 + 节点值)"
+   ],
+   "oneliner": "后序递归，贡献为 max(0,左,右)+节点值，路径和为左右贡献+节点值。",
+   "code": "class Solution:\n    def maxPathSum(self, root: TreeNode) -> int:\n        self.max_sum = float('-inf')\n\n        def dfs(node):\n            if not node:\n                return 0\n            left = max(0, dfs(node.left))  # 左贡献，负则取0\n            right = max(0, dfs(node.right))  # 右贡献，负则取0\n            self.max_sum = max(self.max_sum, left + right + node.val)  # 更新全局最大\n            return max(left, right) + node.val  # 返回该节点能提供的最大贡献\n\n        dfs(root)\n        return self.max_sum",
+   "points": [
+    {
+     "k": "负贡献的取舍",
+     "v": "max(0, left) 和 max(0, right) 确保只取正贡献，负值路径不贡献甚至拖累，直接当 0 处理。"
+    },
+    {
+     "k": "全局最大更新时机",
+     "v": "在「左右贡献 + 当前节点值」处更新，因为这是以当前节点为根的完整路径。"
+    },
+    {
+     "k": "返回值含义",
+     "v": "返回的是该节点能向上提供的最大贡献 = max(左贡献, 右贡献) + 节点值，用于父节点计算。"
+    }
+   ],
+   "followup": "",
+   "category": "二叉树和递归",
+   "in_site": true,
+   "difficulty": "Hard",
+   "leetcode_url": "https://leetcode.cn/problems/binary-tree-maximum-path-sum/",
+   "day": 4
+  },
+  {
+   "id": 98,
+   "title": "验证二叉搜索树",
+   "method": "递归传界",
+   "steps": [
+    "递归传递上下界，判断节点值是否在界内",
+    "左子树用 (lower, node.val)，右子树用 (node.val, upper)"
+   ],
+   "oneliner": "递归传上下界判断，O(n)。",
+   "code": "class Solution:\n    def isValidBST(self, root: TreeNode) -> bool:\n        def dfs(node, lower, upper):\n            if not node:\n                return True\n            if node.val <= lower or node.val >= upper:  # 不在界内\n                return False\n            return dfs(node.left, lower, node.val) and dfs(node.right, node.val, upper)\n        return dfs(root, float('-inf'), float('inf'))",
+   "points": [
+    {
+     "k": "上下界传递",
+     "v": "递归时传递 (lower, upper) 边界，当前节点值必须在界内才合法，否则不是 BST。"
+    },
+    {
+     "k": "初始边界设定",
+     "v": "根节点的界是 (-∞, +∞)，用 float('-inf') 和 float('inf') 表示。"
+    },
+    {
+     "k": "BST 的充要条件",
+     "v": "左子树所有节点值 < 当前节点值 < 右子树所有节点值，递归验证左右子树也必须满足。"
+    }
+   ],
+   "followup": "",
+   "category": "二叉树和递归",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/validate-binary-search-tree/",
+   "day": 4
+  },
+  {
+   "id": 230,
+   "title": "二叉搜索树中第K小的元素",
+   "method": "中序遍历",
+   "steps": [
+    "BST 中序遍历为升序",
+    "中序遍历到第 k 个节点即为第 k 小",
+    "可提前终止遍历"
+   ],
+   "oneliner": "BST 中序遍历升序，第 k 个即为第 k 小，O(H+k)。",
+   "code": "class Solution:\n    def kthSmallest(self, root: TreeNode, k: int) -> int:\n        stack = []\n        cur = root\n        count = 0\n        while cur or stack:\n            while cur:  # 左子树入栈\n                stack.append(cur)\n                cur = cur.left\n            cur = stack.pop()  # 弹出访问\n            count += 1\n            if count == k:  # 第k个\n                return cur.val\n            cur = cur.right  # 处理右子树\n        return -1",
+   "points": [
+    {
+     "k": "中序遍历顺序",
+     "v": "BST 中序遍历（左 → 根 → 右）恰好是节点值升序排列。"
+    },
+    {
+     "k": "计数提前终止",
+     "v": "count 记录已访问节点数，当 count == k 时说明已到第 k 小，直接返回，无需遍历完整棵树。"
+    },
+    {
+     "k": "栈的作用",
+     "v": "用栈模拟递归，左子树全部入栈后弹出访问，再转向右子树，节省递归栈空间。"
+    }
+   ],
+   "followup": "",
+   "category": "二叉树和递归",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/kth-smallest-element-in-a-bst/",
+   "day": 4
+  },
+  {
+   "id": 450,
+   "title": "删除二叉搜索树中的节点",
+   "method": "递归",
+   "steps": [
+    "找到目标节点，按三种情况处理",
+    "叶节点：直接删除",
+    "只有左/右子树：用子树替换",
+    "有两子树：用后继节点（右子树最左）替换"
+   ],
+   "oneliner": "找到节点分三类处理：叶节点直删，有子树用子树替，有两子树用后继替。",
+   "code": "class Solution:\n    def deleteNode(self, root: TreeNode, key: int) -> TreeNode:\n        if not root:\n            return None\n        if key < root.val:  # 在左子树\n            root.left = self.deleteNode(root.left, key)\n        elif key > root.val:  # 在右子树\n            root.right = self.deleteNode(root.right, key)\n        else:  # 找到目标\n            if not root.left:\n                return root.right\n            if not root.right:\n                return root.left\n            successor = root.right\n            while successor.left:  # 找后继\n                successor = successor.left\n            root.val = successor.val  # 替换值\n            root.right = self.deleteNode(root.right, successor.val)  # 删除后继\n        return root",
+   "points": [
+    {
+     "k": "后继节点的定义",
+     "v": "右子树中最左（最小）的节点，用于替换被删除节点，保持 BST 的有序性。"
+    },
+    {
+     "k": "三种删除情况",
+     "v": "叶节点直接删除返回空，有单子树返回该子树，有两子树用后继替换值后递归删除后继节点。"
+    },
+    {
+     "k": "递归删除后继",
+     "v": "替换值后，调用 deleteNode 递归删除后继节点，保证 BST 结构完整。"
+    }
+   ],
+   "followup": "",
+   "category": "二叉树和递归",
+   "in_site": false,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/delete-node-in-a-bst/"
+  },
+  {
+   "id": 46,
+   "title": "全排列",
+   "method": "回溯",
+   "steps": [
+    "递归枚举每个位置可以放的数",
+    "用 used 数组标记已用过的数",
+    "选一个数进入下一层，撤销选择"
+   ],
+   "oneliner": "回溯枚举每个位置可放的数，used 数组去重。",
+   "code": "class Solution:\n    def permute(self, nums: List[int]) -> List[List[int]]:\n        result = []\n        path = []\n        used = [False] * len(nums)  # 标记已使用的数\n\n        def backtrack():\n            if len(path) == len(nums):  # 满了\n                result.append(path[:])\n                return\n            for i in range(len(nums)):\n                if used[i]:  # 已用过则跳过\n                    continue\n                used[i] = True  # 选\n                path.append(nums[i])\n                backtrack()\n                path.pop()  # 撤销\n                used[i] = False\n\n        backtrack()\n        return result",
+   "points": [
+    {
+     "k": "used 数组作用",
+     "v": "标记每个位置的数字是否已被使用，确保每个数字在同一路径中只使用一次。"
+    },
+    {
+     "k": "递归终止条件",
+     "v": "path 长度等于 nums 长度时，说明已选满一个排列，加入结果。"
+    },
+    {
+     "k": "撤销选择的重要性",
+     "v": "回溯的核心，递归前后 used 和 path 的状态必须一致，保证不同分支不受影响。"
+    }
+   ],
+   "followup": "",
+   "category": "回溯和DFS",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/permutations/",
+   "day": 5
+  },
+  {
+   "id": 39,
+   "title": "组合总和",
+   "method": "回溯",
+   "steps": [
+    "排序数组，DFS 回溯",
+    "每个元素可重复选，target 减当前值",
+    "target 为 0 则加入结果，target < 0 则剪枝"
+   ],
+   "oneliner": "排序后回溯，每个数可重复选，target 减到 0 则加入。",
+   "code": "class Solution:\n    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:\n        candidates.sort()  # 排序\n        result = []\n\n        def backtrack(start, target, path):\n            if target == 0:  # 找到解\n                result.append(path[:])\n                return\n            for i in range(start, len(candidates)):\n                if candidates[i] > target:  # 剪枝\n                    break\n                path.append(candidates[i])\n                backtrack(i, target - candidates[i], path)  # i不是i+1，可重复选\n                path.pop()\n\n        backtrack(0, target, [])\n        return result",
+   "points": [
+    {
+     "k": "排序后剪枝",
+     "v": "数组升序排列后，当 candidates[i] > target 时直接 break，因为后面更大的数也不可能凑出目标。"
+    },
+    {
+     "k": "可重复选的实现",
+     "v": "递归时传 i 而非 i+1，允许同一元素在同一路径中重复使用。"
+    },
+    {
+     "k": "target 状态更新",
+     "v": "每选一个数就从 target 中减去该值，递归终止条件 target == 0 时找到一个合法组合。"
+    }
+   ],
+   "followup": "",
+   "category": "回溯和DFS",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/combination-sum/",
+   "day": 5
+  },
+  {
+   "id": 78,
+   "title": "子集",
+   "method": "回溯",
+   "steps": [
+    "每个元素都有选和不选两种情况",
+    "回溯收集所有路径",
+    "从 start 往后枚举下一个选谁，递归树上每个节点都是一个子集"
+   ],
+   "oneliner": "回溯每个元素选或不选，收集所有路径。",
+   "code": "class Solution:\n    def subsets(self, nums: List[int]) -> List[List[int]]:\n        result = []\n        path = []\n\n        def backtrack(start):\n            result.append(path[:])  # 每个节点都加入结果\n            for i in range(start, len(nums)):\n                path.append(nums[i])  # 选\n                backtrack(i + 1)  # 不回头\n                path.pop()  # 撤销\n\n        backtrack(0)\n        return result",
+   "points": [
+    {
+     "k": "每层节点都加入结果",
+     "v": "与全排列不同，子集问题在递归的每一步都要把当前 path 加入结果（包括空集）。"
+    },
+    {
+     "k": "不回头原则",
+     "v": "递归传 i+1，确保只向后选择，避免重复使用前面的数。"
+    },
+    {
+     "k": "收集全部路径",
+     "v": "通过「选」和「不选」两条分支遍历所有情况，最终 result 包含 2^n 个子集。"
+    }
+   ],
+   "followup": "",
+   "category": "回溯和DFS",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/subsets/",
+   "day": 5
+  },
+  {
+   "id": 22,
+   "title": "括号生成",
+   "method": "回溯",
+   "steps": [
+    "递归构建括号序列",
+    "左括号数 < n 可加，右括号数 < 左括号数可加",
+    "左右都用完时加入结果"
+   ],
+   "oneliner": "回溯递归构建，左括号数小于 n 可加，右括号数小于左括号可加。",
+   "code": "class Solution:\n    def generateParenthesis(self, n: int) -> List[str]:\n        result = []\n\n        def backtrack(left, right, path):\n            if len(path) == 2 * n:  # 满了\n                result.append(path)\n                return\n            if left < n:  # 可加左括号\n                backtrack(left + 1, right, path + '(')\n            if right < left:  # 可加右括号\n                backtrack(left, right + 1, path + ')')\n\n        backtrack(0, 0, '')\n        return result",
+   "points": [
+    {
+     "k": "右括号限制",
+     "v": "right < left 确保右括号数量永不超出左括号，保证生成的括号序列合法。"
+    },
+    {
+     "k": "递归树结构",
+     "v": "深度为 2n（n 个左括号 + n 个右括号），每层有两种选择分支。"
+    },
+    {
+     "k": "有效括号性质",
+     "v": "合法括号序列的充要条件是「任意前缀中右括号数 ≤ 左括号数，且左右各 n 个」，这是剪枝的核心依据。"
+    }
+   ],
+   "followup": "",
+   "category": "回溯和DFS",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/generate-parentheses/",
+   "day": 5
+  },
+  {
+   "id": 200,
+   "title": "岛屿数量",
+   "method": "DFS 沉没",
+   "steps": [
+    "遍历网格，遇 '1' 则 DFS 沉没整个岛屿（标记为 '0'）",
+    "每沉没一次岛屿数 +1"
+   ],
+   "oneliner": "DFS 沉没岛屿，每找到一片岛屿 +1，O(m*n)。",
+   "code": "class Solution:\n    def numIslands(self, grid: List[List[str]]) -> int:\n        if not grid:\n            return 0\n        count = 0\n        m, n = len(grid), len(grid[0])\n\n        def dfs(i, j):\n            if i < 0 or i >= m or j < 0 or j >= n or grid[i][j] == '0':  # 边界或水\n                return\n            grid[i][j] = '0'  # 沉没\n            dfs(i + 1, j)\n            dfs(i - 1, j)\n            dfs(i, j + 1)\n            dfs(i, j - 1)\n\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] == '1':  # 发现岛屿\n                    count += 1\n                    dfs(i, j)  # 沉没\n        return count",
+   "points": [
+    {
+     "k": "沉没操作的目的",
+     "v": "将发现的岛屿全部标记为 '0'，避免后续遍历重复计算同一岛屿。"
+    },
+    {
+     "k": "四方向DFS",
+     "v": "从每个 '1' 出发向四个方向递归沉没，确保整个岛屿被标记。"
+    },
+    {
+     "k": "岛屿计数时机",
+     "v": "在主循环中发现 '1' 时 count++，然后立即调用 dfs 沉没该岛屿的所有格子。"
+    }
+   ],
+   "followup": "",
+   "category": "回溯和DFS",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/number-of-islands/",
+   "day": 5
+  },
+  {
+   "id": 113,
+   "title": "路径总和 II",
+   "method": "DFS",
+   "steps": [
+    "DFS 记录路径，累加路径和",
+    "到达叶子节点且和等于 target 则加入结果",
+    "回溯撤销选择"
+   ],
+   "oneliner": "DFS 记录路径，叶子节点且和等于目标则加入结果。",
+   "code": "class Solution:\n    def pathSum(self, root: TreeNode, targetSum: int) -> List[List[int]]:\n        result = []\n\n        def dfs(node, path, cur_sum):\n            if not node:\n                return\n            cur_sum += node.val\n            path.append(node.val)\n            if not node.left and not node.right and cur_sum == targetSum:  # 叶子且和匹配\n                result.append(path[:])\n            dfs(node.left, path, cur_sum)\n            dfs(node.right, path, cur_sum)\n            path.pop()  # 撤销\n\n        dfs(root, [], 0)\n        return result",
+   "points": [
+    {
+     "k": "path[:] 复制切片",
+     "v": "将当前 path 复制一份加入结果，否则后续 pop 会修改已加入的结果。"
+    },
+    {
+     "k": "必须到叶子节点",
+     "v": "只有左右子树都不存在的节点才可能是完整路径的终点，保证路径从根到叶。"
+    },
+    {
+     "k": "回溯撤销选择",
+     "v": "递归返回后执行 path.pop()，恢复递归前的状态，保证同一节点可被多条路径使用。"
+    }
+   ],
+   "followup": "",
+   "category": "回溯和DFS",
+   "in_site": false,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/path-sum-ii/"
+  },
+  {
+   "id": 70,
+   "title": "爬楼梯",
+   "method": "DP",
+   "steps": [
+    "dp[i] = 到达第 i 阶的方法数",
+    "dp[i] = dp[i-1] + dp[i-2]（斐波那契）",
+    "初始 dp[1]=1, dp[2]=2"
+   ],
+   "oneliner": "dp[i]=dp[i-1]+dp[i-2]，斐波那契。",
+   "code": "class Solution:\n    def climbStairs(self, n: int) -> int:\n        if n <= 2:\n            return n\n        dp = [0] * (n + 1)\n        dp[1] = 1\n        dp[2] = 2\n        for i in range(3, n + 1):\n            dp[i] = dp[i - 1] + dp[i - 2]\n        return dp[n]",
+   "points": [
+    {
+     "k": "递推公式来源",
+     "v": "到达第 i 阶可以从 i-1 阶走一步或从 i-2 阶走两步，所以 dp[i] = dp[i-1] + dp[i-2]。"
+    },
+    {
+     "k": "空间优化",
+     "v": "只与前两项有关，可将数组压缩为两个变量，将空间从 O(n) 降到 O(1)。"
+    },
+    {
+     "k": "时间复杂度",
+     "v": "遍历一次即可，时间 O(n)，优于递归加记忆化的方式。"
+    }
+   ],
+   "followup": "",
+   "category": "动态规划",
+   "in_site": true,
+   "difficulty": "Easy",
+   "leetcode_url": "https://leetcode.cn/problems/climbing-stairs/",
+   "day": 7
+  },
+  {
+   "id": 300,
+   "title": "最长递增子序列",
+   "method": "二分+贪心",
+   "steps": [
+    "dp[k] 存长度为 k+1 的递增子序列的最小末尾",
+    "二分查找插入位置，dp[pos] = num",
+    "最终最长长度就是 dp 数组长度"
+   ],
+   "oneliner": "贪心+二分，dp 存最小末尾值，O(nlogn)。",
+   "code": "import bisect\n\nclass Solution:\n    def lengthOfLIS(self, nums: List[int]) -> int:\n        dp = []  # dp[i]是长度为i+1的递增子序列的最小末尾\n        for num in nums:\n            pos = bisect.bisect_left(dp, num)  # 二分查找位置\n            if pos == len(dp):\n                dp.append(num)\n            else:\n                dp[pos] = num\n        return len(dp)",
+   "points": [
+    {
+     "k": "dp 的含义",
+     "v": "dp[i] 表示长度为 i+1 的递增子序列的最小末尾值，用于二分查找时的比较。"
+    },
+    {
+     "k": "二分查找位置",
+     "v": "用 bisect_left 找第一个 >= num 的位置，若在末尾则扩展 dp，否则更新该位置的值为更小的 num。"
+    },
+    {
+     "k": "最终结果",
+     "v": "dp 的长度即为最长递增子序列的长度，无需额外计算。"
+    }
+   ],
+   "followup": "",
+   "category": "动态规划",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/longest-increasing-subsequence/",
+   "day": 7
+  },
+  {
+   "id": 322,
+   "title": "零钱兑换",
+   "method": "完全背包 DP",
+   "steps": [
+    "dp[i] = 凑成金额 i 所需的最少硬币数",
+    "完全背包：每个硬币可以选多次",
+    "dp[i] = min(dp[i], dp[i-coin] + 1)"
+   ],
+   "oneliner": "完全背包，dp[i] 为凑成 i 所需最少硬币数。",
+   "code": "class Solution:\n    def coinChange(self, coins: List[int], amount: int) -> int:\n        dp = [float('inf')] * (amount + 1)  # dp[i]凑成i所需最少硬币\n        dp[0] = 0  # 基础\n        for coin in coins:\n            for i in range(coin, amount + 1):  # 正序，完全背包\n                dp[i] = min(dp[i], dp[i - coin] + 1)\n        return dp[amount] if dp[amount] != float('inf') else -1",
+   "points": [
+    {
+     "k": "dp[0] = 0 的意义",
+     "v": "金额为 0 时不需要任何硬币，这是动态规划的base case。"
+    },
+    {
+     "k": "完全背包内层正序",
+     "v": "因为硬币可以重复使用，内层循环从 coin 到 amount 正序遍历，确保每种硬币可用多次。"
+    },
+    {
+     "k": "dp[amount] 为 inf 的处理",
+     "v": "若最终值仍为 inf，说明无法凑出该金额，返回 -1。"
+    }
+   ],
+   "followup": "",
+   "category": "动态规划",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/coin-change/",
+   "day": 7
+  },
+  {
+   "id": 1143,
+   "title": "最长公共子序列",
+   "method": "DP",
+   "steps": [
+    "dp[i][j] = text1 前 i 个和 text2 前 j 个的最长公共子序列",
+    "若相等则 +1，否则取 max(上, 左)"
+   ],
+   "oneliner": "dp[i][j] 为前 i 和前 j 的最长公共子序列，相等则 +1，否则取 max。",
+   "code": "class Solution:\n    def longestCommonSubsequence(self, text1: str, text2: str) -> int:\n        m, n = len(text1), len(text2)\n        dp = [[0] * (n + 1) for _ in range(m + 1)]\n        for i in range(1, m + 1):\n            for j in range(1, n + 1):\n                if text1[i - 1] == text2[j - 1]:  # 相等\n                    dp[i][j] = dp[i - 1][j - 1] + 1\n                else:  # 不等\n                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])\n        return dp[m][n]",
+   "points": [
+    {
+     "k": "dp 数组多一行一列",
+     "v": "方便处理边界条件，dp[i][j] 对应 text1[0:i] 和 text2[0:j] 的 LCS 长度。"
+    },
+    {
+     "k": "字符相等时",
+     "v": "从 dp[i-1][j-1] + 1，表示两个字符匹配，LCS 长度加一。"
+    },
+    {
+     "k": "字符不等时",
+     "v": "从 dp[i-1][j] 和 dp[i][j-1] 中取较大值，因为最后一位不匹配时结果继承二者之一。"
+    }
+   ],
+   "followup": "",
+   "category": "动态规划",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/longest-common-subsequence/",
+   "day": 7
+  },
+  {
+   "id": 72,
+   "title": "编辑距离",
+   "method": "DP",
+   "steps": [
+    "dp[i][j] = word1 前 i 个变成 word2 前 j 个的最少操作数",
+    "删除/插入/替换三种操作取最小",
+    "若字符相等则直接继承 dp[i-1][j-1]"
+   ],
+   "oneliner": "dp[i][j] 前 i 变 j 最少操作，删插替取最小，O(m*n)。",
+   "code": "class Solution:\n    def minDistance(self, word1: str, word2: str) -> int:\n        m, n = len(word1), len(word2)\n        dp = [[0] * (n + 1) for _ in range(m + 1)]\n        for i in range(m + 1):\n            dp[i][0] = i  # 删除i个字符\n        for j in range(n + 1):\n            dp[0][j] = j  # 插入j个字符\n        for i in range(1, m + 1):\n            for j in range(1, n + 1):\n                if word1[i - 1] == word2[j - 1]:\n                    dp[i][j] = dp[i - 1][j - 1]  # 相等不操作\n                else:\n                    dp[i][j] = min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]) + 1  # 删插替\n        return dp[m][n]",
+   "points": [
+    {
+     "k": "边界条件设定",
+     "v": "dp[i][0] = i 表示将前 i 个字符全部删去，dp[0][j] = j 表示全部插入。"
+    },
+    {
+     "k": "三种操作取最小",
+     "v": "删除（从上方来）、插入（从左方来）、替换（从左上方来），取三者最小代价再加 1。"
+    },
+    {
+     "k": "字符相等时不操作",
+     "v": "word1[i-1] == word2[j-1] 时直接继承 dp[i-1][j-1]，无需额外操作。"
+    }
+   ],
+   "followup": "",
+   "category": "动态规划",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/edit-distance/",
+   "day": 7
+  },
+  {
+   "id": 198,
+   "title": "打家劫舍",
+   "method": "DP",
+   "steps": [
+    "dp[i] = 到第 i 间房能偷的最大金额",
+    "dp[i] = max(dp[i-1], dp[i-2] + nums[i])",
+    "只与前两间房有关，可以压缩空间"
+   ],
+   "oneliner": "dp[i]=max(dp[i-1], dp[i-2]+nums[i])，维护前两个状态。",
+   "code": "class Solution:\n    def rob(self, nums: List[int]) -> int:\n        if not nums:\n            return 0\n        if len(nums) == 1:\n            return nums[0]\n        prev = nums[0]  # dp[i-2]\n        curr = max(nums[0], nums[1])  # dp[i-1]\n        for i in range(2, len(nums)):\n            prev, curr = curr, max(curr, prev + nums[i])  # 选或不选第i间\n        return curr",
+   "points": [
+    {
+     "k": "状态压缩",
+     "v": "只与前两间房有关，用 prev（dp[i-2]）和 curr（dp[i-1]）两个变量滚动更新，空间 O(1)。"
+    },
+    {
+     "k": "状态转移公式",
+     "v": "dp[i] = max(不偷第 i 间, 偷第 i 间) = max(dp[i-1], dp[i-2] + nums[i])。"
+    },
+    {
+     "k": "初始化",
+     "v": "prev = nums[0]（只有第一间），curr = max(nums[0], nums[1])（前两间取较大）。"
+    }
+   ],
+   "followup": "",
+   "category": "动态规划",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/house-robber/",
+   "day": 7
+  },
+  {
+   "id": 121,
+   "title": "买卖股票的最佳时机",
+   "method": "贪心",
+   "steps": [
+    "维护最低价格和最大利润",
+    "遍历时更新最低价格，计算当前利润取最大"
+   ],
+   "oneliner": "贪心维护最低价和最大利润，O(n)。",
+   "code": "class Solution:\n    def maxProfit(self, prices: List[int]) -> int:\n        min_price = float('inf')  # 最低价\n        max_profit = 0  # 最大利润\n        for price in prices:\n            min_price = min(min_price, price)  # 更新最低价\n            max_profit = max(max_profit, price - min_price)  # 更新利润\n        return max_profit",
+   "points": [
+    {
+     "k": "一遍遍历的优势",
+     "v": "只需维护一个最低价格变量，遍历一次即可找到最大利润，时间 O(n)。"
+    },
+    {
+     "k": "最低价的含义",
+     "v": "min_price 记录遍历到当前为止的最低价格，保证在最低价买入。"
+    },
+    {
+     "k": "利润计算",
+     "v": "price - min_price 是以当前价格卖出能获得的最大利润，实时更新全局最大 profit。"
+    }
+   ],
+   "followup": "",
+   "category": "动态规划",
+   "in_site": true,
+   "difficulty": "Easy",
+   "leetcode_url": "https://leetcode.cn/problems/best-time-to-buy-and-sell-stock/",
+   "day": 6
+  },
+  {
+   "id": 122,
+   "title": "买卖股票的最佳时机 II",
+   "method": "贪心",
+   "steps": [
+    "累加所有上升段的利润",
+    "只要第二天比第一天高就前一天买第二天卖"
+   ],
+   "oneliner": "累加所有上升段利润，贪心。",
+   "code": "class Solution:\n    def maxProfit(self, prices: List[int]) -> int:\n        profit = 0\n        for i in range(1, len(prices)):\n            if prices[i] > prices[i - 1]:  # 上升段\n                profit += prices[i] - prices[i - 1]\n        return profit",
+   "points": [
+    {
+     "k": "贪心核心思想",
+     "v": "累加所有上升段利润，等价于把每个正差值都收入囊中。"
+    },
+    {
+     "k": "为何上升段就累加",
+     "v": "prices[i] > prices[i-1] 时前一天买、今天卖，利润必然为正。"
+    },
+    {
+     "k": "无限次交易",
+     "v": "不限制买卖次数，所以每个上升段都可以独立分割计算，无需考虑跨段持有。"
+    }
+   ],
+   "followup": "",
+   "category": "动态规划",
+   "in_site": false,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-ii/"
+  },
+  {
+   "id": 53,
+   "title": "最大子数组和",
+   "method": "贪心/DP",
+   "steps": [
+    "cur_sum 记录以当前元素结尾的最大子序和",
+    "若 cur_sum < 0，则重新从当前元素开始",
+    "res 记录出现过的最大 cur_sum"
+   ],
+   "oneliner": "贪心，cur_sum 为以 i 结尾的最大子序和，负则重新开始。",
+   "code": "class Solution:\n    def maxSubArray(self, nums: List[int]) -> int:\n        max_sum = nums[0]  # 全局最大\n        cur_sum = nums[0]  # 以i结尾的最大子序和\n        for i in range(1, len(nums)):\n            cur_sum = max(nums[i], cur_sum + nums[i])  # 负则重新开始\n            max_sum = max(max_sum, cur_sum)  # 更新全局最大\n        return max_sum",
+   "points": [
+    {
+     "k": "负和重新开始",
+     "v": "若 cur_sum < 0，说明之前累加的和对后续是负贡献，直接从当前元素重新开始。"
+    },
+    {
+     "k": "全局最大记录",
+     "v": "max_sum 记录遍历过程中出现过的最大 cur_sum，即为最大子序和。"
+    },
+    {
+     "k": "cur_sum 更新规则",
+     "v": "max(nums[i], cur_sum + nums[i])，比较「从当前重新开始」和「继续累加」两种选择。"
+    }
+   ],
+   "followup": "",
+   "category": "动态规划",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/maximum-subarray/",
+   "day": 2
+  },
+  {
+   "id": 152,
+   "title": "乘积最大子数组",
+   "method": "DP",
+   "steps": [
+    "同时维护最大和最小乘积（因为负数会使最大变最小）",
+    "若当前数为负，交换 max_prod 和 min_prod",
+    "更新 max_prod = max(当前数, max_prod * 当前数)"
+   ],
+   "oneliner": "维护最大和最小乘积（负数会使最大变最小）。",
+   "code": "class Solution:\n    def maxProduct(self, nums: List[int]) -> int:\n        max_prod = min_prod = nums[0]  # 同时记录最大和最小\n        result = nums[0]\n        for i in range(1, len(nums)):\n            if nums[i] < 0:  # 负数交换最大最小\n                max_prod, min_prod = min_prod, max_prod\n            max_prod = max(nums[i], max_prod * nums[i])\n            min_prod = min(nums[i], min_prod * nums[i])\n            result = max(result, max_prod)\n        return result",
+   "points": [
+    {
+     "k": "为何同时记录最大最小",
+     "v": "负数乘负数会变成正数，最大值遇到负数会变成最小值，最小值遇到负数会变成最大值。"
+    },
+    {
+     "k": "交换时机",
+     "v": "当前数为负时，交换 max_prod 和 min_prod，确保 max_prod 始终是「以当前结尾的最大乘积」。"
+    },
+    {
+     "k": "result 更新",
+     "v": "每轮都更新 result = max(result, max_prod)，确保记录的是全局最大乘积。"
+    }
+   ],
+   "followup": "",
+   "category": "动态规划",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/maximum-product-subarray/",
+   "day": 7
+  },
+  {
+   "id": 312,
+   "title": "戳气球",
+   "method": "区间 DP",
+   "steps": [
+    "dp[i][j] = 开区间 (i,j) 内能戳破的最大金币",
+    "枚举最后一个戳破的气球 k，转移取最大",
+    "dp[i][j] = max(dp[i][k] + dp[k][j] + nums[i]*nums[k]*nums[j])"
+   ],
+   "oneliner": "区间 DP 开区间 (i,j) 最大金币，枚举最后戳破 k，O(n³)。",
+   "code": "class Solution:\n    def maxCoins(self, nums: List[int]) -> int:\n        nums = [1] + nums + [1]  # 两端补1\n        n = len(nums)\n        dp = [[0] * n for _ in range(n)]\n        for length in range(2, n):  # 枚举长度\n            for i in range(n - length):\n                j = i + length\n                for k in range(i + 1, j):  # 枚举分割点\n                    dp[i][j] = max(dp[i][j], dp[i][k] + dp[k][j] + nums[i] * nums[k] * nums[j])\n        return dp[0][n - 1]",
+   "points": [
+    {
+     "k": "两端补 1 的作用",
+     "v": "在原数组两端各加一个虚拟气球，简化边界处理，使每戳一个气球都能获得 nums[i]*nums[k]*nums[j] 的金币。"
+    },
+    {
+     "k": "开区间的含义",
+     "v": "dp[i][j] 表示开区间 (i, j) 内能戳破的最大金币数，i 和 j 本身不被戳破。"
+    },
+    {
+     "k": "枚举最后一个戳破的气球",
+     "v": "遍历所有可能的 k，计算 dp[i][k] + dp[k][j] + nums[i]*nums[k]*nums[j] 取最大值。"
+    }
+   ],
+   "followup": "",
+   "category": "动态规划",
+   "in_site": false,
+   "difficulty": "Hard",
+   "leetcode_url": "https://leetcode.cn/problems/burst-balloons/"
+  },
+  {
+   "id": 354,
+   "title": "俄罗斯套娃信封",
+   "method": "排序+LIS",
+   "steps": [
+    "按宽升序，高降序排列",
+    "问题转化为对高求最长递增子序列（因为同宽时高递减，不会被选中）"
+   ],
+   "oneliner": "宽升序高降序排，转化为高维度 LIS，O(nlogn)。",
+   "code": "import bisect\n\nclass Solution:\n    def maxEnvelopes(self, envelopes: List[List[int]]) -> int:\n        envelopes.sort(key=lambda x: (x[0], -x[1]))  # 宽升序，高降序\n        dp = []  # 存递增序列的最小末尾\n        for _, h in envelopes:\n            pos = bisect.bisect_left(dp, h)  # 对高求LIS\n            if pos == len(dp):\n                dp.append(h)\n            else:\n                dp[pos] = h\n        return len(dp)",
+   "points": [
+    {
+     "k": "排序策略",
+     "v": "宽升序、高降序，确保同宽的信封只选一个（高降序使后面的高不可能接在前面高的后面）。"
+    },
+    {
+     "k": "转化为 LIS",
+     "v": "排序后问题转化为对高求最长递增子序列，同宽不互选保证了贪心正确性。"
+    },
+    {
+     "k": "二分 O(nlogn)",
+     "v": "对高用二分查找插入位置求 LIS，总时间复杂度 O(nlogn)，优于 O(n²) 的 DP。"
+    }
+   ],
+   "followup": "",
+   "category": "动态规划",
+   "in_site": false,
+   "difficulty": "Hard",
+   "leetcode_url": "https://leetcode.cn/problems/russian-doll-envelopes/"
+  },
+  {
+   "id": 33,
+   "title": "搜索旋转排序数组",
+   "method": "二分",
+   "steps": [
+    "在旋转数组中二分，判断哪半边有序",
+    "根据 target 落在有序半边还是无序半边收缩边界"
+   ],
+   "oneliner": "二分判断哪半边有序，target 在有序半边则收缩边界，O(logn)。",
+   "code": "class Solution:\n    def search(self, nums: List[int], target: int) -> int:\n        left = 0\n        right = len(nums) - 1\n        while left <= right:\n            mid = (left + right) // 2\n            if nums[mid] == target:\n                return mid\n            if nums[left] <= nums[mid]:  # 左半边有序\n                if nums[left] <= target < nums[mid]:\n                    right = mid - 1\n                else:\n                    left = mid + 1\n            else:  # 右半边有序\n                if nums[mid] < target <= nums[right]:\n                    left = mid + 1\n                else:\n                    right = mid - 1\n        return -1",
+   "points": [
+    {
+     "k": "如何判断有序半边",
+     "v": "通过 nums[left] <= nums[mid] 判断左半边是否升序有序。"
+    },
+    {
+     "k": "收缩边界的依据",
+     "v": "若 target 落在有序半边（nums[left] <= target < nums[mid]），则在该半边继续二分。"
+    },
+    {
+     "k": "注意 <= 的等号",
+     "v": "nums[left] <= nums[mid] 必须带等号，left == mid 时左半边只有一个元素，也算有序。"
+    }
+   ],
+   "followup": "",
+   "category": "二分查找",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/search-in-rotated-sorted-array/",
+   "day": 5
+  },
+  {
+   "id": 34,
+   "title": "在排序数组中查找元素的第一个和最后一个位置",
+   "method": "二分变形",
+   "steps": [
+    "二分找左边界：target <= nums[mid] 时收缩右边界",
+    "二分找右边界：target >= nums[mid] 时收缩左边界"
+   ],
+   "oneliner": "二分变形找左右边界，左边界 target<=mid 收缩右，右边界 >=mid 收左。",
+   "code": "class Solution:\n    def searchRange(self, nums: List[int], target: int) -> List[int]:\n        def find_bound(nums, target, left):\n            lo, hi = 0, len(nums)\n            while lo < hi:\n                mid = (lo + hi) // 2\n                if nums[mid] > target or (left and nums[mid] == target):\n                    hi = mid\n                else:\n                    lo = mid + 1\n            return lo\n\n        left = find_bound(nums, target, True)\n        if left == len(nums) or nums[left] != target:\n            return [-1, -1]\n        right = find_bound(nums, target, False)\n        return [left, right - 1]",
+   "points": [
+    {
+     "k": "左右边界条件不同",
+     "v": "找左边界时 target <= nums[mid] 收缩右边界，找右边界时 target >= nums[mid] 收缩左边界。"
+    },
+    {
+     "k": "返回值细节",
+     "v": "find_bound(..., False) 返回第一个 > target 的下标，减一才是最后一个 target 的下标。"
+    },
+    {
+     "k": "判空必要性",
+     "v": "若左边界越界或 nums[left] != target，直接返回 [-1, -1]，避免无效访问。"
+    }
+   ],
+   "followup": "",
+   "category": "二分查找",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/",
+   "day": 5
+  },
+  {
+   "id": 4,
+   "title": "寻找两个正序数组的中位数",
+   "method": "二分",
+   "steps": [
+    "二分短数组找分割线",
+    "将两数组划分为左右两部分，使左边元素数 = 右边元素数",
+    "左边最大 <= 右边最小时找到正确分割，计算中位数"
+   ],
+   "oneliner": "二分短数组找分割线，左边元素数等于右边，左边 max <= 右边 min 则找到。",
+   "code": "class Solution:\n    def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:\n        if len(nums1) > len(nums2):  # 确保nums1是短的\n            nums1, nums2 = nums2, nums1\n        m, n = len(nums1), len(nums2)\n        left = 0\n        right = m\n        while left <= right:\n            i = (left + right) // 2  # nums1的分割位置\n            j = (m + n + 1) // 2 - i  # nums2的分割位置\n            nums1_left_max = float('-inf') if i == 0 else nums1[i - 1]\n            nums1_right_min = float('inf') if i == m else nums1[i]\n            nums2_left_max = float('-inf') if j == 0 else nums2[j - 1]\n            nums2_right_min = float('inf') if j == n else nums2[j]\n            if nums1_left_max <= nums2_right_min and nums2_left_max <= nums1_right_min:\n                if (m + n) % 2 == 0:\n                    return (max(nums1_left_max, nums2_left_max) + min(nums1_right_min, nums2_right_min)) / 2\n                else:\n                    return max(nums1_left_max, nums2_left_max)\n            elif nums1_left_max > nums2_right_min:\n                right = i - 1\n            else:\n                left = i + 1\n        return 0.0",
+   "points": [
+    {
+     "k": "二分短数组原因",
+     "v": "确保时间复杂度 O(log(min(m,n)))，二分较长数组没有意义。"
+    },
+    {
+     "k": "分割线条件",
+     "v": "左边所有元素个数 = 右边所有元素个数（偶数），或左边 = 右边+1（奇数），通过 i 和 j 配合实现。"
+    },
+    {
+     "k": "找到条件",
+     "v": "nums1_left_max <= nums2_right_min 且 nums2_left_max <= nums1_right_min 时，分割线正确，中位数在边界处计算。"
+    }
+   ],
+   "followup": "",
+   "category": "二分查找",
+   "in_site": true,
+   "difficulty": "Hard",
+   "leetcode_url": "https://leetcode.cn/problems/median-of-two-sorted-arrays/",
+   "day": 5
+  },
+  {
+   "id": 560,
+   "title": "和为 K 的子数组",
+   "method": "前缀和+哈希",
+   "steps": [
+    "前缀和思想：从头累加到当前位置的和",
+    "若之前某个前缀和 = 当前前缀和 - k，则这段子数组和为 k",
+    "用哈希表记录前缀和出现次数"
+   ],
+   "oneliner": "前缀和+哈希表，查「当前和 - k」出现过几次，O(n)。",
+   "code": "class Solution:\n    def subarraySum(self, nums: List[int], k: int) -> int:\n        prefix = {0: 1}  # 前缀和->次数\n        cur = 0\n        count = 0\n        for num in nums:\n            cur += num  # 累加前缀和\n            count += prefix.get(cur - k, 0)  # 找差值\n            prefix[cur] = prefix.get(cur, 0) + 1  # 存入当前和\n        return count",
+   "points": [
+    {
+     "k": "初始化 prefix = {0: 1} 的含义",
+     "v": "前缀和为 0 出现一次，用于处理从数组开头到当前位置恰好和为 k 的情况。"
+    },
+    {
+     "k": "cur - k 的含义",
+     "v": "若之前某处前缀和为 cur - k，加上当前元素后子数组和恰好为 k，count 累加该前缀和出现的次数。"
+    },
+    {
+     "k": "哈希表实时更新",
+     "v": "每遍历一个元素就将当前前缀和的出现次数 +1，保证后续元素能查到所有历史前缀和。"
+    }
+   ],
+   "followup": "",
+   "category": "前缀和",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/subarray-sum-equals-k/",
+   "day": 1
+  },
+  {
+   "id": 525,
+   "title": "连续数组",
+   "method": "前缀和+哈希",
+   "steps": [
+    "将 0 变为 -1，转化为求和为 0 的最长子数组",
+    "用哈希表记录前缀和第一次出现的位置",
+    "当前和已见过则更新最长长度"
+   ],
+   "oneliner": "0 变 -1 后求和为 0 最长子数组，哈希表存前缀和首次位置，O(n)。",
+   "code": "class Solution:\n    def findMaxLength(self, nums: List[int]) -> int:\n        prefix = {0: -1}  # 前缀和->首次位置\n        cur = 0\n        max_len = 0\n        for i, num in enumerate(nums):\n            cur += 1 if num == 1 else -1  # 0变-1\n            if cur in prefix:\n                max_len = max(max_len, i - prefix[cur])\n            else:\n                prefix[cur] = i  # 首次出现\n        return max_len",
+   "points": [
+    {
+     "k": "0 变 -1 的原理",
+     "v": "将问题转化为求「和为 0 的最长子数组」，因为 1 的个数 - 0 的个数 = 0 等价于前缀和相同。"
+    },
+    {
+     "k": "首次出现位置记录",
+     "v": "哈希表只记录每个前缀和第一次出现的位置，确保子数组长度最大。"
+    },
+    {
+     "k": "max_len 更新规则",
+     "v": "当前前缀和已见过时，用 i - prefix[cur] 计算长度，取较大值保留。"
+    }
+   ],
+   "followup": "",
+   "category": "前缀和",
+   "in_site": false,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/contiguous-array/"
+  },
+  {
+   "id": 55,
+   "title": "跳跃游戏",
+   "method": "贪心",
+   "steps": [
+    "维护能到达的最远位置",
+    "遍历每个位置，更新最远距离",
+    "若最远距离 >= 末尾，则可达"
+   ],
+   "oneliner": "贪心维护最远可达位置，逐位置更新，能到末尾即成功。",
+   "code": "class Solution:\n    def canJump(self, nums: List[int]) -> bool:\n        max_reach = 0  # 最远可达位置\n        for i, jump in enumerate(nums):\n            if i > max_reach:  # 当前位置不可达\n                return False\n            max_reach = max(max_reach, i + jump)  # 更新最远\n            if max_reach >= len(nums) - 1:  # 能到末尾\n                return True\n        return True",
+   "points": [
+    {
+     "k": "max_reach 的含义",
+     "v": "记录从已遍历位置出发能到达的最远下标，每次更新为 max(max_reach, i + nums[i])。"
+    },
+    {
+     "k": "不可达判断",
+     "v": "若 i > max_reach，说明当前位置在当前能到达范围之外，直接返回 False。"
+    },
+    {
+     "k": "提前返回",
+     "v": "若 max_reach >= len(nums) - 1，说明已能到达或超过末尾，直接返回 True。"
+    }
+   ],
+   "followup": "",
+   "category": "贪心",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/jump-game/",
+   "day": 6
+  },
+  {
+   "id": 56,
+   "title": "合并区间",
+   "method": "排序+合并",
+   "steps": [
+    "按起点排序",
+    "遍历区间，当前区间起点 <= 上个区间终点则合并（更新终点为较大值）",
+    "否则开新区间"
+   ],
+   "oneliner": "按起点排序，合并相交的区间，O(nlogn)。",
+   "code": "class Solution:\n    def merge(self, intervals: List[List[int]]) -> List[List[int]]:\n        if not intervals:\n            return []\n        intervals.sort(key=lambda x: x[0])  # 按起点排序\n        result = [intervals[0]]\n        for start, end in intervals[1:]:\n            if start <= result[-1][1]:  # 重叠\n                result[-1][1] = max(result[-1][1], end)\n            else:\n                result.append([start, end])\n        return result",
+   "points": [
+    {
+     "k": "排序的必要性",
+     "v": "按起点排序后，相交的区间必然连续，便于一次遍历完成合并。"
+    },
+    {
+     "k": "合并判断条件",
+     "v": "当前区间起点 start <= 上个区间终点 result[-1][1] 时，两者重叠需合并。"
+    },
+    {
+     "k": "合并后终点取值",
+     "v": "合并后终点取 max(原终点, 新终点)，确保覆盖两个区间的范围。"
+    }
+   ],
+   "followup": "",
+   "category": "贪心",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/merge-intervals/",
+   "day": 2
+  },
+  {
+   "id": 134,
+   "title": "加油站",
+   "method": "贪心",
+   "steps": [
+    "若总油量 >= 总消耗，则必有解",
+    "从 0 开始累加，若油量不足则起点移到下一站，重置油量"
+   ],
+   "oneliner": "总油量够必有解，累加油量不足则换起点，O(n)。",
+   "code": "class Solution:\n    def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:\n        total = 0  # 总油量-总消耗\n        cur = 0  # 当前累计\n        start = 0  # 起点\n        for i in range(len(gas)):\n            cur += gas[i] - cost[i]\n            total += gas[i] - cost[i]\n            if cur < 0:  # 从start到i都不行\n                start = i + 1\n                cur = 0\n        return start if total >= 0 else -1",
+   "points": [
+    {
+     "k": "total >= 0 的意义",
+     "v": "遍历一圈后总油量 >= 总消耗，是存在有效解的必要条件，若不满足直接返回 -1。"
+    },
+    {
+     "k": "cur < 0 的含义",
+     "v": "说明从当前起点 start 到位置 i 之间，没有任何点能作为起点（油量不够），将起点移到 i+1。"
+    },
+    {
+     "k": "贪心正确性",
+     "v": "若 start 到 i 的油量累计为负，则 start 之前的所有点作为起点到 i 必然也为负，不可能成功。"
+    }
+   ],
+   "followup": "",
+   "category": "贪心",
+   "in_site": false,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/gas-station/"
+  },
+  {
+   "id": 136,
+   "title": "只出现一次的数字",
+   "method": "异或",
+   "steps": [
+    "异或运算：相同数字异或为 0，0 异或任何数为其本身",
+    "所有数字异或，结果为只出现一次的数"
+   ],
+   "oneliner": "全员异或，相同为 0，0 异或不变，O(n) O(1)。",
+   "code": "class Solution:\n    def singleNumber(self, nums: List[int]) -> int:\n        result = 0\n        for num in nums:\n            result ^= num  # 异或\n        return result",
+   "points": [
+    {
+     "k": "异或的数学性质",
+     "v": "满足交换律 a^b^c = a^c^b，结合律 a^(b^c) = (a^b)^c，相同数异或为 0。"
+    },
+    {
+     "k": "成对抵消原理",
+     "v": "所有出现两次的数字异或后相互抵消为 0，只剩出现一次的那个数。"
+    },
+    {
+     "k": "与 0 异或不变",
+     "v": "0 ^ x = x，保证最终结果就是只出现一次的数字。"
+    }
+   ],
+   "followup": "",
+   "category": "位运算",
+   "in_site": true,
+   "difficulty": "Easy",
+   "leetcode_url": "https://leetcode.cn/problems/single-number/",
+   "day": 7
+  },
+  {
+   "id": 231,
+   "title": "2的幂",
+   "method": "位运算",
+   "steps": [
+    "n & (n-1) 会消掉最低位的 1",
+    "若结果为 0，则 n 是 2 的幂"
+   ],
+   "oneliner": "n & (n-1) 消掉最低位的 1，为 0 则是 2 的幂。",
+   "code": "class Solution:\n    def isPowerOfTwo(self, n: int) -> bool:\n        return n > 0 and (n & (n - 1)) == 0",
+   "points": [
+    {
+     "k": "2 的幂的二进制特征",
+     "v": "恰好只有一位为 1（如 8 = 1000），而其他数至少有两位为 1。"
+    },
+    {
+     "k": "n-1 的作用",
+     "v": "n-1 会把最低位的 1 变成 0，其后所有位变成 1（如 8-1 = 7 = 0111）。"
+    },
+    {
+     "k": "n & (n-1) 的结果",
+     "v": "消掉最低位的 1 后，若结果为 0，说明原数只有这一位 1，即为 2 的幂。"
+    }
+   ],
+   "followup": "",
+   "category": "位运算",
+   "in_site": false,
+   "difficulty": "Easy",
+   "leetcode_url": "https://leetcode.cn/problems/power-of-two/"
+  },
+  {
+   "id": 207,
+   "title": "课程表",
+   "method": "拓扑排序",
+   "steps": [
+    "建图：邻接表 + 入度数组",
+    "BFS：入度为 0 的课程入队，学完一门减少后续入度",
+    "能学完所有课程则无环"
+   ],
+   "oneliner": "拓扑排序 BFS，入度 0 入队，学完减入度，无环则全部学完。",
+   "code": "from collections import deque\n\nclass Solution:\n    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:\n        graph = [[] for _ in range(numCourses)]  # 邻接表\n        indegree = [0] * numCourses  # 入度\n        for u, v in prerequisites:\n            graph[v].append(u)  # v->u\n            indegree[u] += 1\n        queue = deque([i for i in range(numCourses) if indegree[i] == 0])  # 入度0入队\n        visited = 0\n        while queue:\n            course = queue.popleft()\n            visited += 1\n            for next_course in graph[course]:\n                indegree[next_course] -= 1\n                if indegree[next_course] == 0:\n                    queue.append(next_course)\n        return visited == numCourses",
+   "points": [
+    {
+     "k": "入度为 0 的课程",
+     "v": "表示没有前置课程要求，可以直接学习，是拓扑排序的起点。"
+    },
+    {
+     "k": "学完减入度的原理",
+     "v": "学完一门课后，其指向的后续课程的前置要求减少一个，若减为 0 则变成新的可学课程。"
+    },
+    {
+     "k": "visited == numCourses 的判断",
+     "v": "若最终访问的课程数等于总课程数，说明所有课程都能学完，即图中无环；若有环则某些课程入度永远不为 0。"
+    }
+   ],
+   "followup": "",
+   "category": "图论",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/course-schedule/",
+   "day": 5
+  },
+  {
+   "id": 208,
+   "title": "实现 Trie（前缀树）",
+   "method": "字典树",
+   "steps": [
+    "每个节点含字典存子节点和 isEnd 标记",
+    "insert 遍历字符逐层创建/移动",
+    "search/startsWith 遍历字符判断存在和前缀"
+   ],
+   "oneliner": "字典树存子节点和结束标记，insert 逐层创建，search/prefix 遍历判断。",
+   "code": "class Trie:\n    def __init__(self):\n        self.children = {}  # 子节点\n        self.is_end = False  # 是否结束\n\n    def insert(self, word: str) -> None:\n        node = self\n        for ch in word:\n            if ch not in node.children:\n                node.children[ch] = Trie()\n            node = node.children[ch]\n        node.is_end = True\n\n    def search(self, word: str) -> bool:\n        node = self._search_prefix(word)\n        return node is not None and node.is_end\n\n    def startsWith(self, prefix: str) -> bool:\n        return self._search_prefix(prefix) is not None\n\n    def _search_prefix(self, prefix: str):\n        node = self\n        for ch in prefix:\n            if ch not in node.children:\n                return None\n            node = node.children[ch]\n        return node",
+   "points": [
+    {
+     "k": "节点结构",
+     "v": "每个节点包含 children 字典（存储子节点）和 is_end 标记（标记是否是某单词的结尾）。"
+    },
+    {
+     "k": "查找失败条件",
+     "v": "_search_prefix 遍历过程中若字符不在 children 中，说明前缀不存在，直接返回 None。"
+    },
+    {
+     "k": "search 与 startsWith 的区别",
+     "v": "search 要求完整匹配（is_end 为 True），startsWith 只要求前缀路径存在，不要求 is_end。"
+    }
+   ],
+   "followup": "",
+   "category": "前缀树",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/implement-trie-prefix-tree/",
+   "day": 5
+  },
+  {
+   "id": 2,
+   "title": "两数相加",
+   "method": "链表模拟",
+   "steps": [
+    "从链表头开始逐位相加，用 carry 保存进位",
+    "每位结果 = (l1.val + l2.val + carry) % 10，进位 = // 10",
+    "创建新链表节点串联结果，遍历完还需处理最后的 carry"
+   ],
+   "oneliner": "逐位相加模拟手算，进位 carry 保留，和为(和+进位)%10，进位为 //10。",
+   "code": "class Solution:\n    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:\n        dummy = ListNode()  # 哑节点\n        cur = dummy\n        carry = 0\n        while l1 or l2 or carry:  # 继续条件\n            s = (l1.val if l1 else 0) + (l2.val if l2 else 0) + carry\n            carry = s // 10  # 进位\n            cur.next = ListNode(s % 10)\n            cur = cur.next\n            l1 = l1.next if l1 else None\n            l2 = l2.next if l2 else None\n        return dummy.next",
+   "points": [
+    {
+     "k": "while 循环条件",
+     "v": "l1 or l2 or carry，任一链表未遍历完或还有进位都要继续，确保不漏掉最后的进位节点。"
+    },
+    {
+     "k": "dummy 哑节点作用",
+     "v": "统一头节点的创建逻辑，cur 指针负责逐位构建新链表，return dummy.next 即为结果。"
+    },
+    {
+     "k": "None 处理技巧",
+     "v": "l1.val if l1 else 0，当某链表已遍历完时视为 0，避免空指针异常。"
+    }
+   ],
+   "followup": "",
+   "category": "链表",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/add-two-numbers/",
+   "day": 3
+  },
+  {
+   "id": 92,
+   "title": "翻转链表 II",
+   "method": "哑节点+局部反转",
+   "steps": [
+    "哑节点指向链表头，先找到反转起始位置的前一个节点",
+    "cur 固定为区间第一个节点，每次把 cur 的下一个节点「头插」到 pre 后面，共 right - left 次",
+    "头插过程中链表始终连着，无需额外拼接，返回哑节点的 next"
+   ],
+   "oneliner": "哑节点定位前驱 pre，头插法把区间节点逐个挪到 pre 后，共 right-left 次。",
+   "code": "class Solution:\n    def reverseBetween(self, head: ListNode, left: int, right: int) -> ListNode:\n        dummy = ListNode(next=head)  # 哑节点\n        pre = dummy\n        for _ in range(left - 1):  # 找到前驱\n            pre = pre.next\n\n        cur = pre.next  # 反转区间的第一个节点\n        for _ in range(right - left):  # 头插法局部反转\n            next_node = cur.next\n            cur.next = next_node.next\n            next_node.next = pre.next\n            pre.next = next_node\n\n        return dummy.next",
+   "points": [
+    {
+     "k": "pre 指针的作用",
+     "v": "pre 固定在反转区间前一个节点不动，只通过移动其他指针完成局部反转。"
+    },
+    {
+     "k": "插入反转的核心操作",
+     "v": "每次把 cur.next（即 next_node）插入到 pre 后面，实现区间的就地反转。"
+    },
+    {
+     "k": "循环次数",
+     "v": "反转循环执行 right - left 次，因为区间内有 n 个节点，需要反转 n-1 条指针。"
+    }
+   ],
+   "followup": "",
+   "category": "链表",
+   "in_site": false,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/reverse-linked-list-ii/"
+  },
+  {
+   "id": 169,
+   "title": "多数元素",
+   "method": "Boyer-Moore 投票",
+   "steps": [
+    "候选人票数抵消后剩的即为多数",
+    "count 为 0 时换候选人"
+   ],
+   "oneliner": "Boyer-Moore 投票，候选人票数抵消后剩的即为多数。",
+   "code": "class Solution:\n    def majorityElement(self, nums: List[int]) -> int:\n        count = 0\n        candidate = None\n        for num in nums:\n            if count == 0:  # 换候选人\n                candidate = num\n            count += 1 if num == candidate else -1  # 票数抵消\n        return candidate",
+   "points": [
+    {
+     "k": "票数抵消思想",
+     "v": "相同数投赞成票，不同数投反对票，票数抵消后剩下的候选人就是出现次数 > n/2 的那个。"
+    },
+    {
+     "k": "count == 0 换候选人",
+     "v": "说明之前的候选人在前面的子数组中已被完全抵消，需要重新选候选人。"
+    },
+    {
+     "k": "为何能保证找到多数",
+     "v": "多数元素出现次数 > n/2，其票数抵消后必然有剩余，遍历完数组后留下的就是答案。"
+    }
+   ],
+   "followup": "",
+   "category": "数学",
+   "in_site": true,
+   "difficulty": "Easy",
+   "leetcode_url": "https://leetcode.cn/problems/majority-element/",
+   "day": 7
+  },
+  {
+   "id": 202,
+   "title": "快乐数",
+   "method": "快慢指针",
+   "steps": [
+    "将数各位平方和作为下一个数",
+    "快指针走两步，慢指针走一步",
+    "若为快乐数则会到 1，否则进入循环"
+   ],
+   "oneliner": "快慢指针检测循环，1 为终止状态。",
+   "code": "class Solution:\n    def isHappy(self, n: int) -> bool:\n        def next_num(x):\n            return sum(int(d) ** 2 for d in str(x))\n\n        slow = n\n        fast = next_num(n)\n        while fast != 1 and slow != fast:\n            slow = next_num(slow)  # 慢走一步\n            fast = next_num(next_num(fast))  # 快走两步\n        return fast == 1",
+   "points": [
+    {
+     "k": "快乐数的定义",
+     "v": "将各位数字平方和作为下一个数，不断迭代，最终若能到 1 则为快乐数。"
+    },
+    {
+     "k": "循环判断",
+     "v": "非快乐数会陷入循环（不会到 1），快慢指针最终会在循环中相遇。"
+    },
+    {
+     "k": "终止条件",
+     "v": "快慢指针相遇时若 fast == 1 说明是快乐数，否则进入循环的不是快乐数。"
+    }
+   ],
+   "followup": "",
+   "category": "数学",
+   "in_site": false,
+   "difficulty": "Easy",
+   "leetcode_url": "https://leetcode.cn/problems/happy-number/"
+  }
+ ],
+ "summary": [
+  [
+   "哈希表",
+   "O(1) 查找、计数、去重"
+  ],
+  [
+   "双指针",
+   "收窄、比较、交换"
+  ],
+  [
+   "滑动窗口",
+   "扩右收左、包含则收"
+  ],
+  [
+   "单调栈",
+   "单调递增/递减、下一个更大/更小"
+  ],
+  [
+   "二叉树",
+   "递归、层序、后序、DFS"
+  ],
+  [
+   "回溯",
+   "选或不选、路径记录、去重"
+  ],
+  [
+   "动态规划",
+   "最优子结构、状态转移、压缩"
+  ],
+  [
+   "二分查找",
+   "有序分割、边界收缩"
+  ],
+  [
+   "前缀和",
+   "差分、哈希表统计"
+  ],
+  [
+   "贪心",
+   "局部最优、全局最优"
+  ],
+  [
+   "位运算",
+   "异或、移位、掩码"
+  ],
+  [
+   "图论",
+   "BFS、拓扑排序、连通性"
+  ],
+  [
+   "前缀树",
+   "字典树、前缀匹配"
+  ],
+  [
+   "链表",
+   "虚拟头结点、局部反转"
+  ],
+  [
+   "数学",
+   "投票、快慢指针"
+  ]
+ ]
+}

@@ -2,7 +2,7 @@
 
 > **产品级静态站点 + 全 100 题 Python 题解 + 多解法对比 + ASCII 可视化 + 进度追踪**
 >
-> 在线访问(部署后):`https://<your-username>.github.io/lc100/`
+> 在线访问:<https://young-1231.github.io/lc100/>
 
 ![home](docs/screenshot-home.png)
 
@@ -13,6 +13,7 @@
 | 特性 | 说明 |
 | --- | --- |
 | 🧠 **100 题全覆盖** | 严格按 LeetCode 官方 Hot 100,Python 实现 |
+| ⚡ **一句话速记** | `#/quick` 页:58 道高频题的 Python 面试口述版(一句话思路 + 口述步骤 + 3 个核心要点 + 代码),支持遮住答案自测、闪卡背诵(`←`/`→`/`Space`/`M`)、标记掌握;46 道 Hot 100 题的详情页顶部同步展示速记卡 |
 | 🧮 **算法基础板块** | 以 Hot 100 为基础,补 34 个经典『手撕』算法(排序/二分/字符串/图论/数学位运算/经典范式),每个含思路 + 2–5 种写法对比 + 复杂度大表 + 易错点,代码 100% 自测 |
 | 🟧 **一键去 LeetCode 练习** | 列表每行 + 详情页都有「去 LeetCode 练习」按钮,直达 leetcode.cn 原题盖码默写 |
 | 🧭 **新手练习指南** | 内置 `#/guide` 页,手把手讲注册 / 选 Python3 / Run / Submit / 看判题结果 / 高效习惯 |
@@ -78,10 +79,13 @@ lc100/
 │   ├── patterns/*.md       # 模式速记表(7 张)
 │   ├── algo_families.json  # 算法基础:6 大家族分组 + 排序总览表
 │   ├── algos/<slug>.json   # 算法基础:每个经典算法全量(思路/多写法/复杂度…)
-│   └── algos.json          # 算法基础:列表索引(由 build_algos.py 生成)
+│   ├── algos.json          # 算法基础:列表索引(由 build_algos.py 生成)
+│   ├── oneliner.md         # 一句话速记源文件(人工维护)
+│   └── oneliner.json       # 一句话速记数据(由 build_oneliner.py 生成)
 ├── solutions/              # 完整 .py 源码(可直接下载)
 ├── scripts/build.py        # 从 hot100/ 解析生成题目 JSON
-└── scripts/build_algos.py  # 构建 + 自测「算法基础」板块
+├── scripts/build_algos.py  # 构建 + 自测「算法基础」板块
+└── scripts/build_oneliner.py # 构建 + 自测「一句话速记」板块
 ```
 
 ## 🚀 本地预览
@@ -240,6 +244,17 @@ git push
 # 修改/新增算法后:重建索引并跑全部写法自测
 python3 scripts/build_algos.py
 ```
+
+## ⚡ 一句话速记板块
+
+源文件是 `data/oneliner.md`(每题:口述思路 / 超短一句话版 / 代码 / 3 个核心要点 / 可选的追问应对)。
+改完后重新构建,脚本会逐题 exec 代码并跑用例,全部通过才写出 JSON:
+
+```bash
+python3 scripts/build_oneliner.py
+```
+
+「已掌握」状态存在浏览器 localStorage(`lc100.oneliner.v1`),与题目进度分开。
 
 ## 🤝 致谢
 

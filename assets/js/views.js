@@ -3,6 +3,7 @@ import { getProblems, getDays, getProblem, getPattern, getAlgos, getAlgoFamilies
 import { renderDoc, renderMarkdown } from "./markdown.js";
 import { progress } from "./progress.js";
 import { renderViz } from "./viz.js";
+import { onelinerFor } from "./quick.js";
 
 const DAY_TITLES = {
   1: "哈希 / 双指针 / 滑动窗口 / 子串",
@@ -154,6 +155,13 @@ export async function renderHome() {
       <h2 class="section-title">7 天作战计划</h2>
       <p class="section-sub">每天 4–6 小时,前 90 min 看题读解,后续盖住代码独立写。</p>
       <div class="day-grid">${dayCards}</div>
+    </section>
+    <section class="container">
+      <a class="day-card quick-entry" href="#/quick">
+        <span class="day-badge">⚡ 新</span>
+        <h3>一句话速记 · 面试口述版</h3>
+        <div class="meta"><span>58 道高频题:一句话思路 + 口述步骤 + 3 个核心要点 + Python 代码,支持遮住答案自测和闪卡背诵。</span></div>
+      </a>
     </section>
     <section class="container">
       <h2 class="section-title">使用说明</h2>
@@ -398,9 +406,10 @@ export async function renderProblem(id) {
   id = Number(id);
   const app = document.getElementById("app");
   app.innerHTML = `<div class="loader"></div>`;
-  let data, list;
+  let data, list, quick = null;
   try {
     [data, list] = await Promise.all([getProblem(id), getProblems()]);
+    quick = await onelinerFor(id);
   } catch {
     app.innerHTML = `<div class="container empty">题目 #${id} 不存在。</div>`;
     return;
@@ -449,6 +458,22 @@ export async function renderProblem(id) {
       </div>
       <div class="detail-layout">
         <article id="detail-main">
+          ${quick ? `
+          <section class="detail-section ql-inline" id="sec-quick">
+            <h2>⚡ 一句话速记 <span class="badge">${escapeHtml(quick.method)}</span></h2>
+            <p class="ql-one">${escapeHtml(quick.oneliner)}</p>
+            <div class="ql-grid">
+              <div>
+                <div class="ql-label">面试口述</div>
+                <ol class="ql-steps">${quick.steps.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ol>
+              </div>
+              <div>
+                <div class="ql-label">3 个核心要点</div>
+                <ul class="ql-points">${quick.points.map(x => `<li><strong>${escapeHtml(x.k)}</strong>${escapeHtml(x.v)}</li>`).join("")}</ul>
+              </div>
+            </div>
+            <div class="ql-inline-foot"><a href="#/quick/${id}">在速记页查看 / 闪卡背诵 →</a></div>
+          </section>` : ""}
           ${data.statement ? `
           <section class="detail-section statement-section" id="sec-statement">
             <h2>📋 题目描述 <span class="badge">完整题面</span></h2>
@@ -593,14 +618,15 @@ export async function renderProblem(id) {
         <aside class="toc">
           <div class="toc-title">本页目录</div>
           <ol>
-            ${data.statement ? `<li><a href="#sec-statement">📋 题目描述</a></li>` : ""}
-            <li><a href="#sec-doc">💡 思路 & 直觉</a></li>
-            ${data.viz ? `<li><a href="#sec-viz">可视化</a></li>` : ""}
-            ${data.explanation ? `<li><a href="#sec-expl">💡 解题思路</a></li>` : ""}
-            ${data.explanation && data.explanation.complexity ? `<li><a href="#sec-complexity">🧮 复杂度推导</a></li>` : ""}
-            ${hasMulti ? `<li><a href="#sec-solutions">多解法对比</a></li>` : `<li><a href="#sec-solution">解法</a></li>`}
-            ${data.code_explain ? `<li><a href="#sec-walk">📖 代码讲解</a></li>` : ""}
-            <li><a href="#sec-personal">📝 笔记 & 自评</a></li>
+            ${quick ? `<li><a class="toc-link" data-target="sec-quick">⚡ 一句话速记</a></li>` : ""}
+            ${data.statement ? `<li><a class="toc-link" data-target="sec-statement">📋 题目描述</a></li>` : ""}
+            <li><a class="toc-link" data-target="sec-doc">💡 思路 & 直觉</a></li>
+            ${data.viz ? `<li><a class="toc-link" data-target="sec-viz">可视化</a></li>` : ""}
+            ${data.explanation ? `<li><a class="toc-link" data-target="sec-expl">💡 解题思路</a></li>` : ""}
+            ${data.explanation && data.explanation.complexity ? `<li><a class="toc-link" data-target="sec-complexity">🧮 复杂度推导</a></li>` : ""}
+            ${hasMulti ? `<li><a class="toc-link" data-target="sec-solutions">多解法对比</a></li>` : `<li><a class="toc-link" data-target="sec-solution">解法</a></li>`}
+            ${data.code_explain ? `<li><a class="toc-link" data-target="sec-walk">📖 代码讲解</a></li>` : ""}
+            <li><a class="toc-link" data-target="sec-personal">📝 笔记 & 自评</a></li>
           </ol>
         </aside>
       </div>
@@ -613,6 +639,13 @@ export async function renderProblem(id) {
           : `<span class="next nav-empty"></span>`}
       </nav>
     </div>`;
+
+  // 目录:JS 平滑滚动(不改 hash,避免触发路由)
+  document.querySelectorAll(".toc-link").forEach(a => {
+    a.addEventListener("click", () => {
+      document.getElementById(a.dataset.target)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
 
   // 难度自评 & 笔记
   const stars = document.getElementById("rating-stars");

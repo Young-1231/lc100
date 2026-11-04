@@ -5,6 +5,7 @@ import {
   renderProgress, renderPattern, renderAbout, renderGuide,
   renderAlgos, renderAlgo,
 } from "./views.js";
+import { renderQuick } from "./quick.js";
 
 // ===== Theme =====
 const THEME_KEY = "lc100.theme";
@@ -32,6 +33,7 @@ const NAV = [
   { path: "#/",          label: "首页"     },
   { path: "#/list",      label: "全部题目" },
   { path: "#/day/1",     label: "7 天计划" },
+  { path: "#/quick",     label: "⚡ 一句话速记" },
   { path: "#/algos",     label: "算法基础" },
   { path: "#/guide",     label: "练习指南" },
   { path: "#/progress",  label: "进度"     },
@@ -58,6 +60,8 @@ on(/^#\/list$/,             renderAll);
 on(/^#\/day\/(\d+)$/,       renderDay);
 on(/^#\/p\/(\d+)$/,         renderProblem);
 on(/^#\/progress$/,         renderProgress);
+on(/^#\/quick$/,            () => renderQuick());
+on(/^#\/quick\/(\d+)$/,     id => renderQuick(Number(id)));
 on(/^#\/algos$/,            renderAlgos);
 on(/^#\/algo\/(.+)$/,       renderAlgo);
 on(/^#\/pattern\/(.+)$/,    renderPattern);

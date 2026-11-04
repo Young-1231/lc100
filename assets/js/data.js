@@ -36,6 +36,18 @@ export async function getPattern(filename) {
   return await r.text();
 }
 
+// ===== 一句话速记 =====
+let onelinerPromise = null;
+export function getOneliner() {
+  if (!onelinerPromise) {
+    onelinerPromise = fetch(`${BASE}/oneliner.json`).then(r => {
+      if (!r.ok) throw new Error("oneliner.json not found");
+      return r.json();
+    }).catch(e => { onelinerPromise = null; throw e; });
+  }
+  return onelinerPromise;
+}
+
 // ===== 算法基础 / 经典算法 =====
 export async function getAlgos() {
   if (cache.algos) return cache.algos;
