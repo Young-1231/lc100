@@ -1471,3 +1471,19 @@ pre.code {
 .ql-row2 .pill { height: 28px; font-size: 12.5px; }
 .ql-alt summary { color: var(--text-mute); }
 .ql-alt-desc { margin: 6px 0 0; font-size: 13px; color: var(--text-soft); line-height: 1.7; }
+
+/* 速记:代码语言切换 / 时空复杂度 */
+.ql-lang { margin: 8px 0 0; }
+.ql-lang .seg-btn { font-size: 12.5px; padding: 4px 14px; }
+.ql-lang-pane[hidden] { display: none; }
+.ql-cx { margin: 2px 0 12px; padding: 8px 12px; background: var(--bg-soft); border-radius: var(--radius-sm); }
+.ql-cx .ql-label { display: block; margin: 0 0 4px; }
+.ql-cx dl { margin: 0; display: grid; gap: 3px; }
+.ql-cx-row { display: grid; grid-template-columns: 64px 1fr; gap: 10px; font-size: 13px; line-height: 1.65; }
+.ql-cx-row dt { color: var(--text-mute); font-weight: 600; }
+.ql-cx-row dd { margin: 0; color: var(--text-soft); }
+.ql-cx-row dd code {
+  font-family: var(--font-mono); font-size: .92em; font-weight: 600; padding: 1px 6px; margin-right: 8px;
+  border-radius: 4px; background: var(--bg-elev); color: var(--accent); white-space: nowrap;
+}
+.ql-inline .ql-cx { margin-top: 12px; }

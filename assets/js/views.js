@@ -3,7 +3,7 @@ import { getProblems, getDays, getProblem, getPattern, getAlgos, getAlgoFamilies
 import { renderDoc, renderMarkdown } from "./markdown.js";
 import { progress } from "./progress.js";
 import { renderViz } from "./viz.js";
-import { onelinerFor } from "./quick.js";
+import { onelinerFor, cxHtml } from "./quick.js";
 
 const DAY_TITLES = {
   1: "哈希 / 双指针 / 滑动窗口 / 子串",
@@ -462,6 +462,7 @@ export async function renderProblem(id) {
           <section class="detail-section ql-inline" id="sec-quick">
             <h2>⚡ 一句话速记 <span class="badge">${escapeHtml(quick.method)}</span></h2>
             <p class="ql-one">${escapeHtml(quick.oneliner)}</p>
+            ${cxHtml(quick)}
             <div class="ql-grid">
               <div>
                 <div class="ql-label">面试口述</div>
@@ -472,7 +473,7 @@ export async function renderProblem(id) {
                 <ul class="ql-points">${quick.points.map(x => `<li><strong>${escapeHtml(x.k)}</strong>${escapeHtml(x.v)}</li>`).join("")}</ul>
               </div>
             </div>
-            <div class="ql-inline-foot"><a href="#/quick/${id}">在速记页查看 / 闪卡背诵 →</a></div>
+            <div class="ql-inline-foot"><a href="#/quick/${id}">在速记页查看 Python / Java 代码、闪卡背诵 →</a></div>
           </section>` : ""}
           ${data.statement ? `
           <section class="detail-section statement-section" id="sec-statement">

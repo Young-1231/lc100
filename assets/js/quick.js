@@ -33,29 +33,57 @@ const mastered = {
     return !!s[id];
   },
 };
-const prefs = Object.assign({ mode: "list", hide: false }, loadJSON(PREF_KEY, {}));
+const prefs = Object.assign({ mode: "list", hide: false, lang: "python" }, loadJSON(PREF_KEY, {}));
 function savePrefs() { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); }
 
 const SVG_EXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
 const SVG_COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
 
 // ---- 片段 ----
+const LANGS = { python: "Python", java: "Java" };
+function codePane(lang, code, active) {
+  return `
+    <div class="code-block ql-lang-pane" data-lang="${lang}" ${active ? "" : "hidden"}>
+      <div class="code-toolbar"><span>${lang}</span>
+        <button class="copy-btn" type="button">${SVG_COPY} <span>复制</span></button>
+      </div>
+      <pre class="code"><code class="language-${lang}">${esc(code)}</code></pre>
+    </div>`;
+}
+
+// 代码:Python / Java 两个标签,语言偏好全页共享并记住
 function codeHtml(it) {
-  const lines = it.code.split("\n").length;
+  const codes = { python: it.code, java: it.java };
+  const lang = prefs.lang in codes && codes[prefs.lang] ? prefs.lang : "python";
   return `
     <details class="ql-code">
-      <summary>Python 代码 <span class="ql-mute">· ${lines} 行</span></summary>
-      <div class="code-block">
-        <div class="code-toolbar"><span>python</span>
-          <button class="copy-btn" type="button">${SVG_COPY} <span>复制</span></button>
-        </div>
-        <pre class="code"><code class="language-python">${esc(it.code)}</code></pre>
+      <summary>代码 <span class="ql-mute">· Python / Java</span></summary>
+      <div class="seg-toggle ql-lang" role="tablist" aria-label="代码语言">
+        ${Object.entries(LANGS).filter(([k]) => codes[k]).map(([k, label]) =>
+          `<button class="seg-btn ${k === lang ? "active" : ""}" type="button" role="tab" data-lang="${k}" aria-selected="${k === lang}">${label} <span class="ql-mute">${codes[k].split("\n").length} 行</span></button>`).join("")}
       </div>
+      ${Object.keys(LANGS).filter(k => codes[k]).map(k => codePane(k, codes[k], k === lang)).join("")}
     </details>`;
+}
+
+// 时空复杂度:一行一项,键如「时间」「平均时间」「空间」「稳定性」(详情页也复用)
+export function cxHtml(it) {
+  if (!it.cx || !it.cx.length) return "";
+  return `
+    <div class="ql-cx">
+      <span class="ql-label">时空复杂度</span>
+      <dl>${it.cx.map(r => {
+        const m = r.v.match(/^(O\(.*?\)(?:[、,，]\s*\S+\s*O\(.*?\))?)(?:[，,]\s*(.*))?$/);
+        const big = m ? m[1] : "";
+        const why = m ? (m[2] || "") : r.v;
+        return `<div class="ql-cx-row"><dt>${esc(r.k)}</dt><dd>${big ? `<code>${esc(big)}</code>` : ""}${why ? `<span>${fmt(why)}</span>` : ""}</dd></div>`;
+      }).join("")}</dl>
+    </div>`;
 }
 
 function answerHtml(it) {
   return `
+    ${cxHtml(it)}
     <div class="ql-grid">
       <div>
         <div class="ql-label">面试口述 · ${esc(it.method)}</div>
@@ -233,7 +261,7 @@ function filtered() {
     if (String(it.id) === q) return true;
     const blob = [it.title, it.method, it.oneliner, it.category, ...it.steps,
       ...it.points.map(p => p.k + p.v), it.followup, it.code,
-      it.alt ? it.alt.method + it.alt.desc : ""].join(" ").toLowerCase();
+      it.alt ? it.alt.method + it.alt.desc : "", it.java || "", ...(it.cx || []).map(r => r.v)].join(" ").toLowerCase();
     return blob.includes(q);
   });
 }
@@ -371,7 +399,7 @@ function fcFlip() {
 // ---- 交互 ----
 function highlightIn(root) {
   if (!window.hljs || !root) return;
-  root.querySelectorAll("pre.code code:not(.hljs)").forEach(b => window.hljs.highlightElement(b));
+  root.querySelectorAll(".code-block:not([hidden]) pre.code code:not(.hljs)").forEach(b => window.hljs.highlightElement(b));
 }
 
 function resetPos() { state.idx = 0; state.flipped = false; }
@@ -436,6 +464,19 @@ function bindControls() {
       } else {
         update();
       }
+      return;
+    }
+    // 代码语言切换:全页同步,并记住偏好
+    const lb = e.target.closest(".ql-lang [data-lang]");
+    if (lb) {
+      prefs.lang = lb.dataset.lang; savePrefs();
+      root.querySelectorAll(".ql-lang [data-lang]").forEach(b => {
+        const on = b.dataset.lang === prefs.lang;
+        b.classList.toggle("active", on);
+        b.setAttribute("aria-selected", on);
+      });
+      root.querySelectorAll(".ql-lang-pane").forEach(p => { p.hidden = p.dataset.lang !== prefs.lang; });
+      root.querySelectorAll("details.ql-code[open]").forEach(highlightIn);
       return;
     }
     const copy = e.target.closest(".copy-btn");

@@ -186,6 +186,17 @@
    "sources": [
     "py"
    ],
+   "java": "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        Map<Integer, Integer> seen = new HashMap<>(); // 哈希表：数值 -> 下标\n        for (int i = 0; i < nums.length; i++) {\n            Integer j = seen.get(target - nums[i]); // 查差值是否已见过\n            if (j != null) {\n                return new int[]{j, i};\n            }\n            seen.put(nums[i], i); // 存入当前数\n        }\n        return new int[0];\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，一次遍历，每次哈希查找 O(1)"
+    },
+    {
+     "k": "空间",
+     "v": "O(n)，哈希表最多存 n 个数"
+    }
+   ],
    "category": "哈希表",
    "in_site": true,
    "difficulty": "Easy",
@@ -223,6 +234,17 @@
    "sources": [
     "py",
     "pdf"
+   ],
+   "java": "class Solution {\n    public int lengthOfLongestSubstring(String s) {\n        Map<Character, Integer> charIndex = new HashMap<>(); // 字符 -> 最新下标\n        int left = 0, maxLen = 0;\n        for (int right = 0; right < s.length(); right++) { // 右指针扩展\n            char ch = s.charAt(right);\n            Integer last = charIndex.get(ch);\n            if (last != null && last >= left) { // 字符在窗口内重复\n                left = last + 1; // 收缩左指针\n            }\n            charIndex.put(ch, right); // 更新字符最新位置\n            maxLen = Math.max(maxLen, right - left + 1);\n        }\n        return maxLen;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，left、right 都只向右移动"
+    },
+    {
+     "k": "空间",
+     "v": "O(min(n, Σ))，哈希表最多存 n 个、且不超过字符集大小 Σ 个字符"
+    }
    ],
    "category": "哈希表",
    "in_site": true,
@@ -266,6 +288,17 @@
     "py",
     "pdf"
    ],
+   "java": "class Solution {\n    public int[] topKFrequent(int[] nums, int k) {\n        Map<Integer, Integer> freq = new HashMap<>();\n        for (int x : nums) {\n            freq.merge(x, 1, Integer::sum); // 统计频率\n        }\n        // 最小堆，按出现次数升序，元素为 {num, count}\n        PriorityQueue<int[]> heap = new PriorityQueue<>((a, b) -> Integer.compare(a[1], b[1]));\n        for (Map.Entry<Integer, Integer> e : freq.entrySet()) {\n            heap.offer(new int[]{e.getKey(), e.getValue()});\n            if (heap.size() > k) { // 保持堆大小为 k\n                heap.poll(); // 弹出次数最小的\n            }\n        }\n        int[] ans = new int[k];\n        for (int i = 0; i < k; i++) {\n            ans[i] = heap.poll()[0];\n        }\n        return ans;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n log k)，统计 O(n)，每次堆操作 O(log k)"
+    },
+    {
+     "k": "空间",
+     "v": "O(n)，计数哈希表 O(n) + 堆 O(k)"
+    }
+   ],
    "category": "哈希表",
    "in_site": true,
    "difficulty": "Medium",
@@ -302,6 +335,17 @@
    "alt": null,
    "sources": [
     "pdf"
+   ],
+   "java": "class Solution {\n    public int longestConsecutive(int[] nums) {\n        Set<Integer> st = new HashSet<>();\n        for (int x : nums) {\n            st.add(x); // 去重 + O(1) 查找\n        }\n        int ans = 0;\n        for (int x : st) {\n            if (st.contains(x - 1)) { // 不是起点，跳过\n                continue;\n            }\n            int y = x + 1;\n            while (st.contains(y)) { // 从起点往后数\n                y++;\n            }\n            ans = Math.max(ans, y - x); // 序列为 [x, y)\n        }\n        return ans;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，每个数最多被内层 while 访问一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(n)，哈希集合"
+    }
    ],
    "category": "哈希表",
    "in_site": true,
@@ -340,6 +384,17 @@
    "sources": [
     "py",
     "pdf"
+   ],
+   "java": "class LRUCache {\n    private static class Node { // 双向链表节点\n        int key, val;\n        Node prev, next;\n\n        Node(int key, int val) {\n            this.key = key;\n            this.val = val;\n        }\n    }\n\n    private final int capacity;\n    private final Map<Integer, Node> cache = new HashMap<>(); // key -> 节点\n    private final Node head = new Node(0, 0); // 虚拟头\n    private final Node tail = new Node(0, 0); // 虚拟尾\n\n    public LRUCache(int capacity) {\n        this.capacity = capacity;\n        head.next = tail;\n        tail.prev = head;\n    }\n\n    public int get(int key) {\n        Node node = cache.get(key);\n        if (node == null) {\n            return -1;\n        }\n        remove(node); // 从原位置移除\n        addToHead(node); // 移到头部\n        return node.val;\n    }\n\n    public void put(int key, int value) {\n        Node node = cache.get(key);\n        if (node != null) { // 已存在：更新值并移到头部\n            node.val = value;\n            remove(node);\n            addToHead(node);\n            return;\n        }\n        node = new Node(key, value);\n        cache.put(key, node);\n        addToHead(node);\n        if (cache.size() > capacity) {\n            Node removed = tail.prev; // 移除最久未使用的\n            remove(removed);\n            cache.remove(removed.key);\n        }\n    }\n\n    private void remove(Node node) {\n        node.prev.next = node.next;\n        node.next.prev = node.prev;\n    }\n\n    private void addToHead(Node node) {\n        node.next = head.next;\n        node.prev = head;\n        head.next.prev = node;\n        head.next = node;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "get / put 均为 O(1)"
+    },
+    {
+     "k": "空间",
+     "v": "O(capacity)，哈希表 + 链表节点"
+    }
    ],
    "category": "哈希表",
    "in_site": true,
@@ -383,6 +438,17 @@
     "py",
     "pdf"
    ],
+   "java": "class Solution {\n    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {\n        ListNode dummy = new ListNode(); // 哑节点\n        ListNode cur = dummy;\n        while (l1 != null && l2 != null) { // 比较两链表头\n            if (l1.val <= l2.val) {\n                cur.next = l1;\n                l1 = l1.next;\n            } else {\n                cur.next = l2;\n                l2 = l2.next;\n            }\n            cur = cur.next;\n        }\n        cur.next = l1 != null ? l1 : l2; // 接入剩余部分\n        return dummy.next;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(m + n)，每个节点访问一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)，只改指针，不新建节点"
+    }
+   ],
    "category": "双指针",
    "in_site": true,
    "difficulty": "Easy",
@@ -425,6 +491,17 @@
     "py",
     "pdf"
    ],
+   "java": "class Solution {\n    public ListNode reverseList(ListNode head) {\n        ListNode prev = null, cur = head;\n        while (cur != null) {\n            ListNode next = cur.next; // 保存下一个\n            cur.next = prev; // 反转指针\n            prev = cur; // prev 后移\n            cur = next; // cur 后移\n        }\n        return prev; // prev 是新头\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，遍历一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)，三个指针"
+    }
+   ],
    "category": "双指针",
    "in_site": true,
    "difficulty": "Easy",
@@ -463,6 +540,17 @@
     "py",
     "pdf"
    ],
+   "java": "public class Solution {\n    public boolean hasCycle(ListNode head) {\n        ListNode fast = head, slow = head;\n        while (fast != null && fast.next != null) { // 快指针能走\n            fast = fast.next.next; // 快走两步\n            slow = slow.next; // 慢走一步\n            if (fast == slow) { // 相遇\n                return true;\n            }\n        }\n        return false;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，有环时快指针最多多绕一圈追上"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)，两个指针"
+    }
+   ],
    "category": "双指针",
    "in_site": true,
    "difficulty": "Easy",
@@ -500,6 +588,17 @@
    "sources": [
     "pdf"
    ],
+   "java": "public class Solution {\n    public ListNode detectCycle(ListNode head) {\n        ListNode slow = head, fast = head;\n        while (fast != null && fast.next != null) {\n            slow = slow.next;\n            fast = fast.next.next;\n            if (slow == fast) { // 相遇，说明有环\n                ListNode p = head;\n                while (p != slow) { // 头和相遇点同速走，在入口相遇\n                    p = p.next;\n                    slow = slow.next;\n                }\n                return p;\n            }\n        }\n        return null; // 快指针走到头，无环\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，判环 O(n) + 找入口 O(n)"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)，常数个指针"
+    }
+   ],
    "category": "双指针",
    "in_site": true,
    "difficulty": "Medium",
@@ -536,6 +635,17 @@
    "alt": null,
    "sources": [
     "py"
+   ],
+   "java": "class Solution {\n    public ListNode removeNthFromEnd(ListNode head, int n) {\n        ListNode dummy = new ListNode(0, head); // 哑节点\n        ListNode fast = dummy, slow = dummy;\n        for (int i = 0; i <= n; i++) { // 快指针先走 n+1 步\n            fast = fast.next;\n        }\n        while (fast != null) { // 双指针齐走\n            fast = fast.next;\n            slow = slow.next;\n        }\n        slow.next = slow.next.next; // 删除节点\n        return dummy.next;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，n 为链表长度，一趟扫描"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)"
+    }
    ],
    "category": "双指针",
    "in_site": true,
@@ -575,6 +685,17 @@
     "py",
     "pdf"
    ],
+   "java": "class Solution {\n    public List<List<Integer>> threeSum(int[] nums) {\n        Arrays.sort(nums); // 排序\n        List<List<Integer>> result = new ArrayList<>();\n        int n = nums.length;\n        for (int i = 0; i < n - 2; i++) { // 遍历第一个数\n            if (nums[i] > 0) { // 第一个数大于 0 则无解\n                break;\n            }\n            if (i > 0 && nums[i] == nums[i - 1]) { // 去重\n                continue;\n            }\n            int left = i + 1, right = n - 1;\n            while (left < right) { // 双指针找另外两个数\n                int s = nums[i] + nums[left] + nums[right];\n                if (s == 0) {\n                    result.add(Arrays.asList(nums[i], nums[left], nums[right]));\n                    left++;\n                    right--;\n                    while (left < right && nums[left] == nums[left - 1]) {\n                        left++;\n                    }\n                    while (left < right && nums[right] == nums[right + 1]) {\n                        right--;\n                    }\n                } else if (s < 0) {\n                    left++;\n                } else {\n                    right--;\n                }\n            }\n        }\n        return result;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n²)，排序 O(n log n)，外层 n 次 × 双指针 O(n)"
+    },
+    {
+     "k": "空间",
+     "v": "O(log n)，排序的递归栈，不计返回结果"
+    }
+   ],
    "category": "双指针",
    "in_site": true,
    "difficulty": "Medium",
@@ -613,6 +734,17 @@
     "py",
     "pdf"
    ],
+   "java": "class Solution {\n    public int maxArea(int[] height) {\n        int left = 0, right = height.length - 1, maxArea = 0;\n        while (left < right) {\n            int area = Math.min(height[left], height[right]) * (right - left); // 计算面积\n            maxArea = Math.max(maxArea, area);\n            if (height[left] < height[right]) { // 移动短板\n                left++;\n            } else {\n                right--;\n            }\n        }\n        return maxArea;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，左右指针合计走 n 步"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)"
+    }
+   ],
    "category": "双指针",
    "in_site": true,
    "difficulty": "Medium",
@@ -649,6 +781,17 @@
    "alt": null,
    "sources": [
     "pdf"
+   ],
+   "java": "class Solution {\n    public String longestPalindrome(String s) {\n        int start = 0, maxLen = 0;\n        for (int i = 0; i < s.length(); i++) {\n            for (int j = i; j <= i + 1; j++) { // j == i 奇数中心，j == i + 1 偶数中心\n                int cur = expand(s, i, j);\n                if (cur > maxLen) {\n                    maxLen = cur;\n                    start = i - (cur - 1) / 2; // 由中心和长度反推起点\n                }\n            }\n        }\n        return s.substring(start, start + maxLen);\n    }\n\n    // 从中心向两边扩，返回回文长度\n    private int expand(String s, int l, int r) {\n        while (l >= 0 && r < s.length() && s.charAt(l) == s.charAt(r)) {\n            l--;\n            r++;\n        }\n        return r - l - 1; // 跳出时 l、r 都多走了一步\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n²)，2n-1 个中心，每个最多扩展 O(n)"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)，只用常数个变量"
+    }
    ],
    "category": "双指针",
    "in_site": true,
@@ -687,6 +830,17 @@
    "sources": [
     "py"
    ],
+   "java": "class Solution {\n    public String minWindow(String s, String t) {\n        int[] need = new int[128], window = new int[128]; // 字符计数，题目只含英文字母\n        int kinds = 0; // 需要满足的字符种类数\n        for (char c : t.toCharArray()) {\n            if (need[c]++ == 0) {\n                kinds++;\n            }\n        }\n        int left = 0, valid = 0, minLen = Integer.MAX_VALUE, minStart = 0;\n        for (int right = 0; right < s.length(); right++) { // 扩右指针\n            char c = s.charAt(right);\n            if (need[c] > 0) {\n                window[c]++;\n                if (window[c] == need[c]) { // 该字符满足\n                    valid++;\n                }\n            }\n            while (valid == kinds) { // 包含所有字符，收左指针\n                if (right - left + 1 < minLen) {\n                    minLen = right - left + 1;\n                    minStart = left;\n                }\n                char d = s.charAt(left);\n                if (need[d] > 0) {\n                    if (window[d] == need[d]) {\n                        valid--;\n                    }\n                    window[d]--;\n                }\n                left++;\n            }\n        }\n        return minLen == Integer.MAX_VALUE ? \"\" : s.substring(minStart, minStart + minLen);\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(m + n)，每个字符最多进出窗口各一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(Σ)，两个长度 128 的计数表，Σ 为字符集大小，可视为 O(1)"
+    }
+   ],
    "category": "滑动窗口",
    "in_site": true,
    "difficulty": "Hard",
@@ -723,6 +877,17 @@
    "alt": null,
    "sources": [
     "py"
+   ],
+   "java": "class Solution {\n    public int minSubArrayLen(int target, int[] nums) {\n        int left = 0, curSum = 0, minLen = Integer.MAX_VALUE;\n        for (int right = 0; right < nums.length; right++) { // 扩右指针\n            curSum += nums[right];\n            while (curSum >= target) { // 收左指针\n                minLen = Math.min(minLen, right - left + 1);\n                curSum -= nums[left];\n                left++;\n            }\n        }\n        return minLen == Integer.MAX_VALUE ? 0 : minLen;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，每个元素最多进出窗口各一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)"
+    }
    ],
    "category": "滑动窗口",
    "in_site": false,
@@ -761,6 +926,17 @@
    "sources": [
     "pdf"
    ],
+   "java": "class Solution {\n    public int[] maxSlidingWindow(int[] nums, int k) {\n        Deque<Integer> q = new ArrayDeque<>(); // 存下标，对应值单调递减\n        int[] ans = new int[nums.length - k + 1];\n        for (int i = 0; i < nums.length; i++) {\n            while (!q.isEmpty() && nums[q.peekLast()] <= nums[i]) { // 队尾比新元素小，弹掉\n                q.pollLast();\n            }\n            q.offerLast(i);\n            if (q.peekFirst() <= i - k) { // 队首滑出窗口\n                q.pollFirst();\n            }\n            if (i >= k - 1) { // 窗口形成后记录答案\n                ans[i - k + 1] = nums[q.peekFirst()];\n            }\n        }\n        return ans;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，每个下标最多入队、出队各一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(k)，队列最多存 k 个下标"
+    }
+   ],
    "category": "滑动窗口",
    "in_site": true,
    "difficulty": "Hard",
@@ -798,6 +974,17 @@
    "sources": [
     "py"
    ],
+   "java": "class Solution {\n    public int[] dailyTemperatures(int[] temperatures) {\n        int n = temperatures.length;\n        int[] result = new int[n];\n        Deque<Integer> stack = new ArrayDeque<>(); // 存下标，对应温度单调递减\n        for (int i = 0; i < n; i++) {\n            while (!stack.isEmpty() && temperatures[stack.peek()] < temperatures[i]) { // 比栈顶高则弹出\n                int prev = stack.pop();\n                result[prev] = i - prev; // 计算距离\n            }\n            stack.push(i);\n        }\n        return result;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，每个下标最多入栈、出栈各一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(n)，单调栈"
+    }
+   ],
    "category": "单调栈",
    "in_site": true,
    "difficulty": "Medium",
@@ -834,6 +1021,17 @@
    "alt": null,
    "sources": [
     "py"
+   ],
+   "java": "class Solution {\n    public int largestRectangleArea(int[] heights) {\n        int n = heights.length;\n        int[] h = new int[n + 2]; // 两侧补 0\n        System.arraycopy(heights, 0, h, 1, n);\n        Deque<Integer> stack = new ArrayDeque<>(); // 存下标，对应高度单调递增\n        stack.push(0);\n        int maxArea = 0;\n        for (int i = 1; i < n + 2; i++) {\n            while (h[i] < h[stack.peek()]) { // 遇到更小的柱\n                int height = h[stack.pop()]; // 弹出高度\n                int w = i - stack.peek() - 1; // 宽度\n                maxArea = Math.max(maxArea, height * w);\n            }\n            stack.push(i);\n        }\n        return maxArea;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，每个下标最多入栈、出栈各一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(n)，补 0 的数组 + 单调栈"
+    }
    ],
    "category": "单调栈",
    "in_site": true,
@@ -877,6 +1075,17 @@
     "py",
     "pdf"
    ],
+   "java": "class Solution {\n    public int trap(int[] height) {\n        Deque<Integer> stack = new ArrayDeque<>(); // 单调递减栈，存下标\n        int water = 0;\n        for (int i = 0; i < height.length; i++) {\n            while (!stack.isEmpty() && height[i] > height[stack.peek()]) { // 比栈顶高形成低洼\n                int bottom = stack.pop();\n                if (stack.isEmpty()) { // 没有左边界\n                    break;\n                }\n                int left = stack.peek();\n                int w = i - left - 1; // 宽度\n                int h = Math.min(height[i], height[left]) - height[bottom]; // 高度\n                water += w * h;\n            }\n            stack.push(i);\n        }\n        return water;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，每个下标最多入栈、出栈各一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(n)，单调栈（双指针写法可降到 O(1)）"
+    }
+   ],
    "category": "单调栈",
    "in_site": true,
    "difficulty": "Hard",
@@ -919,6 +1128,17 @@
     "py",
     "pdf"
    ],
+   "java": "class Solution {\n    public List<Integer> inorderTraversal(TreeNode root) {\n        List<Integer> result = new ArrayList<>();\n        Deque<TreeNode> stack = new ArrayDeque<>();\n        TreeNode cur = root;\n        while (cur != null || !stack.isEmpty()) {\n            while (cur != null) { // 左子树全部入栈\n                stack.push(cur);\n                cur = cur.left;\n            }\n            cur = stack.pop(); // 弹出访问\n            result.add(cur.val);\n            cur = cur.right; // 处理右子树\n        }\n        return result;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，每个节点入栈、出栈各一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(h)，栈深度为树高，最坏 O(n)"
+    }
+   ],
    "category": "二叉树和递归",
    "in_site": true,
    "difficulty": "Easy",
@@ -957,6 +1177,17 @@
    "sources": [
     "pdf"
    ],
+   "java": "class Solution {\n    public List<List<Integer>> levelOrder(TreeNode root) {\n        List<List<Integer>> ans = new ArrayList<>();\n        if (root == null) {\n            return ans;\n        }\n        Queue<TreeNode> q = new ArrayDeque<>();\n        q.offer(root);\n        while (!q.isEmpty()) {\n            int size = q.size(); // 当前层的节点数\n            List<Integer> vals = new ArrayList<>(size);\n            for (int i = 0; i < size; i++) {\n                TreeNode node = q.poll();\n                vals.add(node.val);\n                if (node.left != null) q.offer(node.left);\n                if (node.right != null) q.offer(node.right);\n            }\n            ans.add(vals);\n        }\n        return ans;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，每个节点进出队一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(w)，w 为树的最大宽度，最坏 O(n)"
+    }
+   ],
    "category": "二叉树和递归",
    "in_site": true,
    "difficulty": "Medium",
@@ -994,6 +1225,17 @@
    "sources": [
     "pdf"
    ],
+   "java": "class Solution {\n    private int[] preorder;\n    private final Map<Integer, Integer> index = new HashMap<>(); // 值 -> 中序下标\n\n    public TreeNode buildTree(int[] preorder, int[] inorder) {\n        this.preorder = preorder;\n        for (int i = 0; i < inorder.length; i++) {\n            index.put(inorder[i], i);\n        }\n        return build(0, preorder.length, 0);\n    }\n\n    // 前序区间 [preL, preR)，对应中序区间从 inL 开始\n    private TreeNode build(int preL, int preR, int inL) {\n        if (preL == preR) { // 空区间\n            return null;\n        }\n        int rootVal = preorder[preL]; // 前序第一个是根\n        int leftSize = index.get(rootVal) - inL; // 左子树大小\n        TreeNode root = new TreeNode(rootVal);\n        root.left = build(preL + 1, preL + 1 + leftSize, inL);\n        root.right = build(preL + 1 + leftSize, preR, inL + leftSize + 1);\n        return root;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，每个节点构建一次，哈希表 O(1) 找根"
+    },
+    {
+     "k": "空间",
+     "v": "O(n)，哈希表 O(n) + 递归栈 O(h)"
+    }
+   ],
    "category": "二叉树和递归",
    "in_site": true,
    "difficulty": "Medium",
@@ -1029,6 +1271,17 @@
    "alt": null,
    "sources": [
     "py"
+   ],
+   "java": "class Solution {\n    public int maxDepth(TreeNode root) {\n        if (root == null) { // 递归终止\n            return 0;\n        }\n        return Math.max(maxDepth(root.left), maxDepth(root.right)) + 1;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，每个节点访问一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(h)，递归栈深度为树高"
+    }
    ],
    "category": "二叉树和递归",
    "in_site": true,
@@ -1067,6 +1320,17 @@
    "sources": [
     "py",
     "pdf"
+   ],
+   "java": "class Solution {\n    public boolean isSymmetric(TreeNode root) {\n        return root == null || check(root.left, root.right);\n    }\n\n    private boolean check(TreeNode p, TreeNode q) {\n        if (p == null && q == null) { // 两节点都空\n            return true;\n        }\n        if (p == null || q == null) { // 一方空\n            return false;\n        }\n        return p.val == q.val && check(p.left, q.right) && check(p.right, q.left); // 外对外、内对内\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，每个节点比较一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(h)，递归栈深度为树高"
+    }
    ],
    "category": "二叉树和递归",
    "in_site": true,
@@ -1107,6 +1371,17 @@
     "py",
     "pdf"
    ],
+   "java": "class Solution {\n    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {\n        if (root == null || root == p || root == q) { // 终止条件\n            return root;\n        }\n        TreeNode left = lowestCommonAncestor(root.left, p, q); // 递归左\n        TreeNode right = lowestCommonAncestor(root.right, p, q); // 递归右\n        if (left == null) { // 左子树没找到\n            return right;\n        }\n        if (right == null) { // 右子树没找到\n            return left;\n        }\n        return root; // 左右都找到，当前是祖先\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，最坏访问每个节点一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(h)，递归栈深度为树高，链状树时 O(n)"
+    }
+   ],
    "category": "二叉树和递归",
    "in_site": true,
    "difficulty": "Medium",
@@ -1142,6 +1417,17 @@
    "alt": null,
    "sources": [
     "py"
+   ],
+   "java": "class Solution {\n    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {\n        while (root != null) {\n            if (p.val < root.val && q.val < root.val) { // 都在左\n                root = root.left;\n            } else if (p.val > root.val && q.val > root.val) { // 都在右\n                root = root.right;\n            } else { // 分叉点\n                return root;\n            }\n        }\n        return null;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(h)，每次往下走一层"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)，迭代不用栈"
+    }
    ],
    "category": "二叉树和递归",
    "in_site": false,
@@ -1179,6 +1465,17 @@
    "sources": [
     "py"
    ],
+   "java": "class Solution {\n    private int maxSum = Integer.MIN_VALUE;\n\n    public int maxPathSum(TreeNode root) {\n        dfs(root);\n        return maxSum;\n    }\n\n    // 返回该节点能向上提供的最大贡献\n    private int dfs(TreeNode node) {\n        if (node == null) {\n            return 0;\n        }\n        int left = Math.max(0, dfs(node.left)); // 左贡献，负则取 0\n        int right = Math.max(0, dfs(node.right)); // 右贡献，负则取 0\n        maxSum = Math.max(maxSum, left + right + node.val); // 更新全局最大\n        return Math.max(left, right) + node.val;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，后序遍历每个节点一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(h)，递归栈深度为树高"
+    }
+   ],
    "category": "二叉树和递归",
    "in_site": true,
    "difficulty": "Hard",
@@ -1214,6 +1511,17 @@
    "alt": null,
    "sources": [
     "py"
+   ],
+   "java": "class Solution {\n    public boolean isValidBST(TreeNode root) {\n        return dfs(root, Long.MIN_VALUE, Long.MAX_VALUE); // 用 long 防止节点值等于 int 边界\n    }\n\n    private boolean dfs(TreeNode node, long lower, long upper) {\n        if (node == null) {\n            return true;\n        }\n        if (node.val <= lower || node.val >= upper) { // 不在界内\n            return false;\n        }\n        return dfs(node.left, lower, node.val) && dfs(node.right, node.val, upper);\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，每个节点检查一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(h)，递归栈深度为树高"
+    }
    ],
    "category": "二叉树和递归",
    "in_site": true,
@@ -1251,6 +1559,17 @@
    "alt": null,
    "sources": [
     "py"
+   ],
+   "java": "class Solution {\n    public int kthSmallest(TreeNode root, int k) {\n        Deque<TreeNode> stack = new ArrayDeque<>();\n        TreeNode cur = root;\n        int count = 0;\n        while (cur != null || !stack.isEmpty()) {\n            while (cur != null) { // 左子树入栈\n                stack.push(cur);\n                cur = cur.left;\n            }\n            cur = stack.pop(); // 弹出访问\n            if (++count == k) { // 第 k 个\n                return cur.val;\n            }\n            cur = cur.right; // 处理右子树\n        }\n        return -1;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(h + k)，先下到最左再访问 k 个节点"
+    },
+    {
+     "k": "空间",
+     "v": "O(h)，栈深度为树高"
+    }
    ],
    "category": "二叉树和递归",
    "in_site": true,
@@ -1290,6 +1609,17 @@
    "sources": [
     "py"
    ],
+   "java": "class Solution {\n    public TreeNode deleteNode(TreeNode root, int key) {\n        if (root == null) {\n            return null;\n        }\n        if (key < root.val) { // 在左子树\n            root.left = deleteNode(root.left, key);\n        } else if (key > root.val) { // 在右子树\n            root.right = deleteNode(root.right, key);\n        } else { // 找到目标\n            if (root.left == null) {\n                return root.right;\n            }\n            if (root.right == null) {\n                return root.left;\n            }\n            TreeNode successor = root.right;\n            while (successor.left != null) { // 找后继：右子树最左\n                successor = successor.left;\n            }\n            root.val = successor.val; // 替换值\n            root.right = deleteNode(root.right, successor.val); // 删除后继\n        }\n        return root;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(h)，找目标 + 找后继 + 删后继，都沿一条路径"
+    },
+    {
+     "k": "空间",
+     "v": "O(h)，递归栈"
+    }
+   ],
    "category": "二叉树和递归",
    "in_site": false,
    "difficulty": "Medium",
@@ -1326,6 +1656,17 @@
    "sources": [
     "py",
     "pdf"
+   ],
+   "java": "class Solution {\n    private final List<List<Integer>> result = new ArrayList<>();\n    private final List<Integer> path = new ArrayList<>();\n    private boolean[] used; // 标记已使用的数\n\n    public List<List<Integer>> permute(int[] nums) {\n        used = new boolean[nums.length];\n        backtrack(nums);\n        return result;\n    }\n\n    private void backtrack(int[] nums) {\n        if (path.size() == nums.length) { // 满了\n            result.add(new ArrayList<>(path));\n            return;\n        }\n        for (int i = 0; i < nums.length; i++) {\n            if (used[i]) { // 已用过则跳过\n                continue;\n            }\n            used[i] = true; // 选\n            path.add(nums[i]);\n            backtrack(nums);\n            path.remove(path.size() - 1); // 撤销\n            used[i] = false;\n        }\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n · n!)，共 n! 个排列，每个复制 O(n)"
+    },
+    {
+     "k": "空间",
+     "v": "O(n)，递归栈 + path + used，不计结果"
+    }
    ],
    "category": "回溯和DFS",
    "in_site": true,
@@ -1365,6 +1706,17 @@
     "py",
     "pdf"
    ],
+   "java": "class Solution {\n    private int[] candidates;\n    private final List<List<Integer>> result = new ArrayList<>();\n    private final List<Integer> path = new ArrayList<>();\n\n    public List<List<Integer>> combinationSum(int[] candidates, int target) {\n        Arrays.sort(candidates); // 排序，便于剪枝\n        this.candidates = candidates;\n        backtrack(0, target);\n        return result;\n    }\n\n    private void backtrack(int start, int target) {\n        if (target == 0) { // 找到解\n            result.add(new ArrayList<>(path));\n            return;\n        }\n        for (int i = start; i < candidates.length; i++) {\n            if (candidates[i] > target) { // 剪枝，后面更大\n                break;\n            }\n            path.add(candidates[i]);\n            backtrack(i, target - candidates[i]); // 传 i 不是 i+1，可重复选\n            path.remove(path.size() - 1);\n        }\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "指数级，取决于搜索树大小，上界约 O(n^(target/min))"
+    },
+    {
+     "k": "空间",
+     "v": "O(target/min)，递归深度，不计结果"
+    }
+   ],
    "category": "回溯和DFS",
    "in_site": true,
    "difficulty": "Medium",
@@ -1401,6 +1753,17 @@
    "alt": null,
    "sources": [
     "py"
+   ],
+   "java": "class Solution {\n    private final List<List<Integer>> result = new ArrayList<>();\n    private final List<Integer> path = new ArrayList<>();\n\n    public List<List<Integer>> subsets(int[] nums) {\n        backtrack(nums, 0);\n        return result;\n    }\n\n    private void backtrack(int[] nums, int start) {\n        result.add(new ArrayList<>(path)); // 每个节点都加入结果\n        for (int i = start; i < nums.length; i++) {\n            path.add(nums[i]); // 选\n            backtrack(nums, i + 1); // 不回头\n            path.remove(path.size() - 1); // 撤销\n        }\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n · 2ⁿ)，2ⁿ 个子集，每个复制 O(n)"
+    },
+    {
+     "k": "空间",
+     "v": "O(n)，递归栈 + path，不计结果"
+    }
    ],
    "category": "回溯和DFS",
    "in_site": true,
@@ -1440,6 +1803,17 @@
     "py",
     "pdf"
    ],
+   "java": "class Solution {\n    private final List<String> result = new ArrayList<>();\n\n    public List<String> generateParenthesis(int n) {\n        backtrack(n, 0, 0, new StringBuilder());\n        return result;\n    }\n\n    private void backtrack(int n, int left, int right, StringBuilder path) {\n        if (path.length() == 2 * n) { // 满了\n            result.add(path.toString());\n            return;\n        }\n        if (left < n) { // 可加左括号\n            path.append('(');\n            backtrack(n, left + 1, right, path);\n            path.deleteCharAt(path.length() - 1);\n        }\n        if (right < left) { // 可加右括号\n            path.append(')');\n            backtrack(n, left, right + 1, path);\n            path.deleteCharAt(path.length() - 1);\n        }\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(4ⁿ/√n)，合法序列数为第 n 个卡特兰数，每个长 2n"
+    },
+    {
+     "k": "空间",
+     "v": "O(n)，递归深度 2n"
+    }
+   ],
    "category": "回溯和DFS",
    "in_site": true,
    "difficulty": "Medium",
@@ -1478,6 +1852,17 @@
    "sources": [
     "pdf"
    ],
+   "java": "class Solution {\n    private static final int[][] DIRS = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};\n\n    public boolean exist(char[][] board, String word) {\n        for (int i = 0; i < board.length; i++) {\n            for (int j = 0; j < board[0].length; j++) {\n                if (dfs(board, word, i, j, 0)) {\n                    return true;\n                }\n            }\n        }\n        return false;\n    }\n\n    // board[i][j] 开始能否匹配 word[k:]\n    private boolean dfs(char[][] board, String word, int i, int j, int k) {\n        if (board[i][j] != word.charAt(k)) {\n            return false;\n        }\n        if (k == word.length() - 1) { // 最后一个字符也匹配上了\n            return true;\n        }\n        board[i][j] = 0; // 标记已访问\n        for (int[] d : DIRS) {\n            int x = i + d[0], y = j + d[1];\n            if (x >= 0 && x < board.length && y >= 0 && y < board[0].length && dfs(board, word, x, y, k + 1)) {\n                board[i][j] = word.charAt(k); // 返回前恢复\n                return true;\n            }\n        }\n        board[i][j] = word.charAt(k); // 回溯：恢复现场\n        return false;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(m · n · 3^L)，L 为单词长度，除第一步外每步最多 3 个新方向"
+    },
+    {
+     "k": "空间",
+     "v": "O(L)，递归栈深度"
+    }
+   ],
    "category": "回溯和DFS",
    "in_site": true,
    "difficulty": "Medium",
@@ -1514,6 +1899,17 @@
    "alt": null,
    "sources": [
     "pdf"
+   ],
+   "java": "class Solution {\n    private final List<List<String>> ans = new ArrayList<>();\n    private final List<String> path = new ArrayList<>();\n\n    public List<List<String>> partition(String s) {\n        dfs(s, 0);\n        return ans;\n    }\n\n    // 从下标 i 开始切\n    private void dfs(String s, int i) {\n        if (i == s.length()) { // 切完了\n            ans.add(new ArrayList<>(path));\n            return;\n        }\n        for (int j = i; j < s.length(); j++) { // 枚举这一段的结尾 j\n            if (isPalindrome(s, i, j)) { // 是回文才切\n                path.add(s.substring(i, j + 1));\n                dfs(s, j + 1);\n                path.remove(path.size() - 1); // 回溯\n            }\n        }\n    }\n\n    private boolean isPalindrome(String s, int l, int r) {\n        while (l < r) {\n            if (s.charAt(l++) != s.charAt(r--)) {\n                return false;\n            }\n        }\n        return true;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n · 2ⁿ)，n-1 个间隙切或不切，每种方案判断 + 复制 O(n)"
+    },
+    {
+     "k": "空间",
+     "v": "O(n)，递归栈 + path，不计结果"
+    }
    ],
    "category": "回溯和DFS",
    "in_site": true,
@@ -1552,6 +1948,17 @@
     "py",
     "pdf"
    ],
+   "java": "class Solution {\n    public int numIslands(char[][] grid) {\n        int count = 0;\n        for (int i = 0; i < grid.length; i++) {\n            for (int j = 0; j < grid[0].length; j++) {\n                if (grid[i][j] == '1') { // 发现岛屿\n                    count++;\n                    dfs(grid, i, j); // 沉没\n                }\n            }\n        }\n        return count;\n    }\n\n    private void dfs(char[][] grid, int i, int j) {\n        if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || grid[i][j] == '0') { // 边界或水\n            return;\n        }\n        grid[i][j] = '0'; // 沉没\n        dfs(grid, i + 1, j);\n        dfs(grid, i - 1, j);\n        dfs(grid, i, j + 1);\n        dfs(grid, i, j - 1);\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(m · n)，每个格子最多被沉没一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(m · n)，最坏全是陆地时递归栈深度"
+    }
+   ],
    "category": "回溯和DFS",
    "in_site": true,
    "difficulty": "Medium",
@@ -1588,6 +1995,17 @@
    "alt": null,
    "sources": [
     "py"
+   ],
+   "java": "class Solution {\n    private final List<List<Integer>> result = new ArrayList<>();\n    private final List<Integer> path = new ArrayList<>();\n\n    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {\n        dfs(root, targetSum);\n        return result;\n    }\n\n    // left 为还差多少\n    private void dfs(TreeNode node, int left) {\n        if (node == null) {\n            return;\n        }\n        left -= node.val;\n        path.add(node.val);\n        if (node.left == null && node.right == null && left == 0) { // 叶子且和匹配\n            result.add(new ArrayList<>(path));\n        }\n        dfs(node.left, left);\n        dfs(node.right, left);\n        path.remove(path.size() - 1); // 撤销\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n²)，访问 n 个节点，最坏每个叶子都要复制长度 O(n) 的路径"
+    },
+    {
+     "k": "空间",
+     "v": "O(h)，递归栈 + path，不计结果"
+    }
    ],
    "category": "回溯和DFS",
    "in_site": false,
@@ -1626,6 +2044,17 @@
    "sources": [
     "pdf"
    ],
+   "java": "class Solution {\n    private final Map<Long, Integer> cnt = new HashMap<>(); // 前缀和 -> 次数（只含当前路径）\n    private int ans;\n\n    public int pathSum(TreeNode root, int targetSum) {\n        cnt.put(0L, 1); // 空前缀，处理从根开始的路径\n        dfs(root, 0, targetSum);\n        return ans;\n    }\n\n    private void dfs(TreeNode node, long s, int target) {\n        if (node == null) {\n            return;\n        }\n        s += node.val; // 根到当前节点的前缀和，用 long 防溢出\n        ans += cnt.getOrDefault(s - target, 0); // 以当前节点结尾的路径数\n        cnt.merge(s, 1, Integer::sum);\n        dfs(node.left, s, target);\n        dfs(node.right, s, target);\n        cnt.merge(s, -1, Integer::sum); // 回溯：撤销\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，每个节点访问一次，哈希操作 O(1)"
+    },
+    {
+     "k": "空间",
+     "v": "O(n)，哈希表 + 递归栈"
+    }
+   ],
    "category": "回溯和DFS",
    "in_site": true,
    "difficulty": "Medium",
@@ -1663,6 +2092,17 @@
    "sources": [
     "py",
     "pdf"
+   ],
+   "java": "class Solution {\n    public int climbStairs(int n) {\n        if (n <= 2) {\n            return n;\n        }\n        int[] dp = new int[n + 1];\n        dp[1] = 1;\n        dp[2] = 2;\n        for (int i = 3; i <= n; i++) {\n            dp[i] = dp[i - 1] + dp[i - 2]; // 从 i-1 走一步或从 i-2 走两步\n        }\n        return dp[n];\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，每个状态算一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(n)，dp 数组；只留两个变量可降到 O(1)"
+    }
    ],
    "category": "动态规划",
    "in_site": true,
@@ -1706,6 +2146,17 @@
     "py",
     "pdf"
    ],
+   "java": "class Solution {\n    public int lengthOfLIS(int[] nums) {\n        int[] tails = new int[nums.length]; // tails[i]：长度为 i+1 的递增子序列的最小末尾\n        int size = 0;\n        for (int num : nums) {\n            int lo = 0, hi = size; // 二分找第一个 >= num 的位置\n            while (lo < hi) {\n                int mid = (lo + hi) >>> 1;\n                if (tails[mid] < num) {\n                    lo = mid + 1;\n                } else {\n                    hi = mid;\n                }\n            }\n            tails[lo] = num; // 覆盖或追加\n            if (lo == size) {\n                size++;\n            }\n        }\n        return size;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n log n)，每个数二分一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(n)，tails 数组"
+    }
+   ],
    "category": "动态规划",
    "in_site": true,
    "difficulty": "Medium",
@@ -1742,6 +2193,17 @@
    "alt": null,
    "sources": [
     "pdf"
+   ],
+   "java": "class Solution {\n    public boolean wordBreak(String s, List<String> wordDict) {\n        Set<String> words = new HashSet<>(wordDict); // 转集合，O(1) 查找\n        int maxLen = 0;\n        for (String w : wordDict) {\n            maxLen = Math.max(maxLen, w.length()); // 最长单词，用于剪枝\n        }\n        int n = s.length();\n        boolean[] dp = new boolean[n + 1]; // dp[i]：前 i 个字符能否拆分\n        dp[0] = true; // 空串可拆分\n        for (int i = 1; i <= n; i++) {\n            for (int j = i - 1; j >= Math.max(i - maxLen, 0); j--) { // 最后一段长度不超过 maxLen\n                if (dp[j] && words.contains(s.substring(j, i))) {\n                    dp[i] = true;\n                    break;\n                }\n            }\n        }\n        return dp[n];\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n · L²)，L 为最长单词长度，每个位置查 L 个子串，每次截取 / 哈希 O(L)"
+    },
+    {
+     "k": "空间",
+     "v": "O(n + 字典总长)，dp 数组 + 单词集合"
+    }
    ],
    "category": "动态规划",
    "in_site": true,
@@ -1781,6 +2243,17 @@
     "py",
     "pdf"
    ],
+   "java": "class Solution {\n    public int coinChange(int[] coins, int amount) {\n        int[] dp = new int[amount + 1]; // dp[i]：凑成 i 所需最少硬币\n        Arrays.fill(dp, amount + 1); // amount + 1 代表凑不出\n        dp[0] = 0;\n        for (int coin : coins) {\n            for (int i = coin; i <= amount; i++) { // 正序，完全背包\n                dp[i] = Math.min(dp[i], dp[i - coin] + 1);\n            }\n        }\n        return dp[amount] > amount ? -1 : dp[amount];\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n · amount)，n 为硬币种类数"
+    },
+    {
+     "k": "空间",
+     "v": "O(amount)，一维 dp"
+    }
+   ],
    "category": "动态规划",
    "in_site": true,
    "difficulty": "Medium",
@@ -1817,6 +2290,17 @@
    "sources": [
     "py",
     "pdf"
+   ],
+   "java": "class Solution {\n    public int longestCommonSubsequence(String text1, String text2) {\n        int m = text1.length(), n = text2.length();\n        int[][] dp = new int[m + 1][n + 1]; // dp[i][j]：前 i 个和前 j 个的 LCS\n        for (int i = 1; i <= m; i++) {\n            for (int j = 1; j <= n; j++) {\n                if (text1.charAt(i - 1) == text2.charAt(j - 1)) { // 相等\n                    dp[i][j] = dp[i - 1][j - 1] + 1;\n                } else { // 不等\n                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);\n                }\n            }\n        }\n        return dp[m][n];\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(m · n)，每个状态算一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(m · n)，二维 dp；滚动数组可降到 O(n)"
+    }
    ],
    "category": "动态规划",
    "in_site": true,
@@ -1856,6 +2340,17 @@
     "py",
     "pdf"
    ],
+   "java": "class Solution {\n    public int minDistance(String word1, String word2) {\n        int m = word1.length(), n = word2.length();\n        int[][] dp = new int[m + 1][n + 1];\n        for (int i = 0; i <= m; i++) {\n            dp[i][0] = i; // 删除 i 个字符\n        }\n        for (int j = 0; j <= n; j++) {\n            dp[0][j] = j; // 插入 j 个字符\n        }\n        for (int i = 1; i <= m; i++) {\n            for (int j = 1; j <= n; j++) {\n                if (word1.charAt(i - 1) == word2.charAt(j - 1)) {\n                    dp[i][j] = dp[i - 1][j - 1]; // 相等不操作\n                } else {\n                    dp[i][j] = Math.min(dp[i - 1][j - 1], Math.min(dp[i - 1][j], dp[i][j - 1])) + 1; // 替删插\n                }\n            }\n        }\n        return dp[m][n];\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(m · n)，每个状态算一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(m · n)，二维 dp；滚动数组可降到 O(n)"
+    }
+   ],
    "category": "动态规划",
    "in_site": true,
    "difficulty": "Medium",
@@ -1892,6 +2387,17 @@
    "alt": null,
    "sources": [
     "py"
+   ],
+   "java": "class Solution {\n    public int rob(int[] nums) {\n        int prev = 0, curr = 0; // dp[i-2]、dp[i-1]\n        for (int x : nums) {\n            int next = Math.max(curr, prev + x); // 不偷 / 偷当前这间\n            prev = curr;\n            curr = next;\n        }\n        return curr;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，遍历一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)，滚动两个变量"
+    }
    ],
    "category": "动态规划",
    "in_site": true,
@@ -1930,6 +2436,17 @@
     "py",
     "pdf"
    ],
+   "java": "class Solution {\n    public int maxProfit(int[] prices) {\n        int minPrice = Integer.MAX_VALUE, maxProfit = 0;\n        for (int price : prices) {\n            minPrice = Math.min(minPrice, price); // 更新最低价\n            maxProfit = Math.max(maxProfit, price - minPrice); // 今天卖出的利润\n        }\n        return maxProfit;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，遍历一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)，两个变量"
+    }
+   ],
    "category": "动态规划",
    "in_site": true,
    "difficulty": "Easy",
@@ -1965,6 +2482,17 @@
    "alt": null,
    "sources": [
     "py"
+   ],
+   "java": "class Solution {\n    public int maxProfit(int[] prices) {\n        int profit = 0;\n        for (int i = 1; i < prices.length; i++) {\n            if (prices[i] > prices[i - 1]) { // 上升段\n                profit += prices[i] - prices[i - 1];\n            }\n        }\n        return profit;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，遍历一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)"
+    }
    ],
    "category": "动态规划",
    "in_site": false,
@@ -2007,6 +2535,17 @@
     "py",
     "pdf"
    ],
+   "java": "class Solution {\n    public int maxSubArray(int[] nums) {\n        int maxSum = nums[0], curSum = nums[0]; // 全局最大、以 i 结尾的最大和\n        for (int i = 1; i < nums.length; i++) {\n            curSum = Math.max(nums[i], curSum + nums[i]); // 负则重新开始\n            maxSum = Math.max(maxSum, curSum);\n        }\n        return maxSum;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，遍历一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)，两个变量"
+    }
+   ],
    "category": "动态规划",
    "in_site": true,
    "difficulty": "Medium",
@@ -2043,6 +2582,17 @@
    "alt": null,
    "sources": [
     "py"
+   ],
+   "java": "class Solution {\n    public int maxProduct(int[] nums) {\n        int maxProd = nums[0], minProd = nums[0], result = nums[0]; // 同时记录最大和最小\n        for (int i = 1; i < nums.length; i++) {\n            int x = nums[i];\n            if (x < 0) { // 负数交换最大最小\n                int t = maxProd;\n                maxProd = minProd;\n                minProd = t;\n            }\n            maxProd = Math.max(x, maxProd * x);\n            minProd = Math.min(x, minProd * x);\n            result = Math.max(result, maxProd);\n        }\n        return result;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，遍历一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)，三个变量"
+    }
    ],
    "category": "动态规划",
    "in_site": true,
@@ -2081,6 +2631,17 @@
    "sources": [
     "py"
    ],
+   "java": "class Solution {\n    public int maxCoins(int[] nums) {\n        int n = nums.length + 2;\n        int[] val = new int[n]; // 两端补 1\n        val[0] = val[n - 1] = 1;\n        System.arraycopy(nums, 0, val, 1, nums.length);\n        int[][] dp = new int[n][n]; // dp[i][j]：开区间 (i, j) 内能拿到的最大金币\n        for (int len = 2; len < n; len++) { // 枚举区间长度\n            for (int i = 0; i + len < n; i++) {\n                int j = i + len;\n                for (int k = i + 1; k < j; k++) { // k 为 (i, j) 中最后戳破的气球\n                    dp[i][j] = Math.max(dp[i][j], dp[i][k] + dp[k][j] + val[i] * val[k] * val[j]);\n                }\n            }\n        }\n        return dp[0][n - 1];\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n³)，O(n²) 个区间，每个枚举 O(n) 个 k"
+    },
+    {
+     "k": "空间",
+     "v": "O(n²)，二维 dp"
+    }
+   ],
    "category": "动态规划",
    "in_site": false,
    "difficulty": "Hard",
@@ -2116,6 +2677,17 @@
    "sources": [
     "py"
    ],
+   "java": "class Solution {\n    public int maxEnvelopes(int[][] envelopes) {\n        // 宽升序；宽相同时高降序，保证同宽的信封不会被同时选进 LIS\n        Arrays.sort(envelopes, (a, b) -> a[0] != b[0] ? Integer.compare(a[0], b[0]) : Integer.compare(b[1], a[1]));\n        int[] tails = new int[envelopes.length]; // 对高求 LIS\n        int size = 0;\n        for (int[] e : envelopes) {\n            int h = e[1], lo = 0, hi = size;\n            while (lo < hi) { // 第一个 >= h 的位置\n                int mid = (lo + hi) >>> 1;\n                if (tails[mid] < h) {\n                    lo = mid + 1;\n                } else {\n                    hi = mid;\n                }\n            }\n            tails[lo] = h;\n            if (lo == size) {\n                size++;\n            }\n        }\n        return size;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n log n)，排序 + 每个信封二分一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(n)，tails 数组 + 排序开销"
+    }
+   ],
    "category": "动态规划",
    "in_site": false,
    "difficulty": "Hard",
@@ -2150,6 +2722,17 @@
    "alt": null,
    "sources": [
     "py"
+   ],
+   "java": "class Solution {\n    public int search(int[] nums, int target) {\n        int left = 0, right = nums.length - 1;\n        while (left <= right) {\n            int mid = (left + right) >>> 1;\n            if (nums[mid] == target) {\n                return mid;\n            }\n            if (nums[left] <= nums[mid]) { // 左半边有序\n                if (nums[left] <= target && target < nums[mid]) {\n                    right = mid - 1;\n                } else {\n                    left = mid + 1;\n                }\n            } else { // 右半边有序\n                if (nums[mid] < target && target <= nums[right]) {\n                    left = mid + 1;\n                } else {\n                    right = mid - 1;\n                }\n            }\n        }\n        return -1;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(log n)，每次排除一半"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)"
+    }
    ],
    "category": "二分查找",
    "in_site": true,
@@ -2187,6 +2770,17 @@
    "sources": [
     "py"
    ],
+   "java": "class Solution {\n    public int[] searchRange(int[] nums, int target) {\n        int left = lowerBound(nums, target); // 第一个 >= target\n        if (left == nums.length || nums[left] != target) {\n            return new int[]{-1, -1};\n        }\n        int right = lowerBound(nums, target + 1) - 1; // 第一个 > target 的前一个\n        return new int[]{left, right};\n    }\n\n    // 左闭右开二分：返回第一个 >= x 的下标\n    private int lowerBound(int[] nums, int x) {\n        int lo = 0, hi = nums.length;\n        while (lo < hi) {\n            int mid = (lo + hi) >>> 1;\n            if (nums[mid] < x) {\n                lo = mid + 1;\n            } else {\n                hi = mid;\n            }\n        }\n        return lo;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(log n)，两次二分"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)"
+    }
+   ],
    "category": "二分查找",
    "in_site": true,
    "difficulty": "Medium",
@@ -2223,6 +2817,17 @@
    "alt": null,
    "sources": [
     "py"
+   ],
+   "java": "class Solution {\n    public double findMedianSortedArrays(int[] nums1, int[] nums2) {\n        if (nums1.length > nums2.length) { // 确保 nums1 是短的\n            return findMedianSortedArrays(nums2, nums1);\n        }\n        int m = nums1.length, n = nums2.length;\n        int left = 0, right = m;\n        while (left <= right) {\n            int i = (left + right) >>> 1; // nums1 的分割位置\n            int j = (m + n + 1) / 2 - i; // nums2 的分割位置\n            int l1 = i == 0 ? Integer.MIN_VALUE : nums1[i - 1];\n            int r1 = i == m ? Integer.MAX_VALUE : nums1[i];\n            int l2 = j == 0 ? Integer.MIN_VALUE : nums2[j - 1];\n            int r2 = j == n ? Integer.MAX_VALUE : nums2[j];\n            if (l1 <= r2 && l2 <= r1) { // 找到正确分割\n                if ((m + n) % 2 == 1) {\n                    return Math.max(l1, l2);\n                }\n                return (Math.max(l1, l2) + (double) Math.min(r1, r2)) / 2;\n            } else if (l1 > r2) {\n                right = i - 1;\n            } else {\n                left = i + 1;\n            }\n        }\n        return 0.0;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(log min(m, n))，只在短数组上二分"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)"
+    }
    ],
    "category": "二分查找",
    "in_site": true,
@@ -2262,6 +2867,17 @@
     "py",
     "pdf"
    ],
+   "java": "class Solution {\n    public int subarraySum(int[] nums, int k) {\n        Map<Integer, Integer> prefix = new HashMap<>(); // 前缀和 -> 次数\n        prefix.put(0, 1);\n        int cur = 0, count = 0;\n        for (int num : nums) {\n            cur += num; // 累加前缀和\n            count += prefix.getOrDefault(cur - k, 0); // 找差值\n            prefix.merge(cur, 1, Integer::sum); // 存入当前和\n        }\n        return count;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，遍历一次，哈希操作 O(1)"
+    },
+    {
+     "k": "空间",
+     "v": "O(n)，哈希表最多 n+1 个前缀和"
+    }
+   ],
    "category": "前缀和",
    "in_site": true,
    "difficulty": "Medium",
@@ -2299,6 +2915,17 @@
    "sources": [
     "py"
    ],
+   "java": "class Solution {\n    public int findMaxLength(int[] nums) {\n        Map<Integer, Integer> prefix = new HashMap<>(); // 前缀和 -> 首次位置\n        prefix.put(0, -1);\n        int cur = 0, maxLen = 0;\n        for (int i = 0; i < nums.length; i++) {\n            cur += nums[i] == 1 ? 1 : -1; // 0 变 -1\n            Integer first = prefix.get(cur);\n            if (first != null) {\n                maxLen = Math.max(maxLen, i - first);\n            } else {\n                prefix.put(cur, i); // 首次出现\n            }\n        }\n        return maxLen;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，遍历一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(n)，前缀和取值范围 [-n, n]"
+    }
+   ],
    "category": "前缀和",
    "in_site": false,
    "difficulty": "Medium",
@@ -2334,6 +2961,17 @@
    "alt": null,
    "sources": [
     "py"
+   ],
+   "java": "class Solution {\n    public boolean canJump(int[] nums) {\n        int maxReach = 0; // 最远可达位置\n        for (int i = 0; i < nums.length; i++) {\n            if (i > maxReach) { // 当前位置不可达\n                return false;\n            }\n            maxReach = Math.max(maxReach, i + nums[i]);\n            if (maxReach >= nums.length - 1) { // 能到末尾\n                return true;\n            }\n        }\n        return true;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，遍历一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)"
+    }
    ],
    "category": "贪心",
    "in_site": true,
@@ -2373,6 +3011,17 @@
     "py",
     "pdf"
    ],
+   "java": "class Solution {\n    public int[][] merge(int[][] intervals) {\n        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0])); // 按起点排序\n        List<int[]> result = new ArrayList<>();\n        for (int[] cur : intervals) {\n            int last = result.size() - 1;\n            if (last >= 0 && cur[0] <= result.get(last)[1]) { // 重叠\n                result.get(last)[1] = Math.max(result.get(last)[1], cur[1]);\n            } else {\n                result.add(cur);\n            }\n        }\n        return result.toArray(new int[0][]);\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n log n)，排序为主"
+    },
+    {
+     "k": "空间",
+     "v": "O(n)，结果列表 + 排序开销"
+    }
+   ],
    "category": "贪心",
    "in_site": true,
    "difficulty": "Medium",
@@ -2409,6 +3058,17 @@
    "sources": [
     "py"
    ],
+   "java": "class Solution {\n    public int canCompleteCircuit(int[] gas, int[] cost) {\n        int total = 0, cur = 0, start = 0; // 总油量-总消耗、当前累计、起点\n        for (int i = 0; i < gas.length; i++) {\n            cur += gas[i] - cost[i];\n            total += gas[i] - cost[i];\n            if (cur < 0) { // 从 start 到 i 都不行\n                start = i + 1;\n                cur = 0;\n            }\n        }\n        return total >= 0 ? start : -1;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，遍历一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)"
+    }
+   ],
    "category": "贪心",
    "in_site": false,
    "difficulty": "Medium",
@@ -2443,6 +3103,17 @@
    "alt": null,
    "sources": [
     "py"
+   ],
+   "java": "class Solution {\n    public int singleNumber(int[] nums) {\n        int result = 0;\n        for (int num : nums) {\n            result ^= num; // 成对的异或抵消为 0\n        }\n        return result;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，遍历一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)"
+    }
    ],
    "category": "位运算",
    "in_site": true,
@@ -2480,6 +3151,17 @@
    "sources": [
     "py"
    ],
+   "java": "class Solution {\n    public boolean isPowerOfTwo(int n) {\n        return n > 0 && (n & (n - 1)) == 0; // 消掉最低位的 1 后为 0\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(1)，一次位运算"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)"
+    }
+   ],
    "category": "位运算",
    "in_site": false,
    "difficulty": "Easy",
@@ -2515,6 +3197,17 @@
    "alt": null,
    "sources": [
     "py"
+   ],
+   "java": "class Solution {\n    public boolean canFinish(int numCourses, int[][] prerequisites) {\n        List<List<Integer>> graph = new ArrayList<>(); // 邻接表\n        for (int i = 0; i < numCourses; i++) {\n            graph.add(new ArrayList<>());\n        }\n        int[] indegree = new int[numCourses]; // 入度\n        for (int[] p : prerequisites) {\n            graph.get(p[1]).add(p[0]); // 先修 p[1] -> p[0]\n            indegree[p[0]]++;\n        }\n        Queue<Integer> queue = new ArrayDeque<>();\n        for (int i = 0; i < numCourses; i++) {\n            if (indegree[i] == 0) { // 入度 0 入队\n                queue.offer(i);\n            }\n        }\n        int visited = 0;\n        while (!queue.isEmpty()) {\n            int course = queue.poll();\n            visited++;\n            for (int next : graph.get(course)) {\n                if (--indegree[next] == 0) {\n                    queue.offer(next);\n                }\n            }\n        }\n        return visited == numCourses; // 全部学完则无环\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(V + E)，V 为课程数，E 为先修关系数"
+    },
+    {
+     "k": "空间",
+     "v": "O(V + E)，邻接表 + 入度数组 + 队列"
+    }
    ],
    "category": "图论",
    "in_site": true,
@@ -2553,6 +3246,17 @@
    "sources": [
     "py"
    ],
+   "java": "class Trie {\n    private final Trie[] children = new Trie[26]; // 子节点，题目只含小写字母\n    private boolean isEnd; // 是否是某个单词的结尾\n\n    public void insert(String word) {\n        Trie node = this;\n        for (char ch : word.toCharArray()) {\n            int i = ch - 'a';\n            if (node.children[i] == null) {\n                node.children[i] = new Trie();\n            }\n            node = node.children[i];\n        }\n        node.isEnd = true;\n    }\n\n    public boolean search(String word) {\n        Trie node = searchPrefix(word);\n        return node != null && node.isEnd;\n    }\n\n    public boolean startsWith(String prefix) {\n        return searchPrefix(prefix) != null;\n    }\n\n    private Trie searchPrefix(String prefix) {\n        Trie node = this;\n        for (char ch : prefix.toCharArray()) {\n            node = node.children[ch - 'a'];\n            if (node == null) {\n                return null;\n            }\n        }\n        return node;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "insert / search / startsWith 均为 O(L)，L 为单词长度"
+    },
+    {
+     "k": "空间",
+     "v": "O(总字符数 × 26)，最坏每个字符新建一个节点"
+    }
+   ],
    "category": "前缀树",
    "in_site": true,
    "difficulty": "Medium",
@@ -2589,6 +3293,17 @@
    "alt": null,
    "sources": [
     "py"
+   ],
+   "java": "class Solution {\n    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {\n        ListNode dummy = new ListNode(); // 哑节点\n        ListNode cur = dummy;\n        int carry = 0;\n        while (l1 != null || l2 != null || carry != 0) { // 还有数位或进位\n            int s = carry;\n            if (l1 != null) {\n                s += l1.val;\n                l1 = l1.next;\n            }\n            if (l2 != null) {\n                s += l2.val;\n                l2 = l2.next;\n            }\n            carry = s / 10; // 进位\n            cur.next = new ListNode(s % 10);\n            cur = cur.next;\n        }\n        return dummy.next;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(max(m, n))，逐位相加"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)，不计结果链表"
+    }
    ],
    "category": "链表",
    "in_site": true,
@@ -2627,6 +3342,17 @@
    "sources": [
     "pdf"
    ],
+   "java": "class Solution {\n    public boolean isPalindrome(ListNode head) {\n        // 1. 快慢指针找中点：slow 停在前半段末尾\n        ListNode slow = head, fast = head;\n        while (fast.next != null && fast.next.next != null) {\n            slow = slow.next;\n            fast = fast.next.next;\n        }\n        // 2. 反转后半段\n        ListNode prev = null, cur = slow.next;\n        while (cur != null) {\n            ListNode next = cur.next;\n            cur.next = prev;\n            prev = cur;\n            cur = next;\n        }\n        // 3. 两半逐个比较，后半段不比前半段长\n        ListNode p = head, q = prev;\n        while (q != null) {\n            if (p.val != q.val) {\n                return false;\n            }\n            p = p.next;\n            q = q.next;\n        }\n        return true;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，找中点 + 反转 + 比较各一趟"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)，原地反转"
+    }
+   ],
    "category": "链表",
    "in_site": true,
    "difficulty": "Easy",
@@ -2664,6 +3390,17 @@
    "sources": [
     "py"
    ],
+   "java": "class Solution {\n    public ListNode reverseBetween(ListNode head, int left, int right) {\n        ListNode dummy = new ListNode(0, head); // 哑节点\n        ListNode pre = dummy;\n        for (int i = 0; i < left - 1; i++) { // 找到前驱\n            pre = pre.next;\n        }\n        ListNode cur = pre.next; // 反转区间的第一个节点\n        for (int i = 0; i < right - left; i++) { // 头插法局部反转\n            ListNode next = cur.next;\n            cur.next = next.next;\n            next.next = pre.next;\n            pre.next = next;\n        }\n        return dummy.next;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，最多遍历到 right"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)"
+    }
+   ],
    "category": "链表",
    "in_site": false,
    "difficulty": "Medium",
@@ -2700,6 +3437,17 @@
    "sources": [
     "pdf"
    ],
+   "java": "class Solution {\n    public ListNode reverseKGroup(ListNode head, int k) {\n        int n = 0; // 先统计长度\n        for (ListNode cur = head; cur != null; cur = cur.next) {\n            n++;\n        }\n        ListNode dummy = new ListNode(0, head);\n        ListNode p0 = dummy; // 上一组的尾巴\n        ListNode pre = null, cur = head;\n        for (; n >= k; n -= k) { // 剩余够 k 个才翻\n            for (int i = 0; i < k; i++) { // 组内反转\n                ListNode next = cur.next;\n                cur.next = pre;\n                pre = cur;\n                cur = next;\n            }\n            // pre 是本组新头，cur 是下一组的头，p0.next 是本组新尾\n            ListNode tail = p0.next;\n            tail.next = cur; // 本组新尾接下一组\n            p0.next = pre; // 上一组接本组新头\n            p0 = tail; // p0 移到本组尾巴\n        }\n        return dummy.next;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，每个节点反转一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)，原地反转"
+    }
+   ],
    "category": "链表",
    "in_site": true,
    "difficulty": "Hard",
@@ -2735,6 +3483,17 @@
    "alt": null,
    "sources": [
     "py"
+   ],
+   "java": "class Solution {\n    public int majorityElement(int[] nums) {\n        int count = 0, candidate = 0;\n        for (int num : nums) {\n            if (count == 0) { // 换候选人\n                candidate = num;\n            }\n            count += num == candidate ? 1 : -1; // 票数抵消\n        }\n        return candidate;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(n)，遍历一次"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)"
+    }
    ],
    "category": "数学",
    "in_site": true,
@@ -2773,6 +3532,17 @@
    "sources": [
     "py"
    ],
+   "java": "class Solution {\n    public boolean isHappy(int n) {\n        int slow = n, fast = next(n);\n        while (fast != 1 && slow != fast) {\n            slow = next(slow); // 慢走一步\n            fast = next(next(fast)); // 快走两步\n        }\n        return fast == 1;\n    }\n\n    // 各位数字的平方和\n    private int next(int x) {\n        int s = 0;\n        while (x > 0) {\n            int d = x % 10;\n            s += d * d;\n            x /= 10;\n        }\n        return s;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(log n)，数值很快落到 243 以内，之后循环长度有限"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)"
+    }
+   ],
    "category": "数学",
    "in_site": false,
    "difficulty": "Easy",
@@ -2810,6 +3580,25 @@
    "sources": [
     "pdf"
    ],
+   "java": "class Solution {\n    private final Random rand = new Random();\n\n    public int[] sortArray(int[] nums) {\n        quickSort(nums, 0, nums.length - 1);\n        return nums;\n    }\n\n    private void quickSort(int[] nums, int left, int right) {\n        if (left >= right) { // 区间长度 <= 1，不用排\n            return;\n        }\n        int p = partition(nums, left, right);\n        quickSort(nums, left, p - 1);\n        quickSort(nums, p + 1, right);\n    }\n\n    private int partition(int[] nums, int left, int right) {\n        swap(nums, left, left + rand.nextInt(right - left + 1)); // 随机 pivot 换到最左边\n        int pivot = nums[left];\n        int i = left + 1, j = right;\n        while (true) {\n            while (i <= j && nums[i] < pivot) { // i 从左找第一个 >= pivot 的\n                i++;\n            }\n            while (i <= j && nums[j] > pivot) { // j 从右找第一个 <= pivot 的\n                j--;\n            }\n            if (i >= j) { // 相遇或交叉，退出\n                break;\n            }\n            swap(nums, i++, j--);\n        }\n        swap(nums, left, j); // pivot 归位到 j\n        return j;\n    }\n\n    private void swap(int[] nums, int i, int j) {\n        int t = nums[i];\n        nums[i] = nums[j];\n        nums[j] = t;\n    }\n}",
+   "cx": [
+    {
+     "k": "平均时间",
+     "v": "O(n log n)，随机 pivot 期望每次切成两半"
+    },
+    {
+     "k": "最坏时间",
+     "v": "O(n²)，每次都切到最边上，随机化后概率极低"
+    },
+    {
+     "k": "空间",
+     "v": "平均 O(log n)、最坏 O(n)，递归栈"
+    },
+    {
+     "k": "稳定性",
+     "v": "不稳定，交换会打乱相等元素的相对顺序"
+    }
+   ],
    "category": "手撕基础",
    "in_site": false,
    "difficulty": "Medium",
@@ -2845,6 +3634,21 @@
    "alt": null,
    "sources": [
     "pdf"
+   ],
+   "java": "class Solution {\n    private final Random rand = new Random();\n\n    public int findKthLargest(int[] nums, int k) {\n        int target = nums.length - k; // 第 k 大 = 升序后下标 n-k\n        int left = 0, right = nums.length - 1;\n        while (true) {\n            int j = partition(nums, left, right);\n            if (j == target) { // 正好是目标位置\n                return nums[j];\n            }\n            if (j > target) { // 目标在左半边\n                right = j - 1;\n            } else { // 目标在右半边\n                left = j + 1;\n            }\n        }\n    }\n\n    // 同快排：随机 pivot + 双指针，返回 pivot 最终位置\n    private int partition(int[] nums, int left, int right) {\n        swap(nums, left, left + rand.nextInt(right - left + 1));\n        int pivot = nums[left];\n        int i = left + 1, j = right;\n        while (true) {\n            while (i <= j && nums[i] < pivot) {\n                i++;\n            }\n            while (i <= j && nums[j] > pivot) {\n                j--;\n            }\n            if (i >= j) {\n                break;\n            }\n            swap(nums, i++, j--);\n        }\n        swap(nums, left, j);\n        return j;\n    }\n\n    private void swap(int[] nums, int i, int j) {\n        int t = nums[i];\n        nums[i] = nums[j];\n        nums[j] = t;\n    }\n}",
+   "cx": [
+    {
+     "k": "平均时间",
+     "v": "O(n)，每次只走一边，n + n/2 + n/4 + … ≈ 2n"
+    },
+    {
+     "k": "最坏时间",
+     "v": "O(n²)，随机化后极少发生"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)，迭代写法不用递归栈"
+    }
    ],
    "category": "手撕基础",
    "in_site": true,
@@ -2882,6 +3686,17 @@
    "alt": null,
    "sources": [
     "pdf"
+   ],
+   "java": "public class Singleton {\n    private static volatile Singleton instance; // volatile 防止指令重排拿到半初始化对象\n\n    private Singleton() {} // 私有构造，禁止外部 new\n\n    public static Singleton getInstance() {\n        if (instance == null) { // 第一次检查：已创建就直接返回，避免每次都加锁\n            synchronized (Singleton.class) {\n                if (instance == null) { // 第二次检查：拿到锁后再确认一次\n                    instance = new Singleton();\n                }\n            }\n        }\n        return instance;\n    }\n}",
+   "cx": [
+    {
+     "k": "时间",
+     "v": "O(1)，创建后只读一个静态字段"
+    },
+    {
+     "k": "空间",
+     "v": "O(1)，全局只有一个实例"
+    }
    ],
    "category": "手撕基础",
    "in_site": false,

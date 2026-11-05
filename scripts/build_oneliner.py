@@ -10,6 +10,8 @@ oneliner.md 格式:
     **面试口述思路（方法）** 步骤1； 步骤2； ...
     **超短一句话版** 一句话
     **代码**  ```python ... ```
+    **Java 代码**  ```java ... ```        与 Python 主解法同一思路
+    **时空复杂度**  | 复杂度 | 说明 | 表格
     **3 个核心要点（面试官必问）**  * **要点**：说明
     **面试追问应对（加分）** 可选
     **另一种写法（方法）** 说明 + ```python ...```  可选
@@ -80,6 +82,18 @@ def parse_item(head: str, body: str) -> dict:
         alt = {"method": am.group(1).strip(), "desc": unescape(am.group(2)), "code": am.group(3).rstrip("\n")}
         body = body[:am.start()] + body[am.end():]
 
+    jm = re.search(r"\*\*Java 代码\*\*\s*```java\n(.*?)```", body, re.S)
+    java = jm.group(1).rstrip("\n")
+    body = body[:jm.start()] + body[jm.end():]
+    cm = re.search(r"\*\*时空复杂度\*\*\s*((?:^\|.*\|\s*$\n?)+)", body, re.M)
+    cx = []
+    for line in cm.group(1).strip().splitlines():
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if cells[0] in ("复杂度", "---"):
+            continue
+        cx.append({"k": cells[0], "v": cells[1]})
+    body = body[:cm.start()] + body[cm.end():]
+
     code_m = re.search(r"```python\n(.*?)```", body, re.S)
     code = code_m.group(1).rstrip("\n")
     before, after = body[:code_m.start()], body[code_m.end():]
@@ -108,7 +122,7 @@ def parse_item(head: str, body: str) -> dict:
     assert len(points) == 3, (pid, points)
     return {"id": pid, "title": title, "method": method, "steps": steps,
             "oneliner": one, "code": code, "points": points, "followup": follow,
-            "alt": alt, "sources": sources}
+            "alt": alt, "sources": sources, "java": java, "cx": cx}
 
 
 def parse(md: str) -> dict:
@@ -345,6 +359,50 @@ def _threaded_singleton(cls):
     return all(x is got[0] for x in got)
 
 
+# ===================== Java 静态检查 =====================
+# 本机不一定装了 JDK,这里只做不依赖编译器的检查:括号配对、方法名与 Python 版(LeetCode 签名)一致。
+def _strip_java(code: str) -> str:
+    code = re.sub(r"//[^\n]*", "", code)
+    code = re.sub(r'"(?:\\.|[^"\\])*"', '""', code)
+    return re.sub(r"'(?:\\.|[^'\\])'", "''", code)
+
+
+def java_check(it: dict) -> list[str]:
+    errs = []
+    code = _strip_java(it["java"])
+    pairs = {")": "(", "]": "[", "}": "{"}
+    stack = []
+    for ch in code:
+        if ch in "([{":
+            stack.append(ch)
+        elif ch in pairs:
+            if not stack or stack.pop() != pairs[ch]:
+                errs.append("括号不配对")
+                break
+    else:
+        if stack:
+            errs.append("括号未闭合")
+    # Python 版里的公开方法名(驼峰,即 LeetCode 方法名)必须出现在 Java 里
+    py_methods = re.findall(r"^    def ([a-zA-Z]\w*)\(self", it["code"], re.M)
+    for m in py_methods:
+        if m.startswith("_") or m == "__init__":
+            continue
+        if not re.search(rf"\b{m}\s*\(", code):
+            errs.append(f"缺少方法 {m}")
+    py_classes = re.findall(r"^class (\w+)", it["code"], re.M)
+    main_cls = [c for c in py_classes if c in ("Solution", "LRUCache", "Trie", "Singleton")]
+    for c in main_cls:
+        if not re.search(rf"\bclass {c}\b", code):
+            errs.append(f"缺少 class {c}")
+    if not it["cx"] or not any(r["k"].endswith("时间") for r in it["cx"]):
+        errs.append("缺少时间复杂度")
+    for r in it["cx"]:
+        # 表格单元格里不能有 |(如 |Σ|),否则被截断成「O(」
+        if r["v"].count("(") != r["v"].count(")"):
+            errs.append(f"复杂度「{r['k']}」括号不配对,可能含 | 被表格截断:{r['v']}")
+    return errs
+
+
 def run_one(pid, title, code) -> bool:
     NS.clear()
     NS.update(List=List, Optional=Optional, ListNode=ListNode, TreeNode=TreeNode)
@@ -364,6 +422,10 @@ def selftest(items: list[dict]) -> int:
         fails += not run_one(it["id"], it["title"], it["code"])
         if it.get("alt"):
             fails += not run_one(it["id"], it["title"] + "(另一种写法)", it["alt"]["code"])
+    for it in items:
+        for e in java_check(it):
+            fails += 1
+            print(f"  ✗ #{it['id']} {it['title']} Java: {e}")
     alts = {it["id"] for it in items if it.get("alt")}
     assert alts == ALT_IDS, alts ^ ALT_IDS
     return fails

@@ -1,7 +1,7 @@
 # LC100 · 一句话速记（Python 面试口述版）
 
 > 选题来源：python版本.md（一句话版）+ 力扣100手撕.pdf（手撕PDF，仅取选题，内容为本站 Python 重写）。已逐题自测。由 `scripts/build_oneliner.py` 构建为 `data/oneliner.json`。
-> 格式：`## 分类` → `### 题号. 标题` → `> 来源：…` → 口述思路 / 超短一句话版 / 代码 / 3 个核心要点 / (可选)追问 / (可选)另一种写法。
+> 格式：`## 分类` → `### 题号. 标题` → `> 来源：…` → 口述思路 / 超短一句话版 / 代码(Python + Java) / 时空复杂度 / 3 个核心要点 / (可选)追问 / (可选)另一种写法。
 > 无 LeetCode 题号的手撕题用英文 id，如 `### singleton. 单例模式`。
 
 ## 哈希表
@@ -25,6 +25,31 @@ class Solution:
                 return [seen[target - x], i]
             seen[x] = i  # 存入当前数
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        Map<Integer, Integer> seen = new HashMap<>(); // 哈希表：数值 -> 下标
+        for (int i = 0; i < nums.length; i++) {
+            Integer j = seen.get(target - nums[i]); // 查差值是否已见过
+            if (j != null) {
+                return new int[]{j, i};
+            }
+            seen.put(nums[i], i); // 存入当前数
+        }
+        return new int[0];
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，一次遍历，每次哈希查找 O(1) |
+| 空间 | O(n)，哈希表最多存 n 个数 |
 
 **3 个核心要点（面试官必问）**
 
@@ -62,6 +87,34 @@ class Solution:
         return max_len
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        Map<Character, Integer> charIndex = new HashMap<>(); // 字符 -> 最新下标
+        int left = 0, maxLen = 0;
+        for (int right = 0; right < s.length(); right++) { // 右指针扩展
+            char ch = s.charAt(right);
+            Integer last = charIndex.get(ch);
+            if (last != null && last >= left) { // 字符在窗口内重复
+                left = last + 1; // 收缩左指针
+            }
+            charIndex.put(ch, right); // 更新字符最新位置
+            maxLen = Math.max(maxLen, right - left + 1);
+        }
+        return maxLen;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，left、right 都只向右移动 |
+| 空间 | O(min(n, Σ))，哈希表最多存 n 个、且不超过字符集大小 Σ 个字符 |
+
 **3 个核心要点（面试官必问）**
 
 * **收缩条件**：char\_index\[ch] >= left 说明字符在当前窗口内出现过，需要收缩左指针；
@@ -96,6 +149,39 @@ class Solution:
                 heapq.heappop(heap)  # 弹出最小的
         return [num for count, num in heap]  # 返回堆中的数
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public int[] topKFrequent(int[] nums, int k) {
+        Map<Integer, Integer> freq = new HashMap<>();
+        for (int x : nums) {
+            freq.merge(x, 1, Integer::sum); // 统计频率
+        }
+        // 最小堆，按出现次数升序，元素为 {num, count}
+        PriorityQueue<int[]> heap = new PriorityQueue<>((a, b) -> Integer.compare(a[1], b[1]));
+        for (Map.Entry<Integer, Integer> e : freq.entrySet()) {
+            heap.offer(new int[]{e.getKey(), e.getValue()});
+            if (heap.size() > k) { // 保持堆大小为 k
+                heap.poll(); // 弹出次数最小的
+            }
+        }
+        int[] ans = new int[k];
+        for (int i = 0; i < k; i++) {
+            ans[i] = heap.poll()[0];
+        }
+        return ans;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n log k)，统计 O(n)，每次堆操作 O(log k) |
+| 空间 | O(n)，计数哈希表 O(n) + 堆 O(k) |
 
 **3 个核心要点（面试官必问）**
 
@@ -150,6 +236,38 @@ class Solution:
             ans = max(ans, y - x)  # 序列为 [x, y)
         return ans
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public int longestConsecutive(int[] nums) {
+        Set<Integer> st = new HashSet<>();
+        for (int x : nums) {
+            st.add(x); // 去重 + O(1) 查找
+        }
+        int ans = 0;
+        for (int x : st) {
+            if (st.contains(x - 1)) { // 不是起点，跳过
+                continue;
+            }
+            int y = x + 1;
+            while (st.contains(y)) { // 从起点往后数
+                y++;
+            }
+            ans = Math.max(ans, y - x); // 序列为 [x, y)
+        }
+        return ans;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，每个数最多被内层 while 访问一次 |
+| 空间 | O(n)，哈希集合 |
 
 **3 个核心要点（面试官必问）**
 
@@ -224,6 +342,80 @@ class LRUCache:
                 del self.cache[removed.key]
 ```
 
+**Java 代码**
+
+```java
+class LRUCache {
+    private static class Node { // 双向链表节点
+        int key, val;
+        Node prev, next;
+
+        Node(int key, int val) {
+            this.key = key;
+            this.val = val;
+        }
+    }
+
+    private final int capacity;
+    private final Map<Integer, Node> cache = new HashMap<>(); // key -> 节点
+    private final Node head = new Node(0, 0); // 虚拟头
+    private final Node tail = new Node(0, 0); // 虚拟尾
+
+    public LRUCache(int capacity) {
+        this.capacity = capacity;
+        head.next = tail;
+        tail.prev = head;
+    }
+
+    public int get(int key) {
+        Node node = cache.get(key);
+        if (node == null) {
+            return -1;
+        }
+        remove(node); // 从原位置移除
+        addToHead(node); // 移到头部
+        return node.val;
+    }
+
+    public void put(int key, int value) {
+        Node node = cache.get(key);
+        if (node != null) { // 已存在：更新值并移到头部
+            node.val = value;
+            remove(node);
+            addToHead(node);
+            return;
+        }
+        node = new Node(key, value);
+        cache.put(key, node);
+        addToHead(node);
+        if (cache.size() > capacity) {
+            Node removed = tail.prev; // 移除最久未使用的
+            remove(removed);
+            cache.remove(removed.key);
+        }
+    }
+
+    private void remove(Node node) {
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+    }
+
+    private void addToHead(Node node) {
+        node.next = head.next;
+        node.prev = head;
+        head.next.prev = node;
+        head.next = node;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | get / put 均为 O(1) |
+| 空间 | O(capacity)，哈希表 + 链表节点 |
+
 **3 个核心要点（面试官必问）**
 
 * **双向链表顺序**：头部是最近访问的节点，尾部是最久未使用的节点，删除操作在 tail.prev 进行；
@@ -262,6 +454,36 @@ class Solution:
         cur.next = l1 or l2  # 接入剩余部分
         return dummy.next
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        ListNode dummy = new ListNode(); // 哑节点
+        ListNode cur = dummy;
+        while (l1 != null && l2 != null) { // 比较两链表头
+            if (l1.val <= l2.val) {
+                cur.next = l1;
+                l1 = l1.next;
+            } else {
+                cur.next = l2;
+                l2 = l2.next;
+            }
+            cur = cur.next;
+        }
+        cur.next = l1 != null ? l1 : l2; // 接入剩余部分
+        return dummy.next;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(m + n)，每个节点访问一次 |
+| 空间 | O(1)，只改指针，不新建节点 |
 
 **3 个核心要点（面试官必问）**
 
@@ -312,6 +534,30 @@ class Solution:
         return prev  # prev是新头
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public ListNode reverseList(ListNode head) {
+        ListNode prev = null, cur = head;
+        while (cur != null) {
+            ListNode next = cur.next; // 保存下一个
+            cur.next = prev; // 反转指针
+            prev = cur; // prev 后移
+            cur = next; // cur 后移
+        }
+        return prev; // prev 是新头
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，遍历一次 |
+| 空间 | O(1)，三个指针 |
+
 **3 个核心要点（面试官必问）**
 
 * **核心操作三步曲**：next\_node = cur.next → cur.next = prev → prev = cur → cur = next\_node；
@@ -357,6 +603,31 @@ class Solution:
         return False
 ```
 
+**Java 代码**
+
+```java
+public class Solution {
+    public boolean hasCycle(ListNode head) {
+        ListNode fast = head, slow = head;
+        while (fast != null && fast.next != null) { // 快指针能走
+            fast = fast.next.next; // 快走两步
+            slow = slow.next; // 慢走一步
+            if (fast == slow) { // 相遇
+                return true;
+            }
+        }
+        return false;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，有环时快指针最多多绕一圈追上 |
+| 空间 | O(1)，两个指针 |
+
 **3 个核心要点（面试官必问）**
 
 * **快慢指针速度差**：快指针每次走两步，慢指针每次走一步，相对速度为 1，有环必相遇；
@@ -393,6 +664,36 @@ class Solution:
         return None  # 快指针走到头，无环
 ```
 
+**Java 代码**
+
+```java
+public class Solution {
+    public ListNode detectCycle(ListNode head) {
+        ListNode slow = head, fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast) { // 相遇，说明有环
+                ListNode p = head;
+                while (p != slow) { // 头和相遇点同速走，在入口相遇
+                    p = p.next;
+                    slow = slow.next;
+                }
+                return p;
+            }
+        }
+        return null; // 快指针走到头，无环
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，判环 O(n) + 找入口 O(n) |
+| 空间 | O(1)，常数个指针 |
+
 **3 个核心要点（面试官必问）**
 
 * **数学推导**：设头到入口 a、入口到相遇点 b、环长 c，慢指针走了 a+b，快指针走了 2(a+b)，多出的 a+b 是环长的整数倍，所以从相遇点再走 a 步正好回到入口；
@@ -428,6 +729,33 @@ class Solution:
         slow.next = slow.next.next  # 删除节点
         return dummy.next
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode dummy = new ListNode(0, head); // 哑节点
+        ListNode fast = dummy, slow = dummy;
+        for (int i = 0; i <= n; i++) { // 快指针先走 n+1 步
+            fast = fast.next;
+        }
+        while (fast != null) { // 双指针齐走
+            fast = fast.next;
+            slow = slow.next;
+        }
+        slow.next = slow.next.next; // 删除节点
+        return dummy.next;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，n 为链表长度，一趟扫描 |
+| 空间 | O(1) |
 
 **3 个核心要点（面试官必问）**
 
@@ -479,6 +807,53 @@ class Solution:
         return result
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public List<List<Integer>> threeSum(int[] nums) {
+        Arrays.sort(nums); // 排序
+        List<List<Integer>> result = new ArrayList<>();
+        int n = nums.length;
+        for (int i = 0; i < n - 2; i++) { // 遍历第一个数
+            if (nums[i] > 0) { // 第一个数大于 0 则无解
+                break;
+            }
+            if (i > 0 && nums[i] == nums[i - 1]) { // 去重
+                continue;
+            }
+            int left = i + 1, right = n - 1;
+            while (left < right) { // 双指针找另外两个数
+                int s = nums[i] + nums[left] + nums[right];
+                if (s == 0) {
+                    result.add(Arrays.asList(nums[i], nums[left], nums[right]));
+                    left++;
+                    right--;
+                    while (left < right && nums[left] == nums[left - 1]) {
+                        left++;
+                    }
+                    while (left < right && nums[right] == nums[right + 1]) {
+                        right--;
+                    }
+                } else if (s < 0) {
+                    left++;
+                } else {
+                    right--;
+                }
+            }
+        }
+        return result;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n²)，排序 O(n log n)，外层 n 次 × 双指针 O(n) |
+| 空间 | O(log n)，排序的递归栈，不计返回结果 |
+
 **3 个核心要点（面试官必问）**
 
 * **排序的必要性**：排序后方便用双指针，且相同元素相邻，便于去重；
@@ -514,6 +889,33 @@ class Solution:
                 right -= 1
         return max_area
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public int maxArea(int[] height) {
+        int left = 0, right = height.length - 1, maxArea = 0;
+        while (left < right) {
+            int area = Math.min(height[left], height[right]) * (right - left); // 计算面积
+            maxArea = Math.max(maxArea, area);
+            if (height[left] < height[right]) { // 移动短板
+                left++;
+            } else {
+                right--;
+            }
+        }
+        return maxArea;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，左右指针合计走 n 步 |
+| 空间 | O(1) |
 
 **3 个核心要点（面试官必问）**
 
@@ -554,6 +956,42 @@ class Solution:
                     start = i - (cur - 1) // 2  # 由中心和长度反推起点
         return s[start:start + max_len]
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public String longestPalindrome(String s) {
+        int start = 0, maxLen = 0;
+        for (int i = 0; i < s.length(); i++) {
+            for (int j = i; j <= i + 1; j++) { // j == i 奇数中心，j == i + 1 偶数中心
+                int cur = expand(s, i, j);
+                if (cur > maxLen) {
+                    maxLen = cur;
+                    start = i - (cur - 1) / 2; // 由中心和长度反推起点
+                }
+            }
+        }
+        return s.substring(start, start + maxLen);
+    }
+
+    // 从中心向两边扩，返回回文长度
+    private int expand(String s, int l, int r) {
+        while (l >= 0 && r < s.length() && s.charAt(l) == s.charAt(r)) {
+            l--;
+            r++;
+        }
+        return r - l - 1; // 跳出时 l、r 都多走了一步
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n²)，2n-1 个中心，每个最多扩展 O(n) |
+| 空间 | O(1)，只用常数个变量 |
 
 **3 个核心要点（面试官必问）**
 
@@ -608,6 +1046,54 @@ class Solution:
         return s[min_start:min_start + min_len] if min_len != float('inf') else ''
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public String minWindow(String s, String t) {
+        int[] need = new int[128], window = new int[128]; // 字符计数，题目只含英文字母
+        int kinds = 0; // 需要满足的字符种类数
+        for (char c : t.toCharArray()) {
+            if (need[c]++ == 0) {
+                kinds++;
+            }
+        }
+        int left = 0, valid = 0, minLen = Integer.MAX_VALUE, minStart = 0;
+        for (int right = 0; right < s.length(); right++) { // 扩右指针
+            char c = s.charAt(right);
+            if (need[c] > 0) {
+                window[c]++;
+                if (window[c] == need[c]) { // 该字符满足
+                    valid++;
+                }
+            }
+            while (valid == kinds) { // 包含所有字符，收左指针
+                if (right - left + 1 < minLen) {
+                    minLen = right - left + 1;
+                    minStart = left;
+                }
+                char d = s.charAt(left);
+                if (need[d] > 0) {
+                    if (window[d] == need[d]) {
+                        valid--;
+                    }
+                    window[d]--;
+                }
+                left++;
+            }
+        }
+        return minLen == Integer.MAX_VALUE ? "" : s.substring(minStart, minStart + minLen);
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(m + n)，每个字符最多进出窗口各一次 |
+| 空间 | O(Σ)，两个长度 128 的计数表，Σ 为字符集大小，可视为 O(1) |
+
 **3 个核心要点（面试官必问）**
 
 * **双计数器设计**：need 记录目标字符的需求量，window 记录窗口内的数量，valid 记录已满足需求的字符种类数；
@@ -642,6 +1128,32 @@ class Solution:
                 left += 1
         return min_len if min_len != float('inf') else 0
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public int minSubArrayLen(int target, int[] nums) {
+        int left = 0, curSum = 0, minLen = Integer.MAX_VALUE;
+        for (int right = 0; right < nums.length; right++) { // 扩右指针
+            curSum += nums[right];
+            while (curSum >= target) { // 收左指针
+                minLen = Math.min(minLen, right - left + 1);
+                curSum -= nums[left];
+                left++;
+            }
+        }
+        return minLen == Integer.MAX_VALUE ? 0 : minLen;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，每个元素最多进出窗口各一次 |
+| 空间 | O(1) |
 
 **3 个核心要点（面试官必问）**
 
@@ -681,6 +1193,37 @@ class Solution:
         return ans
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        Deque<Integer> q = new ArrayDeque<>(); // 存下标，对应值单调递减
+        int[] ans = new int[nums.length - k + 1];
+        for (int i = 0; i < nums.length; i++) {
+            while (!q.isEmpty() && nums[q.peekLast()] <= nums[i]) { // 队尾比新元素小，弹掉
+                q.pollLast();
+            }
+            q.offerLast(i);
+            if (q.peekFirst() <= i - k) { // 队首滑出窗口
+                q.pollFirst();
+            }
+            if (i >= k - 1) { // 窗口形成后记录答案
+                ans[i - k + 1] = nums[q.peekFirst()];
+            }
+        }
+        return ans;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，每个下标最多入队、出队各一次 |
+| 空间 | O(k)，队列最多存 k 个下标 |
+
 **3 个核心要点（面试官必问）**
 
 * **为什么能弹掉队尾**：它比新元素小、又比新元素先离开窗口，之后任何窗口里都有新元素压着，永远当不了最大值；
@@ -719,6 +1262,33 @@ class Solution:
         return result
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public int[] dailyTemperatures(int[] temperatures) {
+        int n = temperatures.length;
+        int[] result = new int[n];
+        Deque<Integer> stack = new ArrayDeque<>(); // 存下标，对应温度单调递减
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && temperatures[stack.peek()] < temperatures[i]) { // 比栈顶高则弹出
+                int prev = stack.pop();
+                result[prev] = i - prev; // 计算距离
+            }
+            stack.push(i);
+        }
+        return result;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，每个下标最多入栈、出栈各一次 |
+| 空间 | O(n)，单调栈 |
+
 **3 个核心要点（面试官必问）**
 
 * **单调递减栈**：栈内元素对应的温度严格递减，栈顶是当前还没找到更高温度的「待升温」日子；
@@ -753,6 +1323,37 @@ class Solution:
             stack.append(i)
         return max_area
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public int largestRectangleArea(int[] heights) {
+        int n = heights.length;
+        int[] h = new int[n + 2]; // 两侧补 0
+        System.arraycopy(heights, 0, h, 1, n);
+        Deque<Integer> stack = new ArrayDeque<>(); // 存下标，对应高度单调递增
+        stack.push(0);
+        int maxArea = 0;
+        for (int i = 1; i < n + 2; i++) {
+            while (h[i] < h[stack.peek()]) { // 遇到更小的柱
+                int height = h[stack.pop()]; // 弹出高度
+                int w = i - stack.peek() - 1; // 宽度
+                maxArea = Math.max(maxArea, height * w);
+            }
+            stack.push(i);
+        }
+        return maxArea;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，每个下标最多入栈、出栈各一次 |
+| 空间 | O(n)，补 0 的数组 + 单调栈 |
 
 **3 个核心要点（面试官必问）**
 
@@ -790,6 +1391,38 @@ class Solution:
             stack.append(i)
         return water
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public int trap(int[] height) {
+        Deque<Integer> stack = new ArrayDeque<>(); // 单调递减栈，存下标
+        int water = 0;
+        for (int i = 0; i < height.length; i++) {
+            while (!stack.isEmpty() && height[i] > height[stack.peek()]) { // 比栈顶高形成低洼
+                int bottom = stack.pop();
+                if (stack.isEmpty()) { // 没有左边界
+                    break;
+                }
+                int left = stack.peek();
+                int w = i - left - 1; // 宽度
+                int h = Math.min(height[i], height[left]) - height[bottom]; // 高度
+                water += w * h;
+            }
+            stack.push(i);
+        }
+        return water;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，每个下标最多入栈、出栈各一次 |
+| 空间 | O(n)，单调栈（双指针写法可降到 O(1)） |
 
 **3 个核心要点（面试官必问）**
 
@@ -848,6 +1481,35 @@ class Solution:
             cur = cur.right  # 处理右子树
         return result
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        Deque<TreeNode> stack = new ArrayDeque<>();
+        TreeNode cur = root;
+        while (cur != null || !stack.isEmpty()) {
+            while (cur != null) { // 左子树全部入栈
+                stack.push(cur);
+                cur = cur.left;
+            }
+            cur = stack.pop(); // 弹出访问
+            result.add(cur.val);
+            cur = cur.right; // 处理右子树
+        }
+        return result;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，每个节点入栈、出栈各一次 |
+| 空间 | O(h)，栈深度为树高，最坏 O(n) |
 
 **3 个核心要点（面试官必问）**
 
@@ -909,6 +1571,40 @@ class Solution:
         return ans
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> ans = new ArrayList<>();
+        if (root == null) {
+            return ans;
+        }
+        Queue<TreeNode> q = new ArrayDeque<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            int size = q.size(); // 当前层的节点数
+            List<Integer> vals = new ArrayList<>(size);
+            for (int i = 0; i < size; i++) {
+                TreeNode node = q.poll();
+                vals.add(node.val);
+                if (node.left != null) q.offer(node.left);
+                if (node.right != null) q.offer(node.right);
+            }
+            ans.add(vals);
+        }
+        return ans;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，每个节点进出队一次 |
+| 空间 | O(w)，w 为树的最大宽度，最坏 O(n) |
+
 **3 个核心要点（面试官必问）**
 
 * **分层的关键**：range(len(q)) 在循环开始时就固定了次数，循环中新加入的孩子属于下一层；
@@ -950,6 +1646,43 @@ class Solution:
         return build(0, len(preorder), 0, len(inorder))
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    private int[] preorder;
+    private final Map<Integer, Integer> index = new HashMap<>(); // 值 -> 中序下标
+
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        this.preorder = preorder;
+        for (int i = 0; i < inorder.length; i++) {
+            index.put(inorder[i], i);
+        }
+        return build(0, preorder.length, 0);
+    }
+
+    // 前序区间 [preL, preR)，对应中序区间从 inL 开始
+    private TreeNode build(int preL, int preR, int inL) {
+        if (preL == preR) { // 空区间
+            return null;
+        }
+        int rootVal = preorder[preL]; // 前序第一个是根
+        int leftSize = index.get(rootVal) - inL; // 左子树大小
+        TreeNode root = new TreeNode(rootVal);
+        root.left = build(preL + 1, preL + 1 + leftSize, inL);
+        root.right = build(preL + 1 + leftSize, preR, inL + leftSize + 1);
+        return root;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，每个节点构建一次，哈希表 O(1) 找根 |
+| 空间 | O(n)，哈希表 O(n) + 递归栈 O(h) |
+
 **3 个核心要点（面试官必问）**
 
 * **哈希表加速找根**：预存中序下标，每次 O(1) 找到根，整体 O(n)；每次线性查找会变成 O(n²)；
@@ -979,6 +1712,26 @@ class Solution:
             return 0
         return max(self.maxDepth(root.left), self.maxDepth(root.right)) + 1
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public int maxDepth(TreeNode root) {
+        if (root == null) { // 递归终止
+            return 0;
+        }
+        return Math.max(maxDepth(root.left), maxDepth(root.right)) + 1;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，每个节点访问一次 |
+| 空间 | O(h)，递归栈深度为树高 |
 
 **3 个核心要点（面试官必问）**
 
@@ -1011,6 +1764,33 @@ class Solution:
             return p.val == q.val and check(p.left, q.right) and check(p.right, q.left)
         return check(root.left, root.right) if root else True
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public boolean isSymmetric(TreeNode root) {
+        return root == null || check(root.left, root.right);
+    }
+
+    private boolean check(TreeNode p, TreeNode q) {
+        if (p == null && q == null) { // 两节点都空
+            return true;
+        }
+        if (p == null || q == null) { // 一方空
+            return false;
+        }
+        return p.val == q.val && check(p.left, q.right) && check(p.right, q.left); // 外对外、内对内
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，每个节点比较一次 |
+| 空间 | O(h)，递归栈深度为树高 |
 
 **3 个核心要点（面试官必问）**
 
@@ -1046,6 +1826,34 @@ class Solution:
         return root  # 左右都找到，当前是祖先
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null || root == p || root == q) { // 终止条件
+            return root;
+        }
+        TreeNode left = lowestCommonAncestor(root.left, p, q); // 递归左
+        TreeNode right = lowestCommonAncestor(root.right, p, q); // 递归右
+        if (left == null) { // 左子树没找到
+            return right;
+        }
+        if (right == null) { // 右子树没找到
+            return left;
+        }
+        return root; // 左右都找到，当前是祖先
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，最坏访问每个节点一次 |
+| 空间 | O(h)，递归栈深度为树高，链状树时 O(n) |
+
 **3 个核心要点（面试官必问）**
 
 * **终止条件设计**：找到 p 或 q 或空节点就立即返回，是递归的「锚点」，避免无效搜索；
@@ -1078,6 +1886,32 @@ class Solution:
                 return root
         return root
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        while (root != null) {
+            if (p.val < root.val && q.val < root.val) { // 都在左
+                root = root.left;
+            } else if (p.val > root.val && q.val > root.val) { // 都在右
+                root = root.right;
+            } else { // 分叉点
+                return root;
+            }
+        }
+        return null;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(h)，每次往下走一层 |
+| 空间 | O(1)，迭代不用栈 |
 
 **3 个核心要点（面试官必问）**
 
@@ -1116,6 +1950,37 @@ class Solution:
         return self.max_sum
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    private int maxSum = Integer.MIN_VALUE;
+
+    public int maxPathSum(TreeNode root) {
+        dfs(root);
+        return maxSum;
+    }
+
+    // 返回该节点能向上提供的最大贡献
+    private int dfs(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        int left = Math.max(0, dfs(node.left)); // 左贡献，负则取 0
+        int right = Math.max(0, dfs(node.right)); // 右贡献，负则取 0
+        maxSum = Math.max(maxSum, left + right + node.val); // 更新全局最大
+        return Math.max(left, right) + node.val;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，后序遍历每个节点一次 |
+| 空间 | O(h)，递归栈深度为树高 |
+
 **3 个核心要点（面试官必问）**
 
 * **负贡献的取舍**：max(0, left) 和 max(0, right) 确保只取正贡献，负值路径不贡献甚至拖累，直接当 0 处理；
@@ -1147,6 +2012,33 @@ class Solution:
             return dfs(node.left, lower, node.val) and dfs(node.right, node.val, upper)
         return dfs(root, float('-inf'), float('inf'))
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public boolean isValidBST(TreeNode root) {
+        return dfs(root, Long.MIN_VALUE, Long.MAX_VALUE); // 用 long 防止节点值等于 int 边界
+    }
+
+    private boolean dfs(TreeNode node, long lower, long upper) {
+        if (node == null) {
+            return true;
+        }
+        if (node.val <= lower || node.val >= upper) { // 不在界内
+            return false;
+        }
+        return dfs(node.left, lower, node.val) && dfs(node.right, node.val, upper);
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，每个节点检查一次 |
+| 空间 | O(h)，递归栈深度为树高 |
 
 **3 个核心要点（面试官必问）**
 
@@ -1185,6 +2077,37 @@ class Solution:
             cur = cur.right  # 处理右子树
         return -1
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public int kthSmallest(TreeNode root, int k) {
+        Deque<TreeNode> stack = new ArrayDeque<>();
+        TreeNode cur = root;
+        int count = 0;
+        while (cur != null || !stack.isEmpty()) {
+            while (cur != null) { // 左子树入栈
+                stack.push(cur);
+                cur = cur.left;
+            }
+            cur = stack.pop(); // 弹出访问
+            if (++count == k) { // 第 k 个
+                return cur.val;
+            }
+            cur = cur.right; // 处理右子树
+        }
+        return -1;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(h + k)，先下到最左再访问 k 个节点 |
+| 空间 | O(h)，栈深度为树高 |
 
 **3 个核心要点（面试官必问）**
 
@@ -1234,6 +2157,44 @@ class Solution:
         return root
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public TreeNode deleteNode(TreeNode root, int key) {
+        if (root == null) {
+            return null;
+        }
+        if (key < root.val) { // 在左子树
+            root.left = deleteNode(root.left, key);
+        } else if (key > root.val) { // 在右子树
+            root.right = deleteNode(root.right, key);
+        } else { // 找到目标
+            if (root.left == null) {
+                return root.right;
+            }
+            if (root.right == null) {
+                return root.left;
+            }
+            TreeNode successor = root.right;
+            while (successor.left != null) { // 找后继：右子树最左
+                successor = successor.left;
+            }
+            root.val = successor.val; // 替换值
+            root.right = deleteNode(root.right, successor.val); // 删除后继
+        }
+        return root;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(h)，找目标 + 找后继 + 删后继，都沿一条路径 |
+| 空间 | O(h)，递归栈 |
+
 **3 个核心要点（面试官必问）**
 
 * **后继节点的定义**：右子树中最左（最小）的节点，用于替换被删除节点，保持 BST 的有序性；
@@ -1280,6 +2241,46 @@ class Solution:
         return result
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    private final List<List<Integer>> result = new ArrayList<>();
+    private final List<Integer> path = new ArrayList<>();
+    private boolean[] used; // 标记已使用的数
+
+    public List<List<Integer>> permute(int[] nums) {
+        used = new boolean[nums.length];
+        backtrack(nums);
+        return result;
+    }
+
+    private void backtrack(int[] nums) {
+        if (path.size() == nums.length) { // 满了
+            result.add(new ArrayList<>(path));
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (used[i]) { // 已用过则跳过
+                continue;
+            }
+            used[i] = true; // 选
+            path.add(nums[i]);
+            backtrack(nums);
+            path.remove(path.size() - 1); // 撤销
+            used[i] = false;
+        }
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n · n!)，共 n! 个排列，每个复制 O(n) |
+| 空间 | O(n)，递归栈 + path + used，不计结果 |
+
 **3 个核心要点（面试官必问）**
 
 * **used 数组作用**：标记每个位置的数字是否已被使用，确保每个数字在同一路径中只使用一次；
@@ -1321,6 +2322,45 @@ class Solution:
         return result
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    private int[] candidates;
+    private final List<List<Integer>> result = new ArrayList<>();
+    private final List<Integer> path = new ArrayList<>();
+
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        Arrays.sort(candidates); // 排序，便于剪枝
+        this.candidates = candidates;
+        backtrack(0, target);
+        return result;
+    }
+
+    private void backtrack(int start, int target) {
+        if (target == 0) { // 找到解
+            result.add(new ArrayList<>(path));
+            return;
+        }
+        for (int i = start; i < candidates.length; i++) {
+            if (candidates[i] > target) { // 剪枝，后面更大
+                break;
+            }
+            path.add(candidates[i]);
+            backtrack(i, target - candidates[i]); // 传 i 不是 i+1，可重复选
+            path.remove(path.size() - 1);
+        }
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | 指数级，取决于搜索树大小，上界约 O(n^(target/min)) |
+| 空间 | O(target/min)，递归深度，不计结果 |
+
 **3 个核心要点（面试官必问）**
 
 * **排序后剪枝**：数组升序排列后，当 candidates\[i] > target 时直接 break，因为后面更大的数也不可能凑出目标；
@@ -1357,6 +2397,36 @@ class Solution:
         backtrack(0)
         return result
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    private final List<List<Integer>> result = new ArrayList<>();
+    private final List<Integer> path = new ArrayList<>();
+
+    public List<List<Integer>> subsets(int[] nums) {
+        backtrack(nums, 0);
+        return result;
+    }
+
+    private void backtrack(int[] nums, int start) {
+        result.add(new ArrayList<>(path)); // 每个节点都加入结果
+        for (int i = start; i < nums.length; i++) {
+            path.add(nums[i]); // 选
+            backtrack(nums, i + 1); // 不回头
+            path.remove(path.size() - 1); // 撤销
+        }
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n · 2ⁿ)，2ⁿ 个子集，每个复制 O(n) |
+| 空间 | O(n)，递归栈 + path，不计结果 |
 
 **3 个核心要点（面试官必问）**
 
@@ -1395,6 +2465,43 @@ class Solution:
         backtrack(0, 0, '')
         return result
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    private final List<String> result = new ArrayList<>();
+
+    public List<String> generateParenthesis(int n) {
+        backtrack(n, 0, 0, new StringBuilder());
+        return result;
+    }
+
+    private void backtrack(int n, int left, int right, StringBuilder path) {
+        if (path.length() == 2 * n) { // 满了
+            result.add(path.toString());
+            return;
+        }
+        if (left < n) { // 可加左括号
+            path.append('(');
+            backtrack(n, left + 1, right, path);
+            path.deleteCharAt(path.length() - 1);
+        }
+        if (right < left) { // 可加右括号
+            path.append(')');
+            backtrack(n, left, right + 1, path);
+            path.deleteCharAt(path.length() - 1);
+        }
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(4ⁿ/√n)，合法序列数为第 n 个卡特兰数，每个长 2n |
+| 空间 | O(n)，递归深度 2n |
 
 **3 个核心要点（面试官必问）**
 
@@ -1436,6 +2543,52 @@ class Solution:
 
         return any(dfs(i, j, 0) for i in range(m) for j in range(n))
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    private static final int[][] DIRS = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+
+    public boolean exist(char[][] board, String word) {
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (dfs(board, word, i, j, 0)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // board[i][j] 开始能否匹配 word[k:]
+    private boolean dfs(char[][] board, String word, int i, int j, int k) {
+        if (board[i][j] != word.charAt(k)) {
+            return false;
+        }
+        if (k == word.length() - 1) { // 最后一个字符也匹配上了
+            return true;
+        }
+        board[i][j] = 0; // 标记已访问
+        for (int[] d : DIRS) {
+            int x = i + d[0], y = j + d[1];
+            if (x >= 0 && x < board.length && y >= 0 && y < board[0].length && dfs(board, word, x, y, k + 1)) {
+                board[i][j] = word.charAt(k); // 返回前恢复
+                return true;
+            }
+        }
+        board[i][j] = word.charAt(k); // 回溯：恢复现场
+        return false;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(m · n · 3^L)，L 为单词长度，除第一步外每步最多 3 个新方向 |
+| 空间 | O(L)，递归栈深度 |
 
 **3 个核心要点（面试官必问）**
 
@@ -1479,6 +2632,51 @@ class Solution:
         dfs(0)
         return ans
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    private final List<List<String>> ans = new ArrayList<>();
+    private final List<String> path = new ArrayList<>();
+
+    public List<List<String>> partition(String s) {
+        dfs(s, 0);
+        return ans;
+    }
+
+    // 从下标 i 开始切
+    private void dfs(String s, int i) {
+        if (i == s.length()) { // 切完了
+            ans.add(new ArrayList<>(path));
+            return;
+        }
+        for (int j = i; j < s.length(); j++) { // 枚举这一段的结尾 j
+            if (isPalindrome(s, i, j)) { // 是回文才切
+                path.add(s.substring(i, j + 1));
+                dfs(s, j + 1);
+                path.remove(path.size() - 1); // 回溯
+            }
+        }
+    }
+
+    private boolean isPalindrome(String s, int l, int r) {
+        while (l < r) {
+            if (s.charAt(l++) != s.charAt(r--)) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n · 2ⁿ)，n-1 个间隙切或不切，每种方案判断 + 复制 O(n) |
+| 空间 | O(n)，递归栈 + path，不计结果 |
 
 **3 个核心要点（面试官必问）**
 
@@ -1527,6 +2725,43 @@ class Solution:
         return count
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public int numIslands(char[][] grid) {
+        int count = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == '1') { // 发现岛屿
+                    count++;
+                    dfs(grid, i, j); // 沉没
+                }
+            }
+        }
+        return count;
+    }
+
+    private void dfs(char[][] grid, int i, int j) {
+        if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || grid[i][j] == '0') { // 边界或水
+            return;
+        }
+        grid[i][j] = '0'; // 沉没
+        dfs(grid, i + 1, j);
+        dfs(grid, i - 1, j);
+        dfs(grid, i, j + 1);
+        dfs(grid, i, j - 1);
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(m · n)，每个格子最多被沉没一次 |
+| 空间 | O(m · n)，最坏全是陆地时递归栈深度 |
+
 **3 个核心要点（面试官必问）**
 
 * **沉没操作的目的**：将发现的岛屿全部标记为 '0'，避免后续遍历重复计算同一岛屿；
@@ -1566,6 +2801,42 @@ class Solution:
         dfs(root, [], 0)
         return result
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    private final List<List<Integer>> result = new ArrayList<>();
+    private final List<Integer> path = new ArrayList<>();
+
+    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
+        dfs(root, targetSum);
+        return result;
+    }
+
+    // left 为还差多少
+    private void dfs(TreeNode node, int left) {
+        if (node == null) {
+            return;
+        }
+        left -= node.val;
+        path.add(node.val);
+        if (node.left == null && node.right == null && left == 0) { // 叶子且和匹配
+            result.add(new ArrayList<>(path));
+        }
+        dfs(node.left, left);
+        dfs(node.right, left);
+        path.remove(path.size() - 1); // 撤销
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n²)，访问 n 个节点，最坏每个叶子都要复制长度 O(n) 的路径 |
+| 空间 | O(h)，递归栈 + path，不计结果 |
 
 **3 个核心要点（面试官必问）**
 
@@ -1611,6 +2882,40 @@ class Solution:
         return ans
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    private final Map<Long, Integer> cnt = new HashMap<>(); // 前缀和 -> 次数（只含当前路径）
+    private int ans;
+
+    public int pathSum(TreeNode root, int targetSum) {
+        cnt.put(0L, 1); // 空前缀，处理从根开始的路径
+        dfs(root, 0, targetSum);
+        return ans;
+    }
+
+    private void dfs(TreeNode node, long s, int target) {
+        if (node == null) {
+            return;
+        }
+        s += node.val; // 根到当前节点的前缀和，用 long 防溢出
+        ans += cnt.getOrDefault(s - target, 0); // 以当前节点结尾的路径数
+        cnt.merge(s, 1, Integer::sum);
+        dfs(node.left, s, target);
+        dfs(node.right, s, target);
+        cnt.merge(s, -1, Integer::sum); // 回溯：撤销
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，每个节点访问一次，哈希操作 O(1) |
+| 空间 | O(n)，哈希表 + 递归栈 |
+
 **3 个核心要点（面试官必问）**
 
 * **和「和为 K 的子数组」同一个套路**：把根到节点的路径看成数组，前缀和差值为 target 就是一条路径；
@@ -1648,6 +2953,32 @@ class Solution:
         return dp[n]
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public int climbStairs(int n) {
+        if (n <= 2) {
+            return n;
+        }
+        int[] dp = new int[n + 1];
+        dp[1] = 1;
+        dp[2] = 2;
+        for (int i = 3; i <= n; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2]; // 从 i-1 走一步或从 i-2 走两步
+        }
+        return dp[n];
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，每个状态算一次 |
+| 空间 | O(n)，dp 数组；只留两个变量可降到 O(1) |
+
 **3 个核心要点（面试官必问）**
 
 * **递推公式来源**：到达第 i 阶可以从 i-1 阶走一步或从 i-2 阶走两步，所以 dp\[i] = dp\[i-1] + dp\[i-2]；
@@ -1682,6 +3013,40 @@ class Solution:
                 dp[pos] = num
         return len(dp)
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int[] tails = new int[nums.length]; // tails[i]：长度为 i+1 的递增子序列的最小末尾
+        int size = 0;
+        for (int num : nums) {
+            int lo = 0, hi = size; // 二分找第一个 >= num 的位置
+            while (lo < hi) {
+                int mid = (lo + hi) >>> 1;
+                if (tails[mid] < num) {
+                    lo = mid + 1;
+                } else {
+                    hi = mid;
+                }
+            }
+            tails[lo] = num; // 覆盖或追加
+            if (lo == size) {
+                size++;
+            }
+        }
+        return size;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n log n)，每个数二分一次 |
+| 空间 | O(n)，tails 数组 |
 
 **3 个核心要点（面试官必问）**
 
@@ -1732,6 +3097,39 @@ class Solution:
         return dp[n]
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public boolean wordBreak(String s, List<String> wordDict) {
+        Set<String> words = new HashSet<>(wordDict); // 转集合，O(1) 查找
+        int maxLen = 0;
+        for (String w : wordDict) {
+            maxLen = Math.max(maxLen, w.length()); // 最长单词，用于剪枝
+        }
+        int n = s.length();
+        boolean[] dp = new boolean[n + 1]; // dp[i]：前 i 个字符能否拆分
+        dp[0] = true; // 空串可拆分
+        for (int i = 1; i <= n; i++) {
+            for (int j = i - 1; j >= Math.max(i - maxLen, 0); j--) { // 最后一段长度不超过 maxLen
+                if (dp[j] && words.contains(s.substring(j, i))) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        return dp[n];
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n · L²)，L 为最长单词长度，每个位置查 L 个子串，每次截取 / 哈希 O(L) |
+| 空间 | O(n + 字典总长)，dp 数组 + 单词集合 |
+
 **3 个核心要点（面试官必问）**
 
 * **dp[0] = True**：空串可以被拆分，是所有转移的起点；
@@ -1764,6 +3162,31 @@ class Solution:
                 dp[i] = min(dp[i], dp[i - coin] + 1)
         return dp[amount] if dp[amount] != float('inf') else -1
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public int coinChange(int[] coins, int amount) {
+        int[] dp = new int[amount + 1]; // dp[i]：凑成 i 所需最少硬币
+        Arrays.fill(dp, amount + 1); // amount + 1 代表凑不出
+        dp[0] = 0;
+        for (int coin : coins) {
+            for (int i = coin; i <= amount; i++) { // 正序，完全背包
+                dp[i] = Math.min(dp[i], dp[i - coin] + 1);
+            }
+        }
+        return dp[amount] > amount ? -1 : dp[amount];
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n · amount)，n 为硬币种类数 |
+| 空间 | O(amount)，一维 dp |
 
 **3 个核心要点（面试官必问）**
 
@@ -1798,6 +3221,34 @@ class Solution:
                     dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
         return dp[m][n]
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public int longestCommonSubsequence(String text1, String text2) {
+        int m = text1.length(), n = text2.length();
+        int[][] dp = new int[m + 1][n + 1]; // dp[i][j]：前 i 个和前 j 个的 LCS
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (text1.charAt(i - 1) == text2.charAt(j - 1)) { // 相等
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else { // 不等
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(m · n)，每个状态算一次 |
+| 空间 | O(m · n)，二维 dp；滚动数组可降到 O(n) |
 
 **3 个核心要点（面试官必问）**
 
@@ -1837,6 +3288,40 @@ class Solution:
         return dp[m][n]
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public int minDistance(String word1, String word2) {
+        int m = word1.length(), n = word2.length();
+        int[][] dp = new int[m + 1][n + 1];
+        for (int i = 0; i <= m; i++) {
+            dp[i][0] = i; // 删除 i 个字符
+        }
+        for (int j = 0; j <= n; j++) {
+            dp[0][j] = j; // 插入 j 个字符
+        }
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (word1.charAt(i - 1) == word2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1]; // 相等不操作
+                } else {
+                    dp[i][j] = Math.min(dp[i - 1][j - 1], Math.min(dp[i - 1][j], dp[i][j - 1])) + 1; // 替删插
+                }
+            }
+        }
+        return dp[m][n];
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(m · n)，每个状态算一次 |
+| 空间 | O(m · n)，二维 dp；滚动数组可降到 O(n) |
+
 **3 个核心要点（面试官必问）**
 
 * **边界条件设定**：dp\[i]\[0] = i 表示将前 i 个字符全部删去，dp\[0]\[j] = j 表示全部插入；
@@ -1871,6 +3356,29 @@ class Solution:
         return curr
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public int rob(int[] nums) {
+        int prev = 0, curr = 0; // dp[i-2]、dp[i-1]
+        for (int x : nums) {
+            int next = Math.max(curr, prev + x); // 不偷 / 偷当前这间
+            prev = curr;
+            curr = next;
+        }
+        return curr;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，遍历一次 |
+| 空间 | O(1)，滚动两个变量 |
+
 **3 个核心要点（面试官必问）**
 
 * **状态压缩**：只与前两间房有关，用 prev（dp\[i-2]）和 curr（dp\[i-1]）两个变量滚动更新，空间 O(1)；
@@ -1902,6 +3410,28 @@ class Solution:
         return max_profit
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+        int minPrice = Integer.MAX_VALUE, maxProfit = 0;
+        for (int price : prices) {
+            minPrice = Math.min(minPrice, price); // 更新最低价
+            maxProfit = Math.max(maxProfit, price - minPrice); // 今天卖出的利润
+        }
+        return maxProfit;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，遍历一次 |
+| 空间 | O(1)，两个变量 |
+
 **3 个核心要点（面试官必问）**
 
 * **一遍遍历的优势**：只需维护一个最低价格变量，遍历一次即可找到最大利润，时间 O(n)；
@@ -1931,6 +3461,29 @@ class Solution:
                 profit += prices[i] - prices[i - 1]
         return profit
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+        int profit = 0;
+        for (int i = 1; i < prices.length; i++) {
+            if (prices[i] > prices[i - 1]) { // 上升段
+                profit += prices[i] - prices[i - 1];
+            }
+        }
+        return profit;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，遍历一次 |
+| 空间 | O(1) |
 
 **3 个核心要点（面试官必问）**
 
@@ -1962,6 +3515,28 @@ class Solution:
             max_sum = max(max_sum, cur_sum)  # 更新全局最大
         return max_sum
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public int maxSubArray(int[] nums) {
+        int maxSum = nums[0], curSum = nums[0]; // 全局最大、以 i 结尾的最大和
+        for (int i = 1; i < nums.length; i++) {
+            curSum = Math.max(nums[i], curSum + nums[i]); // 负则重新开始
+            maxSum = Math.max(maxSum, curSum);
+        }
+        return maxSum;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，遍历一次 |
+| 空间 | O(1)，两个变量 |
 
 **3 个核心要点（面试官必问）**
 
@@ -2012,6 +3587,35 @@ class Solution:
         return result
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public int maxProduct(int[] nums) {
+        int maxProd = nums[0], minProd = nums[0], result = nums[0]; // 同时记录最大和最小
+        for (int i = 1; i < nums.length; i++) {
+            int x = nums[i];
+            if (x < 0) { // 负数交换最大最小
+                int t = maxProd;
+                maxProd = minProd;
+                minProd = t;
+            }
+            maxProd = Math.max(x, maxProd * x);
+            minProd = Math.min(x, minProd * x);
+            result = Math.max(result, maxProd);
+        }
+        return result;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，遍历一次 |
+| 空间 | O(1)，三个变量 |
+
 **3 个核心要点（面试官必问）**
 
 * **为何同时记录最大最小**：负数乘负数会变成正数，最大值遇到负数会变成最小值，最小值遇到负数会变成最大值；
@@ -2045,6 +3649,36 @@ class Solution:
                     dp[i][j] = max(dp[i][j], dp[i][k] + dp[k][j] + nums[i] * nums[k] * nums[j])
         return dp[0][n - 1]
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public int maxCoins(int[] nums) {
+        int n = nums.length + 2;
+        int[] val = new int[n]; // 两端补 1
+        val[0] = val[n - 1] = 1;
+        System.arraycopy(nums, 0, val, 1, nums.length);
+        int[][] dp = new int[n][n]; // dp[i][j]：开区间 (i, j) 内能拿到的最大金币
+        for (int len = 2; len < n; len++) { // 枚举区间长度
+            for (int i = 0; i + len < n; i++) {
+                int j = i + len;
+                for (int k = i + 1; k < j; k++) { // k 为 (i, j) 中最后戳破的气球
+                    dp[i][j] = Math.max(dp[i][j], dp[i][k] + dp[k][j] + val[i] * val[k] * val[j]);
+                }
+            }
+        }
+        return dp[0][n - 1];
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n³)，O(n²) 个区间，每个枚举 O(n) 个 k |
+| 空间 | O(n²)，二维 dp |
 
 **3 个核心要点（面试官必问）**
 
@@ -2081,6 +3715,42 @@ class Solution:
                 dp[pos] = h
         return len(dp)
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public int maxEnvelopes(int[][] envelopes) {
+        // 宽升序；宽相同时高降序，保证同宽的信封不会被同时选进 LIS
+        Arrays.sort(envelopes, (a, b) -> a[0] != b[0] ? Integer.compare(a[0], b[0]) : Integer.compare(b[1], a[1]));
+        int[] tails = new int[envelopes.length]; // 对高求 LIS
+        int size = 0;
+        for (int[] e : envelopes) {
+            int h = e[1], lo = 0, hi = size;
+            while (lo < hi) { // 第一个 >= h 的位置
+                int mid = (lo + hi) >>> 1;
+                if (tails[mid] < h) {
+                    lo = mid + 1;
+                } else {
+                    hi = mid;
+                }
+            }
+            tails[lo] = h;
+            if (lo == size) {
+                size++;
+            }
+        }
+        return size;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n log n)，排序 + 每个信封二分一次 |
+| 空间 | O(n)，tails 数组 + 排序开销 |
 
 **3 个核心要点（面试官必问）**
 
@@ -2126,6 +3796,43 @@ class Solution:
         return -1
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public int search(int[] nums, int target) {
+        int left = 0, right = nums.length - 1;
+        while (left <= right) {
+            int mid = (left + right) >>> 1;
+            if (nums[mid] == target) {
+                return mid;
+            }
+            if (nums[left] <= nums[mid]) { // 左半边有序
+                if (nums[left] <= target && target < nums[mid]) {
+                    right = mid - 1;
+                } else {
+                    left = mid + 1;
+                }
+            } else { // 右半边有序
+                if (nums[mid] < target && target <= nums[right]) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            }
+        }
+        return -1;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(log n)，每次排除一半 |
+| 空间 | O(1) |
+
 **3 个核心要点（面试官必问）**
 
 * **如何判断有序半边**：通过 nums\[left] <= nums\[mid] 判断左半边是否升序有序；
@@ -2165,6 +3872,42 @@ class Solution:
         right = find_bound(nums, target, False)
         return [left, right - 1]
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public int[] searchRange(int[] nums, int target) {
+        int left = lowerBound(nums, target); // 第一个 >= target
+        if (left == nums.length || nums[left] != target) {
+            return new int[]{-1, -1};
+        }
+        int right = lowerBound(nums, target + 1) - 1; // 第一个 > target 的前一个
+        return new int[]{left, right};
+    }
+
+    // 左闭右开二分：返回第一个 >= x 的下标
+    private int lowerBound(int[] nums, int x) {
+        int lo = 0, hi = nums.length;
+        while (lo < hi) {
+            int mid = (lo + hi) >>> 1;
+            if (nums[mid] < x) {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+        return lo;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(log n)，两次二分 |
+| 空间 | O(1) |
 
 **3 个核心要点（面试官必问）**
 
@@ -2213,6 +3956,46 @@ class Solution:
         return 0.0
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        if (nums1.length > nums2.length) { // 确保 nums1 是短的
+            return findMedianSortedArrays(nums2, nums1);
+        }
+        int m = nums1.length, n = nums2.length;
+        int left = 0, right = m;
+        while (left <= right) {
+            int i = (left + right) >>> 1; // nums1 的分割位置
+            int j = (m + n + 1) / 2 - i; // nums2 的分割位置
+            int l1 = i == 0 ? Integer.MIN_VALUE : nums1[i - 1];
+            int r1 = i == m ? Integer.MAX_VALUE : nums1[i];
+            int l2 = j == 0 ? Integer.MIN_VALUE : nums2[j - 1];
+            int r2 = j == n ? Integer.MAX_VALUE : nums2[j];
+            if (l1 <= r2 && l2 <= r1) { // 找到正确分割
+                if ((m + n) % 2 == 1) {
+                    return Math.max(l1, l2);
+                }
+                return (Math.max(l1, l2) + (double) Math.min(r1, r2)) / 2;
+            } else if (l1 > r2) {
+                right = i - 1;
+            } else {
+                left = i + 1;
+            }
+        }
+        return 0.0;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(log min(m, n))，只在短数组上二分 |
+| 空间 | O(1) |
+
 **3 个核心要点（面试官必问）**
 
 * **二分短数组原因**：确保时间复杂度 O(log(min(m,n)))，二分较长数组没有意义；
@@ -2247,6 +4030,31 @@ class Solution:
             prefix[cur] = prefix.get(cur, 0) + 1  # 存入当前和
         return count
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public int subarraySum(int[] nums, int k) {
+        Map<Integer, Integer> prefix = new HashMap<>(); // 前缀和 -> 次数
+        prefix.put(0, 1);
+        int cur = 0, count = 0;
+        for (int num : nums) {
+            cur += num; // 累加前缀和
+            count += prefix.getOrDefault(cur - k, 0); // 找差值
+            prefix.merge(cur, 1, Integer::sum); // 存入当前和
+        }
+        return count;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，遍历一次，哈希操作 O(1) |
+| 空间 | O(n)，哈希表最多 n+1 个前缀和 |
 
 **3 个核心要点（面试官必问）**
 
@@ -2283,6 +4091,35 @@ class Solution:
         return max_len
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public int findMaxLength(int[] nums) {
+        Map<Integer, Integer> prefix = new HashMap<>(); // 前缀和 -> 首次位置
+        prefix.put(0, -1);
+        int cur = 0, maxLen = 0;
+        for (int i = 0; i < nums.length; i++) {
+            cur += nums[i] == 1 ? 1 : -1; // 0 变 -1
+            Integer first = prefix.get(cur);
+            if (first != null) {
+                maxLen = Math.max(maxLen, i - first);
+            } else {
+                prefix.put(cur, i); // 首次出现
+            }
+        }
+        return maxLen;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，遍历一次 |
+| 空间 | O(n)，前缀和取值范围 [-n, n] |
+
 **3 个核心要点（面试官必问）**
 
 * **0 变 -1 的原理**：将问题转化为求「和为 0 的最长子数组」，因为 1 的个数 - 0 的个数 = 0 等价于前缀和相同；
@@ -2317,6 +4154,33 @@ class Solution:
                 return True
         return True
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public boolean canJump(int[] nums) {
+        int maxReach = 0; // 最远可达位置
+        for (int i = 0; i < nums.length; i++) {
+            if (i > maxReach) { // 当前位置不可达
+                return false;
+            }
+            maxReach = Math.max(maxReach, i + nums[i]);
+            if (maxReach >= nums.length - 1) { // 能到末尾
+                return true;
+            }
+        }
+        return true;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，遍历一次 |
+| 空间 | O(1) |
 
 **3 个核心要点（面试官必问）**
 
@@ -2353,6 +4217,33 @@ class Solution:
         return result
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public int[][] merge(int[][] intervals) {
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0])); // 按起点排序
+        List<int[]> result = new ArrayList<>();
+        for (int[] cur : intervals) {
+            int last = result.size() - 1;
+            if (last >= 0 && cur[0] <= result.get(last)[1]) { // 重叠
+                result.get(last)[1] = Math.max(result.get(last)[1], cur[1]);
+            } else {
+                result.add(cur);
+            }
+        }
+        return result.toArray(new int[0][]);
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n log n)，排序为主 |
+| 空间 | O(n)，结果列表 + 排序开销 |
+
 **3 个核心要点（面试官必问）**
 
 * **排序的必要性**：按起点排序后，相交的区间必然连续，便于一次遍历完成合并；
@@ -2388,6 +4279,32 @@ class Solution:
         return start if total >= 0 else -1
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        int total = 0, cur = 0, start = 0; // 总油量-总消耗、当前累计、起点
+        for (int i = 0; i < gas.length; i++) {
+            cur += gas[i] - cost[i];
+            total += gas[i] - cost[i];
+            if (cur < 0) { // 从 start 到 i 都不行
+                start = i + 1;
+                cur = 0;
+            }
+        }
+        return total >= 0 ? start : -1;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，遍历一次 |
+| 空间 | O(1) |
+
 **3 个核心要点（面试官必问）**
 
 * **total >= 0 的意义**：遍历一圈后总油量 >= 总消耗，是存在有效解的必要条件，若不满足直接返回 -1；
@@ -2419,6 +4336,27 @@ class Solution:
         return result
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public int singleNumber(int[] nums) {
+        int result = 0;
+        for (int num : nums) {
+            result ^= num; // 成对的异或抵消为 0
+        }
+        return result;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，遍历一次 |
+| 空间 | O(1) |
+
 **3 个核心要点（面试官必问）**
 
 * **异或的数学性质**：满足交换律 a^b^c = a^c^b，结合律 a^(b^c) = (a^b)^c，相同数异或为 0；
@@ -2444,6 +4382,23 @@ class Solution:
     def isPowerOfTwo(self, n: int) -> bool:
         return n > 0 and (n & (n - 1)) == 0
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public boolean isPowerOfTwo(int n) {
+        return n > 0 && (n & (n - 1)) == 0; // 消掉最低位的 1 后为 0
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(1)，一次位运算 |
+| 空间 | O(1) |
 
 **3 个核心要点（面试官必问）**
 
@@ -2488,6 +4443,48 @@ class Solution:
                     queue.append(next_course)
         return visited == numCourses
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        List<List<Integer>> graph = new ArrayList<>(); // 邻接表
+        for (int i = 0; i < numCourses; i++) {
+            graph.add(new ArrayList<>());
+        }
+        int[] indegree = new int[numCourses]; // 入度
+        for (int[] p : prerequisites) {
+            graph.get(p[1]).add(p[0]); // 先修 p[1] -> p[0]
+            indegree[p[0]]++;
+        }
+        Queue<Integer> queue = new ArrayDeque<>();
+        for (int i = 0; i < numCourses; i++) {
+            if (indegree[i] == 0) { // 入度 0 入队
+                queue.offer(i);
+            }
+        }
+        int visited = 0;
+        while (!queue.isEmpty()) {
+            int course = queue.poll();
+            visited++;
+            for (int next : graph.get(course)) {
+                if (--indegree[next] == 0) {
+                    queue.offer(next);
+                }
+            }
+        }
+        return visited == numCourses; // 全部学完则无环
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(V + E)，V 为课程数，E 为先修关系数 |
+| 空间 | O(V + E)，邻接表 + 入度数组 + 队列 |
 
 **3 个核心要点（面试官必问）**
 
@@ -2541,6 +4538,54 @@ class Trie:
         return node
 ```
 
+**Java 代码**
+
+```java
+class Trie {
+    private final Trie[] children = new Trie[26]; // 子节点，题目只含小写字母
+    private boolean isEnd; // 是否是某个单词的结尾
+
+    public void insert(String word) {
+        Trie node = this;
+        for (char ch : word.toCharArray()) {
+            int i = ch - 'a';
+            if (node.children[i] == null) {
+                node.children[i] = new Trie();
+            }
+            node = node.children[i];
+        }
+        node.isEnd = true;
+    }
+
+    public boolean search(String word) {
+        Trie node = searchPrefix(word);
+        return node != null && node.isEnd;
+    }
+
+    public boolean startsWith(String prefix) {
+        return searchPrefix(prefix) != null;
+    }
+
+    private Trie searchPrefix(String prefix) {
+        Trie node = this;
+        for (char ch : prefix.toCharArray()) {
+            node = node.children[ch - 'a'];
+            if (node == null) {
+                return null;
+            }
+        }
+        return node;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | insert / search / startsWith 均为 O(L)，L 为单词长度 |
+| 空间 | O(总字符数 × 26)，最坏每个字符新建一个节点 |
+
 **3 个核心要点（面试官必问）**
 
 * **节点结构**：每个节点包含 children 字典（存储子节点）和 is\_end 标记（标记是否是某单词的结尾）；
@@ -2578,6 +4623,40 @@ class Solution:
             l2 = l2.next if l2 else None
         return dummy.next
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode dummy = new ListNode(); // 哑节点
+        ListNode cur = dummy;
+        int carry = 0;
+        while (l1 != null || l2 != null || carry != 0) { // 还有数位或进位
+            int s = carry;
+            if (l1 != null) {
+                s += l1.val;
+                l1 = l1.next;
+            }
+            if (l2 != null) {
+                s += l2.val;
+                l2 = l2.next;
+            }
+            carry = s / 10; // 进位
+            cur.next = new ListNode(s % 10);
+            cur = cur.next;
+        }
+        return dummy.next;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(max(m, n))，逐位相加 |
+| 空间 | O(1)，不计结果链表 |
 
 **3 个核心要点（面试官必问）**
 
@@ -2623,6 +4702,46 @@ class Solution:
         return True
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public boolean isPalindrome(ListNode head) {
+        // 1. 快慢指针找中点：slow 停在前半段末尾
+        ListNode slow = head, fast = head;
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        // 2. 反转后半段
+        ListNode prev = null, cur = slow.next;
+        while (cur != null) {
+            ListNode next = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = next;
+        }
+        // 3. 两半逐个比较，后半段不比前半段长
+        ListNode p = head, q = prev;
+        while (q != null) {
+            if (p.val != q.val) {
+                return false;
+            }
+            p = p.next;
+            q = q.next;
+        }
+        return true;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，找中点 + 反转 + 比较各一趟 |
+| 空间 | O(1)，原地反转 |
+
 **3 个核心要点（面试官必问）**
 
 * **中点的位置**：循环条件 fast.next and fast.next.next 让 slow 停在前半段末尾，奇数长度时中间节点归前半段，比较时以后半段为准；
@@ -2662,6 +4781,35 @@ class Solution:
 
         return dummy.next
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public ListNode reverseBetween(ListNode head, int left, int right) {
+        ListNode dummy = new ListNode(0, head); // 哑节点
+        ListNode pre = dummy;
+        for (int i = 0; i < left - 1; i++) { // 找到前驱
+            pre = pre.next;
+        }
+        ListNode cur = pre.next; // 反转区间的第一个节点
+        for (int i = 0; i < right - left; i++) { // 头插法局部反转
+            ListNode next = cur.next;
+            cur.next = next.next;
+            next.next = pre.next;
+            pre.next = next;
+        }
+        return dummy.next;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，最多遍历到 right |
+| 空间 | O(1) |
 
 **3 个核心要点（面试官必问）**
 
@@ -2710,6 +4858,43 @@ class Solution:
         return dummy.next
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public ListNode reverseKGroup(ListNode head, int k) {
+        int n = 0; // 先统计长度
+        for (ListNode cur = head; cur != null; cur = cur.next) {
+            n++;
+        }
+        ListNode dummy = new ListNode(0, head);
+        ListNode p0 = dummy; // 上一组的尾巴
+        ListNode pre = null, cur = head;
+        for (; n >= k; n -= k) { // 剩余够 k 个才翻
+            for (int i = 0; i < k; i++) { // 组内反转
+                ListNode next = cur.next;
+                cur.next = pre;
+                pre = cur;
+                cur = next;
+            }
+            // pre 是本组新头，cur 是下一组的头，p0.next 是本组新尾
+            ListNode tail = p0.next;
+            tail.next = cur; // 本组新尾接下一组
+            p0.next = pre; // 上一组接本组新头
+            p0 = tail; // p0 移到本组尾巴
+        }
+        return dummy.next;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，每个节点反转一次 |
+| 空间 | O(1)，原地反转 |
+
 **3 个核心要点（面试官必问）**
 
 * **哑节点 + p0**：p0 始终指向上一组的尾巴，第一组的「上一组」就是 dummy，不用特判头节点；
@@ -2746,6 +4931,30 @@ class Solution:
         return candidate
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    public int majorityElement(int[] nums) {
+        int count = 0, candidate = 0;
+        for (int num : nums) {
+            if (count == 0) { // 换候选人
+                candidate = num;
+            }
+            count += num == candidate ? 1 : -1; // 票数抵消
+        }
+        return candidate;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(n)，遍历一次 |
+| 空间 | O(1) |
+
 **3 个核心要点（面试官必问）**
 
 * **票数抵消思想**：相同数投赞成票，不同数投反对票，票数抵消后剩下的候选人就是出现次数 > n/2 的那个；
@@ -2779,6 +4988,39 @@ class Solution:
             fast = next_num(next_num(fast))  # 快走两步
         return fast == 1
 ```
+
+**Java 代码**
+
+```java
+class Solution {
+    public boolean isHappy(int n) {
+        int slow = n, fast = next(n);
+        while (fast != 1 && slow != fast) {
+            slow = next(slow); // 慢走一步
+            fast = next(next(fast)); // 快走两步
+        }
+        return fast == 1;
+    }
+
+    // 各位数字的平方和
+    private int next(int x) {
+        int s = 0;
+        while (x > 0) {
+            int d = x % 10;
+            s += d * d;
+            x /= 10;
+        }
+        return s;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(log n)，数值很快落到 243 以内，之后循环长度有限 |
+| 空间 | O(1) |
 
 **3 个核心要点（面试官必问）**
 
@@ -2836,6 +5078,63 @@ class Solution:
         return nums
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    private final Random rand = new Random();
+
+    public int[] sortArray(int[] nums) {
+        quickSort(nums, 0, nums.length - 1);
+        return nums;
+    }
+
+    private void quickSort(int[] nums, int left, int right) {
+        if (left >= right) { // 区间长度 <= 1，不用排
+            return;
+        }
+        int p = partition(nums, left, right);
+        quickSort(nums, left, p - 1);
+        quickSort(nums, p + 1, right);
+    }
+
+    private int partition(int[] nums, int left, int right) {
+        swap(nums, left, left + rand.nextInt(right - left + 1)); // 随机 pivot 换到最左边
+        int pivot = nums[left];
+        int i = left + 1, j = right;
+        while (true) {
+            while (i <= j && nums[i] < pivot) { // i 从左找第一个 >= pivot 的
+                i++;
+            }
+            while (i <= j && nums[j] > pivot) { // j 从右找第一个 <= pivot 的
+                j--;
+            }
+            if (i >= j) { // 相遇或交叉，退出
+                break;
+            }
+            swap(nums, i++, j--);
+        }
+        swap(nums, left, j); // pivot 归位到 j
+        return j;
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        int t = nums[i];
+        nums[i] = nums[j];
+        nums[j] = t;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 平均时间 | O(n log n)，随机 pivot 期望每次切成两半 |
+| 最坏时间 | O(n²)，每次都切到最边上，随机化后概率极低 |
+| 空间 | 平均 O(log n)、最坏 O(n)，递归栈 |
+| 稳定性 | 不稳定，交换会打乱相等元素的相对顺序 |
+
 **3 个核心要点（面试官必问）**
 
 * **随机化 pivot**：固定选第一个元素时，有序数组每次只能切掉一个元素，退化成 O(n²)；随机选让期望复杂度回到 O(n log n)；
@@ -2890,6 +5189,65 @@ class Solution:
                 left = j + 1
 ```
 
+**Java 代码**
+
+```java
+class Solution {
+    private final Random rand = new Random();
+
+    public int findKthLargest(int[] nums, int k) {
+        int target = nums.length - k; // 第 k 大 = 升序后下标 n-k
+        int left = 0, right = nums.length - 1;
+        while (true) {
+            int j = partition(nums, left, right);
+            if (j == target) { // 正好是目标位置
+                return nums[j];
+            }
+            if (j > target) { // 目标在左半边
+                right = j - 1;
+            } else { // 目标在右半边
+                left = j + 1;
+            }
+        }
+    }
+
+    // 同快排：随机 pivot + 双指针，返回 pivot 最终位置
+    private int partition(int[] nums, int left, int right) {
+        swap(nums, left, left + rand.nextInt(right - left + 1));
+        int pivot = nums[left];
+        int i = left + 1, j = right;
+        while (true) {
+            while (i <= j && nums[i] < pivot) {
+                i++;
+            }
+            while (i <= j && nums[j] > pivot) {
+                j--;
+            }
+            if (i >= j) {
+                break;
+            }
+            swap(nums, i++, j--);
+        }
+        swap(nums, left, j);
+        return j;
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        int t = nums[i];
+        nums[i] = nums[j];
+        nums[j] = t;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 平均时间 | O(n)，每次只走一边，n + n/2 + n/4 + … ≈ 2n |
+| 最坏时间 | O(n²)，随机化后极少发生 |
+| 空间 | O(1)，迭代写法不用递归栈 |
+
 **3 个核心要点（面试官必问）**
 
 * **只走一边**：和快排不同，每次只需处理目标所在的一侧，期望 n + n/2 + n/4 + … = O(n)，最坏 O(n²)；
@@ -2926,6 +5284,34 @@ class Singleton:
                     cls._instance = super().__new__(cls)
         return cls._instance
 ```
+
+**Java 代码**
+
+```java
+public class Singleton {
+    private static volatile Singleton instance; // volatile 防止指令重排拿到半初始化对象
+
+    private Singleton() {} // 私有构造，禁止外部 new
+
+    public static Singleton getInstance() {
+        if (instance == null) { // 第一次检查：已创建就直接返回，避免每次都加锁
+            synchronized (Singleton.class) {
+                if (instance == null) { // 第二次检查：拿到锁后再确认一次
+                    instance = new Singleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+```
+
+**时空复杂度**
+
+| 复杂度 | 说明 |
+| --- | --- |
+| 时间 | O(1)，创建后只读一个静态字段 |
+| 空间 | O(1)，全局只有一个实例 |
 
 **3 个核心要点（面试官必问）**
 
