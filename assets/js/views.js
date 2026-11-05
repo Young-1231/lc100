@@ -160,7 +160,7 @@ export async function renderHome() {
       <a class="day-card quick-entry" href="#/quick">
         <span class="day-badge">⚡ 新</span>
         <h3>一句话速记 · 面试口述版</h3>
-        <div class="meta"><span>58 道高频题:一句话思路 + 口述步骤 + 3 个核心要点 + Python 代码,支持遮住答案自测和闪卡背诵。</span></div>
+        <div class="meta"><span>73 道高频手撕题,综合三份资料标出热度 🔥:一句话思路 + 口述步骤 + 3 个核心要点 + Python 代码,支持遮住答案自测和闪卡背诵。</span></div>
       </a>
     </section>
     <section class="container">

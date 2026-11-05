@@ -6,6 +6,7 @@
     1,
     3,
     347,
+    128,
     146
    ]
   },
@@ -15,16 +16,19 @@
     21,
     206,
     141,
+    142,
     19,
     15,
-    11
+    11,
+    5
    ]
   },
   {
    "name": "滑动窗口",
    "ids": [
     76,
-    209
+    209,
+    239
    ]
   },
   {
@@ -39,6 +43,8 @@
    "name": "二叉树和递归",
    "ids": [
     94,
+    102,
+    105,
     104,
     101,
     236,
@@ -56,8 +62,11 @@
     39,
     78,
     22,
+    79,
+    131,
     200,
-    113
+    113,
+    437
    ]
   },
   {
@@ -65,6 +74,7 @@
    "ids": [
     70,
     300,
+    139,
     322,
     1143,
     72,
@@ -123,7 +133,9 @@
    "name": "链表",
    "ids": [
     2,
-    92
+    234,
+    92,
+    25
    ]
   },
   {
@@ -131,6 +143,14 @@
    "ids": [
     169,
     202
+   ]
+  },
+  {
+   "name": "手撕基础",
+   "ids": [
+    912,
+    215,
+    "singleton"
    ]
   }
  ],
@@ -162,11 +182,16 @@
     }
    ],
    "followup": "若问「为什么不用双指针」，答：双指针需排序后会改变下标关系，哈希表保留下标且只需一遍遍历。",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "哈希表",
    "in_site": true,
    "difficulty": "Easy",
    "leetcode_url": "https://leetcode.cn/problems/two-sum/",
-   "day": 1
+   "day": 1,
+   "hot": 2
   },
   {
    "id": 3,
@@ -194,11 +219,17 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "哈希表",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/longest-substring-without-repeating-characters/",
-   "day": 1
+   "day": 1,
+   "hot": 3
   },
   {
    "id": 347,
@@ -226,11 +257,58 @@
     }
    ],
    "followup": "",
+   "alt": {
+    "method": "桶排序，O(n)",
+    "desc": "下标是出现次数的桶，从高频桶往低频倒着取，取满 k 个即停。",
+    "code": "from collections import Counter\n\nclass Solution:\n    def topKFrequent(self, nums: List[int], k: int) -> List[int]:\n        cnt = Counter(nums)\n        buckets = [[] for _ in range(max(cnt.values()) + 1)]  # 下标 = 出现次数\n        for x, c in cnt.items():\n            buckets[c].append(x)\n        ans = []\n        for c in range(len(buckets) - 1, 0, -1):  # 从高频往低频取\n            ans += buckets[c]\n            if len(ans) >= k:  # 题目保证答案唯一，取满即停\n                return ans[:k]\n        return ans"
+   },
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "哈希表",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/top-k-frequent-elements/",
-   "day": 6
+   "day": 6,
+   "hot": 3
+  },
+  {
+   "id": 128,
+   "title": "最长连续序列",
+   "method": "哈希集合",
+   "steps": [
+    "把所有数放进哈希集合",
+    "只从序列起点开始数：x-1 不在集合里，x 才是起点",
+    "从起点不断查 x+1、x+2……，更新最长长度"
+   ],
+   "oneliner": "哈希集合去重，只从 x-1 不存在的起点往后数，O(n)。",
+   "code": "class Solution:\n    def longestConsecutive(self, nums: List[int]) -> int:\n        st = set(nums)  # 去重 + O(1) 查找\n        ans = 0\n        for x in st:\n            if x - 1 in st:  # 不是起点，跳过，避免重复数\n                continue\n            y = x + 1\n            while y in st:  # 从起点往后数\n                y += 1\n            ans = max(ans, y - x)  # 序列为 [x, y)\n        return ans",
+   "points": [
+    {
+     "k": "只从起点开始数",
+     "v": "保证每个数最多被内层 while 访问一次，整体 O(n)。"
+    },
+    {
+     "k": "遍历集合而非原数组",
+     "v": "原数组可能有大量重复值，遍历集合避免重复起点。"
+    },
+    {
+     "k": "为什么不排序",
+     "v": "题目要求 O(n)，排序是 O(n log n)。"
+    }
+   ],
+   "followup": "若问「还有别的做法吗」，答：并查集把相邻的数合并，最后看最大集合大小，但写起来比哈希集合复杂。",
+   "alt": null,
+   "sources": [
+    "pdf"
+   ],
+   "category": "哈希表",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/longest-consecutive-sequence/",
+   "day": 1,
+   "hot": 2
   },
   {
    "id": 146,
@@ -258,11 +336,17 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "哈希表",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/lru-cache/",
-   "day": 3
+   "day": 3,
+   "hot": 3
   },
   {
    "id": 21,
@@ -290,11 +374,21 @@
     }
    ],
    "followup": "",
+   "alt": {
+    "method": "递归",
+    "desc": "小的当头，它的 next 交给递归去合并剩下的；空间 O(m+n) 递归栈。",
+    "code": "class Solution:\n    def mergeTwoLists(self, l1: ListNode, l2: ListNode) -> ListNode:\n        if not l1:\n            return l2\n        if not l2:\n            return l1\n        if l1.val <= l2.val:  # 小的当头，剩下的递归合并\n            l1.next = self.mergeTwoLists(l1.next, l2)\n            return l1\n        l2.next = self.mergeTwoLists(l1, l2.next)\n        return l2"
+   },
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "双指针",
    "in_site": true,
    "difficulty": "Easy",
    "leetcode_url": "https://leetcode.cn/problems/merge-two-sorted-lists/",
-   "day": 3
+   "day": 3,
+   "hot": 3
   },
   {
    "id": 206,
@@ -322,11 +416,21 @@
     }
    ],
    "followup": "",
+   "alt": {
+    "method": "递归",
+    "desc": "先递归反转后面的部分，再让 head.next 指回 head；空间 O(n) 递归栈。",
+    "code": "class Solution:\n    def reverseList(self, head: ListNode) -> ListNode:\n        if not head or not head.next:  # 空或只剩一个节点\n            return head\n        new_head = self.reverseList(head.next)  # 先反转后面\n        head.next.next = head  # 让后一个节点指回自己\n        head.next = None  # 断开原指向，防止成环\n        return new_head"
+   },
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "双指针",
    "in_site": true,
    "difficulty": "Easy",
    "leetcode_url": "https://leetcode.cn/problems/reverse-linked-list/",
-   "day": 3
+   "day": 3,
+   "hot": 3
   },
   {
    "id": 141,
@@ -354,11 +458,54 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "双指针",
    "in_site": true,
    "difficulty": "Easy",
    "leetcode_url": "https://leetcode.cn/problems/linked-list-cycle/",
-   "day": 3
+   "day": 3,
+   "hot": 3
+  },
+  {
+   "id": 142,
+   "title": "环形链表 II",
+   "method": "Floyd 判圈找入口",
+   "steps": [
+    "快慢指针先判环：快走两步、慢走一步，相遇说明有环",
+    "相遇后，一个指针从头出发，slow 从相遇点出发，都每次走一步",
+    "两者再次相遇的地方就是环入口"
+   ],
+   "oneliner": "快慢指针先相遇，再让一个指针从头和 slow 同速走，相遇点即入口。",
+   "code": "class Solution:\n    def detectCycle(self, head: ListNode) -> ListNode:\n        slow = fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n            if slow is fast:  # 相遇，说明有环\n                p = head\n                while p is not slow:  # 头和相遇点同速走，在入口相遇\n                    p = p.next\n                    slow = slow.next\n                return p\n        return None  # 快指针走到头，无环",
+   "points": [
+    {
+     "k": "数学推导",
+     "v": "设头到入口 a、入口到相遇点 b、环长 c，慢指针走了 a+b，快指针走了 2(a+b)，多出的 a+b 是环长的整数倍，所以从相遇点再走 a 步正好回到入口。"
+    },
+    {
+     "k": "用 is 比较",
+     "v": "比较的是节点对象本身，不是节点的值。"
+    },
+    {
+     "k": "无环情况",
+     "v": "fast 或 fast.next 先为 None，直接返回 None。"
+    }
+   ],
+   "followup": "若问「哈希表做法」，答：遍历时把节点放进 set，第一个重复出现的节点就是入口，O(n) 空间。",
+   "alt": null,
+   "sources": [
+    "pdf"
+   ],
+   "category": "双指针",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/linked-list-cycle-ii/",
+   "day": 3,
+   "hot": 2
   },
   {
    "id": 19,
@@ -386,11 +533,16 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "双指针",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/remove-nth-node-from-end-of-list/",
-   "day": 3
+   "day": 3,
+   "hot": 2
   },
   {
    "id": 15,
@@ -418,11 +570,17 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "双指针",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/3sum/",
-   "day": 1
+   "day": 1,
+   "hot": 3
   },
   {
    "id": 11,
@@ -450,11 +608,54 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "双指针",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/container-with-most-water/",
-   "day": 1
+   "day": 1,
+   "hot": 3
+  },
+  {
+   "id": 5,
+   "title": "最长回文子串",
+   "method": "中心扩展",
+   "steps": [
+    "枚举所有回文中心，共 2n-1 个（n 个单字符中心 + n-1 个双字符中心）",
+    "从中心向两边扩展，直到两端字符不相等",
+    "记录最长的长度和起点，最后切片返回"
+   ],
+   "oneliner": "枚举 2n-1 个中心向两边扩，记录最长，O(n²) 时间 O(1) 空间。",
+   "code": "class Solution:\n    def longestPalindrome(self, s: str) -> str:\n        start, max_len = 0, 0\n\n        def expand(l, r):  # 从中心向两边扩，返回回文长度\n            while l >= 0 and r < len(s) and s[l] == s[r]:\n                l -= 1\n                r += 1\n            return r - l - 1  # 跳出时 l、r 都多走了一步\n\n        for i in range(len(s)):\n            for l, r in ((i, i), (i, i + 1)):  # 奇数中心、偶数中心\n                cur = expand(l, r)\n                if cur > max_len:\n                    max_len = cur\n                    start = i - (cur - 1) // 2  # 由中心和长度反推起点\n        return s[start:start + max_len]",
+   "points": [
+    {
+     "k": "奇偶两种中心",
+     "v": "「aba」的中心是一个字符，「abba」的中心在两个字符之间，两种都要枚举。"
+    },
+    {
+     "k": "长度公式 r - l - 1",
+     "v": "循环退出时 l、r 各多走了一步，所以长度是 (r-1) - (l+1) + 1。"
+    },
+    {
+     "k": "起点反推",
+     "v": "start = i - (len-1)//2，奇偶两种中心都适用。"
+    }
+   ],
+   "followup": "若问「有没有 O(n) 解」，答：Manacher 算法利用已知回文的对称性跳过重复扩展，面试说出思路即可；DP 解法 dp[i][j] = s[i]==s[j] and dp[i+1][j-1] 也是 O(n²)，但要 O(n²) 空间。",
+   "alt": null,
+   "sources": [
+    "pdf"
+   ],
+   "category": "双指针",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/longest-palindromic-substring/",
+   "day": 7,
+   "hot": 2
   },
   {
    "id": 76,
@@ -482,11 +683,16 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "滑动窗口",
    "in_site": true,
    "difficulty": "Hard",
    "leetcode_url": "https://leetcode.cn/problems/minimum-window-substring/",
-   "day": 1
+   "day": 1,
+   "hot": 2
   },
   {
    "id": 209,
@@ -514,10 +720,53 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "滑动窗口",
    "in_site": false,
    "difficulty": "Medium",
-   "leetcode_url": "https://leetcode.cn/problems/minimum-size-subarray-sum/"
+   "leetcode_url": "https://leetcode.cn/problems/minimum-size-subarray-sum/",
+   "hot": 1
+  },
+  {
+   "id": 239,
+   "title": "滑动窗口最大值",
+   "method": "单调队列",
+   "steps": [
+    "双端队列存下标，保持对应的值单调递减",
+    "新元素入队前，把队尾比它小或相等的都弹掉",
+    "队首下标滑出窗口就从队首弹出",
+    "窗口长度够 k 后，队首就是当前窗口最大值"
+   ],
+   "oneliner": "单调递减双端队列存下标，入队弹小、出窗弹头，队首即最大值，O(n)。",
+   "code": "from collections import deque\n\nclass Solution:\n    def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:\n        q = deque()  # 存下标，对应值单调递减，队首是窗口最大值\n        ans = []\n        for i, x in enumerate(nums):\n            while q and nums[q[-1]] <= x:  # 队尾比新元素小，以后不可能再当最大值\n                q.pop()\n            q.append(i)\n            if q[0] <= i - k:  # 队首滑出窗口\n                q.popleft()\n            if i >= k - 1:  # 窗口形成后记录答案\n                ans.append(nums[q[0]])\n        return ans",
+   "points": [
+    {
+     "k": "为什么能弹掉队尾",
+     "v": "它比新元素小、又比新元素先离开窗口，之后任何窗口里都有新元素压着，永远当不了最大值。"
+    },
+    {
+     "k": "存下标而不是值",
+     "v": "要靠下标判断队首是否已经滑出窗口。"
+    },
+    {
+     "k": "复杂度 O(n)",
+     "v": "每个元素最多入队一次、出队一次。"
+    }
+   ],
+   "followup": "若问「能不能用堆」，答：最大堆存 (-值, 下标)，堆顶过期就弹掉，O(n log n)，不如单调队列。",
+   "alt": null,
+   "sources": [
+    "pdf"
+   ],
+   "category": "滑动窗口",
+   "in_site": true,
+   "difficulty": "Hard",
+   "leetcode_url": "https://leetcode.cn/problems/sliding-window-maximum/",
+   "day": 1,
+   "hot": 2
   },
   {
    "id": 739,
@@ -545,11 +794,16 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "单调栈",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/daily-temperatures/",
-   "day": 6
+   "day": 6,
+   "hot": 2
   },
   {
    "id": 84,
@@ -577,11 +831,16 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "单调栈",
    "in_site": true,
    "difficulty": "Hard",
    "leetcode_url": "https://leetcode.cn/problems/largest-rectangle-in-histogram/",
-   "day": 6
+   "day": 6,
+   "hot": 2
   },
   {
    "id": 42,
@@ -609,11 +868,21 @@
     }
    ],
    "followup": "",
+   "alt": {
+    "method": "双指针，O(1) 空间",
+    "desc": "左右双指针维护两侧最高，哪边矮就结算哪边这一格，不用栈。",
+    "code": "class Solution:\n    def trap(self, height: List[int]) -> int:\n        left, right = 0, len(height) - 1\n        pre_max = suf_max = 0  # 左侧最高、右侧最高\n        ans = 0\n        while left < right:\n            pre_max = max(pre_max, height[left])\n            suf_max = max(suf_max, height[right])\n            if pre_max < suf_max:  # 左边矮，左边这格的水由 pre_max 决定\n                ans += pre_max - height[left]\n                left += 1\n            else:  # 右边矮，右边这格由 suf_max 决定\n                ans += suf_max - height[right]\n                right -= 1\n        return ans"
+   },
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "单调栈",
    "in_site": true,
    "difficulty": "Hard",
    "leetcode_url": "https://leetcode.cn/problems/trapping-rain-water/",
-   "day": 1
+   "day": 1,
+   "hot": 3
   },
   {
    "id": 94,
@@ -641,11 +910,96 @@
     }
    ],
    "followup": "",
+   "alt": {
+    "method": "递归",
+    "desc": "左、根、右三行递归，面试先写这个，再补迭代版。",
+    "code": "class Solution:\n    def inorderTraversal(self, root: TreeNode) -> List[int]:\n        ans = []\n\n        def dfs(node):\n            if not node:\n                return\n            dfs(node.left)  # 左\n            ans.append(node.val)  # 根\n            dfs(node.right)  # 右\n\n        dfs(root)\n        return ans"
+   },
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "二叉树和递归",
    "in_site": true,
    "difficulty": "Easy",
    "leetcode_url": "https://leetcode.cn/problems/binary-tree-inorder-traversal/",
-   "day": 4
+   "day": 4,
+   "hot": 3
+  },
+  {
+   "id": 102,
+   "title": "二叉树的层序遍历",
+   "method": "BFS 队列",
+   "steps": [
+    "根节点入队",
+    "每轮先记下队列长度，就是当前层的节点数",
+    "只弹出这么多个节点，收集值并把孩子入队",
+    "一轮结束就得到一层"
+   ],
+   "oneliner": "BFS 队列，每轮先取队长作为本层节点数，弹完一层收一层。",
+   "code": "from collections import deque\n\nclass Solution:\n    def levelOrder(self, root: TreeNode) -> List[List[int]]:\n        if not root:\n            return []\n        ans = []\n        q = deque([root])\n        while q:\n            vals = []\n            for _ in range(len(q)):  # 只处理当前层的节点\n                node = q.popleft()\n                vals.append(node.val)\n                if node.left:\n                    q.append(node.left)\n                if node.right:\n                    q.append(node.right)\n            ans.append(vals)\n        return ans",
+   "points": [
+    {
+     "k": "分层的关键",
+     "v": "range(len(q)) 在循环开始时就固定了次数，循环中新加入的孩子属于下一层。"
+    },
+    {
+     "k": "用 deque",
+     "v": "popleft 是 O(1)，list.pop(0) 是 O(n)。"
+    },
+    {
+     "k": "复杂度",
+     "v": "每个节点进出队一次，时间 O(n)，空间 O(w)，w 是树的最大宽度。"
+    }
+   ],
+   "followup": "若问「锯齿形 / 右视图」，答：锯齿形按层号奇偶把 vals 反转；右视图取每层最后一个值。",
+   "alt": null,
+   "sources": [
+    "pdf"
+   ],
+   "category": "二叉树和递归",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/binary-tree-level-order-traversal/",
+   "day": 4,
+   "hot": 2
+  },
+  {
+   "id": 105,
+   "title": "从前序与中序遍历序列构造二叉树",
+   "method": "前序定根，中序分左右",
+   "steps": [
+    "前序遍历的第一个元素是根",
+    "在中序里找到根的位置，左边是左子树、右边是右子树",
+    "用左子树的大小切分前序数组，递归构建左右子树"
+   ],
+   "oneliner": "前序定根，中序分左右，用左子树大小切前序，递归建树。",
+   "code": "class Solution:\n    def buildTree(self, preorder: List[int], inorder: List[int]) -> TreeNode:\n        index = {x: i for i, x in enumerate(inorder)}  # 值 -> 中序下标，O(1) 找根\n\n        def build(pre_l, pre_r, in_l, in_r):  # 左闭右开区间\n            if pre_l == pre_r:  # 空区间\n                return None\n            root_val = preorder[pre_l]  # 前序第一个是根\n            k = index[root_val]  # 根在中序中的位置\n            left_size = k - in_l  # 左子树大小\n            root = TreeNode(root_val)\n            root.left = build(pre_l + 1, pre_l + 1 + left_size, in_l, k)\n            root.right = build(pre_l + 1 + left_size, pre_r, k + 1, in_r)\n            return root\n\n        return build(0, len(preorder), 0, len(inorder))",
+   "points": [
+    {
+     "k": "哈希表加速找根",
+     "v": "预存中序下标，每次 O(1) 找到根，整体 O(n)；每次线性查找会变成 O(n²)。"
+    },
+    {
+     "k": "区间切分",
+     "v": "左子树的前序是 [pre_l+1, pre_l+1+left_size)，右子树紧随其后到 pre_r。"
+    },
+    {
+     "k": "前提",
+     "v": "节点值互不相同，才能在中序里唯一定位根。"
+    }
+   ],
+   "followup": "若问「中序 + 后序」，答：后序的最后一个是根，其余同理，就是 LC 106。",
+   "alt": null,
+   "sources": [
+    "pdf"
+   ],
+   "category": "二叉树和递归",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/",
+   "day": 4,
+   "hot": 2
   },
   {
    "id": 104,
@@ -672,11 +1026,16 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "二叉树和递归",
    "in_site": true,
    "difficulty": "Easy",
    "leetcode_url": "https://leetcode.cn/problems/maximum-depth-of-binary-tree/",
-   "day": 4
+   "day": 4,
+   "hot": 2
   },
   {
    "id": 101,
@@ -704,11 +1063,17 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "二叉树和递归",
    "in_site": true,
    "difficulty": "Easy",
    "leetcode_url": "https://leetcode.cn/problems/symmetric-tree/",
-   "day": 4
+   "day": 4,
+   "hot": 3
   },
   {
    "id": 236,
@@ -737,11 +1102,17 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "二叉树和递归",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/",
-   "day": 4
+   "day": 4,
+   "hot": 3
   },
   {
    "id": 235,
@@ -768,10 +1139,15 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "二叉树和递归",
    "in_site": false,
    "difficulty": "Medium",
-   "leetcode_url": "https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-search-tree/"
+   "leetcode_url": "https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-search-tree/",
+   "hot": 1
   },
   {
    "id": 124,
@@ -799,11 +1175,16 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "二叉树和递归",
    "in_site": true,
    "difficulty": "Hard",
    "leetcode_url": "https://leetcode.cn/problems/binary-tree-maximum-path-sum/",
-   "day": 4
+   "day": 4,
+   "hot": 2
   },
   {
    "id": 98,
@@ -830,11 +1211,16 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "二叉树和递归",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/validate-binary-search-tree/",
-   "day": 4
+   "day": 4,
+   "hot": 2
   },
   {
    "id": 230,
@@ -862,11 +1248,16 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "二叉树和递归",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/kth-smallest-element-in-a-bst/",
-   "day": 4
+   "day": 4,
+   "hot": 2
   },
   {
    "id": 450,
@@ -895,10 +1286,15 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "二叉树和递归",
    "in_site": false,
    "difficulty": "Medium",
-   "leetcode_url": "https://leetcode.cn/problems/delete-node-in-a-bst/"
+   "leetcode_url": "https://leetcode.cn/problems/delete-node-in-a-bst/",
+   "hot": 1
   },
   {
    "id": 46,
@@ -926,11 +1322,17 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "回溯和DFS",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/permutations/",
-   "day": 5
+   "day": 5,
+   "hot": 3
   },
   {
    "id": 39,
@@ -958,11 +1360,17 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "回溯和DFS",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/combination-sum/",
-   "day": 5
+   "day": 5,
+   "hot": 3
   },
   {
    "id": 78,
@@ -990,11 +1398,16 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "回溯和DFS",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/subsets/",
-   "day": 5
+   "day": 5,
+   "hot": 2
   },
   {
    "id": 22,
@@ -1022,11 +1435,92 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "回溯和DFS",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/generate-parentheses/",
-   "day": 5
+   "day": 5,
+   "hot": 3
+  },
+  {
+   "id": 79,
+   "title": "单词搜索",
+   "method": "DFS 回溯",
+   "steps": [
+    "枚举每个格子作为起点",
+    "当前格子等于 word[k] 才继续，并把格子临时置空，标记已访问",
+    "向四个方向递归匹配 word[k+1]",
+    "四个方向都失败就恢复格子，返回 False"
+   ],
+   "oneliner": "每格出发 DFS，匹配就标记已访问往四周找下一个字符，失败回溯恢复。",
+   "code": "class Solution:\n    def exist(self, board: List[List[str]], word: str) -> bool:\n        m, n = len(board), len(board[0])\n\n        def dfs(i, j, k):  # board[i][j] 开始能否匹配 word[k:]\n            if board[i][j] != word[k]:\n                return False\n            if k == len(word) - 1:  # 最后一个字符也匹配上了\n                return True\n            board[i][j] = ''  # 标记已访问\n            for x, y in ((i + 1, j), (i - 1, j), (i, j + 1), (i, j - 1)):\n                if 0 <= x < m and 0 <= y < n and dfs(x, y, k + 1):\n                    board[i][j] = word[k]  # 返回前恢复\n                    return True\n            board[i][j] = word[k]  # 回溯：恢复现场\n            return False\n\n        return any(dfs(i, j, 0) for i in range(m) for j in range(n))",
+   "points": [
+    {
+     "k": "原地标记",
+     "v": "把格子临时改成空字符代替 visited 数组，回溯时一定要改回来。"
+    },
+    {
+     "k": "剪枝",
+     "v": "字符不匹配立刻返回；还可以先统计字符频次，board 里某个字符不够用就直接返回 False。"
+    },
+    {
+     "k": "复杂度",
+     "v": "O(m·n·3^L)，L 是单词长度，除第一步外每步最多 3 个新方向。"
+    }
+   ],
+   "followup": "若问「还能怎么优化」，答：如果 word 末尾字符在 board 里出现得比开头少，把 word 反转再搜，起点更少。",
+   "alt": null,
+   "sources": [
+    "pdf"
+   ],
+   "category": "回溯和DFS",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/word-search/",
+   "day": 5,
+   "hot": 2
+  },
+  {
+   "id": 131,
+   "title": "分割回文串",
+   "method": "回溯枚举切点",
+   "steps": [
+    "从下标 i 开始，枚举这一段的结尾 j",
+    "如果 s[i..j] 是回文，加入路径，从 j+1 继续切",
+    "切到末尾记录一种方案，然后回溯撤销"
+   ],
+   "oneliner": "回溯枚举每段结尾，是回文才切下一刀，切到末尾收集答案。",
+   "code": "class Solution:\n    def partition(self, s: str) -> List[List[str]]:\n        n = len(s)\n        ans, path = [], []\n\n        def dfs(i):  # 从下标 i 开始切\n            if i == n:  # 切完了\n                ans.append(path[:])\n                return\n            for j in range(i, n):  # 枚举这一段的结尾 j\n                t = s[i:j + 1]\n                if t == t[::-1]:  # 是回文才切\n                    path.append(t)\n                    dfs(j + 1)\n                    path.pop()  # 回溯\n\n        dfs(0)\n        return ans",
+   "points": [
+    {
+     "k": "枚举结尾",
+     "v": "每层递归决定「这一刀切在哪」，和子集、组合是同一个回溯模板。"
+    },
+    {
+     "k": "回文判断可预处理",
+     "v": "dp[i][j] = s[i]==s[j] and dp[i+1][j-1]，判断降到 O(1)。"
+    },
+    {
+     "k": "复杂度",
+     "v": "最坏 O(n·2^n)，比如全是同一个字符时每个位置都能切。"
+    }
+   ],
+   "followup": "若问「最少切几刀」，答：那是 LC 132，改成 DP：f[i] = min(f[j-1] + 1)，其中 s[j..i] 是回文。",
+   "alt": null,
+   "sources": [
+    "pdf"
+   ],
+   "category": "回溯和DFS",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/palindrome-partitioning/",
+   "day": 5,
+   "hot": 2
   },
   {
    "id": 200,
@@ -1053,11 +1547,17 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "回溯和DFS",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/number-of-islands/",
-   "day": 5
+   "day": 5,
+   "hot": 3
   },
   {
    "id": 113,
@@ -1085,10 +1585,53 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "回溯和DFS",
    "in_site": false,
    "difficulty": "Medium",
-   "leetcode_url": "https://leetcode.cn/problems/path-sum-ii/"
+   "leetcode_url": "https://leetcode.cn/problems/path-sum-ii/",
+   "hot": 1
+  },
+  {
+   "id": 437,
+   "title": "路径总和 III",
+   "method": "树上前缀和",
+   "steps": [
+    "根到当前节点的路径和记为前缀和 s",
+    "查哈希表里 s - target 出现过几次，累加到答案",
+    "把 s 计入哈希表后递归左右子树",
+    "返回前撤销 s，保证表里只有当前路径上的前缀和"
+   ],
+   "oneliner": "树上前缀和 + 哈希计数，查 s-target 的次数，递归回来记得撤销，O(n)。",
+   "code": "from collections import defaultdict\n\nclass Solution:\n    def pathSum(self, root: TreeNode, targetSum: int) -> int:\n        cnt = defaultdict(int)  # 前缀和 -> 出现次数（只含当前路径）\n        cnt[0] = 1  # 空前缀，处理从根开始的路径\n        ans = 0\n\n        def dfs(node, s):\n            nonlocal ans\n            if not node:\n                return\n            s += node.val  # 根到当前节点的前缀和\n            ans += cnt[s - targetSum]  # 以当前节点结尾、和为 target 的路径数\n            cnt[s] += 1\n            dfs(node.left, s)\n            dfs(node.right, s)\n            cnt[s] -= 1  # 回溯：离开当前节点时撤销\n\n        dfs(root, 0)\n        return ans",
+   "points": [
+    {
+     "k": "和「和为 K 的子数组」同一个套路",
+     "v": "把根到节点的路径看成数组，前缀和差值为 target 就是一条路径。"
+    },
+    {
+     "k": "回溯撤销",
+     "v": "不撤销的话，兄弟分支的前缀和会混进来，算出不在同一条向下路径上的「假路径」。"
+    },
+    {
+     "k": "cnt[0] = 1",
+     "v": "处理从根节点开始、整条路径和正好为 target 的情况。"
+    }
+   ],
+   "followup": "若问「暴力怎么做」，答：每个节点作为起点往下 DFS 统计，O(n²)。",
+   "alt": null,
+   "sources": [
+    "pdf"
+   ],
+   "category": "回溯和DFS",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/path-sum-iii/",
+   "day": 4,
+   "hot": 2
   },
   {
    "id": 70,
@@ -1116,11 +1659,17 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "动态规划",
    "in_site": true,
    "difficulty": "Easy",
    "leetcode_url": "https://leetcode.cn/problems/climbing-stairs/",
-   "day": 7
+   "day": 7,
+   "hot": 3
   },
   {
    "id": 300,
@@ -1148,11 +1697,58 @@
     }
    ],
    "followup": "",
+   "alt": {
+    "method": "O(n²) DP",
+    "desc": "dp[i] 是以 nums[i] 结尾的 LIS 长度，枚举前面比它小的 nums[j] 转移；先说这个再优化到二分。",
+    "code": "class Solution:\n    def lengthOfLIS(self, nums: List[int]) -> int:\n        dp = [1] * len(nums)  # dp[i]：以 nums[i] 结尾的 LIS 长度\n        for i in range(len(nums)):\n            for j in range(i):\n                if nums[j] < nums[i]:  # 能接在 nums[j] 后面\n                    dp[i] = max(dp[i], dp[j] + 1)\n        return max(dp)"
+   },
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "动态规划",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/longest-increasing-subsequence/",
-   "day": 7
+   "day": 7,
+   "hot": 3
+  },
+  {
+   "id": 139,
+   "title": "单词拆分",
+   "method": "DP",
+   "steps": [
+    "dp[i] 表示 s 的前 i 个字符能否被拆分",
+    "枚举最后一个单词的起点 j，如果 dp[j] 为真且 s[j:i] 在字典里，dp[i] 就为真",
+    "答案是 dp[n]"
+   ],
+   "oneliner": "dp[i] 看前 i 个字符能否拆，枚举最后一个单词 s[j:i]，dp[j] 为真且在字典里即可。",
+   "code": "class Solution:\n    def wordBreak(self, s: str, wordDict: List[str]) -> bool:\n        words = set(wordDict)  # 转集合，O(1) 查找\n        max_len = max(map(len, words))  # 最长单词长度，用于剪枝\n        n = len(s)\n        dp = [False] * (n + 1)  # dp[i]：前 i 个字符能否拆分\n        dp[0] = True  # 空串可拆分\n        for i in range(1, n + 1):\n            for j in range(i - 1, max(i - max_len, 0) - 1, -1):  # 最后一段长度不超过 max_len\n                if dp[j] and s[j:i] in words:\n                    dp[i] = True\n                    break\n        return dp[n]",
+   "points": [
+    {
+     "k": "dp[0] = True",
+     "v": "空串可以被拆分，是所有转移的起点。"
+    },
+    {
+     "k": "字典转 set",
+     "v": "s[j:i] in words 变成 O(1) 查找，否则每次都要线性扫一遍列表。"
+    },
+    {
+     "k": "最长单词剪枝",
+     "v": "最后一段不可能比最长单词还长，j 只需往回看 max_len 个位置。"
+    }
+   ],
+   "followup": "若问「要输出所有拆分方案」，答：那是 LC 140，改成记忆化 DFS，返回从位置 i 开始的所有拆法。",
+   "alt": null,
+   "sources": [
+    "pdf"
+   ],
+   "category": "动态规划",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/word-break/",
+   "day": 7,
+   "hot": 2
   },
   {
    "id": 322,
@@ -1180,11 +1776,17 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "动态规划",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/coin-change/",
-   "day": 7
+   "day": 7,
+   "hot": 3
   },
   {
    "id": 1143,
@@ -1211,11 +1813,17 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "动态规划",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/longest-common-subsequence/",
-   "day": 7
+   "day": 7,
+   "hot": 3
   },
   {
    "id": 72,
@@ -1243,11 +1851,17 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "动态规划",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/edit-distance/",
-   "day": 7
+   "day": 7,
+   "hot": 3
   },
   {
    "id": 198,
@@ -1275,11 +1889,16 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "动态规划",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/house-robber/",
-   "day": 7
+   "day": 7,
+   "hot": 2
   },
   {
    "id": 121,
@@ -1306,11 +1925,17 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "动态规划",
    "in_site": true,
    "difficulty": "Easy",
    "leetcode_url": "https://leetcode.cn/problems/best-time-to-buy-and-sell-stock/",
-   "day": 6
+   "day": 6,
+   "hot": 3
   },
   {
    "id": 122,
@@ -1337,10 +1962,15 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "动态规划",
    "in_site": false,
    "difficulty": "Medium",
-   "leetcode_url": "https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-ii/"
+   "leetcode_url": "https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-ii/",
+   "hot": 1
   },
   {
    "id": 53,
@@ -1368,11 +1998,21 @@
     }
    ],
    "followup": "",
+   "alt": {
+    "method": "前缀和",
+    "desc": "子数组和 = 当前前缀和 - 之前最小前缀和，和「买卖股票」同一个模型。",
+    "code": "class Solution:\n    def maxSubArray(self, nums: List[int]) -> int:\n        ans = float('-inf')\n        pre = 0  # 当前前缀和\n        min_pre = 0  # 之前出现过的最小前缀和\n        for x in nums:\n            pre += x\n            ans = max(ans, pre - min_pre)  # 以 x 结尾的最大子数组和\n            min_pre = min(min_pre, pre)  # 先算答案再更新，保证子数组非空\n        return ans"
+   },
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "动态规划",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/maximum-subarray/",
-   "day": 2
+   "day": 2,
+   "hot": 3
   },
   {
    "id": 152,
@@ -1400,11 +2040,16 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "动态规划",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/maximum-product-subarray/",
-   "day": 7
+   "day": 7,
+   "hot": 2
   },
   {
    "id": 312,
@@ -1432,10 +2077,15 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "动态规划",
    "in_site": false,
    "difficulty": "Hard",
-   "leetcode_url": "https://leetcode.cn/problems/burst-balloons/"
+   "leetcode_url": "https://leetcode.cn/problems/burst-balloons/",
+   "hot": 1
   },
   {
    "id": 354,
@@ -1462,10 +2112,15 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "动态规划",
    "in_site": false,
    "difficulty": "Hard",
-   "leetcode_url": "https://leetcode.cn/problems/russian-doll-envelopes/"
+   "leetcode_url": "https://leetcode.cn/problems/russian-doll-envelopes/",
+   "hot": 1
   },
   {
    "id": 33,
@@ -1492,11 +2147,16 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "二分查找",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/search-in-rotated-sorted-array/",
-   "day": 5
+   "day": 5,
+   "hot": 2
   },
   {
    "id": 34,
@@ -1523,11 +2183,16 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "二分查找",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/",
-   "day": 5
+   "day": 5,
+   "hot": 2
   },
   {
    "id": 4,
@@ -1555,11 +2220,16 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "二分查找",
    "in_site": true,
    "difficulty": "Hard",
    "leetcode_url": "https://leetcode.cn/problems/median-of-two-sorted-arrays/",
-   "day": 5
+   "day": 5,
+   "hot": 2
   },
   {
    "id": 560,
@@ -1587,11 +2257,17 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "前缀和",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/subarray-sum-equals-k/",
-   "day": 1
+   "day": 1,
+   "hot": 3
   },
   {
    "id": 525,
@@ -1619,10 +2295,15 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "前缀和",
    "in_site": false,
    "difficulty": "Medium",
-   "leetcode_url": "https://leetcode.cn/problems/contiguous-array/"
+   "leetcode_url": "https://leetcode.cn/problems/contiguous-array/",
+   "hot": 1
   },
   {
    "id": 55,
@@ -1650,11 +2331,16 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "贪心",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/jump-game/",
-   "day": 6
+   "day": 6,
+   "hot": 2
   },
   {
    "id": 56,
@@ -1682,11 +2368,17 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py",
+    "pdf"
+   ],
    "category": "贪心",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/merge-intervals/",
-   "day": 2
+   "day": 2,
+   "hot": 3
   },
   {
    "id": 134,
@@ -1713,10 +2405,15 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "贪心",
    "in_site": false,
    "difficulty": "Medium",
-   "leetcode_url": "https://leetcode.cn/problems/gas-station/"
+   "leetcode_url": "https://leetcode.cn/problems/gas-station/",
+   "hot": 1
   },
   {
    "id": 136,
@@ -1743,11 +2440,16 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "位运算",
    "in_site": true,
    "difficulty": "Easy",
    "leetcode_url": "https://leetcode.cn/problems/single-number/",
-   "day": 7
+   "day": 7,
+   "hot": 2
   },
   {
    "id": 231,
@@ -1774,10 +2476,15 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "位运算",
    "in_site": false,
    "difficulty": "Easy",
-   "leetcode_url": "https://leetcode.cn/problems/power-of-two/"
+   "leetcode_url": "https://leetcode.cn/problems/power-of-two/",
+   "hot": 1
   },
   {
    "id": 207,
@@ -1805,11 +2512,16 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "图论",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/course-schedule/",
-   "day": 5
+   "day": 5,
+   "hot": 2
   },
   {
    "id": 208,
@@ -1837,11 +2549,16 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "前缀树",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/implement-trie-prefix-tree/",
-   "day": 5
+   "day": 5,
+   "hot": 2
   },
   {
    "id": 2,
@@ -1869,11 +2586,53 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "链表",
    "in_site": true,
    "difficulty": "Medium",
    "leetcode_url": "https://leetcode.cn/problems/add-two-numbers/",
-   "day": 3
+   "day": 3,
+   "hot": 2
+  },
+  {
+   "id": 234,
+   "title": "回文链表",
+   "method": "快慢指针 + 反转后半段",
+   "steps": [
+    "快慢指针找到中点",
+    "反转后半段链表",
+    "前半段从头、后半段从反转后的头，逐个比较"
+   ],
+   "oneliner": "快慢指针找中点，反转后半段，两半逐个比，O(n) 时间 O(1) 空间。",
+   "code": "class Solution:\n    def isPalindrome(self, head: ListNode) -> bool:\n        # 1. 快慢指针找中点：slow 停在前半段末尾\n        slow = fast = head\n        while fast.next and fast.next.next:\n            slow = slow.next\n            fast = fast.next.next\n        # 2. 反转后半段\n        prev, cur = None, slow.next\n        while cur:\n            nxt = cur.next\n            cur.next = prev\n            prev = cur\n            cur = nxt\n        # 3. 两半逐个比较，后半段不比前半段长\n        p, q = head, prev\n        while q:\n            if p.val != q.val:\n                return False\n            p, q = p.next, q.next\n        return True",
+   "points": [
+    {
+     "k": "中点的位置",
+     "v": "循环条件 fast.next and fast.next.next 让 slow 停在前半段末尾，奇数长度时中间节点归前半段，比较时以后半段为准。"
+    },
+    {
+     "k": "为什么要反转",
+     "v": "单链表不能倒着走，反转后半段才能从尾往前比。"
+    },
+    {
+     "k": "空间 O(1)",
+     "v": "转数组或递归都要 O(n) 空间；面试时最好提一句「比完再把后半段反转回来，恢复原链表」。"
+    }
+   ],
+   "followup": "若问「不改链表怎么做」，答：把值存进数组判断 vals == vals[::-1]，O(n) 空间；或者用递归在回溯时从尾往前比。",
+   "alt": null,
+   "sources": [
+    "pdf"
+   ],
+   "category": "链表",
+   "in_site": true,
+   "difficulty": "Easy",
+   "leetcode_url": "https://leetcode.cn/problems/palindrome-linked-list/",
+   "day": 3,
+   "hot": 2
   },
   {
    "id": 92,
@@ -1901,10 +2660,52 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "链表",
    "in_site": false,
    "difficulty": "Medium",
-   "leetcode_url": "https://leetcode.cn/problems/reverse-linked-list-ii/"
+   "leetcode_url": "https://leetcode.cn/problems/reverse-linked-list-ii/",
+   "hot": 1
+  },
+  {
+   "id": 25,
+   "title": "K 个一组翻转链表",
+   "method": "分组反转 + 接线",
+   "steps": [
+    "先遍历求长度 n，不足 k 个的尾巴不翻",
+    "每组用反转链表的三步走翻 k 次",
+    "翻完后，上一组的尾巴接本组新头，本组新尾接下一组的头"
+   ],
+   "oneliner": "先数长度，够 k 个就组内反转，再用 p0 把上一组尾、本组头尾、下一组头接起来。",
+   "code": "class Solution:\n    def reverseKGroup(self, head: ListNode, k: int) -> ListNode:\n        n = 0  # 先统计长度\n        cur = head\n        while cur:\n            n += 1\n            cur = cur.next\n\n        dummy = ListNode(next=head)\n        p0 = dummy  # 上一组的尾巴\n        pre, cur = None, head\n        while n >= k:  # 剩余够 k 个才翻\n            n -= k\n            for _ in range(k):  # 组内反转，同反转链表\n                nxt = cur.next\n                cur.next = pre\n                pre = cur\n                cur = nxt\n            # 此时 pre 是本组新头，cur 是下一组的头，p0.next 是本组新尾\n            tail = p0.next\n            tail.next = cur  # 本组新尾接下一组\n            p0.next = pre  # 上一组接本组新头\n            p0 = tail  # p0 移到本组尾巴\n        return dummy.next",
+   "points": [
+    {
+     "k": "哑节点 + p0",
+     "v": "p0 始终指向上一组的尾巴，第一组的「上一组」就是 dummy，不用特判头节点。"
+    },
+    {
+     "k": "接线顺序",
+     "v": "先用 tail 记住 p0.next（本组新尾），再 tail.next = cur、p0.next = pre，最后 p0 = tail。"
+    },
+    {
+     "k": "复杂度",
+     "v": "每个节点只被反转一次，时间 O(n)，空间 O(1)。"
+    }
+   ],
+   "followup": "若问「不足 k 个也要翻」，答：把 n >= k 改成 n > 0，内层循环次数取 min(k, n)，最后一组剩多少翻多少。",
+   "alt": null,
+   "sources": [
+    "pdf"
+   ],
+   "category": "链表",
+   "in_site": true,
+   "difficulty": "Hard",
+   "leetcode_url": "https://leetcode.cn/problems/reverse-nodes-in-k-group/",
+   "day": 3,
+   "hot": 2
   },
   {
    "id": 169,
@@ -1931,11 +2732,16 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "数学",
    "in_site": true,
    "difficulty": "Easy",
    "leetcode_url": "https://leetcode.cn/problems/majority-element/",
-   "day": 7
+   "day": 7,
+   "hot": 2
   },
   {
    "id": 202,
@@ -1963,10 +2769,125 @@
     }
    ],
    "followup": "",
+   "alt": null,
+   "sources": [
+    "py"
+   ],
    "category": "数学",
    "in_site": false,
    "difficulty": "Easy",
-   "leetcode_url": "https://leetcode.cn/problems/happy-number/"
+   "leetcode_url": "https://leetcode.cn/problems/happy-number/",
+   "hot": 1
+  },
+  {
+   "id": 912,
+   "title": "快速排序（排序数组）",
+   "method": "随机化快排",
+   "steps": [
+    "随机选一个基准 pivot 换到最左边",
+    "双指针 i 从左找 ≥ pivot 的、j 从右找 ≤ pivot 的，找到就交换",
+    "相遇后把 pivot 和 j 交换，pivot 归位",
+    "递归排 pivot 左右两段"
+   ],
+   "oneliner": "随机选基准，双指针把小的甩左、大的甩右，pivot 归位后递归两边，平均 O(n log n)。",
+   "code": "import random\n\nclass Solution:\n    def sortArray(self, nums: List[int]) -> List[int]:\n        def partition(left, right):\n            i = random.randint(left, right)  # 随机选 pivot，防止有序数组退化\n            nums[i], nums[left] = nums[left], nums[i]  # 换到最左边\n            pivot = nums[left]\n            i, j = left + 1, right\n            while True:\n                while i <= j and nums[i] < pivot:  # i 从左找第一个 >= pivot 的\n                    i += 1\n                while i <= j and nums[j] > pivot:  # j 从右找第一个 <= pivot 的\n                    j -= 1\n                if i >= j:  # 相遇或交叉，退出\n                    break\n                nums[i], nums[j] = nums[j], nums[i]\n                i += 1\n                j -= 1\n            nums[left], nums[j] = nums[j], nums[left]  # pivot 归位到 j\n            return j\n\n        def quick_sort(left, right):\n            if left >= right:  # 区间长度 <= 1，不用排\n                return\n            p = partition(left, right)\n            quick_sort(left, p - 1)\n            quick_sort(p + 1, right)\n\n        quick_sort(0, len(nums) - 1)\n        return nums",
+   "points": [
+    {
+     "k": "随机化 pivot",
+     "v": "固定选第一个元素时，有序数组每次只能切掉一个元素，退化成 O(n²)；随机选让期望复杂度回到 O(n log n)。"
+    },
+    {
+     "k": "等于 pivot 也停下交换",
+     "v": "i、j 遇到等于 pivot 的元素都停下互换，大量重复元素时两边也能均分，避免退化。"
+    },
+    {
+     "k": "复杂度与稳定性",
+     "v": "平均 O(n log n)、最坏 O(n²)，空间 O(log n) 递归栈，不稳定排序。"
+    }
+   ],
+   "followup": "若问「全是重复元素怎么办」，答：用三路快排把 = pivot 的元素聚在中间，只递归 < pivot 和 > pivot 两段。",
+   "alt": null,
+   "sources": [
+    "pdf"
+   ],
+   "category": "手撕基础",
+   "in_site": false,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/sort-an-array/",
+   "hot": 1
+  },
+  {
+   "id": 215,
+   "title": "数组中的第K个最大元素",
+   "method": "快速选择",
+   "steps": [
+    "第 k 大等价于升序排序后下标 n-k 的元素",
+    "用快排的 partition 随机选 pivot 分区，pivot 归位到 j",
+    "j 等于 n-k 直接返回，j 大了去左边找，小了去右边找"
+   ],
+   "oneliner": "快速选择：partition 后 pivot 落在 j，和 n-k 比较只走一边，平均 O(n)。",
+   "code": "import random\n\nclass Solution:\n    def findKthLargest(self, nums: List[int], k: int) -> int:\n        target = len(nums) - k  # 第 k 大 = 升序后下标 n-k\n        left, right = 0, len(nums) - 1\n        while True:\n            # 分区：同快排，随机 pivot + 双指针\n            i = random.randint(left, right)\n            nums[i], nums[left] = nums[left], nums[i]\n            pivot = nums[left]\n            i, j = left + 1, right\n            while True:\n                while i <= j and nums[i] < pivot:\n                    i += 1\n                while i <= j and nums[j] > pivot:\n                    j -= 1\n                if i >= j:\n                    break\n                nums[i], nums[j] = nums[j], nums[i]\n                i += 1\n                j -= 1\n            nums[left], nums[j] = nums[j], nums[left]  # pivot 归位到 j\n            if j == target:  # 正好是目标位置\n                return nums[j]\n            if j > target:  # 目标在左半边\n                right = j - 1\n            else:  # 目标在右半边\n                left = j + 1",
+   "points": [
+    {
+     "k": "只走一边",
+     "v": "和快排不同，每次只需处理目标所在的一侧，期望 n + n/2 + n/4 + … = O(n)，最坏 O(n²)。"
+    },
+    {
+     "k": "随机 pivot 必不可少",
+     "v": "LeetCode 有专门卡固定 pivot 的有序 / 重复数据，不随机会超时。"
+    },
+    {
+     "k": "和堆的取舍",
+     "v": "维护大小为 k 的最小堆是 O(n log k)，不改原数组、适合数据流；快速选择更快但会打乱数组。"
+    }
+   ],
+   "followup": "若问「能不能用堆」，答：最小堆只留 k 个，堆顶就是第 k 大；Python 里 `heapq.nlargest(k, nums)[-1]` 一行即可。",
+   "alt": null,
+   "sources": [
+    "pdf"
+   ],
+   "category": "手撕基础",
+   "in_site": true,
+   "difficulty": "Medium",
+   "leetcode_url": "https://leetcode.cn/problems/kth-largest-element-in-an-array/",
+   "day": 6,
+   "hot": 2
+  },
+  {
+   "id": "singleton",
+   "title": "单例模式",
+   "method": "双重检查锁",
+   "steps": [
+    "类变量 _instance 保存唯一实例",
+    "重写 __new__，已有实例就直接返回",
+    "多线程下用双重检查加锁，防止两个线程同时创建出两个实例"
+   ],
+   "oneliner": "类变量存唯一实例，__new__ 里双重检查加锁，保证全局只有一个对象。",
+   "code": "import threading\n\nclass Singleton:\n    _instance = None\n    _lock = threading.Lock()\n\n    def __new__(cls, *args, **kwargs):\n        if cls._instance is None:  # 第一次检查：已创建就直接返回，避免每次都加锁\n            with cls._lock:  # 加锁，防止多线程同时创建\n                if cls._instance is None:  # 第二次检查：拿到锁后再确认一次\n                    cls._instance = super().__new__(cls)\n        return cls._instance",
+   "points": [
+    {
+     "k": "为什么检查两次",
+     "v": "外层检查让已创建后的调用不用抢锁；内层检查防止两个线程都通过了外层、排队拿锁后各建一个。"
+    },
+    {
+     "k": "__init__ 每次都会执行",
+     "v": "每次 Singleton() 都会调用 __init__，初始化逻辑要么做成幂等，要么也放进 __new__ 里只做一次。"
+    },
+    {
+     "k": "Python 的更简写法",
+     "v": "模块本身就是天然单例（import 只执行一次），也可以用装饰器或元类实现。"
+    }
+   ],
+   "followup": "若问「饿汉式和懒汉式」，答：饿汉式类加载时就创建，天然线程安全但可能用不上；懒汉式第一次用才创建，需要加锁保证线程安全。",
+   "alt": null,
+   "sources": [
+    "pdf"
+   ],
+   "category": "手撕基础",
+   "in_site": false,
+   "difficulty": "Medium",
+   "leetcode_url": null,
+   "hot": 1
   }
  ],
  "summary": [
@@ -2029,6 +2950,10 @@
   [
    "数学",
    "投票、快慢指针"
+  ],
+  [
+   "手撕基础",
+   "快排分区、快速选择、单例双重检查"
   ]
  ]
 }

@@ -5,12 +5,16 @@
 
 oneliner.md 格式:
     ## 分类
-    ### 题号. 标题
+    ### 题号. 标题            (无题号的手撕题用英文 id,如 singleton)
+    > 来源：一句话版 · 手撕PDF
     **面试口述思路（方法）** 步骤1； 步骤2； ...
     **超短一句话版** 一句话
     **代码**  ```python ... ```
     **3 个核心要点（面试官必问）**  * **要点**：说明
     **面试追问应对（加分）** 可选
+    **另一种写法（方法）** 说明 + ```python ...```  可选
+
+热度 hot = 出现在几份资料里(一句话版 / 手撕PDF / 官方 Hot 100),3 = 三份都收录。
 """
 from __future__ import annotations
 
@@ -28,6 +32,8 @@ PROBLEMS = ROOT / "data" / "problems.json"
 
 # 不在本站 Hot 100 题单里的题,补 leetcode.cn slug + 难度
 EXTRA = {
+    912: ("sort-an-array", "Medium"),
+    "singleton": (None, "Medium"),
     92: ("reverse-linked-list-ii", "Medium"),
     113: ("path-sum-ii", "Medium"),
     122: ("best-time-to-buy-and-sell-stock-ii", "Medium"),
@@ -56,9 +62,23 @@ def parse_points(block: str) -> list[dict]:
     return pts
 
 
+SOURCE_NAMES = {"一句话版": "py", "手撕PDF": "pdf"}
+
+
 def parse_item(head: str, body: str) -> dict:
-    m = re.match(r"(\d+)\.\s+(.+)", head)
-    pid, title = int(m.group(1)), m.group(2).strip()
+    m = re.match(r"(\w+)\.\s+(.+)", head)
+    pid = int(m.group(1)) if m.group(1).isdigit() else m.group(1)
+    title = m.group(2).strip()
+
+    sm = re.search(r"^> 来源：(.+)$", body, re.M)
+    sources = [SOURCE_NAMES[x.strip()] for x in sm.group(1).split("·")]
+    body = body[:sm.start()] + body[sm.end():]
+
+    alt = None
+    am = re.search(r"\*\*另一种写法（(.+?)）\*\*(.*?)```python\n(.*?)```", body, re.S)
+    if am:
+        alt = {"method": am.group(1).strip(), "desc": unescape(am.group(2)), "code": am.group(3).rstrip("\n")}
+        body = body[:am.start()] + body[am.end():]
 
     code_m = re.search(r"```python\n(.*?)```", body, re.S)
     code = code_m.group(1).rstrip("\n")
@@ -87,7 +107,8 @@ def parse_item(head: str, body: str) -> dict:
     points = parse_points(pts_block)
     assert len(points) == 3, (pid, points)
     return {"id": pid, "title": title, "method": method, "steps": steps,
-            "oneliner": one, "code": code, "points": points, "followup": follow}
+            "oneliner": one, "code": code, "points": points, "followup": follow,
+            "alt": alt, "sources": sources}
 
 
 def parse(md: str) -> dict:
@@ -120,7 +141,9 @@ def enrich(data: dict) -> None:
             it.update(in_site=True, difficulty=p["difficulty"], leetcode_url=p["leetcode_url"], day=p["day"])
         else:
             slug, diff = EXTRA[it["id"]]
-            it.update(in_site=False, difficulty=diff, leetcode_url=f"https://leetcode.cn/problems/{slug}/")
+            it.update(in_site=False, difficulty=diff,
+                      leetcode_url=f"https://leetcode.cn/problems/{slug}/" if slug else None)
+        it["hot"] = len(it["sources"]) + (1 if p else 0)
 
 
 # ===================== 自测 =====================
@@ -254,23 +277,95 @@ TESTS = {
     92: lambda: LL(S().reverseBetween(L([1, 2, 3, 4, 5]), 2, 4)) == [1, 4, 3, 2, 5] and LL(S().reverseBetween(L([5]), 1, 1)) == [5],
     169: lambda: S().majorityElement([2, 2, 1, 1, 1, 2, 2]) == 2,
     202: lambda: S().isHappy(19) and not S().isHappy(2),
+    # ---- 手撕PDF 新增 ----
+    912: lambda: all(S().sortArray(a[:]) == sorted(a) for a in
+                     ([5, 2, 3, 1], [5, 1, 1, 2, 0, 0], [1], [], [3, 3, 3, 3], list(range(50, 0, -1)),
+                      [7, -2, 9, -2, 0, 7, 7, 1])),
+    215: lambda: S().findKthLargest([3, 2, 1, 5, 6, 4], 2) == 5 and S().findKthLargest([3, 2, 3, 1, 2, 4, 5, 5, 6], 4) == 4
+                 and S().findKthLargest([1] * 50, 7) == 1,
+    "singleton": lambda: (lambda C: C() is C() and C._instance is not None)(NS["Singleton"])
+                         and _threaded_singleton(NS["Singleton"]),
+    5: lambda: S().longestPalindrome("babad") in ("bab", "aba") and S().longestPalindrome("cbbd") == "bb"
+               and S().longestPalindrome("a") == "a" and S().longestPalindrome("forgeeksskeegfor") == "geeksskeeg",
+    139: lambda: S().wordBreak("leetcode", ["leet", "code"]) and S().wordBreak("applepenapple", ["apple", "pen"])
+                 and not S().wordBreak("catsandog", ["cats", "dog", "sand", "and", "cat"]),
+    239: lambda: S().maxSlidingWindow([1, 3, -1, -3, 5, 3, 6, 7], 3) == [3, 3, 5, 5, 6, 7] and S().maxSlidingWindow([1], 1) == [1]
+                 and S().maxSlidingWindow([9, 8, 9, 8], 2) == [9, 9, 9],
+    128: lambda: S().longestConsecutive([100, 4, 200, 1, 3, 2]) == 4 and S().longestConsecutive([0, 3, 7, 2, 5, 8, 4, 6, 0, 1]) == 9
+                 and S().longestConsecutive([]) == 0,
+    234: lambda: S().isPalindrome(L([1, 2, 2, 1])) and not S().isPalindrome(L([1, 2])) and S().isPalindrome(L([1]))
+                 and S().isPalindrome(L([1, 2, 3, 2, 1])) and not S().isPalindrome(L([1, 2, 3, 1])),
+    142: lambda: (lambda h: (setattr(h.next.next.next, "next", h.next), S().detectCycle(h).val)[1])(L([3, 2, 0, -4])) == 2
+                 and S().detectCycle(L([1, 2])) is None
+                 and (lambda h: (setattr(h.next, "next", h), S().detectCycle(h))[1] is h)(L([1, 2])),
+    25: lambda: LL(S().reverseKGroup(L([1, 2, 3, 4, 5]), 2)) == [2, 1, 4, 3, 5]
+                and LL(S().reverseKGroup(L([1, 2, 3, 4, 5]), 3)) == [3, 2, 1, 4, 5]
+                and LL(S().reverseKGroup(L([1, 2]), 1)) == [1, 2],
+    102: lambda: S().levelOrder(T([3, 9, 20, None, None, 15, 7])) == [[3], [9, 20], [15, 7]] and S().levelOrder(None) == [],
+    105: lambda: (lambda r: _levels(r) == [3, 9, 20, None, None, 15, 7])(S().buildTree([3, 9, 20, 15, 7], [9, 3, 15, 20, 7]))
+                 and S().buildTree([-1], [-1]).val == -1,
+    437: lambda: S().pathSum(T([10, 5, -3, 3, 2, None, 11, 3, -2, None, 1]), 8) == 3
+                 and S().pathSum(T([5, 4, 8, 11, None, 13, 4, 7, 2, None, None, 5, 1]), 22) == 3,
+    79: lambda: (lambda b: S().exist([r[:] for r in b], "ABCCED") and S().exist([r[:] for r in b], "SEE")
+                 and not S().exist([r[:] for r in b], "ABCB"))([list("ABCE"), list("SFCS"), list("ADEE")]),
+    131: lambda: srt(S().partition("aab")) == [["a", "a", "b"], ["aa", "b"]] and S().partition("a") == [["a"]],
 }
+
+# 另一种写法用同一组用例
+ALT_IDS = {42, 53, 206, 21, 347, 94, 300}
+
+
+def _levels(root):
+    """树 -> 层序数组(去掉末尾 None),用于比较构建结果。"""
+    out, q = [], deque([root])
+    while q:
+        n = q.popleft()
+        out.append(n.val if n else None)
+        if n:
+            q.extend([n.left, n.right])
+    while out and out[-1] is None:
+        out.pop()
+    return out
+
+
+def _threaded_singleton(cls):
+    import threading
+    cls._instance = None
+    got, barrier = [], threading.Barrier(8)
+
+    def worker():
+        barrier.wait()
+        got.append(cls())
+
+    ts = [threading.Thread(target=worker) for _ in range(8)]
+    for t in ts:
+        t.start()
+    for t in ts:
+        t.join()
+    return all(x is got[0] for x in got)
+
+
+def run_one(pid, title, code) -> bool:
+    NS.clear()
+    NS.update(List=List, Optional=Optional, ListNode=ListNode, TreeNode=TreeNode)
+    try:
+        exec(compile(code, f"<{pid}>", "exec"), NS)
+        if bool(TESTS[pid]()):
+            return True
+    except Exception as e:  # noqa: BLE001
+        print(f"  ✗ #{pid} {title}: {type(e).__name__}: {e}")
+    print(f"  ✗ #{pid} {title} 自测失败")
+    return False
 
 
 def selftest(items: list[dict]) -> int:
     fails = 0
     for it in items:
-        NS.clear()
-        NS.update(List=List, Optional=Optional, ListNode=ListNode, TreeNode=TreeNode)
-        try:
-            exec(compile(it["code"], f"<{it['id']}>", "exec"), NS)
-            ok = bool(TESTS[it["id"]]())
-        except Exception as e:  # noqa: BLE001
-            ok = False
-            print(f"  ✗ #{it['id']} {it['title']}: {type(e).__name__}: {e}")
-        if not ok:
-            fails += 1
-            print(f"  ✗ #{it['id']} {it['title']} 自测失败")
+        fails += not run_one(it["id"], it["title"], it["code"])
+        if it.get("alt"):
+            fails += not run_one(it["id"], it["title"] + "(另一种写法)", it["alt"]["code"])
+    alts = {it["id"] for it in items if it.get("alt")}
+    assert alts == ALT_IDS, alts ^ ALT_IDS
     return fails
 
 
@@ -283,7 +378,8 @@ def main() -> int:
         print(f"自测失败 {fails}/{n},未写出 JSON")
         return 1
     OUT.write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-    print(f"✓ {n} 题自测通过 → {OUT.relative_to(ROOT)}")
+    n_alt = sum(1 for it in data["items"] if it.get("alt"))
+    print(f"✓ {n} 题 + {n_alt} 个另一种写法自测通过 → {OUT.relative_to(ROOT)}")
     return 0
 
 

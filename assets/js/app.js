@@ -61,7 +61,7 @@ on(/^#\/day\/(\d+)$/,       renderDay);
 on(/^#\/p\/(\d+)$/,         renderProblem);
 on(/^#\/progress$/,         renderProgress);
 on(/^#\/quick$/,            () => renderQuick());
-on(/^#\/quick\/(\d+)$/,     id => renderQuick(Number(id)));
+on(/^#\/quick\/(\w+)$/,     id => renderQuick(/^\d+$/.test(id) ? Number(id) : id));
 on(/^#\/algos$/,            renderAlgos);
 on(/^#\/algo\/(.+)$/,       renderAlgo);
 on(/^#\/pattern\/(.+)$/,    renderPattern);

@@ -69,23 +69,48 @@ function answerHtml(it) {
     ${it.followup ? `<div class="ql-follow"><span class="ql-label">追问应对</span>${fmt(it.followup)}</div>` : ""}`;
 }
 
+function altHtml(it) {
+  if (!it.alt) return "";
+  return `
+    <details class="ql-code ql-alt">
+      <summary>另一种写法 · ${esc(it.alt.method)}</summary>
+      <p class="ql-alt-desc">${fmt(it.alt.desc)}</p>
+      <div class="code-block">
+        <div class="code-toolbar"><span>python</span>
+          <button class="copy-btn" type="button">${SVG_COPY} <span>复制</span></button>
+        </div>
+        <pre class="code"><code class="language-python">${esc(it.alt.code)}</code></pre>
+      </div>
+    </details>`;
+}
+
 function linksHtml(it) {
   return `
     ${it.in_site ? `<a class="ql-link" href="#/p/${it.id}" title="站内详解:题面 / 多解法 / 可视化">详解 →</a>` : ""}
-    <a class="lc-btn" href="${esc(it.leetcode_url)}" target="_blank" rel="noopener" title="在 LeetCode 上默写">${SVG_EXT}<span>练习</span></a>`;
+    ${it.leetcode_url ? `<a class="lc-btn" href="${esc(it.leetcode_url)}" target="_blank" rel="noopener" title="在 LeetCode 上默写">${SVG_EXT}<span>练习</span></a>` : ""}`;
 }
 
 function masterBtn(it) {
   const on = mastered.has(it.id);
-  return `<button class="ql-master ${on ? "on" : ""}" type="button" data-id="${it.id}" aria-pressed="${on}" title="标记为已掌握">${on ? "✓ 已掌握" : "标记掌握"}</button>`;
+  return `<button class="ql-master ${on ? "on" : ""}" type="button" data-id="${esc(it.id)}" aria-pressed="${on}" title="标记为已掌握">${on ? "✓ 已掌握" : "标记掌握"}</button>`;
+}
+
+// 热度 = 收录它的资料份数:一句话版 / 手撕PDF / 官方 Hot 100
+const HOT_LABEL = { 3: "三份资料都收录,必背", 2: "两份资料收录", 1: "一份资料收录" };
+const SRC_LABEL = { py: "一句话版", pdf: "手撕PDF" };
+function hotHtml(it) {
+  const srcs = [...it.sources.map(s => SRC_LABEL[s]), ...(it.in_site ? ["Hot 100"] : [])];
+  return `<span class="ql-hot hot-${it.hot}" title="${HOT_LABEL[it.hot]}:${srcs.join(" · ")}" aria-label="热度 ${it.hot}/3,${HOT_LABEL[it.hot]}">${"🔥".repeat(it.hot)}</span>`;
 }
 
 function headHtml(it) {
+  const isNum = typeof it.id === "number";
   return `
-    <span class="ql-num">#${it.id}</span>
+    <span class="ql-num">${isNum ? `#${it.id}` : "手撕"}</span>
     <h3 class="ql-title">${esc(it.title)}</h3>
     <span class="diff ${diffClass(it.difficulty)}">${esc(it.difficulty)}</span>
-    ${it.in_site ? "" : `<span class="ql-tag" title="不在本站 Hot 100 题单内的高频补充题">补充</span>`}`;
+    ${hotHtml(it)}
+    ${it.in_site || !isNum ? "" : `<span class="ql-tag" title="不在本站 Hot 100 题单内的高频补充题">补充</span>`}`;
 }
 
 function cardHtml(it) {
@@ -100,11 +125,16 @@ function cardHtml(it) {
         ${answerHtml(it)}
       </div>
       ${codeHtml(it)}
+      ${altHtml(it)}
     </article>`;
 }
 
 // ---- 页面 ----
-const state = { q: "", cat: "all", st: "all", order: null, idx: 0, flipped: false, data: null };
+// hot: "all" | "3" | "2"(两份及以上)  ·  group: "cat" 按分类 | "hot" 按热度
+const state = { q: "", cat: "all", st: "all", hot: "all", group: "cat", order: null, idx: 0, flipped: false, data: null };
+
+// data-id 里是字符串,数字题号转回 number,手撕题(如 singleton)保持字符串
+function parseId(s) { return /^\d+$/.test(s) ? Number(s) : s; }
 
 export async function renderQuick(focusId) {
   const app = document.getElementById("app");
@@ -118,15 +148,17 @@ export async function renderQuick(focusId) {
   }
   state.data = data;
   state.order = null;
-  if (focusId) { state.cat = "all"; state.st = "all"; state.q = ""; prefs.mode = "list"; }
+  if (focusId != null) { state.cat = "all"; state.st = "all"; state.hot = "all"; state.q = ""; prefs.mode = "list"; }
 
   const cats = data.categories;
+  const nHot = n => data.items.filter(it => it.hot >= n).length;
   app.innerHTML = `
     <div class="container quick">
       <div class="ql-hero">
         <h1>⚡ 一句话速记</h1>
-        <p class="section-sub">${data.items.length} 道高频题的 Python 面试口述版:先背一句话,再展开口述步骤、3 个核心要点和代码。
-          遮住答案自测,或切到闪卡一张张过。</p>
+        <p class="section-sub">${data.items.length} 道高频手撕题的 Python 面试口述版:先背一句话,再展开口述步骤、3 个核心要点和代码。
+          选题综合了「一句话版」「力扣100手撕」和官方 Hot 100 三份资料,
+          <span class="ql-hot hot-3">🔥🔥🔥</span> 表示三份都收录(${nHot(3)} 题),时间紧就先背这些。</p>
         <div class="ql-meter"><span id="ql-meter-text"></span><div class="progress-bar"><div class="progress-fill" id="ql-meter-fill"></div></div></div>
       </div>
 
@@ -146,6 +178,17 @@ export async function renderQuick(focusId) {
             <button class="pill" data-st="todo">未掌握</button>
             <button class="pill" data-st="done">已掌握</button>
           </div>
+        </div>
+        <div class="ql-row2">
+          <div class="filter-pills" id="ql-hotf" aria-label="按热度筛选">
+            <button class="pill" data-hot="all">全部热度</button>
+            <button class="pill" data-hot="3">🔥🔥🔥 必背 <span class="ql-count">${nHot(3)}</span></button>
+            <button class="pill" data-hot="2">🔥🔥 及以上 <span class="ql-count">${nHot(2)}</span></button>
+          </div>
+          <span class="seg-toggle" id="ql-group" role="tablist" aria-label="排列方式">
+            <button class="seg-btn" data-group="cat" role="tab">按分类</button>
+            <button class="seg-btn" data-group="hot" role="tab">按热度</button>
+          </span>
         </div>
         <div class="ql-cats" id="ql-cats">
           <button class="pill" data-cat="all">全部 <span class="ql-count">${data.items.length}</span></button>
@@ -167,7 +210,7 @@ export async function renderQuick(focusId) {
   bindControls();
   update();
 
-  if (focusId) {
+  if (focusId != null) {
     const card = document.getElementById(`q-${focusId}`);
     if (card) {
       card.scrollIntoView({ block: "start" });
@@ -182,13 +225,15 @@ function filtered() {
   const q = state.q.trim().toLowerCase();
   return items.filter(it => {
     if (state.cat !== "all" && it.category !== state.cat) return false;
+    if (state.hot !== "all" && it.hot < Number(state.hot)) return false;
     const m = mastered.has(it.id);
     if (state.st === "done" && !m) return false;
     if (state.st === "todo" && m) return false;
     if (!q) return true;
     if (String(it.id) === q) return true;
     const blob = [it.title, it.method, it.oneliner, it.category, ...it.steps,
-      ...it.points.map(p => p.k + p.v), it.followup, it.code].join(" ").toLowerCase();
+      ...it.points.map(p => p.k + p.v), it.followup, it.code,
+      it.alt ? it.alt.method + it.alt.desc : ""].join(" ").toLowerCase();
     return blob.includes(q);
   });
 }
@@ -206,6 +251,12 @@ function update() {
   });
   document.querySelectorAll("#ql-st .pill").forEach(b => b.classList.toggle("active", b.dataset.st === state.st));
   document.querySelectorAll("#ql-cats .pill").forEach(b => b.classList.toggle("active", b.dataset.cat === state.cat));
+  document.querySelectorAll("#ql-hotf .pill").forEach(b => b.classList.toggle("active", b.dataset.hot === state.hot));
+  document.querySelectorAll("#ql-group .seg-btn").forEach(b => {
+    const on = b.dataset.group === state.group;
+    b.classList.toggle("active", on);
+    b.setAttribute("aria-selected", on);
+  });
   document.getElementById("ql-hide").checked = prefs.hide;
   document.getElementById("ql-hide-wrap").hidden = prefs.mode !== "list";
 
@@ -219,11 +270,15 @@ function renderList() {
     view.innerHTML = `<div class="empty">没有匹配的题目。</div>`;
     return;
   }
-  // 按分类分组,保留原顺序
+  // 按分类或热度分组,组内保留原顺序
+  const HOT_GROUP = { 3: "🔥🔥🔥 必背 · 三份资料都收录", 2: "🔥🔥 高频 · 两份资料收录", 1: "🔥 补充 · 一份资料收录" };
+  const keyOf = it => state.group === "hot" ? HOT_GROUP[it.hot] : it.category;
+  const sorted = state.group === "hot" ? [...items].sort((a, b) => b.hot - a.hot) : items;
   const groups = new Map();
-  for (const it of items) {
-    if (!groups.has(it.category)) groups.set(it.category, []);
-    groups.get(it.category).push(it);
+  for (const it of sorted) {
+    const k = keyOf(it);
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(it);
   }
   view.innerHTML = `<div class="ql-list ${prefs.hide ? "quiz" : ""}">${
     [...groups].map(([cat, arr]) => `
@@ -237,6 +292,7 @@ function renderList() {
 // ---- 闪卡 ----
 function cardPool() {
   const pool = filtered();
+  if (state.group === "hot") pool.sort((a, b) => b.hot - a.hot);  // 稳定排序,同热度保留原顺序
   if (state.order) {
     const rank = new Map(state.order.map((id, i) => [id, i]));
     pool.sort((a, b) => (rank.get(a.id) ?? 1e9) - (rank.get(b.id) ?? 1e9));
@@ -270,7 +326,8 @@ function renderCards() {
             <p class="ql-one">${fmt(it.oneliner)}</p>
             ${answerHtml(it)}
           </div>
-          ${codeHtml(it)}`
+          ${codeHtml(it)}
+          ${altHtml(it)}`
         : `<button class="fc-reveal" type="button" id="fc-reveal">显示答案 <span class="kbd">Space</span></button>`}
       </article>
       <div class="fc-nav">
@@ -339,6 +396,16 @@ function bindControls() {
     if (!b) return;
     state.st = b.dataset.st; resetPos(); update();
   });
+  document.getElementById("ql-hotf").addEventListener("click", e => {
+    const b = e.target.closest("[data-hot]");
+    if (!b) return;
+    state.hot = b.dataset.hot; resetPos(); update();
+  });
+  document.getElementById("ql-group").addEventListener("click", e => {
+    const b = e.target.closest("[data-group]");
+    if (!b) return;
+    state.group = b.dataset.group; resetPos(); update();
+  });
   document.getElementById("ql-cats").addEventListener("click", e => {
     const b = e.target.closest("[data-cat]");
     if (!b) return;
@@ -356,7 +423,7 @@ function bindControls() {
     }
     const mb = e.target.closest(".ql-master");
     if (mb) {
-      const id = Number(mb.dataset.id);
+      const id = parseId(mb.dataset.id);
       mastered.toggle(id);
       // 列表模式就地更新,避免重渲染丢失展开状态;「未掌握/已掌握」筛选下需要重排
       if (prefs.mode === "list" && state.st === "all") {

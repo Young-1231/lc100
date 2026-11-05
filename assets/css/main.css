@@ -1337,13 +1337,13 @@ pre.code {
 .ql-count { font-size: 11px; opacity: .65; font-variant-numeric: tabular-nums; }
 .ql-mute { color: var(--text-mute); font-size: 12.5px; font-weight: 400; }
 
-.ql-group { margin-top: 28px; scroll-margin-top: 170px; }
+.ql-group { margin-top: 28px; scroll-margin-top: 220px; }
 .ql-group-title { font-size: 17px; font-weight: 700; margin: 0 0 12px; display: flex; align-items: baseline; gap: 8px; }
 
 .ql-card {
   border: 1px solid var(--border); border-radius: var(--radius);
   background: var(--bg-elev); padding: 16px 18px 12px; margin-bottom: 12px;
-  scroll-margin-top: 170px; transition: border-color var(--duration), box-shadow var(--duration);
+  scroll-margin-top: 220px; transition: border-color var(--duration), box-shadow var(--duration);
 }
 .ql-card:hover { border-color: var(--text-mute); }
 .ql-card.flash { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
@@ -1461,3 +1461,13 @@ pre.code {
 .quick-entry .meta span { line-height: 1.7; }
 /* 目录跳转时不被吸顶 header 挡住 */
 .detail-section { scroll-margin-top: 76px; }
+
+/* 速记:热度 / 第二行筛选 / 另一种写法 */
+.ql-hot { font-size: 12px; letter-spacing: -2px; line-height: 1; cursor: help; }
+.ql-hot.hot-2 { opacity: .85; }
+.ql-hot.hot-1 { opacity: .6; }
+.ql-row2 { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-bottom: 10px; }
+.ql-row2 .seg-toggle { margin-left: 0; }
+.ql-row2 .pill { height: 28px; font-size: 12.5px; }
+.ql-alt summary { color: var(--text-mute); }
+.ql-alt-desc { margin: 6px 0 0; font-size: 13px; color: var(--text-soft); line-height: 1.7; }
